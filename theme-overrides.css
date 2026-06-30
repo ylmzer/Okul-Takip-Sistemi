@@ -1,0 +1,4891 @@
+:root {
+  --corp-sidebar-width: 326px;
+  --accent: #0f766e;
+  --accent-strong: #115e59;
+  --accent-soft: #e0f2f1;
+  --accent-rgb: 15, 118, 110;
+  --corp-bg: #f3f5f7;
+  --corp-panel: #ffffff;
+  --corp-line: #cbd5e1;
+  --corp-line-soft: #e2e8f0;
+  --corp-ink: #0f172a;
+  --corp-muted: #64748b;
+  --corp-sidebar: #111827;
+  --corp-sidebar-2: #0b1220;
+}
+
+body.app-mode .app-shell,
+body.skill-mode .skill-shell,
+body.student-mode .student-shell,
+body.annual-mode .annual-shell,
+body.course-mode .course-shell,
+body.global-settings-mode .global-settings-shell {
+  grid-template-columns: var(--corp-sidebar-width) minmax(0, 1fr) !important;
+  background: var(--corp-bg) !important;
+}
+
+body.global-settings-mode {
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+body.global-settings-mode .global-settings-shell {
+  grid-template-rows: none !important;
+}
+
+body.app-mode .sidebar,
+body.skill-mode .skill-sidebar,
+body.student-mode .student-sidebar,
+body.annual-mode .annual-sidebar,
+body.course-mode .course-sidebar,
+body.global-settings-mode .global-settings-sidebar {
+  width: var(--corp-sidebar-width) !important;
+  min-width: var(--corp-sidebar-width) !important;
+  max-width: var(--corp-sidebar-width) !important;
+  padding: 18px !important;
+  color: #cbd5e1 !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0)),
+    linear-gradient(180deg, var(--corp-sidebar), var(--corp-sidebar-2)) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+body.app-mode .workspace,
+body.skill-mode .skill-workspace,
+body.student-mode .student-workspace,
+body.annual-mode .annual-workspace,
+body.course-mode .course-workspace,
+body.global-settings-mode .global-settings-workspace {
+  padding: 22px 24px !important;
+  overflow-x: hidden !important;
+  color: var(--corp-ink) !important;
+  background: var(--corp-bg) !important;
+}
+
+body.app-mode .topbar,
+body.skill-mode .skill-topbar,
+body.student-mode .student-topbar,
+body.annual-mode .annual-topbar,
+body.course-mode .course-topbar,
+body.global-settings-mode .global-settings-topbar {
+  min-height: 44px !important;
+  margin: 0 0 20px !important;
+  padding: 0 178px 0 0 !important;
+  align-items: center !important;
+  color: var(--corp-ink) !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+body.app-mode .topbar h1,
+body.skill-mode .skill-topbar h1,
+body.student-mode .student-topbar h1,
+body.annual-mode .annual-topbar h1,
+body.course-mode .course-topbar h1,
+body.global-settings-mode .global-settings-topbar h1 {
+  color: var(--corp-ink) !important;
+  font-size: clamp(1.35rem, 1.8vw, 1.72rem) !important;
+  font-weight: 850 !important;
+  line-height: 1.08 !important;
+  letter-spacing: 0 !important;
+  text-shadow: none !important;
+}
+
+body.app-mode .module-sidebar-brand,
+body.skill-mode .module-sidebar-brand,
+body.student-mode .module-sidebar-brand,
+body.annual-mode .module-sidebar-brand,
+body.course-mode .module-sidebar-brand,
+body.global-settings-mode .module-sidebar-brand {
+  display: grid !important;
+  grid-template-columns: 52px minmax(0, 1fr) !important;
+  gap: 14px !important;
+  align-items: center !important;
+  min-height: 76px !important;
+  margin: 0 0 18px !important;
+  padding: 10px !important;
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.055) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+
+body.app-mode .module-sidebar-brand > div,
+body.skill-mode .module-sidebar-brand > div,
+body.student-mode .module-sidebar-brand > div,
+body.annual-mode .module-sidebar-brand > div,
+body.course-mode .module-sidebar-brand > div,
+body.global-settings-mode .module-sidebar-brand > div {
+  display: grid !important;
+  gap: 4px !important;
+  min-width: 0 !important;
+}
+
+body.app-mode .module-sidebar-brand strong,
+body.skill-mode .module-sidebar-brand strong,
+body.student-mode .module-sidebar-brand strong,
+body.annual-mode .module-sidebar-brand strong,
+body.course-mode .module-sidebar-brand strong,
+body.global-settings-mode .module-sidebar-brand strong {
+  overflow: hidden !important;
+  color: #ffffff !important;
+  font-size: 0 !important;
+  font-weight: 850 !important;
+  line-height: 1.12 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+body.app-mode .module-sidebar-brand strong::before,
+body.skill-mode .module-sidebar-brand strong::before,
+body.student-mode .module-sidebar-brand strong::before,
+body.annual-mode .module-sidebar-brand strong::before,
+body.course-mode .module-sidebar-brand strong::before,
+body.global-settings-mode .module-sidebar-brand strong::before {
+  font-size: 1.02rem !important;
+}
+
+body.app-mode .module-sidebar-brand[data-module-brand="sorubank"] strong::before {
+  content: "Soru Bankası";
+}
+
+body.skill-mode .module-sidebar-brand[data-module-brand="skill-training"] strong::before {
+  content: "Beceri Eğitimi";
+}
+
+body.student-mode .module-sidebar-brand[data-module-brand="student-tracking"] strong::before {
+  content: "Ders Takibi";
+}
+
+body.annual-mode .module-sidebar-brand[data-module-brand="annual-plan"] strong::before {
+  content: "Yıllık Plan";
+}
+
+body.course-mode .module-sidebar-brand[data-module-brand="course-tracking"] strong::before {
+  content: "Kurs Takibi";
+}
+
+body.app-mode .module-sidebar-brand small,
+body.skill-mode .module-sidebar-brand small,
+body.student-mode .module-sidebar-brand small,
+body.annual-mode .module-sidebar-brand small,
+body.course-mode .module-sidebar-brand small,
+body.global-settings-mode .module-sidebar-brand small {
+  display: none !important;
+}
+
+body.app-mode .module-sidebar-brand > div::after,
+body.skill-mode .module-sidebar-brand > div::after,
+body.student-mode .module-sidebar-brand > div::after,
+body.annual-mode .module-sidebar-brand > div::after,
+body.course-mode .module-sidebar-brand > div::after,
+body.global-settings-mode .module-sidebar-brand > div::after {
+  overflow: hidden !important;
+  color: #94a3b8 !important;
+  font-size: 0.78rem !important;
+  font-weight: 650 !important;
+  line-height: 1.25 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+body.app-mode .module-sidebar-brand[data-module-brand="sorubank"] > div::after {
+  content: "Soru, sınav ve analiz";
+}
+
+body.skill-mode .module-sidebar-brand[data-module-brand="skill-training"] > div::after {
+  content: "İşletme ve evrak takibi";
+}
+
+body.student-mode .module-sidebar-brand[data-module-brand="student-tracking"] > div::after {
+  content: "Sınıf ve öğrenci izleme";
+}
+
+body.annual-mode .module-sidebar-brand[data-module-brand="annual-plan"] > div::after {
+  content: "Alan, ders ve plan üretimi";
+}
+
+body.course-mode .module-sidebar-brand[data-module-brand="course-tracking"] > div::after {
+  content: "Devam ve not yönetimi";
+}
+
+body.app-mode .module-sidebar-icon,
+body.skill-mode .module-sidebar-icon,
+body.student-mode .module-sidebar-icon,
+body.annual-mode .module-sidebar-icon,
+body.course-mode .module-sidebar-icon,
+body.global-settings-mode .module-sidebar-icon,
+body.skill-mode .module-sidebar-brand .ime-logo {
+  display: grid !important;
+  width: 52px !important;
+  height: 52px !important;
+  place-items: center !important;
+  color: var(--accent-strong) !important;
+  background: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  font-size: 0.86rem !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+body.skill-mode .module-sidebar-brand .ime-logo i,
+body.app-mode .module-sidebar-brand .brand-pages,
+body.app-mode .module-sidebar-brand .brand-letter,
+body.skill-mode .module-sidebar-brand + .skill-subtitle,
+body.student-mode .module-sidebar-brand + .student-subtitle,
+body.annual-mode .module-sidebar-brand + .annual-subtitle,
+body.course-mode .module-sidebar-brand + .course-subtitle,
+body.global-settings-mode .module-sidebar-brand + .global-settings-subtitle,
+body.skill-mode .skill-sidebar-footer {
+  display: none !important;
+}
+
+body.skill-mode .module-sidebar-brand .ime-logo::before {
+  content: "BE";
+}
+
+body.skill-mode .skill-view {
+  padding: 0 0 38px !important;
+}
+
+body.skill-mode .skill-stat-grid {
+  grid-template-columns: repeat(5, minmax(128px, 1fr)) !important;
+  gap: 14px !important;
+  margin-bottom: 18px !important;
+}
+
+body.skill-mode .skill-stat-card {
+  min-height: 118px !important;
+  padding: 16px 14px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06) !important;
+}
+
+body.skill-mode .skill-stat-card span {
+  color: #64748b !important;
+  font-size: 0.84rem !important;
+}
+
+body.skill-mode .skill-stat-card strong {
+  color: var(--corp-ink) !important;
+  font-size: 2rem !important;
+}
+
+body.skill-mode .skill-stat-card h3 {
+  color: var(--corp-ink) !important;
+  font-size: 0.9rem !important;
+}
+
+body.skill-mode .skill-stat-card small,
+body.skill-mode .skill-stat-card .stat-dot-row {
+  font-size: 0.78rem !important;
+}
+
+body.skill-mode .skill-dashboard-grid {
+  gap: 16px !important;
+}
+
+body.skill-mode .skill-quick-panel,
+body.skill-mode .skill-notice-panel {
+  padding: 16px !important;
+  background: #ffffff !important;
+  border: 1px solid var(--corp-line-soft) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06) !important;
+}
+
+body.skill-mode .skill-quick-panel h2,
+body.skill-mode .skill-section-title h2 {
+  margin: 0 !important;
+  color: var(--corp-ink) !important;
+  font-size: 1.02rem !important;
+  font-weight: 850 !important;
+}
+
+body.skill-mode .skill-quick-grid {
+  grid-template-columns: repeat(5, minmax(120px, 1fr)) !important;
+  gap: 10px !important;
+  margin-top: 12px !important;
+}
+
+body.skill-mode .skill-quick-grid button {
+  min-height: 82px !important;
+  gap: 8px !important;
+  padding: 12px !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  font-size: 0.86rem !important;
+}
+
+body.skill-mode .skill-quick-grid button span,
+body.skill-mode .skill-section-title > span,
+body.skill-mode .skill-alert-list .skill-alert-icon {
+  width: 34px !important;
+  height: 34px !important;
+  color: var(--accent-strong) !important;
+  background: var(--accent-soft) !important;
+  border-color: rgba(var(--accent-rgb), 0.18) !important;
+  border-radius: 8px !important;
+  font-size: 0.94rem !important;
+}
+
+body.skill-mode .skill-section-title {
+  gap: 10px !important;
+  margin-bottom: 14px !important;
+  padding-bottom: 12px !important;
+  border-bottom: 1px solid var(--corp-line-soft) !important;
+}
+
+body.skill-mode .skill-section-title small {
+  margin-left: auto !important;
+  color: #334155 !important;
+  font-size: 0.82rem !important;
+  font-weight: 760 !important;
+}
+
+body.app-mode .module-sidebar-brand[data-module-brand="sorubank"],
+.module-float-panel button[data-floating-module="sorubank"] {
+  --module-color: #10b981;
+  --module-soft: #d1fae5;
+  --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 4h8v3H8zM7 5H5v16h14V5h-2v4H7V5zm2 8h6v2H9v-2zm0 4h4v2H9v-2z'/%3E%3C/svg%3E");
+}
+
+body.student-mode .module-sidebar-brand[data-module-brand="student-tracking"],
+.module-float-panel button[data-floating-module="student-tracking"] {
+  --module-color: #2563eb;
+  --module-soft: #dbeafe;
+  --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm8-1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2 21c.7-4.2 3.2-7 7-7s6.3 2.8 7 7H2zm13.7-7.7c3.1.4 5.4 3 6.1 7.7H18c-.3-2.9-1.1-5.3-2.3-7.7z'/%3E%3C/svg%3E");
+}
+
+body.skill-mode .module-sidebar-brand[data-module-brand="skill-training"],
+.module-float-panel button[data-floating-module="skill-training"] {
+  --module-color: #f97316;
+  --module-soft: #ffedd5;
+  --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 4h6l1.5 3H21v13H3V7h4.5L9 4zm1.3 2-1 2h5.4l-1-2h-3.4zM5 10v8h14v-8h-4v2H9v-2H5z'/%3E%3C/svg%3E");
+}
+
+body.course-mode .module-sidebar-brand[data-module-brand="course-tracking"],
+.module-float-panel button[data-floating-module="course-tracking"] {
+  --module-color: #8b5cf6;
+  --module-soft: #ede9fe;
+  --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 3h12a3 3 0 0 1 3 3v15H6a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2zm1 3v11.2c.3-.1.6-.2 1-.2h11V6a1 1 0 0 0-1-1H6v1zm3 3h6v2H9V9zm0 4h5v2H9v-2z'/%3E%3C/svg%3E");
+}
+
+body.annual-mode .module-sidebar-brand[data-module-brand="annual-plan"],
+.module-float-panel button[data-floating-module="annual-plan"] {
+  --module-color: #65a30d;
+  --module-soft: #ecfccb;
+  --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 2h2v3h6V2h2v3h4v17H3V5h4V2zm12 9H5v9h14v-9zM5 7v2h14V7H5zm3 6h3v3H8v-3zm5 0h3v3h-3v-3z'/%3E%3C/svg%3E");
+}
+
+.module-float-panel button[data-floating-module="settings"] {
+  --module-color: #0f766e;
+  --module-soft: #ccfbf1;
+  --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10.7 2h2.6l.7 3c.5.2.9.4 1.3.7l2.9-.9 1.3 2.3-2.2 2c.1.5.2 1 .2 1.5s-.1 1-.2 1.5l2.2 2-1.3 2.3-2.9-.9c-.4.3-.8.5-1.3.7l-.7 3h-2.6l-.7-3c-.5-.2-.9-.4-1.3-.7l-2.9.9-1.3-2.3 2.2-2c-.1-.5-.2-1-.2-1.5s.1-1 .2-1.5l-2.2-2 1.3-2.3 2.9.9c.4-.3.8-.5 1.3-.7l.7-3zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z'/%3E%3C/svg%3E");
+}
+
+.mobile-module-hub-btn,
+.module-float-panel button[data-floating-module="hub"] {
+  --module-color: #0f766e;
+  --module-soft: #ccfbf1;
+  --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z'/%3E%3C/svg%3E");
+}
+
+body.app-mode .module-sidebar-icon,
+body.skill-mode .module-sidebar-icon,
+body.student-mode .module-sidebar-icon,
+body.annual-mode .module-sidebar-icon,
+body.course-mode .module-sidebar-icon,
+body.global-settings-mode .module-sidebar-icon,
+body.skill-mode .module-sidebar-brand .ime-logo {
+  color: transparent !important;
+  font-size: 0 !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+body.app-mode .module-sidebar-icon::before,
+body.skill-mode .module-sidebar-icon::before,
+body.student-mode .module-sidebar-icon::before,
+body.annual-mode .module-sidebar-icon::before,
+body.course-mode .module-sidebar-icon::before,
+body.global-settings-mode .module-sidebar-icon::before,
+body.skill-mode .module-sidebar-brand .ime-logo::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  width: 29px !important;
+  height: 29px !important;
+  background: var(--module-color, var(--accent-strong)) !important;
+  transform: translate(-50%, -50%) !important;
+  -webkit-mask: var(--module-icon-mask) center / contain no-repeat !important;
+  mask: var(--module-icon-mask) center / contain no-repeat !important;
+}
+
+body.module-mode .module-card .module-icon {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+body.module-mode .module-card .module-icon::before {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+body.app-mode .module-float-switcher,
+body.skill-mode .module-float-switcher,
+body.student-mode .module-float-switcher,
+body.annual-mode .module-float-switcher,
+body.course-mode .module-float-switcher,
+body.global-settings-mode .module-float-switcher {
+  position: fixed !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: 18px !important;
+  left: 18px !important;
+  z-index: 900 !important;
+  display: block !important;
+  width: calc(var(--corp-sidebar-width) - 36px) !important;
+}
+
+body.app-mode .module-float-switcher {
+  bottom: 18px !important;
+}
+
+body.app-mode .mobile-module-hub-btn,
+body.skill-mode .mobile-module-hub-btn,
+body.student-mode .mobile-module-hub-btn,
+body.annual-mode .mobile-module-hub-btn,
+body.course-mode .mobile-module-hub-btn,
+body.global-settings-mode .mobile-module-hub-btn {
+  justify-content: flex-start !important;
+  width: 100% !important;
+  min-height: 46px !important;
+  padding: 0 12px !important;
+  color: #e5f7f5 !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  font-size: 0.9rem !important;
+  font-weight: 820 !important;
+}
+
+body.app-mode .mobile-module-hub-btn:hover,
+body.skill-mode .mobile-module-hub-btn:hover,
+body.student-mode .mobile-module-hub-btn:hover,
+body.annual-mode .mobile-module-hub-btn:hover,
+body.course-mode .mobile-module-hub-btn:hover,
+body.global-settings-mode .mobile-module-hub-btn:hover,
+body.app-mode .mobile-module-hub-btn[aria-expanded="true"],
+body.skill-mode .mobile-module-hub-btn[aria-expanded="true"],
+body.student-mode .mobile-module-hub-btn[aria-expanded="true"],
+body.annual-mode .mobile-module-hub-btn[aria-expanded="true"],
+body.course-mode .mobile-module-hub-btn[aria-expanded="true"],
+body.global-settings-mode .mobile-module-hub-btn[aria-expanded="true"] {
+  color: #ffffff !important;
+  background: rgba(15, 118, 110, 0.72) !important;
+  border-color: rgba(94, 234, 212, 0.36) !important;
+}
+
+body.app-mode .mobile-module-hub-btn span,
+body.skill-mode .mobile-module-hub-btn span,
+body.student-mode .mobile-module-hub-btn span,
+body.annual-mode .mobile-module-hub-btn span,
+body.course-mode .mobile-module-hub-btn span,
+body.global-settings-mode .mobile-module-hub-btn span {
+  display: grid !important;
+  position: relative !important;
+  width: 30px !important;
+  height: 30px !important;
+  flex: 0 0 30px !important;
+  place-items: center !important;
+  color: transparent !important;
+  background: #f8fafc !important;
+  border-radius: 8px !important;
+  font-size: 0 !important;
+}
+
+body.app-mode .mobile-module-hub-btn span::before,
+body.skill-mode .mobile-module-hub-btn span::before,
+body.student-mode .mobile-module-hub-btn span::before,
+body.annual-mode .mobile-module-hub-btn span::before,
+body.course-mode .mobile-module-hub-btn span::before,
+body.global-settings-mode .mobile-module-hub-btn span::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  width: 16px !important;
+  height: 16px !important;
+  background: var(--module-color) !important;
+  transform: translate(-50%, -50%) !important;
+  -webkit-mask: var(--module-icon-mask) center / contain no-repeat !important;
+  mask: var(--module-icon-mask) center / contain no-repeat !important;
+}
+
+body.app-mode .module-float-panel,
+body.skill-mode .module-float-panel,
+body.student-mode .module-float-panel,
+body.annual-mode .module-float-panel,
+body.course-mode .module-float-panel,
+body.global-settings-mode .module-float-panel {
+  top: auto !important;
+  right: auto !important;
+  bottom: calc(100% + 8px) !important;
+  left: 0 !important;
+  width: 100% !important;
+  max-height: min(472px, calc(100vh - 112px)) !important;
+  overflow: auto !important;
+  gap: 6px !important;
+  padding: 8px !important;
+  background: #ffffff !important;
+  border: 1px solid var(--corp-line-soft) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.2) !important;
+}
+
+body.app-mode .module-float-panel-links,
+body.skill-mode .module-float-panel-links,
+body.student-mode .module-float-panel-links,
+body.annual-mode .module-float-panel-links,
+body.course-mode .module-float-panel-links,
+body.global-settings-mode .module-float-panel-links {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  width: 100% !important;
+}
+
+body.app-mode .module-float-panel button,
+body.skill-mode .module-float-panel button,
+body.student-mode .module-float-panel button,
+body.annual-mode .module-float-panel button,
+body.course-mode .module-float-panel button,
+body.global-settings-mode .module-float-panel button {
+  display: grid !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  grid-template-columns: 34px minmax(0, 1fr) !important;
+  min-height: 42px !important;
+  padding: 6px 12px !important;
+  color: #334155 !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  font-size: 0.88rem !important;
+  font-weight: 800 !important;
+}
+
+body.app-mode .module-float-panel button:hover,
+body.skill-mode .module-float-panel button:hover,
+body.student-mode .module-float-panel button:hover,
+body.annual-mode .module-float-panel button:hover,
+body.course-mode .module-float-panel button:hover,
+body.global-settings-mode .module-float-panel button:hover,
+body.app-mode .module-float-panel button.is-active,
+body.skill-mode .module-float-panel button.is-active,
+body.student-mode .module-float-panel button.is-active,
+body.annual-mode .module-float-panel button.is-active,
+body.course-mode .module-float-panel button.is-active,
+body.global-settings-mode .module-float-panel button.is-active {
+  color: #0f172a !important;
+  background: var(--module-soft, #e0f2f1) !important;
+  border-color: color-mix(in srgb, var(--module-color, #0f766e) 30%, transparent) !important;
+}
+
+body.app-mode .module-float-panel button span,
+body.skill-mode .module-float-panel button span,
+body.student-mode .module-float-panel button span,
+body.annual-mode .module-float-panel button span,
+body.course-mode .module-float-panel button span,
+body.global-settings-mode .module-float-panel button span {
+  display: grid !important;
+  position: relative !important;
+  width: 30px !important;
+  height: 30px !important;
+  place-items: center !important;
+  color: transparent !important;
+  background: var(--module-soft, #e0f2f1) !important;
+  border: 1px solid color-mix(in srgb, var(--module-color, #0f766e) 20%, transparent) !important;
+  border-radius: 8px !important;
+  font-size: 0 !important;
+}
+
+body.app-mode .module-float-panel button span::before,
+body.skill-mode .module-float-panel button span::before,
+body.student-mode .module-float-panel button span::before,
+body.annual-mode .module-float-panel button span::before,
+body.course-mode .module-float-panel button span::before,
+body.global-settings-mode .module-float-panel button span::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  width: 17px !important;
+  height: 17px !important;
+  background: var(--module-color, #0f766e) !important;
+  transform: translate(-50%, -50%) !important;
+  -webkit-mask: var(--module-icon-mask) center / contain no-repeat !important;
+  mask: var(--module-icon-mask) center / contain no-repeat !important;
+}
+
+body.app-mode .sidebar .system-section {
+  display: none !important;
+}
+
+body.app-mode .sidebar .course-picker {
+  z-index: 40 !important;
+}
+
+body.app-mode .sidebar .course-picker.is-open {
+  z-index: 980 !important;
+}
+
+body.app-mode .sidebar .course-list {
+  z-index: 990 !important;
+  color: #e5edf2 !important;
+  background: #172033 !important;
+  border-color: rgba(148, 163, 184, 0.34) !important;
+  box-shadow: 0 18px 38px rgba(2, 6, 23, 0.42) !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+}
+
+body.app-mode .sidebar .course-option {
+  color: #e5edf2 !important;
+  background: #202a3c !important;
+  border-color: rgba(148, 163, 184, 0.18) !important;
+}
+
+body.app-mode .sidebar .course-option:hover,
+body.app-mode .sidebar .course-option.is-active {
+  color: #ffffff !important;
+  background: #0f766e !important;
+  border-color: rgba(94, 234, 212, 0.34) !important;
+}
+
+body.app-mode .sidebar .course-option small {
+  color: #cbd5e1 !important;
+}
+
+body.app-mode.settings-mode .topbar {
+  display: flex !important;
+}
+
+body.app-mode.settings-mode .tabs {
+  display: flex !important;
+}
+
+body.app-mode.settings-mode .workspace {
+  padding-top: 22px !important;
+}
+
+body.course-mode .course-active-module-card {
+  margin-top: 14px !important;
+  margin-bottom: 0 !important;
+}
+
+body.course-mode .course-nav {
+  flex: 0 0 auto !important;
+}
+
+body.course-mode .course-sidebar {
+  padding-bottom: 82px !important;
+}
+
+body.course-mode #courseModuleSelectDialog {
+  width: min(460px, calc(100vw - 48px)) !important;
+  max-width: min(460px, calc(100vw - 48px)) !important;
+  max-height: calc(100dvh - 112px) !important;
+  margin: 72px auto auto !important;
+  overflow: hidden !important;
+}
+
+body.course-mode #courseModuleSelectDialog .course-dialog-body {
+  max-height: calc(100dvh - 184px) !important;
+  overflow: auto !important;
+}
+
+body.course-mode #courseModuleSelectDialog .course-dialog-list {
+  max-height: min(340px, calc(100dvh - 260px)) !important;
+}
+
+body.app-mode .topbar,
+body.skill-mode .skill-topbar,
+body.student-mode .student-topbar,
+body.annual-mode .annual-topbar,
+body.course-mode .course-topbar,
+body.global-settings-mode .global-settings-topbar {
+  padding-right: 0 !important;
+}
+
+@media (max-width: 900px) {
+  body.app-mode .app-shell,
+  body.skill-mode .skill-shell,
+  body.student-mode .student-shell,
+  body.annual-mode .annual-shell,
+  body.course-mode .course-shell,
+  body.global-settings-mode .global-settings-shell {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.app-mode .sidebar,
+  body.skill-mode .skill-sidebar,
+  body.student-mode .student-sidebar,
+  body.annual-mode .annual-sidebar,
+  body.course-mode .course-sidebar,
+  body.global-settings-mode .global-settings-sidebar {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+  }
+
+  body.app-mode .topbar,
+  body.skill-mode .skill-topbar,
+  body.student-mode .student-topbar,
+  body.annual-mode .annual-topbar,
+  body.course-mode .course-topbar,
+  body.global-settings-mode .global-settings-topbar {
+    padding-right: 0 !important;
+  }
+
+  body.app-mode .module-float-switcher,
+  body.skill-mode .module-float-switcher,
+  body.student-mode .module-float-switcher,
+  body.annual-mode .module-float-switcher,
+  body.course-mode .module-float-switcher,
+  body.global-settings-mode .module-float-switcher {
+    right: 14px !important;
+    bottom: 14px !important;
+    left: 14px !important;
+    width: auto !important;
+  }
+
+  body.skill-mode {
+    height: auto !important;
+    max-height: none !important;
+    overflow: auto !important;
+  }
+
+  body.skill-mode .skill-shell {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+  }
+
+  body.skill-mode .skill-sidebar {
+    grid-row: 1 !important;
+    height: auto !important;
+  }
+
+  body.skill-mode .skill-nav {
+    display: none !important;
+  }
+
+  .skill-nav-mobile-select-container {
+    display: block !important;
+  }
+
+  body.skill-mode .skill-workspace {
+    grid-row: 2 !important;
+    grid-column: 1 !important;
+    height: auto !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  body.skill-mode .skill-report-tabs {
+    display: none !important;
+  }
+
+  .skill-report-mobile-select-container {
+    display: block !important;
+  }
+
+  body.global-settings-mode {
+    height: auto !important;
+    max-height: none !important;
+    overflow: auto !important;
+  }
+
+  body.global-settings-mode .global-settings-shell {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+  }
+
+  body.global-settings-mode .global-settings-sidebar {
+    grid-row: 1 !important;
+    height: auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+
+  body.global-settings-mode .global-settings-workspace {
+    grid-row: 2 !important;
+    grid-column: 1 !important;
+    height: auto !important;
+    display: block !important;
+    overflow: visible !important;
+  }
+
+  body.global-settings-mode .global-settings-nav {
+    display: none !important;
+  }
+
+  .global-settings-mobile-select-container {
+    display: block !important;
+  }
+
+  /* Mobilde üst bar (sidebar) - Son derece kompakt, şık yapışkan bar */
+  body.app-mode aside.sidebar,
+  body.skill-mode aside.skill-sidebar,
+  body.student-mode aside.student-sidebar,
+  body.annual-mode aside.annual-sidebar,
+  body.course-mode aside.course-sidebar,
+  body.global-settings-mode aside.global-settings-sidebar {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 0 16px !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    margin-bottom: 0 !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 999 !important;
+    
+    /* Default (Light Mode) Styling */
+    background: #ffffff !important;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important;
+  }
+
+  /* Dark Mode Styling for Sidebar topbar */
+  body.dark-mode.app-mode aside.sidebar,
+  body.dark-mode.skill-mode aside.skill-sidebar,
+  body.dark-mode.student-mode aside.student-sidebar,
+  body.dark-mode.annual-mode aside.annual-sidebar,
+  body.dark-mode.course-mode aside.course-sidebar,
+  body.dark-mode.global-settings-mode aside.global-settings-sidebar {
+    background: var(--corp-sidebar, #111827) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  body.app-mode .workspace,
+  body.skill-mode .skill-workspace,
+  body.student-mode .student-workspace,
+  body.annual-mode .annual-workspace,
+  body.course-mode .course-workspace,
+  body.global-settings-mode .global-settings-workspace {
+    padding-top: 42px !important;
+  }
+
+  /* Marka / modül başlığını mobilde yatay, kompakt ve tam sığacak şekilde düzenle */
+  body.app-mode aside.sidebar .brand,
+  body.app-mode aside.sidebar .module-sidebar-brand,
+  body.skill-mode aside.skill-sidebar .module-sidebar-brand,
+  body.student-mode aside.student-sidebar .module-sidebar-brand,
+  body.annual-mode aside.annual-sidebar .module-sidebar-brand,
+  body.course-mode aside.course-sidebar .module-sidebar-brand,
+  body.global-settings-mode aside.global-settings-sidebar .module-sidebar-brand {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    background: transparent !important;
+    border: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 0 !important;
+    grid-template-columns: none !important; /* Cancel grid columns */
+    width: auto !important;
+    max-width: none !important;
+    height: 100% !important;
+  }
+
+  /* Modül ikonlarını mobilde tamamen gizle */
+  body.app-mode .module-sidebar-icon,
+  body.skill-mode .module-sidebar-brand .ime-logo,
+  body.student-mode .module-sidebar-icon,
+  body.annual-mode .module-sidebar-icon,
+  body.course-mode .module-sidebar-icon,
+  body.global-settings-mode .module-sidebar-icon {
+    display: none !important;
+  }
+
+  body.skill-mode .module-sidebar-brand .ime-logo::before {
+    display: none !important;
+  }
+
+  /* Başlık yazılarının çakışmasını engelleme */
+  body.app-mode .module-sidebar-brand strong,
+  body.skill-mode .module-sidebar-brand strong,
+  body.student-mode .module-sidebar-brand strong,
+  body.annual-mode .module-sidebar-brand strong,
+  body.course-mode .module-sidebar-brand strong,
+  body.global-settings-mode .module-sidebar-brand strong {
+    font-size: 0 !important;
+  }
+
+  body.app-mode .module-sidebar-brand strong::before,
+  body.skill-mode .module-sidebar-brand strong::before,
+  body.student-mode .module-sidebar-brand strong::before,
+  body.annual-mode .module-sidebar-brand strong::before,
+  body.course-mode .module-sidebar-brand strong::before,
+  body.global-settings-mode .module-sidebar-brand strong::before {
+    font-size: 0.95rem !important;
+    font-weight: 850 !important;
+    color: var(--corp-ink, #0f172a) !important;
+  }
+
+  body.dark-mode.app-mode .module-sidebar-brand strong::before,
+  body.dark-mode.skill-mode .module-sidebar-brand strong::before,
+  body.dark-mode.student-mode .module-sidebar-brand strong::before,
+  body.dark-mode.annual-mode .module-sidebar-brand strong::before,
+  body.dark-mode.course-mode .module-sidebar-brand strong::before,
+  body.dark-mode.global-settings-mode .module-sidebar-brand strong::before {
+    color: #ffffff !important;
+  }
+
+  /* Modül açıklamalarını gizleme */
+  body.app-mode .module-sidebar-brand > div::after,
+  body.skill-mode .module-sidebar-brand > div::after,
+  body.student-mode .module-sidebar-brand > div::after,
+  body.annual-mode .module-sidebar-brand > div::after,
+  body.course-mode .module-sidebar-brand > div::after,
+  body.global-settings-mode .module-sidebar-brand > div::after {
+    display: none !important;
+  }
+
+  /* Masaüstü menüleri ve alt sekmeleri gizle */
+  body.app-mode .workspace nav.tabs,
+  body.skill-mode .skill-nav,
+  body.student-mode .student-nav,
+  body.annual-mode .annual-nav,
+  body.course-mode .course-nav,
+  body.course-mode .course-tabs,
+  body.global-settings-mode .global-settings-nav {
+    display: none !important;
+  }
+
+  /* Mobil dropdownları göster ve boyutu sınırla */
+  .app-nav-mobile-select-container,
+  .skill-nav-mobile-select-container,
+  .student-nav-mobile-select-container,
+  .annual-nav-mobile-select-container,
+  .course-nav-mobile-select-container,
+  .global-settings-mobile-select-container {
+    display: block !important;
+    margin: 0 !important;
+    flex-grow: 1 !important;
+    max-width: 170px !important;
+  }
+
+  .app-nav-mobile-select-container {
+    max-width: 135px !important;
+  }
+
+  body.global-settings-mode .global-settings-subtitle,
+  body.global-settings-mode .global-settings-nav {
+    display: none !important;
+  }
+
+  /* Mobil Ayarlar Profil Sayfası Düzenlemesi */
+  body.global-settings-mode .global-settings-panel[data-global-settings-panel="profile"].is-active {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  body.global-settings-mode .profile-premium-card {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 16px !important;
+    padding: 16px !important;
+  }
+
+  body.global-settings-mode .profile-premium-details {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  body.global-settings-mode .profile-premium-details h3 {
+    font-size: 1.1rem !important;
+  }
+
+  body.global-settings-mode .profile-premium-stats {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+    width: 100% !important;
+    margin-top: 12px !important;
+  }
+
+  body.global-settings-mode .profile-stat-box {
+    padding: 10px 12px !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  /* Soru Bankası Sidebar - Ders ve Sepet Yüzen Panel Yapısı (Açılır Çekmece) */
+  body.app-mode aside.sidebar:not(.is-expanded) .sidebar-float-content {
+    display: none !important;
+  }
+
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content {
+    display: flex !important;
+    flex-direction: column !important;
+    position: fixed !important;
+    bottom: 74px !important;
+    right: 18px !important;
+    width: 260px !important;
+    max-width: calc(100vw - 36px) !important;
+    max-height: 50vh !important;
+    overflow-y: auto !important;
+    background: rgba(15, 23, 42, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 16px !important;
+    padding: 12px !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4) !important;
+    z-index: 1000 !important;
+    gap: 8px !important;
+  }
+
+  /* İçerik öğelerinin görünürlük ve yerleşim düzenlemeleri */
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content #newQuestionBtn {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .side-section {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-card {
+    display: block !important;
+    margin-top: 10px !important;
+  }
+
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-summary {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+  }
+
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-types,
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-card .active-course-head,
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-card .course-actions {
+    grid-column: span 2 !important;
+  }
+
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-card .active-course-stats,
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-card .active-course-meta {
+    display: contents !important;
+  }
+
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-card .active-cart-button {
+    grid-column: span 2 !important;
+  }
+
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-card .active-course-head {
+    display: grid !important;
+  }
+
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-card .course-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+  }
+
+  /* Soru Bankası çekmece içi kompakt boyutlandırma */
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-card {
+    margin-top: 4px !important;
+  }
+
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-summary {
+    padding: 8px !important;
+    gap: 6px !important;
+  }
+
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-stats span,
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-meta span,
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-meta button {
+    min-height: 32px !important;
+    padding: 4px 6px !important;
+    font-size: 0.75rem !important;
+  }
+
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-stats,
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-meta {
+    gap: 4px !important;
+  }
+
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .course-actions button {
+    min-height: 30px !important;
+    font-size: 0.75rem !important;
+    padding: 4px 8px !important;
+  }
+
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .side-section h2,
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .side-section strong {
+    font-size: 0.8rem !important;
+  }
+
+  body.app-mode aside.sidebar.is-expanded .sidebar-float-content .course-picker-button {
+    min-height: 36px !important;
+    padding: 4px 8px !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* sidebar-toggle-btn içindeki metin gizle, sadece ikon göster */
+  .sidebar-toggle-btn {
+    font-size: 0 !important;
+  }
+
+  /* Toggle button stili artık evrensel FAB bloğunda (max-width: 900px) tanımlıdır */
+}
+
+/* Mobil Görünüm Modül Menüleri / Dropdown Seçiciler */
+.app-nav-mobile-select-container,
+.skill-nav-mobile-select-container,
+.student-nav-mobile-select-container,
+.annual-nav-mobile-select-container,
+.course-nav-mobile-select-container,
+.global-settings-mobile-select-container {
+  display: none;
+  width: 100%;
+}
+
+body.app-mode select.app-nav-mobile-select,
+body.skill-mode select.skill-nav-mobile-select,
+body.student-mode select.student-nav-mobile-select,
+body.annual-mode select.annual-nav-mobile-select,
+body.course-mode select.course-nav-mobile-select,
+body.global-settings-mode select.global-settings-mobile-select {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  color: #f1f5f9 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 8px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  font-family: inherit !important;
+  font-size: 0.82rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+  outline: none !important;
+  transition: all 0.2s ease-in-out !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+  background-size: 12px !important;
+  padding: 0 28px 0 10px !important;
+}
+
+body.app-mode select.app-nav-mobile-select:focus,
+body.skill-mode select.skill-nav-mobile-select:focus,
+body.student-mode select.student-nav-mobile-select:focus,
+body.annual-mode select.annual-nav-mobile-select:focus,
+body.course-mode select.course-nav-mobile-select:focus,
+body.global-settings-mode select.global-settings-mobile-select:focus {
+  border-color: var(--accent) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.2) !important;
+}
+
+body select.app-nav-mobile-select option,
+body select.skill-nav-mobile-select option,
+body select.student-nav-mobile-select option,
+body select.annual-nav-mobile-select option,
+body select.course-nav-mobile-select option,
+body select.global-settings-mobile-select option,
+body select.app-nav-mobile-select optgroup,
+body select.skill-nav-mobile-select optgroup,
+body select.student-nav-mobile-select optgroup,
+body select.annual-nav-mobile-select optgroup,
+body select.course-nav-mobile-select optgroup,
+body select.global-settings-mobile-select optgroup {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+  font-weight: 500 !important;
+  padding: 8px !important;
+}
+
+/* Mobil Görünüm Ayarlar Sekmeleri / Dropdown Seçici */
+.global-settings-mobile-select-container {
+  display: none;
+  margin-top: 14px;
+  width: 100%;
+}
+
+.global-settings-mobile-select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s, background-color 0.2s;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.global-settings-mobile-select:focus {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-mode .global-settings-mobile-select {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Mobil Görünüm Rapor Sekmeleri / Dropdown Seçici */
+.skill-report-mobile-select-container {
+  display: none;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.skill-report-mobile-select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--corp-line);
+  background: var(--corp-panel);
+  color: var(--corp-ink);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.skill-report-mobile-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+body.dark-mode .skill-report-mobile-select {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: #1e293b;
+  color: #f1f5f9;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+/* Mobil Görünüm Staj Menüsü / Dropdown Seçici */
+.skill-nav-mobile-select-container {
+  display: none;
+  margin-top: 14px;
+  width: 100%;
+}
+
+.skill-nav-mobile-select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s, background-color 0.2s;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.skill-nav-mobile-select:focus {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+body.dark-mode .skill-nav-mobile-select {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* --- Global Settings Enhancements --- */
+body.global-settings-mode .global-settings-brand {
+  --module-color: #64748b !important;
+  --module-soft: #f1f5f9 !important;
+  --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46.21 14.25 0 14 0h-4c-.25 0-.46.21-.49.46L9.13 3.11c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.25.24.46.49.46h4c.25 0 .46-.21.49-.46l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z'/%3E%3C/svg%3E") !important;
+}
+
+body.global-settings-mode .module-sidebar-brand[data-module-brand="settings"] strong::before {
+  content: "Ayarlar" !important;
+}
+
+body.global-settings-mode .module-sidebar-brand[data-module-brand="settings"] > div::after {
+  content: "Program Geneli" !important;
+}
+
+@media (min-width: 901px) {
+  body.global-settings-mode .global-settings-sidebar {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100vh !important;
+    box-sizing: border-box !important;
+  }
+
+  body.global-settings-mode .global-settings-nav {
+    position: static !important;
+    display: grid !important;
+    gap: 8px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.global-settings-mode .global-settings-nav button {
+    display: flex !important;
+    align-items: center !important;
+    min-height: 44px !important;
+    padding: 0 13px !important;
+    color: #94a3b8 !important;
+    text-align: left !important;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    border-radius: 8px !important;
+    font-size: 0.94rem !important;
+    font-weight: 850 !important;
+    transition: all 0.15s ease !important;
+    gap: 12px !important;
+  }
+
+  body.global-settings-mode .global-settings-nav button:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: transparent !important;
+  }
+
+  body.global-settings-mode .global-settings-nav button.is-active {
+    color: #ffffff !important;
+    background: var(--accent) !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25) !important;
+  }
+
+  body.global-settings-mode .global-settings-nav button span {
+    display: none !important;
+  }
+
+  body.global-settings-mode .global-settings-nav button::before {
+    content: "" !important;
+    display: block !important;
+    width: 8px !important;
+    height: 8px !important;
+    flex: 0 0 8px !important;
+    border-radius: 999px !important;
+    background: #5eead4 !important;
+    box-shadow: 0 0 0 4px rgba(45, 212, 191, 0.12) !important;
+    transition: all 0.2s ease !important;
+  }
+
+  body.global-settings-mode .global-settings-nav button:nth-child(2)::before {
+    background: #f8c471 !important;
+    box-shadow: 0 0 0 4px rgba(248, 196, 113, 0.14) !important;
+  }
+
+  body.global-settings-mode .global-settings-nav button:nth-child(3)::before {
+    background: #8fb8ff !important;
+    box-shadow: 0 0 0 4px rgba(143, 184, 255, 0.14) !important;
+  }
+
+  body.global-settings-mode .global-settings-nav button:nth-child(4)::before {
+    background: #b7e889 !important;
+    box-shadow: 0 0 0 4px rgba(183, 232, 137, 0.14) !important;
+  }
+
+  body.global-settings-mode .global-settings-nav button.is-active::before {
+    background: #ffffff !important;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15) !important;
+  }
+
+  body.global-settings-mode .global-settings-workspace {
+    display: block !important;
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 22px 24px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    height: 100vh !important;
+    box-sizing: border-box !important;
+    color: var(--corp-ink) !important;
+    background: var(--corp-bg) !important;
+  }
+
+  body.global-settings-mode .global-settings-topbar {
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 0 20px 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+}
+
+.profile-premium-card {
+  display: flex !important;
+  align-items: center !important;
+  gap: 24px !important;
+  padding: 24px !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--corp-line-soft) !important;
+}
+
+.profile-premium-avatar {
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%) !important;
+  color: #ffffff !important;
+  display: grid !important;
+  place-items: center !important;
+  font-size: 1.6rem !important;
+  font-weight: 800 !important;
+  box-shadow: 0 8px 16px rgba(15, 118, 110, 0.15) !important;
+}
+
+.profile-premium-details {
+  flex: 1 !important;
+}
+
+.profile-premium-details h3 {
+  margin: 0 0 4px 0 !important;
+  font-size: 1.2rem !important;
+  color: var(--corp-ink) !important;
+}
+
+.profile-premium-details p {
+  margin: 0 !important;
+  font-size: 0.88rem !important;
+  color: var(--corp-muted) !important;
+}
+
+.profile-premium-stats {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+  gap: 16px !important;
+  margin-top: 16px !important;
+}
+
+.profile-stat-box {
+  padding: 12px 14px !important;
+  background: #ffffff !important;
+  border: 1px solid var(--corp-line-soft) !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+.profile-stat-box span:first-child {
+  font-size: 0.76rem !important;
+  color: var(--corp-muted) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.profile-stat-box span:last-child {
+  font-size: 1.1rem !important;
+  font-weight: 850 !important;
+  color: var(--corp-ink) !important;
+}
+
+/* Toggle sync visibility state */
+[data-global-settings-panel="sync"] .cloud-auth-fields,
+[data-global-settings-panel="sync"] #signInBtn,
+[data-global-settings-panel="sync"] #signUpBtn {
+  display: inline-block !important;
+}
+
+[data-global-settings-panel="sync"] #syncNowBtn,
+[data-global-settings-panel="sync"] #signOutBtn {
+  display: none !important;
+}
+
+[data-global-settings-panel="sync"].cloud-connected .cloud-auth-fields,
+[data-global-settings-panel="sync"].cloud-connected #signInBtn,
+[data-global-settings-panel="sync"].cloud-connected #signUpBtn {
+  display: none !important;
+}
+
+[data-global-settings-panel="sync"].cloud-connected #syncNowBtn,
+[data-global-settings-panel="sync"].cloud-connected #signOutBtn {
+  display: inline-block !important;
+}
+
+.settings-form-grid {
+  display: grid !important;
+  gap: 20px !important;
+  margin-top: 16px !important;
+}
+
+.settings-form-field {
+  display: grid !important;
+  gap: 6px !important;
+}
+
+.settings-form-field label {
+  font-weight: 700 !important;
+  font-size: 0.88rem !important;
+  color: var(--corp-ink) !important;
+}
+
+.settings-form-field select {
+  width: 100% !important;
+  padding: 8px 12px !important;
+  border: 1px solid var(--corp-line) !important;
+  border-radius: 6px !important;
+  background-color: #ffffff !important;
+  font-size: 0.9rem !important;
+  transition: border-color 0.2s ease !important;
+}
+
+.settings-form-field select:focus {
+  border-color: var(--accent) !important;
+}
+
+.settings-form-field::before,
+.settings-form-field::after,
+.settings-form-field label::before,
+.settings-form-field label::after,
+.settings-form-field select::before,
+.settings-form-field select::after {
+  content: none !important;
+  display: none !important;
+}
+
+.settings-form-field select {
+  background-image: none !important;
+}
+
+.settings-toggle-field {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  cursor: pointer !important;
+  user-select: none !important;
+}
+
+.settings-toggle-field input[type="checkbox"] {
+  width: 18px !important;
+  height: 18px !important;
+  cursor: pointer !important;
+  accent-color: var(--accent) !important;
+}
+
+.settings-toggle-field div {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+
+.settings-toggle-field strong {
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  color: var(--corp-ink) !important;
+}
+
+.settings-toggle-field span {
+  font-size: 0.78rem !important;
+  color: var(--corp-muted) !important;
+}
+
+/* --- Soru Bankası Navigation Tabs (Horizontal) --- */
+body.app-mode .tabs {
+  display: flex !important;
+  gap: 8px !important;
+  margin-bottom: 20px !important;
+  border-bottom: 1px solid var(--corp-line-soft) !important;
+  padding-bottom: 8px !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  overflow-x: auto !important;
+  width: 100% !important;
+}
+
+body.app-mode .tab {
+  height: 38px !important;
+  padding: 0 16px !important;
+  color: #334155 !important;
+  background: #ffffff !important;
+  border: 1px solid var(--corp-line) !important;
+  border-radius: var(--corp-radius-sm) !important;
+  font-weight: 730 !important;
+  font-size: 0.9rem !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  box-shadow: none !important;
+  min-width: max-content !important;
+}
+
+body.app-mode .tab::before {
+  content: none !important;
+}
+
+body.app-mode .tab:hover {
+  color: var(--accent-strong) !important;
+  border-color: rgba(var(--accent-rgb), 0.36) !important;
+  background: #f8fafc !important;
+}
+
+body.app-mode .tab.is-active {
+  color: #ffffff !important;
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+/* --- Settings Module Sidebar Brand Icon --- */
+body.global-settings-mode .module-sidebar-icon {
+  background: linear-gradient(135deg, #9de0d6, #fff3bf) !important;
+  color: #063f3b !important;
+  font-size: 0.95rem !important;
+  font-weight: 950 !important;
+}
+
+/* --- Beceri Eğitimi Global Search Box Extension --- */
+@media (min-width: 901px) {
+  .skill-search {
+    width: 480px !important;
+    min-width: 480px !important;
+  }
+}
+
+/* --- Login/Register Page Styling Unification (Modules Hub Style) --- */
+body.auth-mode .auth-shell {
+  background:
+    radial-gradient(circle at 15% 12%, rgba(45, 212, 191, 0.14), transparent 30%),
+    radial-gradient(circle at 84% 22%, rgba(96, 165, 250, 0.14), transparent 28%),
+    radial-gradient(circle at 80% 88%, rgba(132, 204, 22, 0.1), transparent 28%),
+    linear-gradient(135deg, #fbfdff 0%, #eef6ff 48%, #f9fbff 100%) !important;
+  color: #0f172a !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important; /* Shift contents to the top */
+  min-height: 100vh !important;
+  padding: 6vh 20px 30px !important; /* 6% height padding at top to shift it up */
+  box-sizing: border-box !important;
+}
+
+body.auth-mode .auth-brand {
+  margin: 0 auto 8px !important; /* Reduced space between title and card */
+  display: flex !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  align-items: center !important;
+}
+
+body.auth-mode .auth-brand strong {
+  color: #0d363d !important;
+  text-shadow: none !important;
+  font-size: clamp(1.4rem, 2.5vw, 2rem) !important;
+}
+
+body.auth-mode .auth-card {
+  margin: 0 auto auto !important; /* Position higher but allow normal bottom scroll */
+  max-width: 1000px !important; /* Slightly enlarged max-width */
+  width: 100% !important;
+  background:
+    radial-gradient(circle at 92% 12%, rgba(15, 118, 110, 0.04), transparent 30%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 248, 250, 0.95) 100%) !important;
+  border: 1px solid rgba(15, 118, 110, 0.12) !important;
+  border-radius: 20px !important;
+  box-shadow:
+    0 24px 50px rgba(15, 23, 42, 0.07),
+    0 12px 24px rgba(15, 118, 110, 0.03),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.8) !important;
+  padding: 30px 36px !important; /* Enlarged padding for a more premium look */
+  gap: 20px !important;
+  min-height: auto !important;
+}
+
+body.auth-mode .auth-intro {
+  min-height: auto !important;
+}
+
+body.auth-mode .auth-intro h1 {
+  color: #0d363d !important;
+  font-weight: 850 !important;
+  font-size: clamp(1.8rem, 3.2vw, 2.4rem) !important; /* Slightly larger heading font size */
+  margin: 4px 0 8px !important;
+}
+
+body.auth-mode .auth-copy {
+  font-size: 0.86rem !important;
+  line-height: 1.45 !important;
+}
+
+body.auth-mode .auth-highlights {
+  margin-top: 14px !important;
+}
+
+body.auth-mode .auth-highlights span {
+  padding: 6px 10px !important;
+  font-size: 0.74rem !important;
+}
+
+body.auth-mode .auth-panel {
+  padding: 12px !important; /* More compact panel */
+  gap: 8px !important;
+}
+
+body.auth-mode .login-form {
+  padding: 12px !important; /* More compact form fields container */
+  gap: 8px !important;
+}
+
+body.auth-mode .login-form label {
+  gap: 2px !important;
+}
+
+body.auth-mode .login-form label span {
+  font-size: 0.8rem !important;
+}
+
+body.auth-mode .login-form input {
+  height: 36px !important;
+  padding: 0 10px !important;
+  font-size: 0.86rem !important;
+}
+
+body.auth-mode .auth-switch {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+body.auth-mode .auth-switch button {
+  min-height: 34px !important;
+  font-size: 0.86rem !important;
+}
+
+body.auth-mode .auth-switch button.is-active {
+  background: #ffffff !important;
+  color: var(--accent-strong) !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06) !important;
+}
+
+body.auth-mode .primary-action {
+  min-height: 38px !important;
+  font-size: 0.9rem !important;
+}
+
+body.auth-mode .ghost-action {
+  min-height: 38px !important;
+  font-size: 0.86rem !important;
+  margin-top: 6px !important;
+}
+
+/* ============================================================    KOYU TEMA / DARK MODE STİLLERİ
+    ========================================================================== */
+
+body.dark-mode {
+  color-scheme: dark !important;
+  --corp-bg: transparent !important;
+  --corp-panel: rgba(255, 255, 255, 0.03) !important;
+  --corp-line: rgba(255, 255, 255, 0.08) !important;
+  --corp-line-soft: rgba(255, 255, 255, 0.08) !important;
+  --corp-ink: #cbd5e1 !important;
+  --corp-muted: #94a3b8 !important;
+
+  --panel: rgba(255, 255, 255, 0.03) !important;
+  --surface: rgba(255, 255, 255, 0.01) !important;
+  --surface-strong: rgba(255, 255, 255, 0.05) !important;
+  --line: rgba(255, 255, 255, 0.08) !important;
+  --ink: #cbd5e1 !important;
+  --muted: #94a3b8 !important;
+  --accent-soft: rgba(15, 118, 110, 0.2) !important;
+}
+
+/* Ana Çalışma Alanları Arka Planı (Sol taraftaki koyu gradient rengiyle eşleştirildi) */
+body.dark-mode,
+body.dark-mode .workspace,
+body.dark-mode .skill-workspace,
+body.dark-mode .student-workspace,
+body.dark-mode .annual-workspace,
+body.dark-mode .course-workspace,
+body.dark-mode .global-settings-workspace {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0)),
+    linear-gradient(180deg, var(--corp-sidebar), var(--corp-sidebar-2)) !important;
+  background-attachment: fixed !important;
+  color: #cbd5e1 !important;
+}
+
+/* Üst Başlık Barları */
+body.dark-mode .topbar,
+body.dark-mode .skill-topbar,
+body.dark-mode .student-topbar,
+body.dark-mode .annual-topbar,
+body.dark-mode .course-topbar,
+body.dark-mode .global-settings-topbar {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .topbar h1,
+body.dark-mode .skill-topbar h1,
+body.dark-mode .student-topbar h1,
+body.dark-mode .annual-topbar h1,
+body.dark-mode .course-topbar h1,
+body.dark-mode .global-settings-topbar h1 {
+  color: #ffffff !important;
+}
+
+body.dark-mode .eyebrow,
+body.dark-mode .skill-subtitle,
+body.dark-mode .global-settings-subtitle {
+  color: #94a3b8 !important;
+}
+
+/* Kartlar ve Paneller */
+body.dark-mode .question-card,
+body.dark-mode .course-table-card,
+body.dark-mode .skill-panel,
+body.dark-mode .builder-panel,
+body.dark-mode .selected-panel,
+body.dark-mode .curriculum-panel,
+body.dark-mode .global-settings-card,
+body.dark-mode .profile-premium-card,
+body.dark-mode .profile-stat-box,
+body.dark-mode .teacher-item {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+/* İstatistik Kartları */
+body.dark-mode .skill-stat-card,
+body.dark-mode .student-stat-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .skill-stat-card h3,
+body.dark-mode .skill-stat-card strong,
+body.dark-mode .student-stat-card strong {
+  color: #ffffff !important;
+}
+
+body.dark-mode .skill-stat-card span,
+body.dark-mode .skill-stat-card small,
+body.dark-mode .student-stat-card span,
+body.dark-mode .student-stat-card small {
+  color: #94a3b8 !important;
+}
+
+/* Genel Metin Renkleri */
+body.dark-mode p,
+body.dark-mode span,
+body.dark-mode div,
+body.dark-mode li,
+body.dark-mode label,
+body.dark-mode strong:not(.brand strong):not(.module-sidebar-brand strong) {
+  color: #cbd5e1;
+}
+
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4 {
+  color: #ffffff !important;
+}
+
+/* Tablolar */
+body.dark-mode table {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode th {
+  background: #161e2b !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode td {
+  color: #e2e8f0 !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+body.dark-mode tr:hover td {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Form Elemanları (Inputs, Selects, Textareas) */
+body.dark-mode input[type="text"],
+body.dark-mode input[type="search"],
+body.dark-mode input[type="date"],
+body.dark-mode input[type="number"],
+body.dark-mode input[type="email"],
+body.dark-mode input[type="password"],
+body.dark-mode select,
+body.dark-mode textarea {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  color-scheme: dark !important;
+}
+
+body.dark-mode select option {
+  background-color: #0b1220 !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode select option:checked,
+body.dark-mode select option:hover {
+  background-color: var(--accent, #0f766e) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode input:not([type="checkbox"]):focus,
+body.dark-mode select:focus,
+body.dark-mode textarea:focus {
+  border-color: var(--accent) !important;
+  outline: none !important;
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Soru Bankası Araç Çubukları */
+body.dark-mode .toolbar,
+body.dark-mode .bulk-toolbar,
+body.dark-mode .course-toolbar,
+body.dark-mode .skill-search {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .bulk-toolbar span {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode #bulkQuestionToolbar div {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode #bulkQuestionToolbar strong {
+  color: #ffffff !important;
+}
+
+/* Yatay Pill Sekmeler (Horizontal Tabs) */
+body.dark-mode .tab,
+body.dark-mode .course-tab {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .tab:hover,
+body.dark-mode .course-tab:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+body.dark-mode .tab.is-active,
+body.dark-mode .course-tab.is-active {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #ffffff !important;
+}
+
+/* Modallar / Dialog Kutuları */
+body.dark-mode dialog {
+  background: #0f172a !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-mode .dialog-body,
+body.dark-mode .basket-body,
+body.dark-mode .question-editor-scrollable {
+  background: #0f172a !important;
+}
+
+body.dark-mode .basket-heading,
+body.dark-mode .course-dialog-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .dialog-actions,
+body.dark-mode .basket-actions,
+body.dark-mode .course-dialog-actions {
+  background: #0f172a !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Editörler */
+body.dark-mode .rich-editor {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .editor-tools {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .editor-tools button {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .type-panel {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Ders Seçici Dropdown */
+body.dark-mode .course-picker-button {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .course-list {
+  background: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important;
+}
+
+body.dark-mode .course-option:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Yıllık Plan Modülü Outcome Ağacı */
+body.dark-mode .curriculum-layout,
+body.dark-mode .topic-pane,
+body.dark-mode .outcome-pane {
+  background: rgba(255, 255, 255, 0.01) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .curriculum-topic-btn {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+body.dark-mode .curriculum-topic-btn.is-active {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .outcome-row {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Ayarlar Sayfası Genel Tema Toggle Düğmesi */
+body.dark-mode .settings-toggle-field strong {
+  color: #ffffff !important;
+}
+
+/* Soru Havuzu Kartı Puanı/Sil Butonu */
+body.dark-mode .question-card-actions {
+  border-top-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Dışa Aktar butonu vb */
+body.dark-mode .secondary-action {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .secondary-action:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* --- Modüller Ana Sayfası Koyu Tema Uyumu --- */
+body.dark-mode .module-hub h1,
+body.dark-mode .module-hub-heading h1 {
+  color: #ffffff !important;
+}
+
+body.dark-mode .module-hub-heading p {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .module-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .module-card:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+body.dark-mode .module-card strong {
+  color: #ffffff !important;
+}
+
+body.dark-mode .module-card small {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .user-menu-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .user-menu-card:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+body.dark-mode .user-menu-card strong {
+  color: #ffffff !important;
+}
+
+body.dark-mode .user-menu-card small {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .user-menu-popover {
+  background: #0f172a !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.dark-mode .user-menu-popover button {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .user-menu-popover button:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+}
+
+/* --- Giriş/Kayıt Ekranı (Auth Shell) Koyu Tema Uyumu --- */
+body.dark-mode.auth-mode .auth-shell,
+body.dark-mode .auth-shell {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0)),
+    linear-gradient(180deg, var(--corp-sidebar), var(--corp-sidebar-2)) !important;
+  background-attachment: fixed !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode.auth-mode .auth-brand strong,
+body.dark-mode .auth-brand strong {
+  color: #ffffff !important;
+}
+
+body.dark-mode.auth-mode .auth-card,
+body.dark-mode .auth-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.dark-mode.auth-mode .auth-intro h1,
+body.dark-mode .auth-intro h1 {
+  color: #ffffff !important;
+}
+
+body.dark-mode.auth-mode .auth-switch,
+body.dark-mode .auth-switch {
+  background: rgba(0, 0, 0, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode.auth-mode .auth-switch button,
+body.dark-mode .auth-switch button {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode.auth-mode .auth-switch button.is-active,
+body.dark-mode .auth-switch button.is-active {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode.auth-mode .auth-copy,
+body.dark-mode .auth-copy {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode.auth-mode .auth-highlights span,
+body.dark-mode .auth-highlights span {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode.auth-mode .auth-highlights span strong,
+body.dark-mode .auth-highlights span strong {
+  color: #ffffff !important;
+}
+
+/* --- Soru Bankası Soru Etiketleri / Chips Koyu Tema Uyumu --- */
+body.dark-mode .chip {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .chip-points {
+  background: rgba(15, 118, 110, 0.2) !important;
+  border-color: rgba(15, 118, 110, 0.3) !important;
+  color: #5eead4 !important;
+}
+
+body.dark-mode .chip-scope {
+  background: rgba(180, 83, 9, 0.2) !important;
+  border-color: rgba(180, 83, 9, 0.3) !important;
+  color: #fdba74 !important;
+}
+
+body.dark-mode .question-preview {
+  color: #cbd5e1 !important;
+}
+
+/* --- Modüller Switcher Paneli (Floating Switcher) Koyu Tema --- */
+body.dark-mode .module-float-panel,
+body.dark-mode .user-menu-popover,
+body.dark-mode .course-list {
+  background: #0b1220 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.45) !important;
+}
+
+body.dark-mode .module-float-panel button,
+body.dark-mode .user-menu-popover button,
+body.dark-mode .course-option {
+  color: #cbd5e1 !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+}
+
+body.dark-mode .module-float-panel button span {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+body.dark-mode .module-float-panel button:hover,
+body.dark-mode .module-float-panel button.is-active,
+body.dark-mode .user-menu-popover button:hover,
+body.dark-mode .course-option:hover,
+body.dark-mode .course-option.is-active {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* --- Soru Editörü Panel ve Araç Çubuğu Koyu Tema Uyumu --- */
+body.dark-mode .editor-main,
+body.dark-mode .editor-side {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .editor-side label span,
+body.dark-mode .editor-main label span,
+body.dark-mode .editor-main .side-subheading {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .editor-side select option {
+  background: #0f172a !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .editor-tools button,
+body.dark-mode .editor-tools label,
+body.dark-mode .editor-tools select {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .editor-tools button[data-command="bold"],
+body.dark-mode .editor-tools button[data-command="italic"],
+body.dark-mode .editor-tools button[data-command="underline"] {
+  color: #60a5fa !important;
+  background-color: rgba(30, 64, 175, 0.2) !important;
+  border-color: rgba(30, 64, 175, 0.3) !important;
+}
+body.dark-mode .editor-tools button[data-command="bold"]:hover,
+body.dark-mode .editor-tools button[data-command="italic"]:hover,
+body.dark-mode .editor-tools button[data-command="underline"]:hover {
+  background-color: rgba(30, 64, 175, 0.35) !important;
+}
+
+body.dark-mode .editor-tools button[data-command="strikeThrough"] {
+  color: #94a3b8 !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+body.dark-mode .editor-tools .list-picker-wrapper button.list-picker-btn[data-command="insertUnorderedList"],
+body.dark-mode .editor-tools .list-picker-wrapper button.list-picker-btn[data-command="insertOrderedList"] {
+  color: #c084fc !important;
+  background-color: rgba(109, 40, 217, 0.2) !important;
+  border-color: rgba(109, 40, 217, 0.3) !important;
+}
+body.dark-mode .editor-tools .list-picker-wrapper button.list-picker-btn[data-command="insertUnorderedList"]:hover,
+body.dark-mode .editor-tools .list-picker-wrapper button.list-picker-btn[data-command="insertOrderedList"]:hover {
+  background-color: rgba(109, 40, 217, 0.35) !important;
+}
+
+body.dark-mode .editor-tools button[data-command="justifyLeft"],
+body.dark-mode .editor-tools button[data-command="justifyCenter"],
+body.dark-mode .editor-tools button[data-command="justifyRight"] {
+  color: #2dd4bf !important;
+  background-color: rgba(15, 118, 110, 0.2) !important;
+  border-color: rgba(15, 118, 110, 0.3) !important;
+}
+body.dark-mode .editor-tools button[data-command="justifyLeft"]:hover,
+body.dark-mode .editor-tools button[data-command="justifyCenter"]:hover,
+body.dark-mode .editor-tools button[data-command="justifyRight"]:hover {
+  background-color: rgba(15, 118, 110, 0.35) !important;
+}
+
+body.dark-mode .editor-tools button[data-command="outdent"],
+body.dark-mode .editor-tools button[data-command="indent"] {
+  color: #fbbf24 !important;
+  background-color: rgba(180, 83, 9, 0.2) !important;
+  border-color: rgba(180, 83, 9, 0.3) !important;
+}
+body.dark-mode .editor-tools button[data-command="outdent"]:hover,
+body.dark-mode .editor-tools button[data-command="indent"]:hover {
+  background-color: rgba(180, 83, 9, 0.35) !important;
+}
+
+body.dark-mode .editor-tools button[data-command="removeFormat"] {
+  color: #f87171 !important;
+  background-color: rgba(220, 38, 38, 0.2) !important;
+  border-color: rgba(220, 38, 38, 0.3) !important;
+}
+body.dark-mode .editor-tools button[data-command="removeFormat"]:hover {
+  background-color: rgba(220, 38, 38, 0.35) !important;
+}
+
+body.dark-mode .editor-tools select.font-size-select {
+  color: #2dd4bf !important;
+  background-color: rgba(6, 95, 70, 0.2) !important;
+  border-color: rgba(6, 95, 70, 0.3) !important;
+}
+
+body.dark-mode .editor-tools .table-picker-wrapper button.table-picker-btn {
+  color: #34d399 !important;
+  background-color: rgba(4, 120, 87, 0.2) !important;
+  border-color: rgba(4, 120, 87, 0.3) !important;
+}
+body.dark-mode .editor-tools .table-picker-wrapper button.table-picker-btn:hover {
+  background-color: rgba(4, 120, 87, 0.35) !important;
+}
+
+body.dark-mode .editor-tools button.journal-entry-tool-btn {
+  color: #2dd4bf !important;
+  background-color: rgba(15, 79, 70, 0.2) !important;
+  border-color: rgba(15, 79, 70, 0.3) !important;
+}
+body.dark-mode .editor-tools button.journal-entry-tool-btn:hover {
+  background-color: rgba(15, 79, 70, 0.35) !important;
+}
+
+body.dark-mode .editor-tools button.link-btn {
+  color: #818cf8 !important;
+  background-color: rgba(55, 48, 163, 0.2) !important;
+  border-color: rgba(55, 48, 163, 0.3) !important;
+}
+body.dark-mode .editor-tools button.link-btn:hover {
+  background-color: rgba(55, 48, 163, 0.35) !important;
+}
+
+body.dark-mode .editor-tools .color-picker-btn[title="Yazı rengi"] {
+  color: #facc15 !important;
+  background-color: rgba(202, 138, 4, 0.2) !important;
+  border-color: rgba(202, 138, 4, 0.3) !important;
+}
+body.dark-mode .editor-tools .color-picker-btn[title="Yazı rengi"]:hover {
+  background-color: rgba(202, 138, 4, 0.35) !important;
+}
+
+body.dark-mode .editor-tools .color-picker-btn[title="Vurgu rengi"] {
+  color: #fbbf24 !important;
+  background-color: rgba(180, 83, 9, 0.2) !important;
+  border-color: rgba(180, 83, 9, 0.3) !important;
+}
+body.dark-mode .editor-tools .color-picker-btn[title="Vurgu rengi"]:hover {
+  background-color: rgba(180, 83, 9, 0.35) !important;
+}
+
+body.dark-mode .editor-tools label[title="Görsel ekle"] {
+  color: #f472b6 !important;
+  background-color: rgba(190, 24, 93, 0.2) !important;
+  border-color: rgba(190, 24, 93, 0.3) !important;
+}
+body.dark-mode .editor-tools label[title="Görsel ekle"]:hover {
+  background-color: rgba(190, 24, 93, 0.35) !important;
+}
+
+body.dark-mode .color-picker-popup,
+body.dark-mode .table-picker-popup {
+  background: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+body.dark-mode .table-picker-title {
+  color: #94a3b8 !important;
+}
+
+/* --- Kazanımlar Ekranı Konu/Kazanım Kartları Koyu Tema Uyumu --- */
+body.dark-mode .topic-item,
+body.dark-mode .outcome-item {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .topic-item.is-active {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.24) !important;
+}
+
+body.dark-mode .topic-actions span {
+  background: rgba(15, 118, 110, 0.2) !important;
+  border-color: rgba(15, 118, 110, 0.3) !important;
+  color: #5eead4 !important;
+}
+
+body.dark-mode .question-preview {
+  color: #cbd5e1 !important;
+}
+
+/* --- Sınav Analizi Koyu Tema Uyumu --- */
+body.dark-mode .printable-analysis {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .analysis-print-heading h3 {
+  color: #ffffff !important;
+}
+
+body.dark-mode .analysis-kpi-table td {
+  background: rgba(15, 118, 110, 0.1) !important;
+  border: 1px solid rgba(15, 118, 110, 0.25) !important;
+}
+
+body.dark-mode .analysis-kpi-label {
+  color: #5eead4 !important;
+}
+
+body.dark-mode .analysis-kpi-value {
+  color: #ffffff !important;
+}
+
+body.dark-mode .analysis-kpi-note {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .analysis-brief {
+  color: #cbd5e1 !important;
+  background: rgba(245, 158, 11, 0.08) !important;
+  border: 1px solid rgba(245, 158, 11, 0.2) !important;
+}
+
+body.dark-mode .analysis-box {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .analysis-box h3 {
+  color: #5eead4 !important;
+}
+
+body.dark-mode .analysis-dist-label {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .analysis-meter td {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .analysis-meter td.is-filled {
+  background: #10b981 !important;
+}
+
+body.dark-mode .analysis-dist-value {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .analysis-dist-percent {
+  color: #5eead4 !important;
+}
+
+body.dark-mode .analysis-distribution-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+body.dark-mode .analysis-table {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .analysis-table th,
+body.dark-mode .analysis-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .analysis-table th {
+  color: #5eead4 !important;
+  background: #12272f !important;
+}
+
+/* --- Diğer Modüller Koyu Tema Uyumu (Formlar, Kaydedilmiş Veri Tabloları & Kartlar) --- */
+
+/* Kartlar ve Paneller */
+body.dark-mode .student-panel,
+body.dark-mode .student-item-card,
+body.dark-mode .student-empty,
+body.dark-mode .student-routine-row,
+body.dark-mode .student-plan-card,
+body.dark-mode .annual-step,
+body.dark-mode .annual-panel,
+body.dark-mode .annual-empty,
+body.dark-mode .annual-library-card,
+body.dark-mode .annual-generated-card,
+body.dark-mode .annual-unit-row,
+body.dark-mode .annual-meb-step,
+body.dark-mode .annual-meb-card,
+body.dark-mode .annual-import-card,
+body.dark-mode .course-panel,
+body.dark-mode .course-form-container,
+body.dark-mode .course-report-card,
+body.dark-mode .skill-table,
+body.dark-mode .skill-row,
+body.dark-mode .skill-assignment-row {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+/* Tablolar ve Başlık Alanları */
+body.dark-mode .course-data-table th {
+  background: #12272f !important;
+  color: #5eead4 !important;
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .course-data-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .annual-output-table {
+  background: rgba(255, 255, 255, 0.02) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-output-table th {
+  background: #12272f !important;
+  color: #5eead4 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .annual-output-table td {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .skill-grid-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .skill-grid-row > * {
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .skill-grid-row:nth-child(even):not(.skill-grid-head),
+body.dark-mode .skill-assignment-row:nth-child(even) {
+  background: rgba(255, 255, 255, 0.015) !important;
+}
+
+body.dark-mode .skill-grid-row:hover:not(.skill-grid-head) {
+  background: rgba(15, 118, 110, 0.15) !important;
+}
+
+body.dark-mode .skill-grid-head {
+  background: #13222b !important;
+  color: #cbd5e1 !important;
+}
+
+/* Başlık ve Metin Renkleri */
+body.dark-mode .course-panel-title h2,
+body.dark-mode .student-panel-title h2,
+body.dark-mode .annual-panel-title h2,
+body.dark-mode .report-details h3,
+body.dark-mode .skill-form-title h2 {
+  color: #5eead4 !important;
+}
+
+body.dark-mode .student-item-card strong,
+body.dark-mode .annual-unit-row strong,
+body.dark-mode .annual-meb-card strong,
+body.dark-mode .annual-import-card strong {
+  color: #ffffff !important;
+}
+
+/* Buton ve Badge Renkleri */
+body.dark-mode .student-card-meta span {
+  color: #5eead4 !important;
+  background: rgba(15, 118, 110, 0.15) !important;
+}
+
+body.dark-mode .student-card-actions button {
+  color: #5eead4 !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .student-card-actions button:last-child {
+  color: #f87171 !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
+}
+
+body.dark-mode .danger-action.soft {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #f87171 !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
+}
+
+body.dark-mode .course-badge.active,
+body.dark-mode .course-badge.pass,
+body.dark-mode .badge-light-teal {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #34d399 !important;
+}
+
+body.dark-mode .course-badge.absent,
+body.dark-mode .course-badge.fail,
+body.dark-mode .badge-light-red {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #f87171 !important;
+}
+
+body.dark-mode .course-badge.neutral {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .badge-light-orange {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #fbbf24 !important;
+}
+
+body.dark-mode .annual-meb-actions span {
+  color: #5eead4 !important;
+  background: rgba(15, 118, 110, 0.15) !important;
+  border: 1px solid rgba(15, 118, 110, 0.3) !important;
+}
+
+body.dark-mode .annual-meb-actions button {
+  color: #cbd5e1 !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .annual-plan-output header {
+  background: rgba(15, 118, 110, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-plan-output header span {
+  color: #5eead4 !important;
+  background: rgba(15, 118, 110, 0.15) !important;
+}
+
+body.dark-mode .skill-day-picker button {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .skill-day-picker button.is-active {
+  background: var(--accent) !important;
+  color: #fff !important;
+}
+
+/* Rutin Değerlendirme & Yıllık Plan Hafta */
+body.dark-mode .student-plan-week {
+  background: rgba(15, 118, 110, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .student-slider-heading output {
+  color: #5eead4 !important;
+  background: rgba(15, 118, 110, 0.15) !important;
+  border: 1px solid rgba(15, 118, 110, 0.3) !important;
+}
+
+body.dark-mode .student-plan-skip {
+  color: #fca5a5 !important;
+}
+
+/* --- Soru Bankası Bütünleşik Masaüstü Layout & İçerik Kaydırma (Scroll) Yapısı --- */
+@media (min-width: 901px) {
+  body.app-mode {
+    height: 100vh !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+  }
+
+  body.app-mode .app-shell {
+    height: 100vh !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+  }
+
+  body.app-mode .sidebar {
+    height: 100vh !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  body.app-mode .workspace {
+    height: 100vh !important;
+    max-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  body.app-mode .view {
+    flex: 1 !important;
+    min-height: 0 !important;
+    display: none !important;
+  }
+
+  body.app-mode .view.is-active {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+
+  /* Soru Havuzu Görünümü (#bankView) */
+  body.app-mode #bankView .question-grid {
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    padding-bottom: 24px !important;
+  }
+
+  /* Kazanımlar Görünümü (#curriculumView) */
+  body.app-mode #curriculumView.is-active {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  body.app-mode #curriculumView .curriculum-panel {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  body.app-mode #curriculumView .curriculum-layout {
+    flex: 1 !important;
+    min-height: 0 !important;
+    display: grid !important;
+    grid-template-columns: 320px minmax(0, 1fr) !important;
+    overflow: hidden !important;
+  }
+
+  body.app-mode #curriculumView .topic-pane,
+  body.app-mode #curriculumView .outcome-pane {
+    max-height: 100% !important;
+    overflow-y: auto !important;
+  }
+
+  /* Sınav Oluştur & Okul Ayarları Görünümleri */
+  body.app-mode #examView,
+  body.app-mode #settingsView {
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    padding-bottom: 24px !important;
+  }
+}
+
+/* --- Ders Takibi & Beceri Eğitimi Ek Koyu Tema İyileştirmeleri --- */
+
+/* Ders Takibi Hızlı İşlem Düğmeleri */
+body.dark-mode .student-quick-grid button {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .student-quick-grid button:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: var(--accent) !important;
+}
+
+body.dark-mode .student-quick-grid button span {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: var(--accent) !important;
+}
+
+/* Beceri Eğitimi Hızlı İşlem Düğmeleri */
+body.dark-mode .skill-quick-grid button {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .skill-quick-grid button:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: var(--accent) !important;
+}
+
+body.dark-mode .skill-quick-grid button span {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: var(--accent) !important;
+}
+
+/* Beceri Eğitimi Görevler ve Bildirimler Paneli */
+body.dark-mode .skill-alert-list {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .skill-alert {
+  background: rgba(255, 255, 255, 0.015) !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .skill-alert strong {
+  color: #ffffff !important;
+}
+
+body.dark-mode .skill-alert small {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .skill-alert button {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+/* Beceri Eğitimi Tanımlı Okul, Öğretmen, Alan/Dal ve Tatil Tabloları */
+body.dark-mode .skill-data-table {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .skill-data-table th {
+  background: #13222b !important;
+  color: #cbd5e1 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .skill-data-table th:last-child {
+  border-right: none !important;
+}
+
+body.dark-mode .skill-data-table td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .skill-data-table td:last-child {
+  border-right: none !important;
+}
+
+body.dark-mode .skill-data-table tr:hover td {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+body.dark-mode .skill-data-table tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.01) !important;
+}
+
+/* Beceri Eğitimi Raporlar Kısmı */
+body.dark-mode .skill-report-filter,
+body.dark-mode .skill-report-options {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .skill-report-tabs {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 5px !important;
+}
+
+body.dark-mode .skill-report-tabs button {
+  background: transparent !important;
+  border: 0 !important;
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .skill-report-tabs button:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .skill-report-tabs button.is-active {
+  background: var(--accent) !important;
+  border: 0 !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 16px rgba(15, 118, 110, 0.25) !important;
+}
+
+body.dark-mode .skill-assignment-table {
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .skill-report-filter-bottom span {
+  background: rgba(96, 165, 250, 0.08) !important;
+  border-color: rgba(96, 165, 250, 0.18) !important;
+  color: #60a5fa !important;
+}
+
+body.dark-mode .skill-report-filter-bottom span:first-of-type {
+  background: rgba(45, 212, 191, 0.08) !important;
+  border-color: rgba(45, 212, 191, 0.18) !important;
+  color: #2dd4bf !important;
+}
+
+
+/* Beceri Eğitimi Devamsızlık İşleme Paneli Modal (Dark Mode) */
+body.dark-mode .skill-absence-dialog {
+  background: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-mode .skill-absence-body {
+  background: #0f172a !important;
+}
+
+body.dark-mode .skill-absence-grid-table {
+  background: #0b1220 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .skill-absence-grid-table th,
+body.dark-mode .skill-absence-grid-table td {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+body.dark-mode .skill-absence-grid-table th {
+  background: #0f172a !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .skill-absence-grid-table td.student-col {
+  background: #0f172a !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .skill-absence-grid-table td.row-type-col {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #cbd5e1 !important;
+}
+
+/* Weekend Column/Cell Styling (Dark Mode) */
+body.dark-mode .skill-absence-grid-table th.is-weekend,
+body.dark-mode .skill-absence-grid-table td.absence-cell.is-weekend {
+  background: repeating-linear-gradient(
+    45deg,
+    #1e293b,
+    #1e293b 6px,
+    #0b1220 6px,
+    #0b1220 12px
+  ) !important;
+  color: #64748b !important;
+}
+
+/* Holiday Column/Cell Styling (Dark Mode) */
+body.dark-mode .skill-absence-grid-table th.is-holiday,
+body.dark-mode .skill-absence-grid-table td.absence-cell.is-holiday {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #fbbf24 !important;
+}
+
+/* School Day Column/Cell Styling (Dark Mode) */
+body.dark-mode .skill-absence-grid-table th.is-school-day,
+body.dark-mode .skill-absence-grid-table td.absence-cell.is-school-day {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #34d399 !important;
+}
+
+/* Active grid input cells */
+body.dark-mode .skill-absence-grid-table td.absence-cell {
+  background: #0b1220 !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .skill-absence-grid-table td.absence-cell:not(.is-weekend):hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Drag selection highlight */
+body.dark-mode .skill-absence-grid-table td.absence-cell.is-selected {
+  background: rgba(15, 118, 110, 0.3) !important;
+  color: #5eead4 !important;
+  box-shadow: inset 0 0 0 2px var(--accent) !important;
+}
+
+/* Close button (x) and input fields */
+body.dark-mode .skill-absence-dialog input[type="search"],
+body.dark-mode .skill-absence-dialog select {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+
+/* Overlay Popover Letter Picker Menu (Dark Mode) */
+body.dark-mode .skill-absence-overlay-menu {
+  background: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-mode .skill-absence-overlay-menu button {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .skill-absence-overlay-menu button:hover {
+  background: var(--accent) !important;
+  color: #ffffff !important;
+  border-color: var(--accent) !important;
+}
+
+/* --- Kurs Takibi Koyu Tema İyileştirmeleri --- */
+body.dark-mode .course-data-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+body.dark-mode .course-data-table tbody tr.is-selected {
+  background: rgba(15, 118, 110, 0.2) !important;
+}
+
+body.dark-mode .course-dialog-list button {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .course-dialog-list button:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .course-dialog-list button.is-active {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .course-meta-settings-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .course-meta-settings-card .settings-value {
+  color: #5eead4 !important;
+}
+
+body.dark-mode .course-meta-settings-card .settings-status-badge {
+  background: rgba(15, 118, 110, 0.2) !important;
+  color: #5eead4 !important;
+}
+
+/* --- Global Toast Bildirimleri (Koyu Tema) --- */
+body.dark-mode .toast {
+  background: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #cbd5e1 !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-mode .toast strong {
+  color: #5eead4 !important;
+}
+
+body.dark-mode .toast.is-error {
+  border-left-color: #f87171 !important;
+}
+
+body.dark-mode .toast.is-error strong {
+  color: #f87171 !important;
+}
+
+body.dark-mode .toast.is-warning {
+  border-left-color: #fbbf24 !important;
+}
+
+body.dark-mode .toast.is-warning strong {
+  color: #fbbf24 !important;
+}
+
+/* --- Kurs Takibi Diyalog ve Öğrenci Kartı Öğeleri Koyu Tema --- */
+body.dark-mode .course-dialog-header {
+  background: #0f172a !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .course-dialog-header h2 {
+  color: #ffffff !important;
+}
+
+body.dark-mode .course-dialog-header .ghost-action {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: #94a3b8 !important;
+  font-size: 1.5rem !important;
+  min-height: 0 !important;
+  height: auto !important;
+  padding: 0 !important;
+  width: auto !important;
+}
+
+body.dark-mode .course-dialog-header .ghost-action:hover {
+  color: #f87171 !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+
+/* Red box close button style for dark mode (Sorubank & IME unified) */
+body.dark-mode .skill-close-x,
+body.dark-mode .course-dialog-close-btn {
+  color: #f87171 !important;
+  border: 1px solid rgba(248, 113, 113, 0.2) !important;
+  background: rgba(248, 113, 113, 0.05) !important;
+  font-weight: bold !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  flex-shrink: 0 !important;
+  font-size: 1.2rem !important;
+  padding: 0 0 3px 0 !important;
+  line-height: 1 !important;
+}
+
+body.dark-mode .skill-close-x:hover,
+body.dark-mode .course-dialog-close-btn:hover {
+  color: #ffffff !important;
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+  transform: rotate(90deg) scale(1.1) !important;
+}
+
+body.dark-mode #courseStudentCardDialog .summary-box:first-child {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.25) !important;
+}
+
+body.dark-mode #courseStudentCardDialog .summary-box:first-child div {
+  color: #34d399 !important;
+}
+
+body.dark-mode #courseStudentCardDialog .summary-box:first-child strong {
+  color: #5eead4 !important;
+}
+
+body.dark-mode #courseStudentCardDialog .summary-box:last-child {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+body.dark-mode #courseStudentCardDialog .summary-box:last-child div {
+  color: #f87171 !important;
+}
+
+body.dark-mode #courseStudentCardDialog .summary-box:last-child strong {
+  color: #fca5a5 !important;
+}
+
+/* --- Öğrenci Kartı Sınav ve Devamsızlık Listeleri Koyu Tema --- */
+body.dark-mode #courseCardExamsList div[style*="background:#fef2f2"],
+body.dark-mode #courseCardAbsencesList div[style*="background:#fef2f2"] {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
+  color: #fca5a5 !important;
+}
+
+body.dark-mode #courseCardExamsList div[style*="background:#f8fafc"] {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode #courseCardExamsList div[style*="background:#f8fafc"] strong {
+  color: #5eead4 !important;
+}
+
+/* --- Soru Aktarma Sihirbazı Koyu Tema Uyumu --- */
+body.dark-mode #importDropZone {
+  background: rgba(15, 118, 110, 0.1) !important;
+  color: #5eead4 !important;
+}
+
+body.dark-mode #importDropZone p[style*="color: #153f46"] {
+  color: #ffffff !important;
+}
+
+body.dark-mode #importDropZoneSelected {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.25) !important;
+}
+
+body.dark-mode #importSelectedFileName {
+  color: #34d399 !important;
+}
+
+body.dark-mode #importDropZone p[style*="background: rgba(21,63,70,0.06)"] {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+body.dark-mode #courseImportWizardDialog div[style*="background:#fefce8"],
+body.dark-mode #bankImportWizardDialog div[style*="background:#fefce8"] {
+  background: rgba(245, 158, 11, 0.1) !important;
+  border-color: rgba(245, 158, 11, 0.2) !important;
+}
+
+body.dark-mode #courseImportWizardDialog div[style*="background:#fefce8"] p,
+body.dark-mode #bankImportWizardDialog div[style*="background:#fefce8"] p {
+  color: #fbbf24 !important;
+}
+
+body.dark-mode #courseImportWizardDialog div[style*="background:#f8fafc"],
+body.dark-mode #bankImportWizardDialog div[style*="background:#f8fafc"] {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode #wizardPreviewCount,
+body.dark-mode #courseImportWizardDialog h3[style*="color:#153f46"],
+body.dark-mode #courseImportWizardDialog div[style*="color:#153f46"],
+body.dark-mode #bankImportWizardDialog h3[style*="color:#153f46"],
+body.dark-mode #bankImportWizardDialog div[style*="color:#153f46"] {
+  color: #5eead4 !important;
+}
+
+body.dark-mode #wizardOptAdd.active {
+  background: rgba(15, 118, 110, 0.15) !important;
+  border-color: var(--accent) !important;
+}
+
+body.dark-mode #wizardOptReplace {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode #wizardSummaryBox {
+  background: rgba(16, 185, 129, 0.15) !important;
+  border-color: rgba(16, 185, 129, 0.25) !important;
+}
+
+body.dark-mode #wizardSummaryBox div {
+  color: #34d399 !important;
+}
+
+/* --- Wizard Soru Kartları Koyu Tema Uyumu --- */
+body.dark-mode .wizard-q-card {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+body.dark-mode .wizard-q-header {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .wizard-q-num {
+  color: #5eead4 !important;
+  background: rgba(15, 118, 110, 0.2) !important;
+}
+
+body.dark-mode .wizard-q-body {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .wizard-q-opt.correct {
+  color: #34d399 !important;
+  background: rgba(16, 185, 129, 0.15) !important;
+}
+
+body.dark-mode .wizard-answer-select {
+  background: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode #wizardLoadingOverlay {
+  background: rgba(15, 23, 42, 0.85) !important;
+  color: #ffffff !important;
+}
+
+/* --- Beceri Eğitimi Arama, Takvim ve Rapor Önizleme Koyu Tema --- */
+body.dark-mode .skill-month-picker button,
+body.dark-mode .skill-date-row button,
+body.dark-mode .skill-precheck button,
+body.dark-mode .skill-wide-soft,
+body.dark-mode .skill-inline-search button {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #5eead4 !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .skill-month-picker button:hover,
+body.dark-mode .skill-date-row button:hover,
+body.dark-mode .skill-precheck button:hover,
+body.dark-mode .skill-wide-soft:hover,
+body.dark-mode .skill-inline-search button:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .skill-month-picker {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .skill-assignment-row strong {
+  color: #ffffff !important;
+}
+
+body.dark-mode .skill-assignment-row small {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .skill-search {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .skill-search:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+body.dark-mode .skill-search:focus-within {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.24) !important;
+}
+
+body.dark-mode .skill-search b:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .skill-search input {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+  padding: 0 !important;
+  height: auto !important;
+}
+
+body.dark-mode .skill-search span {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .skill-search b {
+  color: #94a3b8 !important;
+}
+
+/* Koyu Tema Arama Sonuç Paneli */
+body.dark-mode .skill-search-results {
+  background: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-mode .skill-search-results button {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .skill-search-results button:hover,
+body.dark-mode .skill-search-results button:focus {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--accent, #0f766e) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .skill-search-results em {
+  color: var(--accent, #14b8a6) !important;
+}
+
+body.dark-mode .skill-search-results strong {
+  color: #ffffff !important;
+}
+
+body.dark-mode .skill-search-results small {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .skill-search-empty {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .skill-report-preview-dialog {
+  background: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-mode .skill-report-preview-body {
+  background: #0b1220 !important;
+}
+
+body.dark-mode .skill-report-preview-head {
+  background: #0f172a !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .skill-report-preview-head h2 {
+  color: #ffffff !important;
+}
+
+body.dark-mode .skill-report-preview-body iframe {
+  background: #0b1220 !important;
+}
+
+body.dark-mode .skill-report-preview-center .icon-btn {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .skill-report-preview-center .icon-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+body.dark-mode .skill-report-preview-center #skillReportZoomLabel {
+  color: #ffffff !important;
+}
+
+/* --- Yıllık Plan Modülü Koyu Tema İyileştirmeleri --- */
+
+/* 1. Kaynak Merkezi (Download Results Grid & Column Cards) */
+body.dark-mode .annual-download-column-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .annual-download-column-card:hover {
+  border-color: rgba(94, 234, 212, 0.25) !important;
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.15) !important;
+}
+
+body.dark-mode .annual-download-column-header {
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .annual-download-status-info {
+  background: rgba(255, 255, 255, 0.015) !important;
+  border: 1px dashed rgba(255, 255, 255, 0.08) !important;
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .annual-download-badge {
+  background: rgba(15, 118, 110, 0.2) !important;
+  color: #5eead4 !important;
+}
+
+/* 2. Ders Kitapları & DBF Listesi Kartları */
+body.dark-mode .annual-resource-card {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-resource-card:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--accent, #0f766e) !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .annual-resource-icon-wrapper {
+  background: rgba(15, 118, 110, 0.2) !important;
+  color: #5eead4 !important;
+}
+
+body.dark-mode .annual-resource-icon-wrapper.material-kind {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #fbbf24 !important;
+}
+
+body.dark-mode .annual-resource-title {
+  color: #ffffff !important;
+}
+
+body.dark-mode .annual-resource-meta {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .annual-resource-meta-separator {
+  color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 3. Özel Şablon Düzenleyici & Ünite Kartları */
+body.dark-mode .annual-custom-unit-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .annual-custom-unit-card span {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-custom-unit-card input,
+body.dark-mode .annual-custom-unit-card textarea {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode #annualCustomTemplateTitle,
+body.dark-mode .annual-panel h3[style*="color: #0f172a"] {
+  color: #ffffff !important;
+}
+
+body.dark-mode #annualCustomTotalRatio {
+  color: #94a3b8 !important;
+}
+
+/* 4. Plan Hazırlama Ayarlar Özeti & Metot/Gereç Seçim Çipleri */
+body.dark-mode .annual-settings-summary-card {
+  background: rgba(20, 184, 166, 0.1) !important;
+  border: 1px solid rgba(20, 184, 166, 0.2) !important;
+}
+
+body.dark-mode .annual-settings-summary-card .summary-details {
+  color: #a7f3d0 !important;
+}
+
+body.dark-mode .annual-settings-summary-card button {
+  color: #34d399 !important;
+}
+
+body.dark-mode .annual-choice-chip {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-choice-chip:has(input:checked) {
+  background: rgba(15, 118, 110, 0.15) !important;
+  border-color: rgba(94, 234, 212, 0.3) !important;
+}
+
+body.dark-mode .annual-template-unit-table-wrap {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .annual-template-unit-table {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* 5. Genel Plan Ayarları & Seçim Alanları */
+body.dark-mode .annual-settings-group {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .annual-settings-group span,
+body.dark-mode .annual-settings-group label,
+body.dark-mode .annual-settings-group .annual-zumre-actions {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-settings-subheading,
+body.dark-mode .annual-settings-panel .annual-settings-subheading {
+  color: #5eead4 !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .annual-settings-checks label {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-zumre-remove,
+body.dark-mode .annual-zumre-actions #annualRemoveZumreTeacherBtn {
+  color: #f87171 !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+  border: 1px solid rgba(239, 68, 68, 0.2) !important;
+}
+
+body.dark-mode .annual-zumre-remove:hover {
+  color: #ffffff !important;
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+}
+
+body.dark-mode .annual-zumre-actions {
+  color: #cbd5e1 !important;
+}
+
+/* 6. Word ve MEB Kataloğundan Veri Aktarım Dialogu */
+body.dark-mode #annualWordImportDialog {
+  background: #0f172a !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-mode #annualWordImportDialog div[style*="border-bottom: 2px solid #e2e8f0"] {
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode #annualImportTabMeb,
+body.dark-mode #annualImportTabLocal {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode #annualImportTabMeb.is-active,
+body.dark-mode #annualImportTabLocal.is-active {
+  color: #5eead4 !important;
+  border-bottom-color: #5eead4 !important;
+}
+
+body.dark-mode #annualWordImportDialog p,
+body.dark-mode #annualWordImportDialog span {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode #annualWordImportDialog select {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode #annualWordImportDialog select option {
+  background-color: #0b1220 !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode #annualWordImportDialog div[style*="border: 2px dashed #cbd5e1"] {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+body.dark-mode #annualWordImportDialog div[style*="border: 2px dashed #cbd5e1"] span[style*="color: #1e293b"] {
+  color: #ffffff !important;
+}
+
+body.dark-mode #annualImportLocalFileName {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+/* 7. Genel Buton ve Etiket Koyu Tema Düzeltmeleri */
+body.dark-mode .danger-action {
+  color: #f87171 !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+  border: 1px solid rgba(239, 68, 68, 0.2) !important;
+}
+
+body.dark-mode .danger-action:hover {
+  color: #ffffff !important;
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+}
+
+body.dark-mode .ghost-action {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .ghost-action:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+}
+
+/* 8. Kütüphane Kart Etiketi */
+body.dark-mode .annual-library-card span {
+  background: rgba(15, 118, 110, 0.2) !important;
+  color: #5eead4 !important;
+}
+
+/* 9. Plan Hazırlama Ayarlar Özeti Hapları */
+body.dark-mode .annual-settings-summary-compact .annual-summary-pills span {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-settings-summary-compact .annual-summary-pills strong {
+  color: #5eead4 !important;
+}
+
+/* 10. Giriş & Kayıt Form Kartı */
+body.dark-mode.auth-mode .auth-panel,
+body.dark-mode .auth-panel {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.dark-mode.auth-mode .login-form label span,
+body.dark-mode .login-form label span {
+  color: #cbd5e1 !important;
+}
+
+/* 11. Yıllık Plan Seçilen Şablon Özet Kartı */
+body.dark-mode .annual-template-summary {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-template-summary strong {
+  color: #ffffff !important;
+}
+
+body.dark-mode .annual-template-summary span {
+  color: #94a3b8 !important;
+}
+
+/* 12. Ayarlar Yedekleme ve Senkronizasyon Koyu Tema Düzeltmeleri */
+body.dark-mode .backup-module-grid {
+  background: linear-gradient(180deg, #111c30, #0b1220) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .backup-module-option {
+  background: #1e293b !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f8fafc !important;
+}
+
+body.dark-mode .backup-module-option:hover {
+  border-color: rgba(15, 118, 110, 0.6) !important;
+  background: #243049 !important;
+}
+
+body.dark-mode .backup-checkmark {
+  background: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .backup-module-option input:checked + .backup-checkmark {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+body.dark-mode .backup-module-option strong {
+  color: #ffffff !important;
+}
+
+body.dark-mode .backup-module-option small {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .cloud-config {
+  background: rgba(30, 41, 59, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .cloud-config summary {
+  color: #38bdf8 !important;
+}
+
+body.dark-mode .cloud-config-grid input {
+  background: #0f172a !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .cloud-config-grid input::placeholder {
+  color: #64748b !important;
+}
+
+/* 13. Soru Bankası Soru Havuzu ve Soru Aktarma Sihirbazı Düzeltmeleri */
+body.app-mode .question-meta {
+  margin-right: 34px !important;
+  padding-right: 0 !important;
+}
+
+.wizard-q-header {
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+body.dark-mode .question-select {
+  background: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-mode .question-select input {
+  accent-color: var(--accent) !important;
+}
+
+/* Sihirbaz Drag-Drop ve Bilgi Koyu Tema Uyumu */
+body.dark-mode #importDropZone,
+body.dark-mode #bankImportDropZone {
+  background: rgba(15, 118, 110, 0.1) !important;
+  border-color: var(--accent) !important;
+}
+
+body.dark-mode #importDropZone p,
+body.dark-mode #bankImportDropZone p {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode #importDropZoneSelected,
+body.dark-mode #bankImportDropZoneSelected {
+  background: rgba(16, 185, 129, 0.1) !important;
+  border-color: rgba(16, 185, 129, 0.25) !important;
+}
+
+body.dark-mode #importSelectedFileName,
+body.dark-mode #bankImportSelectedFileName {
+  color: #34d399 !important;
+}
+
+body.dark-mode #wizardStep1 > div:nth-child(3),
+body.dark-mode #bankWizardStep1 > div:nth-child(3) {
+  background: rgba(245, 158, 11, 0.1) !important;
+  border: 1px solid rgba(245, 158, 11, 0.25) !important;
+}
+
+body.dark-mode #wizardStep1 > div:nth-child(3) p,
+body.dark-mode #bankWizardStep1 > div:nth-child(3) p,
+body.dark-mode #wizardStep1 > div:nth-child(3) strong,
+body.dark-mode #bankWizardStep1 > div:nth-child(3) strong {
+  color: #fde047 !important;
+}
+
+/* Sihirbaz Soru Önizleme Kartları Koyu Tema */
+body.dark-mode .wizard-q-card input,
+body.dark-mode .wizard-q-card select,
+body.dark-mode .wizard-q-card textarea {
+  background: #0f172a !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #f8fafc !important;
+}
+
+/* Beceri Eğitim Modülü Üst Bar Çizgisinin Kaldırılması */
+body.dark-mode.skill-mode .skill-topbar {
+  border-bottom: none !important;
+}
+
+/* Veri Aktarımı Sihirbazı Koyu Tema Uyumlu Önizleme Alanı */
+body.dark-mode #skillImportPreviewArea {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Dosya Seçim Girişleri Koyu Tema Uyumluluğu */
+body.dark-mode input[type="file"] {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #cbd5e1 !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+body.dark-mode input[type="file"]::-webkit-file-upload-button {
+  background: #1e293b !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+body.dark-mode input[type="file"]::-webkit-file-upload-button:hover {
+  background: #334155 !important;
+  color: #ffffff !important;
+}
+
+/* Koyu temada modül logosu ve bildirim ikonlarının beyaz kalmasının düzeltilmesi */
+body.dark-mode.app-mode .module-sidebar-icon,
+body.dark-mode.skill-mode .module-sidebar-icon,
+body.dark-mode.student-mode .module-sidebar-icon,
+body.dark-mode.annual-mode .module-sidebar-icon,
+body.dark-mode.course-mode .module-sidebar-icon,
+body.dark-mode.global-settings-mode .module-sidebar-icon,
+body.dark-mode.skill-mode .module-sidebar-brand .ime-logo {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+body.dark-mode .skill-alert > span {
+  background: rgba(15, 118, 110, 0.15) !important;
+  border: 1px solid rgba(15, 118, 110, 0.3) !important;
+  color: #2dd4bf !important;
+}
+
+
+/* Toggle button style (hidden on desktop) */
+@media (min-width: 901px) {
+  body.app-mode aside.sidebar .sidebar-toggle-btn,
+  body.app-mode .sidebar-toggle-btn,
+  .sidebar-toggle-btn,
+  .mobile-nav-tabs-group,
+  .mobile-nav-divider {
+    display: none !important;
+  }
+}
+
+/* Mobil dropdown seçicileri tamamen gizle (FAB Menü devraldı) */
+.app-nav-mobile-select-container,
+.skill-nav-mobile-select-container,
+.student-nav-mobile-select-container,
+.annual-nav-mobile-select-container,
+.course-nav-mobile-select-container,
+.global-settings-mobile-select-container {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  /* Evrensel Mobil FAB Butonları (Sol: Modüller, Sağ: Gezinme) */
+  body.app-mode #mobileModuleHubBtn,
+  body.skill-mode #mobileModuleHubBtn,
+  body.student-mode #mobileModuleHubBtn,
+  body.annual-mode #mobileModuleHubBtn,
+  body.course-mode #mobileModuleHubBtn,
+  body.global-settings-mode #mobileModuleHubBtn,
+  .mobile-nav-fab,
+  .sidebar-toggle-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: fixed !important;
+    bottom: 18px !important;
+    z-index: 1001 !important;
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 50% !important;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.3) !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease !important;
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    padding: 0 !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: 48px !important;
+    max-height: 48px !important;
+  }
+
+  body.app-mode #mobileModuleHubBtn,
+  body.skill-mode #mobileModuleHubBtn,
+  body.student-mode #mobileModuleHubBtn,
+  body.annual-mode #mobileModuleHubBtn,
+  body.course-mode #mobileModuleHubBtn,
+  body.global-settings-mode #mobileModuleHubBtn {
+    left: 18px !important;
+    right: auto !important;
+  }
+
+  .mobile-nav-fab,
+  .sidebar-toggle-btn {
+    right: 18px !important;
+    left: auto !important;
+  }
+
+  #mobileModuleHubBtn:active,
+  .mobile-nav-fab:active,
+  .sidebar-toggle-btn:active {
+    transform: scale(0.9) !important;
+  }
+
+  /* Simge boyutlarını ve stillerini eşitleme */
+  #mobileModuleHubBtn span,
+  .mobile-nav-fab span,
+  .sidebar-toggle-btn span {
+    font-size: 1.25rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+  }
+
+  /* Modüller yazısını kesinlikle gizle */
+  body.app-mode #mobileModuleHubBtn strong,
+  body.skill-mode #mobileModuleHubBtn strong,
+  body.student-mode #mobileModuleHubBtn strong,
+  body.annual-mode #mobileModuleHubBtn strong,
+  body.course-mode #mobileModuleHubBtn strong,
+  body.global-settings-mode #mobileModuleHubBtn strong {
+    display: none !important;
+  }
+
+  /* Evrensel Mobil Gezinme Paneli (Çekmece) */
+  .mobile-nav-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    position: fixed !important;
+    bottom: 74px !important;
+    right: 18px !important;
+    width: 260px !important;
+    max-width: calc(100vw - 36px) !important;
+    background: rgba(15, 23, 42, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 16px !important;
+    padding: 16px !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4) !important;
+    z-index: 1000 !important;
+    gap: 12px !important;
+  }
+
+  .mobile-nav-panel-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding-bottom: 8px !important;
+  }
+
+  .mobile-nav-panel-header strong {
+    color: #f1f5f9 !important;
+    font-size: 0.9rem !important;
+  }
+
+  .mobile-nav-panel-close {
+    background: transparent !important;
+    border: 0 !important;
+    color: #94a3b8 !important;
+    font-size: 1.4rem !important;
+    cursor: pointer !important;
+    padding: 0 4px !important;
+    line-height: 1 !important;
+  }
+
+  .mobile-nav-panel-links {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .mobile-nav-panel-link-btn {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 40px !important;
+    padding: 0 12px !important;
+    border-radius: 8px !important;
+    border: 1px solid transparent !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: #cbd5e1 !important;
+    font-size: 0.88rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    text-align: left !important;
+  }
+
+  .mobile-nav-panel-link-btn.is-active {
+    background: var(--accent) !important;
+    color: #ffffff !important;
+    border-color: var(--accent) !important;
+  }
+
+  /* Soru Bankası Mobil Sekme Seçici Buton Grubu */
+  .mobile-nav-tabs-group {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  .mobile-nav-tab-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 38px !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #cbd5e1 !important;
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .mobile-nav-tab-btn.is-active {
+    background: var(--accent) !important;
+    color: #ffffff !important;
+    border-color: var(--accent) !important;
+  }
+
+  .mobile-nav-divider {
+    height: 1px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    margin: 6px 0 !important;
+    width: 100% !important;
+  }
+
+  /* Evrensel Sol Mobil Modül Seçim FAB Butonu */
+  .module-float-switcher {
+    display: block !important;
+    position: static !important;
+    width: auto !important;
+  }
+
+  /* Beceri Eğitimi Mobil İstatistik ve Hızlı İşlem Izgaraları */
+  body.skill-mode .skill-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+  }
+
+  body.skill-mode .skill-quick-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin-top: 8px !important;
+  }
+
+  body.skill-mode .skill-stat-card {
+    min-height: 90px !important;
+    padding: 10px 12px !important;
+  }
+
+  body.skill-mode .skill-quick-grid button {
+    min-height: 70px !important;
+    padding: 8px !important;
+    font-size: 0.8rem !important;
+  }
+
+  body.skill-mode .skill-stat-grid > :nth-child(5),
+  body.skill-mode .skill-quick-grid > :nth-child(5) {
+    grid-column: span 2 !important;
+  }
+
+  body.skill-mode .skill-school-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+
+  body.skill-mode .skill-view[data-skill-panel="businesses"] .skill-businesses-actions-group {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  /* Ders ve Öğrenci Takibi Mobil İstatistik Izgarası (2 sütunlu) */
+  body.student-mode .student-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+  }
+
+  body.student-mode .student-stat-card {
+    min-height: 80px !important;
+    padding: 10px 8px !important;
+  }
+
+  body.student-mode .student-stat-card strong {
+    font-size: 1.6rem !important;
+  }
+
+  body.student-mode .student-stat-grid > :nth-child(5) {
+    grid-column: span 2 !important;
+  }
+
+  /* Ders ve Öğrenci Takibi Mobil Hızlı İşlemler (2 sütunlu) */
+  body.student-mode .student-quick-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin-top: 8px !important;
+  }
+
+  body.student-mode .student-quick-grid button {
+    min-height: 70px !important;
+    padding: 10px 8px !important;
+    gap: 8px !important;
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+    font-size: 0.8rem !important;
+  }
+
+  body.student-mode .student-quick-grid span {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  #mobileModuleHubBtn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: fixed !important;
+    bottom: 18px !important;
+    left: 18px !important;
+    right: auto !important;
+    z-index: 1001 !important;
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 50% !important;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.3) !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease !important;
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    padding: 0 !important;
+  }
+
+  #mobileModuleHubBtn:active {
+    transform: scale(0.9) !important;
+  }
+
+  #mobileModuleHubBtn strong {
+    display: none !important;
+  }
+
+  #mobileModuleHubBtn span {
+    font-size: 1.3rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-block !important;
+    background: transparent !important;
+    border: none !important;
+    color: #ffffff !important;
+  }
+
+  /* Evrensel Sol Mobil Modül Seçim Paneli (Çekmece) */
+  body.app-mode .module-float-panel,
+  body.skill-mode .module-float-panel,
+  body.student-mode .module-float-panel,
+  body.annual-mode .module-float-panel,
+  body.course-mode .module-float-panel,
+  body.global-settings-mode .module-float-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    position: fixed !important;
+    bottom: 74px !important;
+    left: 18px !important;
+    right: auto !important;
+    width: 260px !important;
+    max-width: calc(100vw - 36px) !important;
+    background: rgba(15, 23, 42, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 16px !important;
+    padding: 16px !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4) !important;
+    z-index: 1000 !important;
+    gap: 12px !important;
+    height: auto !important;
+    max-height: none !important;
+    top: auto !important;
+  }
+
+  .module-float-panel-links {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  /* Modül Seçim Butonlarının Görünümü */
+  body.app-mode .module-float-panel button,
+  body.skill-mode .module-float-panel button,
+  body.student-mode .module-float-panel button,
+  body.annual-mode .module-float-panel button,
+  body.course-mode .module-float-panel button,
+  body.global-settings-mode .module-float-panel button {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 36px !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    border: 1px solid transparent !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: #cbd5e1 !important;
+    font-size: 0.84rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    text-align: left !important;
+    gap: 6px !important;
+    box-shadow: none !important;
+    text-transform: none !important;
+    grid-template-columns: none !important;
+  }
+
+  /* Modül simgelerini gizleme */
+  body.app-mode .module-float-panel button span,
+  body.skill-mode .module-float-panel button span,
+  body.student-mode .module-float-panel button span,
+  body.annual-mode .module-float-panel button span,
+  body.course-mode .module-float-panel button span,
+  body.global-settings-mode .module-float-panel button span {
+    display: none !important;
+  }
+
+  /* Modül kısa açıklaması */
+  .module-desc {
+    display: inline-block !important;
+    font-size: 0.72rem !important;
+    color: #94a3b8 !important;
+    font-weight: 500 !important;
+    margin-left: 2px !important;
+    white-space: nowrap !important;
+  }
+
+  .module-desc::before {
+    content: "• " !important;
+    color: rgba(255, 255, 255, 0.15) !important;
+    margin-right: 4px !important;
+  }
+
+  /* Modüllerin hover / active durumları */
+  body.app-mode .module-float-panel button.is-active,
+  body.skill-mode .module-float-panel button.is-active,
+  body.student-mode .module-float-panel button.is-active,
+  body.annual-mode .module-float-panel button.is-active,
+  body.course-mode .module-float-panel button.is-active,
+  body.global-settings-mode .module-float-panel button.is-active {
+    background: var(--accent) !important;
+    color: #ffffff !important;
+    border-color: var(--accent) !important;
+  }
+
+  body.app-mode .module-float-panel button.is-active span,
+  body.skill-mode .module-float-panel button.is-active span,
+  body.student-mode .module-float-panel button.is-active span,
+  body.annual-mode .module-float-panel button.is-active span,
+  body.course-mode .module-float-panel button.is-active span,
+  body.global-settings-mode .module-float-panel button.is-active span {
+    background: #ffffff !important;
+    color: var(--accent) !important;
+  }
+
+  body.app-mode .module-float-panel button:hover,
+  body.skill-mode .module-float-panel button:hover,
+  body.student-mode .module-float-panel button:hover,
+  body.annual-mode .module-float-panel button:hover,
+  body.course-mode .module-float-panel button:hover,
+  body.global-settings-mode .module-float-panel button:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+  }
+
+  body.app-mode .module-float-panel button strong,
+  body.skill-mode .module-float-panel button strong,
+  body.student-mode .module-float-panel button strong,
+  body.annual-mode .module-float-panel button strong,
+  body.course-mode .module-float-panel button strong,
+  body.global-settings-mode .module-float-panel button strong {
+    font-weight: 700 !important;
+    font-size: 0.88rem !important;
+  }
+
+  /* Sol FAB iconunu mobil için puzzle emojisi yap ve maskeyi sıfırla */
+  body.app-mode #mobileModuleHubBtn span::before,
+  body.skill-mode #mobileModuleHubBtn span::before,
+  body.student-mode #mobileModuleHubBtn span::before,
+  body.annual-mode #mobileModuleHubBtn span::before,
+  body.course-mode #mobileModuleHubBtn span::before,
+  body.global-settings-mode #mobileModuleHubBtn span::before {
+    content: "🧩" !important;
+    font-size: 1.25rem !important;
+    background: transparent !important;
+    mask: none !important;
+    -webkit-mask: none !important;
+    position: static !important;
+    transform: none !important;
+    width: auto !important;
+    height: auto !important;
+    display: inline-flex !important;
+  }
+
+  /* Mobil üst barı (topbar) yapışkanlıktan çıkar */
+  body.app-mode .topbar,
+  body.skill-mode .skill-topbar,
+  body.student-mode .student-topbar,
+  body.annual-mode .annual-topbar,
+  body.course-mode .course-topbar,
+  body.global-settings-mode .global-settings-topbar {
+    position: relative !important;
+    top: auto !important;
+    z-index: 99 !important;
+  }
+
+  /* sidebar-toggle-btn'in body.app-mode .sidebar button tarafından ezilmesini önle */
+  body.app-mode aside.sidebar .sidebar-toggle-btn {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 50% !important;
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    max-width: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.3) !important;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease !important;
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+}
+
+/* Panellerin üst başlıklarını ve modül açıklamalarını masaüstünde tamamen gizleme */
+.mobile-nav-panel-header,
+.module-desc {
+  display: none !important;
+}
+
+/* HTML hidden özelliğinin CSS display kuralları tarafından ezilmesini kesin olarak engelleyen yüksek öncelikli kural */
+body.app-mode .module-float-panel[hidden],
+body.skill-mode .module-float-panel[hidden],
+body.student-mode .module-float-panel[hidden],
+body.annual-mode .module-float-panel[hidden],
+body.course-mode .module-float-panel[hidden],
+body.global-settings-mode .module-float-panel[hidden],
+.mobile-nav-panel[hidden],
+[hidden] {
+  display: none !important;
+}
+
+/* Modallerin ve Açılır Pencerelerin Kapat (X) Butonunu Sağ Üste Sabitleme */
+dialog,
+.dialog-body,
+.basket-dialog,
+.basket-body,
+.preview-dialog,
+.question-editor-dialog,
+.skill-status-dialog,
+.confirm-dialog,
+.prompt-dialog {
+  position: relative !important;
+}
+
+.course-dialog-close-btn,
+.skill-close-x {
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+  z-index: 1010 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px !important;
+  max-width: 30px !important;
+  min-height: 30px !important;
+  max-height: 30px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  font-size: 1.25rem !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+}
+
+/* Kapatma butonlarının mobilde başlık alanından dışarı taşmasını önlemek için dialog başlıklarına sağ iç boşluk ekle */
+.basket-heading,
+.preview-heading,
+.dialog-body h2,
+.preview-body h2,
+.confirm-body h2,
+.prompt-body h2,
+.skill-status-body h2,
+.dialog-body .panel-heading {
+  padding-right: 60px !important;
+}
+
+/* Mobil görünümde Soru Editörü başlık alanı elemanlarını dikey hizala */
+@media (max-width: 520px) {
+  .basket-heading > div {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+  }
+
+  .basket-heading select {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+  }
+}
+
+/* Ana modül ekranı başlık alanı yerleşim kuralları */
+body.module-mode .compact-module-header {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  margin: 0 0 16px 0 !important;
+  padding: 10px 0 !important;
+  z-index: 3 !important;
+  display: grid !important;
+  grid-template-columns: 1fr auto 1fr !important;
+  align-items: center !important;
+}
+
+.module-hub-spacer {
+  grid-column: 1 !important;
+}
+
+/* Ortalı ve belirgin "Okul Takip Sistemi" başlığı */
+.hub-title {
+  grid-column: 2 !important;
+  margin: 0 !important;
+  font-size: 2.2rem !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  text-align: center !important;
+  letter-spacing: -0.03em !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Profil kartını sağa yasla */
+body.module-mode .compact-module-header .user-menu-wrap {
+  grid-column: 3 !important;
+  justify-self: end !important;
+}
+
+/* Ana modül ekranı dış kapsayıcı hizalaması (Dikey ortalamayı iptal edip yukarı yanaştırmak için) */
+body.module-mode .auth-shell {
+  align-content: start !important;
+  padding-top: 24px !important;
+}
+
+/* Ana modül ekranı genişlik ve üst boşluk ayarı (Desktop kartlarını daraltmak için) */
+body.module-mode .module-hub {
+  width: min(960px, 100%) !important;
+  margin: 0 auto !important;
+  padding-top: 10px !important;
+}
+
+/* Mobil cihazlarda dikey hizalama ve uyumluluk */
+@media (max-width: 768px) {
+  body.module-mode .auth-shell {
+    padding-top: 16px !important;
+  }
+
+  body.module-mode .module-hub {
+    padding-top: 5px !important;
+  }
+
+  body.module-mode .compact-module-header {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 14px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .hub-title {
+    font-size: 1.8rem !important;
+    width: 100% !important;
+  }
+
+  body.module-mode .compact-module-header .user-menu-wrap {
+    justify-self: center !important;
+  }
+
+  /* Mobil 2'li grid ve kart optimizasyonları */
+  body.module-mode .module-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  body.module-mode .module-card {
+    min-height: 125px !important;
+    padding: 14px 12px !important;
+    border-radius: 12px !important;
+  }
+
+  body.module-mode .module-card .module-icon {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 10px !important;
+    font-size: 0.95rem !important;
+  }
+
+  body.module-mode .module-card strong {
+    margin-top: 10px !important;
+    font-size: 1.05rem !important;
+  }
+
+  body.module-mode .module-card small {
+    margin-top: 4px !important;
+    font-size: 0.76rem !important;
+    line-height: 1.25 !important;
+  }
+}
+
+/* Okul Takip Sistemi Kurumsal Logo (Ayarlar Sayfası Sidebar) */
+.global-settings-logo-img {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 12px !important;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15)) !important;
+}
+
+@media (max-width: 900px) {
+  body.global-settings-mode .global-settings-logo-img {
+    display: none !important;
+  }
+}
+
+/* Mobil/Masaüstü Modül Gezginindeki Kurumsal Logo */
+.floating-hub-logo-img {
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 8px !important;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2)) !important;
+  object-fit: contain !important;
+  flex-shrink: 0 !important;
+}
+
+/* Rapor Önizlemede Kapatma Butonu Konumunun Sıfırlanması (Masaüstü ve Mobil için Ortak Akış) */
+.skill-report-preview-head .skill-close-x {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  margin: 0 !important;
+  border-radius: 10px !important;
+  min-height: 38px !important;
+  min-width: 38px !important;
+  width: 38px !important;
+  height: 38px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Mobilde Rapor Önizleme Başlık Çubuğu – Kompakt, Taşmasız ve Üst Üste Binmez */
+@media (max-width: 768px) {
+  .skill-report-preview-dialog {
+    width: calc(100vw - 12px) !important;
+    max-width: 100% !important;
+    height: calc(100dvh - 12px) !important;
+    max-height: 100% !important;
+    border-radius: 10px !important;
+    margin: 6px !important;
+  }
+
+  .skill-report-preview-head {
+    flex-wrap: nowrap !important;
+    padding: 8px 10px !important;
+    gap: 8px !important;
+  }
+
+  /* Başlık ve zoom kontrolü kompakt tek satır */
+  .skill-report-preview-left {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .skill-report-preview-head h2 {
+    font-size: 0.82rem !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .skill-report-preview-center {
+    flex: 0 0 auto !important;
+    gap: 4px !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .skill-report-preview-center .icon-btn {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    border-radius: 6px !important;
+  }
+
+  .skill-report-preview-center #skillReportZoomLabel {
+    font-size: 0.72rem !important;
+    min-width: 32px !important;
+  }
+
+  /* Sağdaki buton grubu: Yazdır, PDF İndir, Paylaş ve Kapat */
+  .skill-report-preview-right {
+    flex: 0 0 auto !important;
+    gap: 4px !important;
+  }
+
+  /* Mobilde Yazdır, PDF ve Paylaş butonlarının yazılarını gizle, sadece ikona dönüştür */
+  .skill-report-preview-head #skillReportPrintBtn,
+  .skill-report-preview-head #skillReportPdfBtn,
+  .skill-report-preview-head #skillReportShareBtn {
+    font-size: 0 !important;
+    padding: 0 !important;
+    min-width: 28px !important;
+    width: 28px !important;
+    min-height: 28px !important;
+    height: 28px !important;
+    border-radius: 6px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: none !important;
+  }
+
+  .skill-report-preview-head #skillReportPrintBtn svg,
+  .skill-report-preview-head #skillReportPdfBtn svg,
+  .skill-report-preview-head #skillReportShareBtn svg {
+    margin: 0 !important;
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  /* Kapat (X) Butonu boyutu mobilde küçülsün */
+  .skill-report-preview-head .skill-close-x {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    font-size: 1rem !important;
+    border-radius: 6px !important;
+  }
+
+  /* Dikey ayırıcı çizgiyi gizle */
+  .skill-report-preview-right > div[style*="width: 1px"] {
+    display: none !important;
+  }
+}

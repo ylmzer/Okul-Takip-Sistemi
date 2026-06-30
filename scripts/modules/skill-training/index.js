@@ -1,0 +1,1230 @@
+/* ==========================================================================
+   İŞLETMELERDE BECERİ EĞİTİMİ MODÜLÜ - EKRAN BAĞLARI VE ETKİLEŞİMLER
+   ========================================================================== */
+
+els.skillModuleSwitchBtn?.addEventListener("click", returnToModuleHub);
+
+if (els.skillGlobalSearchInput) {
+  els.skillGlobalSearchInput.addEventListener("input", renderSkillGlobalSearchResults);
+  els.skillGlobalSearchInput.addEventListener("focus", renderSkillGlobalSearchResults);
+  els.skillGlobalSearchInput.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeSkillGlobalSearchResults();
+    }
+    if (event.key === "Enter") {
+      const firstResult = els.skillGlobalSearchResults?.querySelector("[data-skill-global-type]");
+      if (firstResult) {
+        event.preventDefault();
+        openSkillGlobalSearchItem(firstResult.dataset.skillGlobalType, firstResult.dataset.skillGlobalId);
+      }
+    }
+  });
+}
+if (els.skillGlobalSearchClear) {
+  els.skillGlobalSearchClear.addEventListener("click", (event) => {
+    event.preventDefault();
+    clearSkillGlobalSearch();
+    els.skillGlobalSearchInput?.focus();
+  });
+  els.skillGlobalSearchClear.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      clearSkillGlobalSearch();
+      els.skillGlobalSearchInput?.focus();
+    }
+  });
+}
+if (els.skillGlobalSearchResults) {
+  els.skillGlobalSearchResults.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-skill-global-type]");
+    if (!button) return;
+    event.preventDefault();
+    openSkillGlobalSearchItem(button.dataset.skillGlobalType, button.dataset.skillGlobalId);
+  });
+}
+let parsedImportSqliteData = null;
+let activeImportTab = "excel";
+
+function updateImportNextBtnState() {
+  const nextBtn = document.getElementById("skillImportNextBtn");
+  if (!nextBtn) return;
+  
+  if (activeImportTab === "excel") {
+    const fileInput = document.getElementById("skillImportFileInput");
+    nextBtn.disabled = !(fileInput && fileInput.files && fileInput.files.length > 0);
+  } else {
+    const sqliteSelect = document.getElementById("skillImportSqliteSelect");
+    nextBtn.disabled = !(sqliteSelect && sqliteSelect.value);
+  }
+}
+
+async function handleImportNextStep() {
+  const step1 = document.getElementById("skillImportStep1");
+  const step2 = document.getElementById("skillImportStep2");
+  const tabContainer = document.getElementById("skillImportTabContainer");
+  const saveBtn = document.getElementById("skillImportSaveBtn");
+  const prevBtn = document.getElementById("skillImportPrevBtn");
+  
+  if (step1) step1.style.display = "none";
+  if (tabContainer) tabContainer.style.display = "none";
+  if (step2) step2.style.display = "flex";
+  if (els.skillImportPreviewArea) els.skillImportPreviewArea.style.display = "flex";
+  if (saveBtn) saveBtn.disabled = true;
+  if (prevBtn) prevBtn.disabled = true;
+  
+  if (activeImportTab === "excel") {
+    const fileInput = document.getElementById("skillImportFileInput");
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      await analyzeImeImportFile(fileInput.files[0]);
+    }
+  } else {
+    await analyzeSqliteProfile();
+  }
+}
+
+function handleImportPrevStep() {
+  const step1 = document.getElementById("skillImportStep1");
+  const step2 = document.getElementById("skillImportStep2");
+  const tabContainer = document.getElementById("skillImportTabContainer");
+  
+  if (step2) step2.style.display = "none";
+  if (step1) step1.style.display = "block";
+  if (tabContainer) tabContainer.style.display = "flex";
+  
+  if (els.skillImportPreviewArea) els.skillImportPreviewArea.style.display = "none";
+  if (els.skillImportStats) els.skillImportStats.textContent = "";
+  if (els.skillImportPreviewTable) els.skillImportPreviewTable.innerHTML = "";
+  if (els.skillImportSaveBtn) els.skillImportSaveBtn.disabled = true;
+  
+  updateImportNextBtnState();
+}
+
+function switchImportTab(tab) {
+  activeImportTab = tab;
+  const tabExcel = document.getElementById("skillImportTabExcel");
+  const tabSqlite = document.getElementById("skillImportTabSqlite");
+  const panelExcel = document.getElementById("skillImportExcelPanel");
+  const panelSqlite = document.getElementById("skillImportSqlitePanel");
+  
+  if (tab === "excel") {
+    tabExcel?.classList.add("is-active");
+    if (tabExcel) {
+      tabExcel.style.color = "var(--accent)";
+      tabExcel.style.borderBottomColor = "var(--accent)";
+    }
+    tabSqlite?.classList.remove("is-active");
+    if (tabSqlite) {
+      tabSqlite.style.color = "var(--muted)";
+      tabSqlite.style.borderBottomColor = "transparent";
+    }
+    if (panelExcel) panelExcel.style.display = "block";
+    if (panelSqlite) panelSqlite.style.display = "none";
+  } else {
+    tabSqlite?.classList.add("is-active");
+    if (tabSqlite) {
+      tabSqlite.style.color = "var(--accent)";
+      tabSqlite.style.borderBottomColor = "var(--accent)";
+    }
+    tabExcel?.classList.remove("is-active");
+    if (tabExcel) {
+      tabExcel.style.color = "var(--muted)";
+      tabExcel.style.borderBottomColor = "transparent";
+    }
+    if (panelExcel) panelExcel.style.display = "none";
+    if (panelSqlite) panelSqlite.style.display = "block";
+  }
+  
+  if (els.skillImportPreviewArea) els.skillImportPreviewArea.style.display = "none";
+  if (els.skillImportStats) els.skillImportStats.textContent = "";
+  if (els.skillImportPreviewTable) els.skillImportPreviewTable.innerHTML = "";
+  if (els.skillImportSaveBtn) els.skillImportSaveBtn.disabled = true;
+  parsedImportRecords = [];
+  parsedImportSqliteData = null;
+  
+  updateImportNextBtnState();
+}
+
+async function loadSqliteProfiles() {
+  const select = document.getElementById("skillImportSqliteSelect");
+  if (!select) return;
+  select.innerHTML = '<option value="">Yükleniyor...</option>';
+  try {
+    const response = await fetch("/api/list-sqlite-profiles");
+    if (!response.ok) throw new Error("Profil listesi alınamadı");
+    const result = await response.json();
+    if (!result.Profiles || result.Profiles.length === 0) {
+      select.innerHTML = '<option value="">Hiçbir profil bulunamadı</option>';
+      updateImportNextBtnState();
+      return;
+    }
+    select.innerHTML = result.Profiles.map(p => `
+      <option value="${escapeHtml(p.DbFile)}">${escapeHtml(p.Name)} (${escapeHtml(p.InstitutionType)})</option>
+    `).join("");
+    
+    if (result.SelectedProfile) {
+      const found = result.Profiles.find(p => p.Name === result.SelectedProfile || p.DbFile === result.SelectedProfile);
+      if (found) {
+        select.value = found.DbFile;
+      }
+    }
+  } catch (error) {
+    select.innerHTML = `<option value="">Hata: ${escapeHtml(error.message)}</option>`;
+  }
+  updateImportNextBtnState();
+}
+
+async function analyzeSqliteProfile() {
+  const select = document.getElementById("skillImportSqliteSelect");
+  const prevBtn = document.getElementById("skillImportPrevBtn");
+  
+  if (!select || !select.value) {
+    showToast("Lütfen bir profil seçin", "error");
+    if (prevBtn) prevBtn.disabled = false;
+    return;
+  }
+  const dbFile = select.value;
+  
+  if (els.skillImportPreviewArea) els.skillImportPreviewArea.style.display = "flex";
+  if (els.skillImportPreviewTable) {
+    els.skillImportPreviewTable.innerHTML = `
+      <tr>
+        <td colspan="6" class="skill-import-loading">
+          <div class="skill-import-loading-spinner"></div>
+          <span>SQLite veritabanı çözümleniyor, lütfen bekleyin...</span>
+        </td>
+      </tr>
+    `;
+  }
+  if (els.skillImportSaveBtn) els.skillImportSaveBtn.disabled = true;
+  if (els.skillImportStats) els.skillImportStats.textContent = "";
+  parsedImportSqliteData = null;
+  
+  try {
+    const response = await fetch("/api/import-sqlite-profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ dbFile })
+    });
+    
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(errText || "Sunucu hatası");
+    }
+    
+    const result = await response.json();
+    if (result.error) {
+      throw new Error(result.error);
+    }
+    
+    parsedImportSqliteData = result;
+    const studentCount = result.students?.length || 0;
+    const businessCount = result.businesses?.length || 0;
+    const teacherCount = result.teacherPool?.length || 0;
+    const holidayCount = result.holidays?.length || 0;
+    const absenceCount = Object.keys(result.absenceRecords || {}).length;
+    
+    if (els.skillImportStats) {
+      els.skillImportStats.innerHTML = `
+        <div class="skill-import-success-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.15); padding: 6px 12px; border-radius: 6px; color: #10b981; font-weight: bold; font-size: 0.85rem;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span>✓</span> SQLite Çözümleme Başarılı!
+          </div>
+          <div style="font-size: 0.78rem; font-weight: normal; color: var(--muted);">
+            Okul: <strong style="color: var(--ink);">${escapeHtml(result.school?.name || "Belirtilmedi")}</strong>
+          </div>
+        </div>
+        <div class="skill-import-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 15px;">
+          <div class="skill-import-stat-card" style="padding: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Öğrenci</div>
+            <div style="font-size: 1.35rem; font-weight: 800; color: var(--accent); margin-top: 4px;">${studentCount}</div>
+          </div>
+          <div class="skill-import-stat-card" style="padding: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">İşletme</div>
+            <div style="font-size: 1.35rem; font-weight: 800; color: var(--accent); margin-top: 4px;">${businessCount}</div>
+          </div>
+          <div class="skill-import-stat-card" style="padding: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Öğretmen</div>
+            <div style="font-size: 1.35rem; font-weight: 800; color: var(--accent); margin-top: 4px;">${teacherCount}</div>
+          </div>
+          <div class="skill-import-stat-card" style="padding: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Resmi Tatil</div>
+            <div style="font-size: 1.35rem; font-weight: 800; color: var(--accent); margin-top: 4px;">${holidayCount}</div>
+          </div>
+          <div class="skill-import-stat-card" style="padding: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Devamsızlık</div>
+            <div style="font-size: 1.35rem; font-weight: 800; color: var(--accent); margin-top: 4px;">${absenceCount}</div>
+          </div>
+        </div>
+      `;
+    }
+    
+    if (els.skillImportPreviewTable) {
+      if (studentCount === 0) {
+        els.skillImportPreviewTable.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 20px; color: var(--muted);">
+              Profilde öğrenci kaydı bulunamadı.
+            </td>
+          </tr>
+        `;
+      } else {
+        const coordMap = {};
+        (result.coordinators || []).forEach(c => {
+          coordMap[c.businessId] = c.teacher;
+        });
+        
+        els.skillImportPreviewTable.innerHTML = result.students.map(s => {
+          const biz = (result.businesses || []).find(b => b.id === s.businessId);
+          const teacherName = coordMap[s.businessId] || "Atanmadı";
+          return `
+            <tr>
+              <td>${escapeHtml(s.no || "-")}</td>
+              <td><strong>${escapeHtml(s.name || "-")}</strong></td>
+              <td>${escapeHtml(s.className || "-")}</td>
+              <td>${escapeHtml(s.field || "-")}</td>
+              <td>${escapeHtml(biz?.name || "-")}</td>
+              <td>${escapeHtml(teacherName)}</td>
+            </tr>
+          `;
+        }).join("");
+      }
+    }
+    
+    if (els.skillImportSaveBtn) els.skillImportSaveBtn.disabled = false;
+    
+  } catch (error) {
+    showToast(`Çözümleme hatası: ${error.message}`, "error");
+    if (els.skillImportPreviewTable) {
+      els.skillImportPreviewTable.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 20px; color: var(--danger);">
+            Hata: ${escapeHtml(error.message)}
+          </td>
+        </tr>
+      `;
+    }
+  } finally {
+    if (prevBtn) prevBtn.disabled = false;
+  }
+}
+
+function openSkillImportDialog() {
+  const step1 = document.getElementById("skillImportStep1");
+  const step2 = document.getElementById("skillImportStep2");
+  const tabContainer = document.getElementById("skillImportTabContainer");
+  const nextBtn = document.getElementById("skillImportNextBtn");
+  
+  if (step1) step1.style.display = "block";
+  if (step2) step2.style.display = "none";
+  if (tabContainer) tabContainer.style.display = "flex";
+  if (nextBtn) nextBtn.disabled = true;
+
+  if (els.skillImportFileInput) els.skillImportFileInput.value = "";
+  if (els.skillImportPreviewArea) els.skillImportPreviewArea.style.display = "none";
+  if (els.skillImportStats) els.skillImportStats.textContent = "";
+  if (els.skillImportPreviewTable) els.skillImportPreviewTable.innerHTML = "";
+  if (els.skillImportSaveBtn) els.skillImportSaveBtn.disabled = true;
+  parsedImportRecords = [];
+  parsedImportSqliteData = null;
+  switchImportTab("excel");
+  loadSqliteProfiles();
+  els.skillImportDialog?.showModal();
+}
+
+async function analyzeImeImportFile(file) {
+  if (!file) return;
+  const prevBtn = document.getElementById("skillImportPrevBtn");
+  
+  if (els.skillImportPreviewArea) els.skillImportPreviewArea.style.display = "flex";
+  if (els.skillImportPreviewTable) {
+    els.skillImportPreviewTable.innerHTML = `
+      <tr>
+        <td colspan="6" class="skill-import-loading">
+          <div class="skill-import-loading-spinner"></div>
+          <span>Dosya analiz ediliyor, lütfen bekleyin...</span>
+        </td>
+      </tr>
+    `;
+  }
+  if (els.skillImportSaveBtn) els.skillImportSaveBtn.disabled = true;
+  if (els.skillImportStats) els.skillImportStats.textContent = "";
+  
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    
+    const knownTeachers = skillState.teacherPool.map(t => t.name);
+    formData.append("knownTeachers", JSON.stringify(knownTeachers));
+    
+    const response = await fetch("/api/import-ime-data", {
+      method: "POST",
+      body: formData
+    });
+    
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(errText || "Sunucu hatası");
+    }
+    
+    const result = await response.json();
+    if (result.error) {
+      throw new Error(result.error);
+    }
+    
+    parsedImportRecords = result.records || [];
+    
+    if (parsedImportRecords.length === 0) {
+      if (els.skillImportPreviewTable) {
+        els.skillImportPreviewTable.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 20px; color: var(--danger);">
+              Seçilen dosyada geçerli öğrenci veya işletme verisi bulunamadı.
+            </td>
+          </tr>
+        `;
+      }
+      if (els.skillImportStats) els.skillImportStats.textContent = "Sonuç: 0 kayıt bulundu.";
+      return;
+    }
+    
+    const uniqueStudents = new Set(parsedImportRecords.map(r => r.student_name).filter(Boolean));
+    const uniqueBusinesses = new Set(parsedImportRecords.map(r => r.business_name).filter(Boolean));
+    const uniqueTeachers = new Set(parsedImportRecords.map(r => r.coordinator_name).filter(Boolean));
+    
+    if (els.skillImportStats) {
+      els.skillImportStats.innerHTML = `
+        <div class="skill-import-success-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.15); padding: 6px 12px; border-radius: 6px; color: #10b981; font-weight: bold; font-size: 0.85rem;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span>✓</span> Dosya Analizi Başarılı!
+          </div>
+          <div style="font-size: 0.78rem; font-weight: normal; color: var(--muted);">
+            İçe aktarılmaya hazır veriler aşağıda listelenmiştir.
+          </div>
+        </div>
+        <div class="skill-import-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 15px;">
+          <div class="skill-import-stat-card" style="padding: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Toplam Öğrenci</div>
+            <div style="font-size: 1.35rem; font-weight: 800; color: var(--accent); margin-top: 4px;">${uniqueStudents.size}</div>
+          </div>
+          <div class="skill-import-stat-card" style="padding: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">İşletme</div>
+            <div style="font-size: 1.35rem; font-weight: 800; color: var(--accent); margin-top: 4px;">${uniqueBusinesses.size}</div>
+          </div>
+          <div class="skill-import-stat-card" style="padding: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Öğretmen</div>
+            <div style="font-size: 1.35rem; font-weight: 800; color: var(--accent); margin-top: 4px;">${uniqueTeachers.size}</div>
+          </div>
+        </div>
+      `;
+    }
+    
+    if (els.skillImportPreviewTable) {
+      els.skillImportPreviewTable.innerHTML = parsedImportRecords.map(r => `
+        <tr>
+          <td>${escapeHtml(r.student_no || "-")}</td>
+          <td><strong>${escapeHtml(r.student_name || "-")}</strong></td>
+          <td>${escapeHtml(r.class_name || "-")}</td>
+          <td>${escapeHtml(r.field || "-")}</td>
+          <td>${escapeHtml(r.business_name || "-")}</td>
+          <td>${escapeHtml(r.coordinator_name || "-")}</td>
+        </tr>
+      `).join("");
+    }
+    
+    if (els.skillImportSaveBtn) els.skillImportSaveBtn.disabled = false;
+    
+  } catch (error) {
+    showToast(`Analiz hatası: ${error.message}`, "error");
+    if (els.skillImportPreviewTable) {
+      els.skillImportPreviewTable.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 20px; color: var(--danger);">
+            Hata: ${escapeHtml(error.message)}
+          </td>
+        </tr>
+      `;
+    }
+  } finally {
+    if (prevBtn) prevBtn.disabled = false;
+  }
+}
+
+function saveImeImportedData(event) {
+  event.preventDefault();
+  
+  if (activeImportTab === "sqlite") {
+    if (!parsedImportSqliteData) return;
+    
+    // Replace active profile state collections
+    skillState.school = parsedImportSqliteData.school || skillState.school;
+    skillState.schoolRecords = parsedImportSqliteData.schoolRecords || [];
+    skillState.teacherPool = parsedImportSqliteData.teacherPool || [];
+    skillState.fields = parsedImportSqliteData.fields || [];
+    skillState.businesses = parsedImportSqliteData.businesses || [];
+    skillState.students = parsedImportSqliteData.students || [];
+    skillState.coordinators = parsedImportSqliteData.coordinators || [];
+    skillState.holidays = parsedImportSqliteData.holidays || [];
+    skillState.absenceRecords = parsedImportSqliteData.absenceRecords || {};
+    
+    saveSkillProfileStore();
+    saveState({ sync: true });
+    renderSkillModule();
+    
+    showToast("Masaüstü SQLite veritabanı başarıyla içe aktarıldı.", "success");
+    els.skillImportDialog?.close();
+    return;
+  }
+
+  if (parsedImportRecords.length === 0) return;
+  
+  let addedCount = 0;
+  
+  parsedImportRecords.forEach(rec => {
+    let bizName = (rec.business_name || "Belirtilmedi").trim();
+    let biz = skillState.businesses.find(b => b.name.toLowerCase() === bizName.toLowerCase());
+    if (!biz) {
+      biz = {
+        id: uid("biz"),
+        name: bizName,
+        phone: rec.business_phone || "",
+        address: rec.business_address || "",
+        group: "1"
+      };
+      skillState.businesses.push(biz);
+    } else {
+      biz.phone = biz.phone || rec.business_phone || "";
+      biz.address = biz.address || rec.business_address || "";
+    }
+    
+    let teacherName = (rec.coordinator_name || "").trim().toUpperCase();
+    if (teacherName) {
+      let teacher = skillState.teacherPool.find(t => t.name.toLowerCase() === teacherName.toLowerCase());
+      if (!teacher) {
+        teacher = {
+          id: uid("teacher"),
+          name: teacherName
+        };
+        skillState.teacherPool.push(teacher);
+      }
+    }
+    
+    let stuNo = (rec.student_no || "").trim();
+    let stuName = (rec.student_name || "").trim();
+    let student = skillState.students.find(s => 
+      (stuNo && s.no === stuNo) || 
+      (s.name.toLowerCase() === stuName.toLowerCase())
+    );
+    
+    let days = rec.days || "Pzt, Sal";
+    if (!student) {
+      student = {
+        id: uid("stu"),
+        no: stuNo,
+        name: stuName,
+        className: rec.class_name || "12/A",
+        field: rec.field || "Belirtilmedi",
+        businessId: biz.id,
+        days: days,
+        active: true
+      };
+      skillState.students.push(student);
+      addedCount++;
+    } else {
+      student.no = stuNo || student.no;
+      student.name = stuName || student.name;
+      student.className = rec.class_name || student.className;
+      student.field = rec.field || student.field;
+      student.businessId = biz.id;
+      student.days = days;
+    }
+    
+    if (teacherName) {
+      let coord = skillState.coordinators.find(c => 
+        c.teacher.toLowerCase() === teacherName.toLowerCase() && 
+        c.businessId === biz.id
+      );
+      if (!coord) {
+        coord = {
+          id: uid("coord"),
+          teacher: teacherName,
+          businessId: biz.id,
+          day: ""
+        };
+        skillState.coordinators.push(coord);
+      }
+    }
+  });
+  
+  saveSkillProfileStore();
+  saveState({ sync: true });
+  renderSkillModule();
+  
+  showToast(`${addedCount} yeni öğrenci ve eşleştirmeleri sisteme aktarıldı.`, "success");
+  els.skillImportDialog?.close();
+}
+
+if (els.skillImportDataBtn) els.skillImportDataBtn.addEventListener("click", openSkillImportDialog);
+if (els.skillImportCloseBtn) els.skillImportCloseBtn.addEventListener("click", () => els.skillImportDialog?.close());
+if (els.skillImportCancelBtn) els.skillImportCancelBtn.addEventListener("click", () => els.skillImportDialog?.close());
+if (els.skillImportFileInput) els.skillImportFileInput.addEventListener("change", updateImportNextBtnState);
+if (els.skillImportForm) els.skillImportForm.addEventListener("submit", saveImeImportedData);
+
+document.getElementById("skillImportTabExcel")?.addEventListener("click", () => switchImportTab("excel"));
+document.getElementById("skillImportTabSqlite")?.addEventListener("click", () => switchImportTab("sqlite"));
+document.getElementById("skillImportSqliteSelect")?.addEventListener("change", updateImportNextBtnState);
+document.getElementById("skillImportNextBtn")?.addEventListener("click", handleImportNextStep);
+document.getElementById("skillImportPrevBtn")?.addEventListener("click", handleImportPrevStep);
+
+if (els.skillImeProfileBtn) els.skillImeProfileBtn.addEventListener("click", openSkillImeProfileDialog);
+if (els.skillImeProfileCloseBtn) els.skillImeProfileCloseBtn.addEventListener("click", () => els.skillImeProfileDialog?.close());
+if (els.skillImeProfileNewBtn) els.skillImeProfileNewBtn.addEventListener("click", clearSkillImeProfileForm);
+if (els.skillImeProfileDeleteBtn) els.skillImeProfileDeleteBtn.addEventListener("click", deleteSkillImeProfile);
+if (els.skillImeProfileForm) els.skillImeProfileForm.addEventListener("submit", saveSkillImeProfile);
+if (els.skillImeProfileList) {
+  els.skillImeProfileList.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-skill-ime-profile]");
+    if (!button) return;
+    switchSkillImeProfile(button.dataset.skillImeProfile);
+  });
+}
+document.addEventListener("mousedown", (event) => {
+  if (event.target.closest("#skillGlobalSearchBox")) return;
+  closeSkillGlobalSearchResults();
+});
+
+els.skillNavButtons.forEach((button) => {
+  button.addEventListener("click", () => setSkillView(button.dataset.skillView));
+});
+if (els.skillNavMobileSelect) {
+  els.skillNavMobileSelect.addEventListener("change", (e) => setSkillView(e.target.value));
+}
+const skillDataMenuToggle = document.querySelector(".skill-nav-parent");
+const skillDataSubnav = document.querySelector(".skill-subnav");
+if (skillDataMenuToggle && skillDataSubnav) {
+  skillDataMenuToggle.setAttribute("aria-expanded", skillDataSubnav.hidden ? "false" : "true");
+  skillDataMenuToggle.addEventListener("click", () => {
+    const willOpen = skillDataSubnav.hidden;
+    skillDataSubnav.hidden = !willOpen;
+    skillDataMenuToggle.setAttribute("aria-expanded", willOpen ? "true" : "false");
+  });
+}
+els.skillQuickButtons.forEach((button) => {
+  button.addEventListener("click", () => setSkillView(button.dataset.skillViewTarget));
+});
+/* Devamsızlık İşleme Paneli Logic */
+let tempAbsenceRecords = {};
+let isAbsenceDragging = false;
+let absenceSelectedCells = [];
+
+function refreshAbsenceEntryDialogDatesAndGrid() {
+  const { startDate, endDate } = getReportDateRange();
+  const monthText = new Date(`${startDate}T00:00:00`).toLocaleDateString("tr-TR", { month: "long", year: "numeric" });
+  
+  if (els.skillAbsenceEntryMonthText) els.skillAbsenceEntryMonthText.textContent = monthText;
+  if (els.skillAbsenceEntryRangeText) els.skillAbsenceEntryRangeText.textContent = `${formatSkillDate(startDate)} - ${formatSkillDate(endDate)}`;
+
+  renderAbsenceEntryGrid();
+}
+
+function openSkillAbsenceEntryDialog() {
+  const selectedBusinessIds = getSelectedReportBusinessIds() || [];
+  let activeStudents = [];
+  if (selectedBusinessIds.length > 0) {
+    activeStudents = skillState.students.filter(student => selectedBusinessIds.includes(student.businessId));
+  } else {
+    activeStudents = skillState.students || [];
+  }
+  if (!activeStudents.length) {
+    showToast("Kayıtlı öğrenci bulunamadı.", "warning");
+    return;
+  }
+
+  // Load state
+  tempAbsenceRecords = structuredClone(skillState.absenceRecords || {});
+
+  // Populate students dropdown selector
+  if (els.skillAbsenceEntryStudentSelect) {
+    els.skillAbsenceEntryStudentSelect.innerHTML = `<option value="all">Tüm Öğrenciler</option>`;
+    activeStudents.forEach(student => {
+      const biz = getSkillBusiness(student.businessId);
+      const label = `${student.no || "-"} - ${student.name} (${biz?.name || "İşletmesiz"})`;
+      const option = document.createElement("option");
+      option.value = student.id;
+      option.textContent = label;
+      els.skillAbsenceEntryStudentSelect.appendChild(option);
+    });
+  }
+
+  if (els.skillAbsenceSearchInput) {
+    els.skillAbsenceSearchInput.value = "";
+  }
+
+  // Draw the grid
+  refreshAbsenceEntryDialogDatesAndGrid();
+
+  // Reset status bar
+  if (els.skillAbsenceStatusStudentName) els.skillAbsenceStatusStudentName.textContent = "-";
+  if (els.skillAbsenceStatusCellCount) els.skillAbsenceStatusCellCount.textContent = "0";
+
+  // Bind dropdown filter
+  els.skillAbsenceEntryStudentSelect.onchange = renderAbsenceEntryGrid;
+
+  // Show dialog
+  if (els.skillAbsenceEntryDialog) els.skillAbsenceEntryDialog.showModal();
+}
+
+function renderAbsenceEntryGrid() {
+  const selectedBusinessIds = getSelectedReportBusinessIds() || [];
+  let activeStudents = [];
+  if (selectedBusinessIds.length > 0) {
+    activeStudents = skillState.students.filter(student => selectedBusinessIds.includes(student.businessId));
+  } else {
+    activeStudents = skillState.students || [];
+  }
+  const studentFilter = els.skillAbsenceEntryStudentSelect?.value || "all";
+  
+  let studentsToRender = studentFilter === "all"
+    ? activeStudents
+    : activeStudents.filter(s => s.id === studentFilter);
+
+  const query = (els.skillAbsenceSearchInput?.value || "").toLocaleLowerCase("tr-TR").trim();
+  if (query) {
+    studentsToRender = studentsToRender.filter(s => {
+      const name = (s.name || "").toLocaleLowerCase("tr-TR");
+      const no = (s.no || "").toLocaleLowerCase("tr-TR");
+      return name.includes(query) || no.includes(query);
+    });
+  }
+
+  const { startDate, endDate } = getReportDateRange();
+  const dates = getDatesBetween(startDate, endDate);
+
+  // 1. Day names header row
+  const dayNamesRow = els.skillAbsenceGridDayNames;
+  if (dayNamesRow) {
+    let html = `<th rowspan="2" style="width: 180px; text-align: left; padding-left: 10px;">Öğrenci</th><th rowspan="2" style="width: 50px;">Satır</th>`;
+    const dayNamesShort = ["Pzr", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"];
+    dates.forEach(date => {
+      const isWE = date.getDay() === 0 || date.getDay() === 6;
+      const isHol = isReportHoliday(date);
+      const label = dayNamesShort[date.getDay()];
+      html += `<th class="${isWE ? "is-weekend" : ""} ${isHol ? "is-holiday" : ""}">${label}</th>`;
+    });
+    dayNamesRow.innerHTML = html;
+  }
+
+  // 2. Day numbers header row
+  const dayNumsRow = els.skillAbsenceGridDayNumbers;
+  if (dayNumsRow) {
+    let html = "";
+    dates.forEach(date => {
+      const isWE = date.getDay() === 0 || date.getDay() === 6;
+      const isHol = isReportHoliday(date);
+      html += `<th class="${isWE ? "is-weekend" : ""} ${isHol ? "is-holiday" : ""}">${date.getDate()}</th>`;
+    });
+    dayNumsRow.innerHTML = html;
+  }
+
+  // 3. Grid body rows
+  const gridBody = els.skillAbsenceGridBody;
+  if (gridBody) {
+    let html = "";
+    studentsToRender.forEach(student => {
+      const schoolDays = String(student.days || "").split(",").map((day) => day.trim()).filter(Boolean);
+      
+      // Row S (AM)
+      let sHtml = `<tr>
+        <td class="student-col" rowspan="2">${escapeHtml(student.name)}<br><small style="font-weight: normal; color: var(--muted);">${escapeHtml(student.no || "-")}</small></td>
+        <td class="row-type-col">S</td>`;
+      dates.forEach(date => {
+        const isWE = date.getDay() === 0 || date.getDay() === 6;
+        const isHol = isReportHolidayForStudent(date, student);
+        const dateStr = toSkillIsoDate(date);
+        const { schoolType, summerStartDate, summerEndDate } = getStudentSchoolConfig(student);
+        const isSummer = (summerStartDate && summerEndDate && dateStr >= summerStartDate && dateStr <= summerEndDate);
+        const isSch = !isWE && !isHol && (!isSummer || schoolType !== "mesem") && schoolDays.includes(getShortSkillDay(date));
+        const cellVal = getGridSymbolForEntry(student, date, "am");
+        sHtml += `<td class="absence-cell ${isWE ? "is-weekend" : ""} ${isHol ? "is-holiday" : ""} ${isSch ? "is-school-day" : ""}" 
+                      data-student-id="${student.id}" 
+                      data-student-name="${escapeHtml(student.name)}" 
+                      data-date="${dateStr}" 
+                      data-session="am">${cellVal}</td>`;
+      });
+      sHtml += `</tr>`;
+
+      // Row Ö (PM)
+      let oHtml = `<tr>
+        <td class="row-type-col">Ö</td>`;
+      dates.forEach(date => {
+        const isWE = date.getDay() === 0 || date.getDay() === 6;
+        const isHol = isReportHolidayForStudent(date, student);
+        const dateStr = toSkillIsoDate(date);
+        const { schoolType, summerStartDate, summerEndDate } = getStudentSchoolConfig(student);
+        const isSummer = (summerStartDate && summerEndDate && dateStr >= summerStartDate && dateStr <= summerEndDate);
+        const isSch = !isWE && !isHol && (!isSummer || schoolType !== "mesem") && schoolDays.includes(getShortSkillDay(date));
+        const cellVal = getGridSymbolForEntry(student, date, "pm");
+        oHtml += `<td class="absence-cell ${isWE ? "is-weekend" : ""} ${isHol ? "is-holiday" : ""} ${isSch ? "is-school-day" : ""}" 
+                      data-student-id="${student.id}" 
+                      data-student-name="${escapeHtml(student.name)}" 
+                      data-date="${dateStr}" 
+                      data-session="pm">${cellVal}</td>`;
+      });
+      oHtml += `</tr>`;
+
+      html += sHtml + oHtml;
+    });
+    gridBody.innerHTML = html;
+
+    // Bind drag select events
+    setupGridDragSelect();
+  }
+}
+
+function getGridSymbolForEntry(student, date, session) {
+  const dateStr = toSkillIsoDate(date);
+  const dateValue = dateStr;
+  
+  const { schoolType, summerStartDate, summerEndDate } = getStudentSchoolConfig(student);
+  
+  if (summerStartDate && summerEndDate) {
+    const isSummer = (dateValue >= summerStartDate && dateValue <= summerEndDate);
+    if (schoolType === "lise") {
+      if (isSummer) {
+        return "";
+      }
+    } else if (schoolType === "mesem") {
+      if (isSummer) {
+        if (tempAbsenceRecords[student.id]?.[dateStr]?.[session] !== undefined) {
+          return tempAbsenceRecords[student.id][dateStr][session];
+        }
+        const matchingHolidays = skillState.holidays.filter((holiday) => dateValue >= holiday.startDate && dateValue <= (holiday.endDate || holiday.startDate));
+        const sessionHolidays = matchingHolidays.filter((holiday) => isHolidaySession(holiday, dateValue, session));
+        if (sessionHolidays.some((holiday) => !holiday.isSchoolBreak)) return "T";
+        if (date.getDay() === 0 || date.getDay() === 6) return "";
+        return els.skillAbsenceAutoFillX?.checked === false ? "" : "X";
+      }
+    }
+  }
+
+  if (date.getDay() === 0 || date.getDay() === 6) return "";
+
+  const matchingHolidays = skillState.holidays.filter((holiday) => dateStr >= holiday.startDate && dateStr <= (holiday.endDate || holiday.startDate));
+  const sessionHolidays = matchingHolidays.filter((holiday) => isHolidaySession(holiday, dateStr, session));
+  if (sessionHolidays.some((holiday) => !isSkillSchoolBreakForMesem(holiday, student))) return "T";
+  if (sessionHolidays.some((holiday) => isSkillSchoolBreakForMesem(holiday, student))) return getSkillMesemBreakSymbol(date);
+
+  const schoolDays = String(student.days || "").split(",").map((day) => day.trim()).filter(Boolean);
+  const isSchoolDay = schoolDays.includes(getShortSkillDay(date));
+  if (isSchoolDay) return els.skillAbsenceAutoFillO?.checked === false ? "" : "O";
+
+  if (tempAbsenceRecords[student.id]?.[dateStr]?.[session] !== undefined) {
+    return tempAbsenceRecords[student.id][dateStr][session];
+  }
+
+  return els.skillAbsenceAutoFillX?.checked === false ? "" : "X";
+}
+
+function isReportHoliday(date) {
+  const dateValue = toSkillIsoDate(date);
+  return skillState.holidays.some((holiday) => (
+    dateValue >= holiday.startDate && dateValue <= (holiday.endDate || holiday.startDate) && !isSkillSchoolBreakForMesem(holiday)
+  ));
+}
+
+function isReportHolidayForStudent(date, student) {
+  const dateValue = toSkillIsoDate(date);
+  const { schoolType, summerStartDate, summerEndDate } = getStudentSchoolConfig(student);
+  
+  if (summerStartDate && summerEndDate) {
+    const isSummer = (dateValue >= summerStartDate && dateValue <= summerEndDate);
+    if (schoolType === "lise") {
+      if (isSummer) {
+        return true;
+      }
+    }
+  }
+  
+  return skillState.holidays.some((holiday) => (
+    dateValue >= holiday.startDate && dateValue <= (holiday.endDate || holiday.startDate) && !isSkillSchoolBreakForMesem(holiday, student)
+  ));
+}
+
+function setupGridDragSelect() {
+  const cells = els.skillAbsenceGridBody.querySelectorAll("td.absence-cell");
+  
+  cells.forEach(cell => {
+    if (
+      cell.classList.contains("is-weekend") ||
+      cell.classList.contains("is-holiday") ||
+      cell.classList.contains("is-school-day")
+    ) {
+      return;
+    }
+
+    cell.addEventListener("mousedown", (e) => {
+      isAbsenceDragging = true;
+      clearAbsenceSelection();
+      absenceSelectedCells.push(cell);
+      cell.classList.add("is-selected");
+      
+      if (els.skillAbsenceStatusStudentName) els.skillAbsenceStatusStudentName.textContent = cell.dataset.studentName;
+      if (els.skillAbsenceStatusCellCount) els.skillAbsenceStatusCellCount.textContent = "1";
+      
+      e.preventDefault();
+    });
+
+    cell.addEventListener("mouseenter", () => {
+      if (isAbsenceDragging) {
+        if (!absenceSelectedCells.includes(cell)) {
+          absenceSelectedCells.push(cell);
+          cell.classList.add("is-selected");
+          if (els.skillAbsenceStatusCellCount) els.skillAbsenceStatusCellCount.textContent = String(absenceSelectedCells.length);
+        }
+      }
+    });
+  });
+}
+
+function clearAbsenceSelection() {
+  absenceSelectedCells.forEach(cell => cell.classList.remove("is-selected"));
+  absenceSelectedCells = [];
+}
+
+// Global mouse up to handle drag release
+document.addEventListener("mouseup", (e) => {
+  if (isAbsenceDragging) {
+    isAbsenceDragging = false;
+    const lastCell = absenceSelectedCells[absenceSelectedCells.length - 1];
+    if (lastCell && els.skillAbsenceOverlayMenu && els.skillAbsenceEntryDialog) {
+      const rect = lastCell.getBoundingClientRect();
+      const bodyEl = els.skillAbsenceEntryDialog.querySelector(".skill-absence-body");
+      if (bodyEl) {
+        const bodyRect = bodyEl.getBoundingClientRect();
+        els.skillAbsenceOverlayMenu.style.left = `${rect.left - bodyRect.left}px`;
+        els.skillAbsenceOverlayMenu.style.top = `${rect.bottom - bodyRect.top + 5}px`;
+        els.skillAbsenceOverlayMenu.hidden = false;
+        
+        // Prevent the immediate click event from hiding it
+        els.skillAbsenceOverlayMenu.dataset.justShown = "true";
+        setTimeout(() => {
+          if (els.skillAbsenceOverlayMenu) {
+            delete els.skillAbsenceOverlayMenu.dataset.justShown;
+          }
+        }, 50);
+      }
+    }
+  }
+});
+
+// Hide overlay click handler
+document.addEventListener("click", (e) => {
+  if (els.skillAbsenceOverlayMenu && !els.skillAbsenceOverlayMenu.hidden) {
+    if (els.skillAbsenceOverlayMenu.dataset.justShown === "true") {
+      return;
+    }
+    if (!e.target.closest("td.absence-cell") && !e.target.closest(".skill-absence-overlay-menu")) {
+      els.skillAbsenceOverlayMenu.hidden = true;
+      clearAbsenceSelection();
+    }
+  }
+});
+
+function initAbsenceEntryEventBindings() {
+  if (els.skillAbsenceOverlayMenu) {
+    els.skillAbsenceOverlayMenu.addEventListener("click", (event) => {
+      const btn = event.target.closest("button");
+      if (!btn) return;
+      const val = btn.dataset.absenceValue;
+      const symbol = val === "clear" ? "" : val;
+
+      absenceSelectedCells.forEach(cell => {
+        const studentId = cell.dataset.studentId;
+        const dateStr = cell.dataset.date;
+        const session = cell.dataset.session;
+
+        if (!tempAbsenceRecords[studentId]) tempAbsenceRecords[studentId] = {};
+        if (!tempAbsenceRecords[studentId][dateStr]) tempAbsenceRecords[studentId][dateStr] = {};
+        tempAbsenceRecords[studentId][dateStr][session] = symbol;
+        cell.textContent = symbol;
+      });
+
+      clearAbsenceSelection();
+      els.skillAbsenceOverlayMenu.hidden = true;
+    });
+  }
+
+  if (els.skillAbsenceSearchInput) {
+    els.skillAbsenceSearchInput.addEventListener("input", () => {
+      renderAbsenceEntryGrid();
+    });
+  }
+
+  if (els.skillAbsenceClearBtn) {
+    els.skillAbsenceClearBtn.addEventListener("click", () => {
+      const val = els.skillAbsenceEntryStudentSelect?.value || "all";
+      if (val === "all") {
+        const selectedBusinessIds = getSelectedReportBusinessIds() || [];
+        let activeStudents = [];
+        if (selectedBusinessIds.length > 0) {
+          activeStudents = skillState.students.filter(student => selectedBusinessIds.includes(student.businessId));
+        } else {
+          activeStudents = skillState.students || [];
+        }
+        activeStudents.forEach(student => {
+          delete tempAbsenceRecords[student.id];
+        });
+      } else {
+        delete tempAbsenceRecords[val];
+      }
+      renderAbsenceEntryGrid();
+      showToast("Seçilen öğrenci(ler) için elle girilen değerler sıfırlandı.", "info");
+    });
+  }
+
+  if (els.skillAbsenceClearAllBtn) {
+    els.skillAbsenceClearAllBtn.addEventListener("click", async () => {
+      if (!await appConfirm("Bu aya ait tüm manuel devamsızlık girişlerini temizlemek istediğinize emin misiniz?", { title: "Devamsızlıkları temizle", okText: "Temizle" })) return;
+      tempAbsenceRecords = {};
+      renderAbsenceEntryGrid();
+      showToast("Tüm devamsızlık girişleri temizlendi.", "info");
+    });
+  }
+
+  if (els.skillAbsenceSaveBtn) {
+    els.skillAbsenceSaveBtn.addEventListener("click", () => {
+      skillState.absenceRecords = tempAbsenceRecords;
+      saveSkillState();
+      showToast("Devamsızlık girişleri başarıyla kaydedildi.");
+      els.skillAbsenceEntryDialog?.close();
+      
+      // Force preview redraw
+      previewSkillAbsenceReport();
+    });
+  }
+
+  if (els.skillAbsencePrevMonthBtn) {
+    els.skillAbsencePrevMonthBtn.addEventListener("click", () => {
+      moveSkillReportMonth(-1);
+      refreshAbsenceEntryDialogDatesAndGrid();
+    });
+  }
+
+  if (els.skillAbsenceNextMonthBtn) {
+    els.skillAbsenceNextMonthBtn.addEventListener("click", () => {
+      moveSkillReportMonth(1);
+      refreshAbsenceEntryDialogDatesAndGrid();
+    });
+  }
+
+  if (els.skillAbsenceAutoFillX) {
+    els.skillAbsenceAutoFillX.addEventListener("change", () => {
+      renderAbsenceEntryGrid();
+    });
+  }
+
+  if (els.skillAbsenceAutoFillO) {
+    els.skillAbsenceAutoFillO.addEventListener("change", () => {
+      renderAbsenceEntryGrid();
+    });
+  }
+
+  const closeBtns = [els.skillAbsenceCancelBtn, els.skillAbsenceEntryCloseBtn];
+  closeBtns.forEach(btn => {
+    if (btn) {
+      btn.addEventListener("click", () => {
+        els.skillAbsenceEntryDialog?.close();
+      });
+    }
+  });
+}
+
+if (els.skillNewStudentBtn) els.skillNewStudentBtn.addEventListener("click", () => setSkillView("students"));
+if (els.skillAlertList) {
+  els.skillAlertList.addEventListener("click", (event) => {
+    const target = event.target.closest("[data-skill-view-target]");
+    if (target) setSkillView(target.dataset.skillViewTarget);
+  });
+}
+if (els.skillNewSchoolBtn) els.skillNewSchoolBtn.addEventListener("click", clearSkillSchoolForm);
+if (els.skillSaveSchoolBtn) els.skillSaveSchoolBtn.addEventListener("click", saveSkillSchool);
+if (els.skillDeleteSchoolBtn) els.skillDeleteSchoolBtn.addEventListener("click", deleteSelectedSkillSchools);
+if (els.skillSchoolTable) els.skillSchoolTable.addEventListener("click", handleSkillManagedTables);
+if (els.skillNewTeacherBtn) els.skillNewTeacherBtn.addEventListener("click", clearSkillTeacherForm);
+if (els.skillSaveTeacherBtn) els.skillSaveTeacherBtn.addEventListener("click", saveSkillTeacher);
+if (els.skillDeleteTeacherBtn) els.skillDeleteTeacherBtn.addEventListener("click", deleteSelectedSkillTeachers);
+if (els.skillTeacherTable) els.skillTeacherTable.addEventListener("click", handleSkillManagedTables);
+if (els.skillNewFieldBtn) els.skillNewFieldBtn.addEventListener("click", clearSkillFieldForm);
+if (els.skillSaveFieldBtn) els.skillSaveFieldBtn.addEventListener("click", saveSkillField);
+if (els.skillDeleteFieldBtn) els.skillDeleteFieldBtn.addEventListener("click", deleteSelectedSkillFields);
+if (els.skillDeleteAllFieldsBtn) els.skillDeleteAllFieldsBtn.addEventListener("click", deleteAllSkillFields);
+if (els.skillFieldTable) els.skillFieldTable.addEventListener("click", handleSkillManagedTables);
+if (els.skillHolidayForm) els.skillHolidayForm.addEventListener("submit", saveSkillHoliday);
+if (els.skillHolidayYear) els.skillHolidayYear.addEventListener("change", () => {
+  clearSkillHolidayForm();
+  renderSkillHolidays();
+});
+if (els.skillAutoHolidayBtn) els.skillAutoHolidayBtn.addEventListener("click", fillAutomaticSkillHolidays);
+if (els.skillClearHolidayBtn) els.skillClearHolidayBtn.addEventListener("click", clearSkillHolidayForm);
+if (els.skillDeleteSelectedHolidayBtn) els.skillDeleteSelectedHolidayBtn.addEventListener("click", deleteSelectedSkillHolidays);
+if (els.skillDeleteAllHolidayBtn) els.skillDeleteAllHolidayBtn.addEventListener("click", deleteAllSkillHolidays);
+if (els.skillHolidayTable) els.skillHolidayTable.addEventListener("click", handleSkillHolidayTableClick);
+if (els.skillReportCoordinatorFilter) els.skillReportCoordinatorFilter.addEventListener("change", renderSkillReportAssignments);
+if (els.skillReportSearch) els.skillReportSearch.addEventListener("input", renderSkillReportAssignments);
+if (els.skillReportIncludeEmpty) els.skillReportIncludeEmpty.addEventListener("change", renderSkillReportAssignments);
+if (els.skillReportSelectAll) {
+  els.skillReportSelectAll.addEventListener("change", () => {
+    els.skillReportAssignmentList?.querySelectorAll("[data-skill-report-business]").forEach((checkbox) => {
+      checkbox.checked = els.skillReportSelectAll.checked;
+    });
+    runSkillReportPrecheck();
+  });
+}
+if (els.skillReportAssignmentList) els.skillReportAssignmentList.addEventListener("change", runSkillReportPrecheck);
+els.skillReportTabs?.forEach((button) => {
+  button.addEventListener("click", () => setSkillReportType(button.dataset.skillReportTab));
+});
+if (els.skillReportMobileSelect) {
+  els.skillReportMobileSelect.addEventListener("change", (e) => setSkillReportType(e.target.value));
+}
+if (els.skillReportMonthSelect) {
+  els.skillReportMonthSelect.addEventListener("change", () => {
+    setCheckedSkillReportRange("month");
+    syncSkillReportMonthDates();
+    setSkillReportDateInputsEnabled(false);
+    runSkillReportPrecheck();
+  });
+}
+if (els.skillReportPrevMonthBtn) els.skillReportPrevMonthBtn.addEventListener("click", () => moveSkillReportMonth(-1));
+if (els.skillReportNextMonthBtn) els.skillReportNextMonthBtn.addEventListener("click", () => moveSkillReportMonth(1));
+document.querySelectorAll('input[name="skillReportRange"]').forEach((input) => {
+  input.addEventListener("change", syncSkillReportRange);
+});
+if (els.skillReportStartDate) els.skillReportStartDate.addEventListener("change", runSkillReportPrecheck);
+if (els.skillReportEndDate) els.skillReportEndDate.addEventListener("change", runSkillReportPrecheck);
+if (els.skillReportPerPage) els.skillReportPerPage.addEventListener("change", runSkillReportPrecheck);
+if (els.skillMonthlyAutoFill) els.skillMonthlyAutoFill.addEventListener("change", runSkillReportPrecheck);
+if (els.skillMonthlyMasterCert) els.skillMonthlyMasterCert.addEventListener("change", runSkillReportPrecheck);
+if (els.skillTerminationBlank) els.skillTerminationBlank.addEventListener("change", () => {
+  syncTerminationOptionState();
+  runSkillReportPrecheck();
+});
+if (els.skillTerminationTemplate) els.skillTerminationTemplate.addEventListener("change", () => {
+  syncTerminationOptionState();
+  runSkillReportPrecheck();
+});
+if (els.skillTerminationStudent) els.skillTerminationStudent.addEventListener("change", runSkillReportPrecheck);
+if (els.skillTerminationContractDate) els.skillTerminationContractDate.addEventListener("change", runSkillReportPrecheck);
+if (els.skillTerminationCancelDate) els.skillTerminationCancelDate.addEventListener("change", runSkillReportPrecheck);
+if (els.skillTerminationReasons) els.skillTerminationReasons.addEventListener("input", runSkillReportPrecheck);
+if (els.skillTerminationStudentTc) els.skillTerminationStudentTc.addEventListener("input", runSkillReportPrecheck);
+if (els.skillTerminationVeliName) els.skillTerminationVeliName.addEventListener("input", runSkillReportPrecheck);
+if (els.skillTerminationVeliPhone) els.skillTerminationVeliPhone.addEventListener("input", runSkillReportPrecheck);
+if (els.skillTerminationVeliAddress) els.skillTerminationVeliAddress.addEventListener("input", runSkillReportPrecheck);
+if (els.skillTerminationReasonCode) els.skillTerminationReasonCode.addEventListener("change", runSkillReportPrecheck);
+if (els.skillGradeType) els.skillGradeType.addEventListener("change", () => {
+  updateGradeLayoutOptions();
+  runSkillReportPrecheck();
+});
+if (els.skillGradeLayout) els.skillGradeLayout.addEventListener("change", runSkillReportPrecheck);
+if (els.skillGradeTerm) els.skillGradeTerm.addEventListener("change", runSkillReportPrecheck);
+if (els.skillWageMinimumNet) els.skillWageMinimumNet.addEventListener("input", runSkillReportPrecheck);
+if (els.skillWageStudentType) els.skillWageStudentType.addEventListener("change", runSkillReportPrecheck);
+if (els.skillWageManualAbsence) els.skillWageManualAbsence.addEventListener("change", runSkillReportPrecheck);
+if (els.skillWageManualBtn) els.skillWageManualBtn.addEventListener("click", openWageManualDialog);
+if (els.skillWageManualForm) els.skillWageManualForm.addEventListener("submit", saveWageManualAbsences);
+if (els.skillWageManualCloseBtn) els.skillWageManualCloseBtn.addEventListener("click", closeWageManualDialog);
+if (els.skillWageManualCancelBtn) els.skillWageManualCancelBtn.addEventListener("click", closeWageManualDialog);
+if (els.skillWageManualClearBtn) els.skillWageManualClearBtn.addEventListener("click", clearWageManualInputs);
+if (els.skillWageManualTable) els.skillWageManualTable.addEventListener("input", updateWageManualSummary);
+if (els.skillReportPrecheckBtn) els.skillReportPrecheckBtn.addEventListener("click", runSkillReportPrecheck);
+if (els.skillReportPreviewBtn) els.skillReportPreviewBtn.addEventListener("click", previewSkillAbsenceReport);
+if (els.skillReportPreviewCloseBtn) els.skillReportPreviewCloseBtn.addEventListener("click", closeSkillReportPreview);
+if (els.skillReportPrintBtn) els.skillReportPrintBtn.addEventListener("click", printSkillAbsenceReport);
+if (els.skillReportShareBtn) els.skillReportShareBtn.addEventListener("click", shareSkillReport);
+if (els.skillReportZoomInBtn) els.skillReportZoomInBtn.addEventListener("click", () => zoomSkillReport(0.1));
+if (els.skillReportZoomOutBtn) els.skillReportZoomOutBtn.addEventListener("click", () => zoomSkillReport(-0.1));
+
+els.skillStudentForm.addEventListener("submit", saveSkillStudent);
+els.skillBusinessForm.addEventListener("submit", saveSkillBusiness);
+els.skillCoordinatorForm.addEventListener("submit", saveSkillCoordinator);
+els.skillClearStudentBtn.addEventListener("click", clearSkillStudentForm);
+if (els.skillToggleStudentStatusBtn) els.skillToggleStudentStatusBtn.addEventListener("click", toggleSelectedSkillStudentStatus);
+if (els.skillActivateStudentBtn) els.skillActivateStudentBtn.addEventListener("click", () => setSelectedSkillStudentStatus(true));
+if (els.skillDeleteSelectedStudentBtn) els.skillDeleteSelectedStudentBtn.addEventListener("click", deleteSelectedSkillStudents);
+if (els.skillDeleteAllStudentBtn) els.skillDeleteAllStudentBtn.addEventListener("click", deleteAllSkillStudents);
+els.skillClearBusinessBtn.addEventListener("click", clearSkillBusinessForm);
+if (els.skillDeleteSelectedBusinessBtn) els.skillDeleteSelectedBusinessBtn.addEventListener("click", deleteSelectedSkillBusinesses);
+if (els.skillDeleteAllBusinessBtn) els.skillDeleteAllBusinessBtn.addEventListener("click", deleteAllSkillBusinesses);
+if (els.skillClearCoordinatorBtn) els.skillClearCoordinatorBtn.addEventListener("click", clearSkillCoordinatorForm);
+if (els.skillDeleteSelectedCoordinatorBtn) els.skillDeleteSelectedCoordinatorBtn.addEventListener("click", deleteSelectedSkillCoordinators);
+if (els.skillDeleteAllCoordinatorBtn) els.skillDeleteAllCoordinatorBtn.addEventListener("click", deleteAllSkillCoordinators);
+els.skillStudentSearch.addEventListener("input", renderSkillStudents);
+if (els.skillStudentClassFilter) els.skillStudentClassFilter.addEventListener("change", renderSkillStudents);
+if (els.skillStudentBusinessFilter) els.skillStudentBusinessFilter.addEventListener("change", renderSkillStudents);
+if (els.skillStudentStatusFilter) els.skillStudentStatusFilter.addEventListener("change", renderSkillStudents);
+if (els.skillStudentDayPicker) {
+  els.skillStudentDayPicker.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-skill-student-day]");
+    if (!button) return;
+    const days = (els.skillStudentDays.value || "").split(",").map((day) => day.trim()).filter(Boolean);
+    const nextDays = days.includes(button.dataset.skillStudentDay)
+      ? days.filter((day) => day !== button.dataset.skillStudentDay)
+      : [...days, button.dataset.skillStudentDay];
+    setSkillStudentDays(nextDays.join(", "));
+  });
+}
+if (els.skillClassDayPicker) {
+  els.skillClassDayPicker.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-skill-class-day]");
+    if (!button) return;
+    button.classList.toggle("is-active");
+  });
+}
+if (els.skillClassDaySelect) {
+  els.skillClassDaySelect.addEventListener("change", () => {
+    setSkillClassDayPickerDays(getClassDaysFromStudents(els.skillClassDaySelect.value));
+    updateSkillClassDaySummary();
+  });
+}
+if (els.skillAssignClassDaysBtn) els.skillAssignClassDaysBtn.addEventListener("click", openSkillClassDayDialog);
+if (els.skillClassDayForm) els.skillClassDayForm.addEventListener("submit", assignDaysToClass);
+if (els.skillClassDayCloseBtn) els.skillClassDayCloseBtn.addEventListener("click", closeSkillClassDayDialog);
+if (els.skillClassDayCancelBtn) els.skillClassDayCancelBtn.addEventListener("click", closeSkillClassDayDialog);
+if (els.skillStudentStatusForm) els.skillStudentStatusForm.addEventListener("submit", saveSkillStudentStatus);
+if (els.skillStatusStudentSearch) els.skillStatusStudentSearch.addEventListener("input", renderSkillStatusStudentResults);
+if (els.skillStatusStudentResults) {
+  els.skillStatusStudentResults.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-skill-status-search-student]");
+    if (!button) return;
+    selectSkillStatusStudent(button.dataset.skillStatusSearchStudent);
+  });
+}
+if (els.skillStatusStudentSelect) els.skillStatusStudentSelect.addEventListener("change", updatePendingStatusStudentFromSelect);
+if (els.skillStatusCloseBtn) els.skillStatusCloseBtn.addEventListener("click", closeSkillStudentStatusDialog);
+if (els.skillStatusCancelBtn) els.skillStatusCancelBtn.addEventListener("click", closeSkillStudentStatusDialog);
+els.skillStudentTable.addEventListener("click", handleSkillTableClick);
+els.skillStudentTable.addEventListener("change", updateSkillStudentActionState);
+els.skillBusinessTable.addEventListener("click", handleSkillTableClick);
+els.skillCoordinatorTable.addEventListener("click", handleSkillTableClick);
+
+// Initialize Devamsızlık Girişi panel bindings
+if (els.skillAbsenceEntryBtn) els.skillAbsenceEntryBtn.addEventListener("click", openSkillAbsenceEntryDialog);
+initAbsenceEntryEventBindings();
+window.SkillTrainingModule = {
+  get shell() {
+    return els.skillShell;
+  },
+  get state() {
+    return skillState;
+  },
+  render() {
+    return renderSkillModule();
+  },
+  setView(view) {
+    return setSkillView(view);
+  },
+  renderProfileButton() {
+    return renderSkillProfileButton();
+  }
+};

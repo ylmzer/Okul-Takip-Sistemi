@@ -1,0 +1,10 @@
+supabase-config.js
+.vercel/
+node_modules/
+.cache/
+__pycache__/
+outputs/
+*.rar
+*.zip
+*.log
+nul
