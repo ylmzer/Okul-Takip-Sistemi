@@ -1627,7 +1627,7 @@ function renderSkillProfileButton() {
   els.skillImeProfileBtn.title = `${profile.name || "İME Profili"} · ${label}`;
 }
 
-function handleLocalRegister(event) {
+async function handleLocalRegister(event) {
   event.preventDefault();
   const name = els.registerNameInput.value.trim();
   const email = normalizeEmail(els.registerEmailInput.value);
@@ -1636,6 +1636,71 @@ function handleLocalRegister(event) {
     showToast("Ad soyad, geçerli e-posta ve en az 4 karakter şifre girin.", "warning");
     return;
   }
+
+  let landingModule = "";
+  try {
+    const globalSettings = JSON.parse(localStorage.getItem("sorubank:global-settings:v1") || "{}");
+    landingModule = globalSettings.landingModule || "";
+  } catch (e) {}
+
+  // 1. Bulut (Supabase) yapılandırılmışsa önce Supabase ile kaydet
+  if (cloudState.client) {
+    try {
+      const { data, error } = await cloudState.client.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { name: name }
+        }
+      });
+      if (error) throw error;
+
+      if (data?.user) {
+        // Yerel kullanıcı listesinde yoksa kaydet (offline destek için)
+        const users = loadLocalUsers();
+        const newUser = {
+          id: data.user.id || uid("user"),
+          name,
+          email,
+          password,
+          createdAt: new Date().toISOString()
+        };
+        if (!users.some((u) => normalizeEmail(u.email) === email)) {
+          users.push(newUser);
+          saveLocalUsers(users);
+        }
+
+        if (data.session) {
+          cloudState.session = data.session;
+          renderCloudStatus();
+          saveLocalSession({
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email,
+            activeModule: landingModule,
+            createdAt: new Date().toISOString()
+          });
+          showToast("Hesap oluşturuldu ve giriş yapıldı.");
+          await pushCloudState();
+        } else {
+          showToast("Hesap oluşturuldu. Supabase e-posta onayı açıksa gelen kutusunu kontrol edin.", "info", "Kayıt Yapıldı");
+          // E-posta onayı gerekiyorsa yerel olarak yine de giriş yaptıralım ki offline başlayabilsinler
+          saveLocalSession({
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email,
+            activeModule: landingModule,
+            createdAt: new Date().toISOString()
+          });
+        }
+        return;
+      }
+    } catch (err) {
+      console.warn("Supabase registration failed, falling back to local:", err.message);
+    }
+  }
+
+  // 2. Yerel Kayıt
   const users = loadLocalUsers();
   if (users.some((user) => normalizeEmail(user.email) === email)) {
     showToast("Bu e-posta ile kayıt zaten var. Giriş yapabilirsiniz.", "warning");
@@ -1652,11 +1717,6 @@ function handleLocalRegister(event) {
   };
   users.push(newUser);
   saveLocalUsers(users);
-  let landingModule = "";
-  try {
-    const globalSettings = JSON.parse(localStorage.getItem("sorubank:global-settings:v1") || "{}");
-    landingModule = globalSettings.landingModule || "";
-  } catch (e) {}
   saveLocalSession({
     id: newUser.id,
     name: newUser.name,
@@ -1667,20 +1727,65 @@ function handleLocalRegister(event) {
   showToast("Hesabınız oluşturuldu ve giriş yapıldı.");
 }
 
-function handleLocalLogin(event) {
+async function handleLocalLogin(event) {
   event.preventDefault();
   const email = normalizeEmail(els.localUserEmailInput.value);
   const password = els.localUserPasswordInput.value;
-  const user = loadLocalUsers().find((item) => normalizeEmail(item.email) === email && item.password === password);
-  if (!user) {
-    showToast("E-posta veya şifre hatalı.", "error", "Giriş yapılamadı");
-    return;
-  }
+
   let landingModule = "";
   try {
     const globalSettings = JSON.parse(localStorage.getItem("sorubank:global-settings:v1") || "{}");
     landingModule = globalSettings.landingModule || "";
   } catch (e) {}
+
+  // 1. Bulut (Supabase) yapılandırılmışsa önce buluttan giriş yapmayı dene
+  if (cloudState.client) {
+    try {
+      const { data, error } = await cloudState.client.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+
+      if (data?.session) {
+        cloudState.session = data.session;
+        renderCloudStatus();
+
+        // Yerel kullanıcı listesinde yoksa kaydet (offline destek için)
+        const users = loadLocalUsers();
+        const name = data.session.user.user_metadata?.name || data.session.user.user_metadata?.full_name || email.split("@")[0];
+        if (!users.some((u) => normalizeEmail(u.email) === email)) {
+          users.push({
+            id: data.session.user.id,
+            name,
+            email,
+            password,
+            createdAt: new Date().toISOString()
+          });
+          saveLocalUsers(users);
+        }
+
+        saveLocalSession({
+          id: data.session.user.id,
+          name,
+          email,
+          activeModule: landingModule,
+          createdAt: new Date().toISOString()
+        });
+
+        showToast("Giriş yapıldı, bulut verileri eşitleniyor...");
+        await syncCloudNow();
+        return;
+      }
+    } catch (err) {
+      console.warn("Supabase auth failed, trying local fallback:", err.message);
+    }
+  }
+
+  // 2. Yerel kontrol (Supabase yoksa veya bulut girişi başarısız olursa yerel veritabanına bak)
+  const user = loadLocalUsers().find((item) => normalizeEmail(item.email) === email && item.password === password);
+  if (!user) {
+    showToast("E-posta veya şifre hatalı.", "error", "Giriş yapılamadı");
+    return;
+  }
+
   saveLocalSession({
     id: user.id,
     name: user.name,
