@@ -6823,7 +6823,11 @@ function showToast(message, type = "info", title = "") {
 function appConfirm(message, options = {}) {
   if (!els.confirmDialog) return Promise.resolve(window.confirm(message));
   els.confirmTitle.textContent = options.title || "İşlemi onayla";
-  els.confirmMessage.textContent = message;
+  if (options.html) {
+    els.confirmMessage.innerHTML = message;
+  } else {
+    els.confirmMessage.textContent = message;
+  }
   els.confirmOkBtn.textContent = options.okText || "Onayla";
   els.confirmCancelBtn.textContent = options.cancelText || "Vazgeç";
   return new Promise((resolve) => {
@@ -12377,14 +12381,16 @@ function mergeBackupStorageValue(key, currentRaw, incomingRaw) {
   return incomingRaw;
 }
 
-function applyBackupPackage(backup, mode = "replace") {
+function applyBackupPackage(backup, mode = "replace", modulesToRestore = backup.modules || Object.keys(BACKUP_MODULES)) {
   const storage = backup.storage || {};
   if (mode !== "merge") {
-    backupKeysForModules(backup.modules || Object.keys(BACKUP_MODULES)).forEach((key) => {
+    backupKeysForModules(modulesToRestore).forEach((key) => {
       if (key !== BACKUP_SNAPSHOT_KEY) localStorage.removeItem(key);
     });
   }
+  const allowedKeys = new Set(backupKeysForModules(modulesToRestore));
   Object.entries(storage).forEach(([key, incomingRaw]) => {
+    if (!allowedKeys.has(key)) return;
     if (incomingRaw == null) {
       localStorage.removeItem(key);
       return;
@@ -12397,16 +12403,73 @@ function applyBackupPackage(backup, mode = "replace") {
   });
 }
 
+function backupSummaryHtml(summary = {}, modulesToRestore = [], mode = "replace") {
+  const lines = [];
+  if (modulesToRestore.includes("sorubank") && (summary.courses || summary.questions || summary.curriculumItems)) {
+    lines.push(`<li><strong>Soru Bankası:</strong> ${summary.courses || 0} ders, ${summary.questions || 0} soru, ${summary.curriculumItems || 0} kazanım</li>`);
+  }
+  if (modulesToRestore.includes("skill") && (summary.skillSchools || summary.skillBusinesses || summary.skillStudents)) {
+    lines.push(`<li><strong>İME (Beceri Eğitimi):</strong> ${summary.skillSchools || 0} okul, ${summary.skillBusinesses || 0} işletme, ${summary.skillStudents || 0} öğrenci</li>`);
+  }
+  if (modulesToRestore.includes("course") && (summary.courseModules || summary.courseStudents || summary.courseQuestions)) {
+    lines.push(`<li><strong>Kurs/Ders Takibi:</strong> ${summary.courseModules || 0} modül, ${summary.courseStudents || 0} öğrenci, ${summary.courseQuestions || 0} soru</li>`);
+  }
+  if (modulesToRestore.includes("student") && (summary.trackingClasses || summary.trackingLessons || summary.trackingStudents || summary.trackingPlans)) {
+    lines.push(`<li><strong>Ders Takibi:</strong> ${summary.trackingClasses || 0} sınıf, ${summary.trackingLessons || 0} ders, ${summary.trackingStudents || 0} öğrenci, ${summary.trackingPlans || 0} yıllık plan</li>`);
+  }
+  if (modulesToRestore.includes("annualPlan") && (summary.annualTemplates || summary.annualGenerated)) {
+    lines.push(`<li><strong>Yıllık Plan:</strong> ${summary.annualTemplates || 0} şablon, ${summary.annualGenerated || 0} üretilen plan</li>`);
+  }
+  if (modulesToRestore.includes("settings") && summary.skillProfiles) {
+    lines.push(`<li><strong>Profil/Ayar:</strong> ${summary.skillProfiles || 0} İME profil kaydı</li>`);
+  }
+
+  const moduleText = modulesToRestore.map((moduleKey) => BACKUP_MODULES[moduleKey]?.label || moduleKey).join(", ") || "Hiçbiri";
+
+  const warningText = mode === "merge"
+    ? "Bu yedek, seçilen modüllerdeki mevcut verilerinizin üzerine eklenecektir."
+    : "Bu yedek, seçilen modüllerdeki mevcut verilerinizin yerine geçecektir. Seçilmeyen diğer modülleriniz korunacaktır.";
+
+  return `
+    <div class="confirm-backup-rich" style="display: flex; flex-direction: column; gap: 12px; text-align: left; font-size: 0.85rem; line-height: 1.5; color: rgba(248, 251, 251, 0.85); font-family: sans-serif;">
+      <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px;">
+        <h4 style="margin: 0 0 8px 0; font-size: 0.9rem; color: #9de0d6; font-weight: 600; display: flex; align-items: center; gap: 6px;">📦 Geri Yüklenecek Veriler</h4>
+        <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px;">
+          ${lines.length > 0 ? lines.join("") : "<li>Seçilen modüller için yedek dosyasında veri bulunamadı.</li>"}
+        </ul>
+      </div>
+      <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px;">
+        <h4 style="margin: 0 0 4px 0; font-size: 0.9rem; color: #9de0d6; font-weight: 600;">🛠️ İşlenecek Modüller</h4>
+        <p style="margin: 0; color: rgba(248, 251, 251, 0.95); font-weight: 500;">${moduleText}</p>
+      </div>
+      <div style="padding: 10px 12px; background: rgba(235, 94, 85, 0.1); border: 1px solid rgba(235, 94, 85, 0.22); border-radius: 8px;">
+        <strong style="color: #ff9f80; font-size: 0.82rem; display: block; text-align: center;">⚠️ ${warningText}</strong>
+      </div>
+      <p style="margin: 4px 0 0 0; font-weight: 600; text-align: center; color: rgba(248, 251, 251, 0.95);">Geri yükleme işlemine devam etmek istiyor musunuz?</p>
+    </div>
+  `;
+}
+
 async function restoreBackupPackage(backup, mode = "replace") {
-  const summary = backupSummaryText(backup.summary || backupSummaryFromStorage(backup.storage));
-  const moduleText = (backup.modules || []).map((moduleKey) => BACKUP_MODULES[moduleKey]?.label || moduleKey).join(", ") || "Bilinmiyor";
-  const confirmed = await appConfirm(
-    `Yedek içeriği:\n${summary}\n\nModüller: ${moduleText}\n\n${mode === "merge" ? "Bu yedek mevcut verinin üzerine eklenecek." : "Bu yedek seçili verilerin yerine geçecek."} Devam edilsin mi?`,
-    { title: "Yedekten geri yükle", okText: "Geri yükle" }
-  );
+  const selectedModules = backupSelectedModules();
+  const modulesToRestore = (backup.modules || Object.keys(BACKUP_MODULES)).filter(m => selectedModules.includes(m));
+
+  if (modulesToRestore.length === 0) {
+    showToast("Geri yüklenecek hiçbir modül seçilmedi. Lütfen yukarıdan en az bir modül seçin.", "warning");
+    return;
+  }
+
+  const summary = backup.summary || backupSummaryFromStorage(backup.storage);
+  const summaryHtml = backupSummaryHtml(summary, modulesToRestore, mode);
+
+  const confirmed = await appConfirm(summaryHtml, {
+    title: "Yedekten geri yükle",
+    okText: "Geri yükle",
+    html: true
+  });
   if (!confirmed) return;
   createAutoBackupSnapshot("before-restore", { silent: true });
-  applyBackupPackage(backup, mode);
+  applyBackupPackage(backup, mode, modulesToRestore);
   showToast("Yedek geri yüklendi. Uygulama yenileniyor.");
   setTimeout(() => window.location.reload(), 350);
 }
