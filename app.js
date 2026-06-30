@@ -2223,6 +2223,15 @@ async function initializeCloud() {
   const config = await loadCloudConfig();
   if (els.supabaseUrlInput) els.supabaseUrlInput.value = config.url;
   if (els.supabaseAnonKeyInput) els.supabaseAnonKeyInput.value = config.anonKey;
+
+  const isSystemConfig = Boolean(
+    (window.SORUBANK_SUPABASE?.url) ||
+    (!storedCloudConfig().url && config.url)
+  );
+  const cloudConfigEl = document.querySelector(".cloud-config");
+  if (cloudConfigEl) {
+    cloudConfigEl.style.setProperty("display", isSystemConfig ? "none" : "", "important");
+  }
   if (!config.url || !config.anonKey) {
     cloudState = { ...cloudState, enabled: false, ready: true, client: null, session: null, lastError: "" };
     renderCloudStatus();
