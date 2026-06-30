@@ -2406,8 +2406,39 @@ async function initializeCloud() {
     const { data, error } = await client.auth.getSession();
     if (error) throw error;
     cloudState = { ...cloudState, client, session: data.session, enabled: true, ready: true, lastError: "" };
+    
+    if (data.session) {
+      const email = normalizeEmail(data.session.user.email);
+      const localEmail = localSession ? normalizeEmail(localSession.email) : "";
+      if (email && localEmail && email !== localEmail) {
+        console.warn("Session email mismatch. Syncing local profile to active cloud account:", email);
+        const name = data.session.user.user_metadata?.name || data.session.user.user_metadata?.full_name || email.split("@")[0];
+        saveLocalSession({
+          id: data.session.user.id,
+          name: name,
+          email: email,
+          activeModule: localSession?.activeModule || "",
+          createdAt: new Date().toISOString()
+        });
+      }
+    }
+
     client.auth.onAuthStateChange((_event, session) => {
       cloudState.session = session;
+      if (session) {
+        const email = normalizeEmail(session.user.email);
+        const localEmail = localSession ? normalizeEmail(localSession.email) : "";
+        if (email && localEmail && email !== localEmail) {
+          const name = session.user.user_metadata?.name || session.user.user_metadata?.full_name || email.split("@")[0];
+          saveLocalSession({
+            id: session.user.id,
+            name: name,
+            email: email,
+            activeModule: localSession?.activeModule || "",
+            createdAt: new Date().toISOString()
+          });
+        }
+      }
       renderCloudStatus();
     });
     renderCloudStatus();
