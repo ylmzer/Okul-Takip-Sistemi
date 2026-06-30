@@ -1646,6 +1646,7 @@ async function handleLocalRegister(event) {
   // 1. Bulut (Supabase) yapılandırılmışsa önce Supabase ile kaydet
   if (cloudState.client) {
     try {
+      clearLocalUserData();
       const { data, error } = await cloudState.client.auth.signUp({
         email,
         password,
@@ -1710,6 +1711,7 @@ async function handleLocalRegister(event) {
     els.localUserEmailInput.value = email;
     return;
   }
+  clearLocalUserData();
   const newUser = {
     id: uid("user"),
     name,
@@ -1743,6 +1745,7 @@ async function handleLocalLogin(event) {
   // 1. Bulut (Supabase) yapılandırılmışsa önce buluttan giriş yapmayı dene
   if (cloudState.client) {
     try {
+      clearLocalUserData();
       const { data, error } = await cloudState.client.auth.signInWithPassword({ email, password });
       if (error) throw error;
 
@@ -1790,6 +1793,8 @@ async function handleLocalLogin(event) {
     return;
   }
 
+  clearLocalUserData();
+
   saveLocalSession({
     id: user.id,
     name: user.name,
@@ -1826,9 +1831,24 @@ function returnToModuleHub() {
   saveLocalSession({ ...localSession, activeModule: "" });
 }
 
+function clearLocalUserData() {
+  const allKeys = backupKeysForModules(Object.keys(BACKUP_MODULES));
+  allKeys.forEach((key) => {
+    if (key !== LOCAL_USERS_KEY && key !== CLOUD_CONFIG_KEY && key !== LOCAL_SESSION_KEY) {
+      localStorage.removeItem(key);
+    }
+  });
+  localStorage.removeItem("sorubank:global-settings:v1");
+}
+
 function logoutLocalSession() {
+  clearLocalUserData();
+  if (cloudState.client) {
+    cloudState.client.auth.signOut().catch(() => {});
+  }
+  cloudState.session = null;
   saveLocalSession(null);
-  setAuthMode("login");
+  window.location.href = window.location.pathname;
 }
 
 function closeUserMenus() {
