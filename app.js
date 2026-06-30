@@ -1696,7 +1696,9 @@ async function handleLocalRegister(event) {
         return;
       }
     } catch (err) {
-      console.warn("Supabase registration failed, falling back to local:", err.message);
+      console.warn("Supabase registration failed:", err.message);
+      showToast(`Kayıt başarısız: ${err.message}`, "error");
+      return;
     }
   }
 
@@ -1775,7 +1777,9 @@ async function handleLocalLogin(event) {
         return;
       }
     } catch (err) {
-      console.warn("Supabase auth failed, trying local fallback:", err.message);
+      console.warn("Supabase auth failed:", err.message);
+      showToast(`Giriş başarısız: ${err.message}`, "error");
+      return;
     }
   }
 
@@ -2337,6 +2341,20 @@ async function initializeCloud() {
   if (cloudConfigEl) {
     cloudConfigEl.style.setProperty("display", isSystemConfig ? "none" : "", "important");
   }
+  if (isSystemConfig) {
+    const quickStartBtn = document.querySelector("#quickStartBtn");
+    if (quickStartBtn) {
+      quickStartBtn.style.setProperty("display", "none", "important");
+    }
+    const authCopy = document.querySelector(".auth-copy");
+    if (authCopy) {
+      authCopy.textContent = "Okul Takip Sistemi bulut hesabınızla giriş yapın. Verileriniz otomatik olarak eşitlenecektir.";
+    }
+    const introTitle = document.querySelector(".auth-intro h1");
+    if (introTitle) {
+      introTitle.textContent = "Hesabınıza giriş yapın";
+    }
+  }
   if (!config.url || !config.anonKey) {
     cloudState = { ...cloudState, enabled: false, ready: true, client: null, session: null, lastError: "" };
     renderCloudStatus();
@@ -2487,6 +2505,39 @@ function applyCloudState(remoteState, updatedAt = "") {
   renderCloudStatus();
 }
 
+function checkIsLocalStateEmpty() {
+  try {
+    // 1. Soru Bankası kontrolü
+    const qCount = state?.questions?.length || 0;
+    if (qCount > 0) return false;
+
+    // 2. Kurs takibi kontrolü
+    const courseStateRaw = localStorage.getItem("coursetracking_state");
+    if (courseStateRaw) {
+      const parsed = JSON.parse(courseStateRaw);
+      if (parsed?.courses?.length > 0 || parsed?.questions?.length > 0) return false;
+    }
+
+    // 3. Öğrenci takibi kontrolü
+    const studentStateRaw = localStorage.getItem("student-tracking:state:v1");
+    if (studentStateRaw) {
+      const parsed = JSON.parse(studentStateRaw);
+      if (parsed?.students?.length > 0) return false;
+    }
+
+    // 4. Yıllık plan kontrolü
+    const annualStateRaw = localStorage.getItem("annual-plan:state:v1");
+    if (annualStateRaw) {
+      const parsed = JSON.parse(annualStateRaw);
+      if (parsed?.plans?.length > 0) return false;
+    }
+
+    return true;
+  } catch (e) {
+    return true;
+  }
+}
+
 async function syncCloudNow() {
   if (!cloudState.client) {
     showToast("Önce Supabase bağlantı ayarını kaydedin.", "warning");
@@ -2504,11 +2555,17 @@ async function syncCloudNow() {
     renderCloudStatus();
     if (remote?.state) {
       const isBackupPackage = remote.state.type === "sorubank-backup" && remote.state.storage;
-      const useRemote = await appConfirm("Bulutta kayıtlı verileriniz bulundu. Buluttaki verileri bu cihaza yükleyelim mi? Vazgeçerseniz bu cihazdaki veriler buluta gönderilir.", {
-        title: "Bulut eşitleme",
-        okText: "Buluttan yükle",
-        cancelText: "Cihazdakini gönder"
-      });
+      
+      const isLocalEmpty = checkIsLocalStateEmpty();
+      let useRemote = true;
+      if (!isLocalEmpty) {
+        useRemote = await appConfirm("Bulutta kayıtlı verileriniz bulundu. Buluttaki verileri bu cihaza yükleyelim mi? Vazgeçerseniz bu cihazdaki veriler buluta gönderilir.", {
+          title: "Bulut eşitleme",
+          okText: "Buluttan yükle",
+          cancelText: "Cihazdakini gönder"
+        });
+      }
+      
       if (useRemote) {
         if (isBackupPackage) {
           applyBackupPackage(remote.state, "replace");
