@@ -93,7 +93,8 @@ let cloudState = {
   ready: false,
   syncing: false,
   lastSyncAt: "",
-  lastError: ""
+  lastError: "",
+  configSource: "none"
 };
 let cloudSyncTimer = null;
 let localSession = loadLocalSession();
@@ -2275,33 +2276,43 @@ function saveStoredCloudConfig(config) {
 }
 
 async function loadCloudConfig() {
-  const manual = storedCloudConfig();
-  if (manual.url && manual.anonKey) return manual;
-
   const browserConfig = normalizeCloudConfig(window.SORUBANK_SUPABASE || {});
-  if (browserConfig.url && browserConfig.anonKey) return browserConfig;
+  if (browserConfig.url && browserConfig.anonKey) {
+    return { ...browserConfig, source: "system" };
+  }
 
   try {
     const response = await fetch("/api/config", { cache: "no-store" });
     if (response.ok) {
       const serverConfig = normalizeCloudConfig(await response.json());
-      if (serverConfig.url && serverConfig.anonKey) return serverConfig;
+      if (serverConfig.url && serverConfig.anonKey) {
+        return { ...serverConfig, source: "system" };
+      }
     }
   } catch {
     // Local file usage or static hosting without an API endpoint should still work offline.
   }
 
-  return manual;
+  const manual = storedCloudConfig();
+  return { ...manual, source: manual.url ? "manual" : "none" };
 }
 
 function renderCloudStatus() {
   if (!els.cloudStatusTitle) return;
-  const config = storedCloudConfig();
-  if (els.supabaseUrlInput && !els.supabaseUrlInput.value) els.supabaseUrlInput.value = config.url;
-  if (els.supabaseAnonKeyInput && !els.supabaseAnonKeyInput.value) els.supabaseAnonKeyInput.value = config.anonKey;
 
+  const isSystem = cloudState.configSource === "system";
+  if (isSystem) {
+    if (els.supabaseUrlInput) els.supabaseUrlInput.value = "";
+    if (els.supabaseAnonKeyInput) els.supabaseAnonKeyInput.value = "";
+  } else {
+    const config = storedCloudConfig();
+    if (els.supabaseUrlInput && !els.supabaseUrlInput.value) els.supabaseUrlInput.value = config.url;
+    if (els.supabaseAnonKeyInput && !els.supabaseAnonKeyInput.value) els.supabaseAnonKeyInput.value = config.anonKey;
+  }
+
+  const config = storedCloudConfig();
   const email = cloudState.session?.user?.email || "";
-  const configured = cloudState.enabled || Boolean(config.url && config.anonKey);
+  const configured = cloudState.enabled || (isSystem ? true : Boolean(config.url && config.anonKey));
   const connected = Boolean(cloudState.session);
   const busy = cloudState.syncing;
   let title = "Yerel kullanım";
@@ -2350,13 +2361,17 @@ function scheduleCloudSave() {
 
 async function initializeCloud() {
   const config = await loadCloudConfig();
-  if (els.supabaseUrlInput) els.supabaseUrlInput.value = config.url;
-  if (els.supabaseAnonKeyInput) els.supabaseAnonKeyInput.value = config.anonKey;
+  const isSystemConfig = config.source === "system";
+  cloudState.configSource = config.source;
 
-  const isSystemConfig = Boolean(
-    (window.SORUBANK_SUPABASE?.url) ||
-    (!storedCloudConfig().url && config.url)
-  );
+  if (isSystemConfig) {
+    if (els.supabaseUrlInput) els.supabaseUrlInput.value = "";
+    if (els.supabaseAnonKeyInput) els.supabaseAnonKeyInput.value = "";
+  } else {
+    if (els.supabaseUrlInput) els.supabaseUrlInput.value = config.url;
+    if (els.supabaseAnonKeyInput) els.supabaseAnonKeyInput.value = config.anonKey;
+  }
+
   const cloudConfigEl = document.querySelector(".cloud-config");
   if (cloudConfigEl) {
     cloudConfigEl.style.setProperty("display", isSystemConfig ? "none" : "", "important");
