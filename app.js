@@ -1840,6 +1840,7 @@ function clearLocalUserData() {
     }
   });
   localStorage.removeItem("sorubank:global-settings:v1");
+  localStorage.removeItem("sorubank:cloud-last-sync");
 }
 
 function logoutLocalSession() {
@@ -2359,6 +2360,51 @@ function scheduleCloudSave() {
   }, 1100);
 }
 
+async function checkAndSyncCloudBackground() {
+  if (!cloudState.client || !cloudState.session) return;
+  try {
+    const userId = cloudState.session.user.id;
+    const { data, error } = await cloudState.client
+      .from("sorubank_cloud_states")
+      .select("updated_at")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return;
+
+    const remoteUpdatedAt = data.updated_at;
+    const localLastSync = localStorage.getItem("sorubank:cloud-last-sync") || "";
+
+    if (remoteUpdatedAt && remoteUpdatedAt !== localLastSync) {
+      console.log("Newer remote state detected. Syncing background...");
+      const { data: remoteStateData, error: readError } = await cloudState.client
+        .from("sorubank_cloud_states")
+        .select("state, updated_at")
+        .eq("user_id", userId)
+        .maybeSingle();
+      
+      if (readError) throw readError;
+      if (remoteStateData?.state) {
+        const isBackupPackage = remoteStateData.state.type === "sorubank-backup" && remoteStateData.state.storage;
+        if (isBackupPackage) {
+          applyBackupPackage(remoteStateData.state, "replace");
+          localStorage.setItem("sorubank:cloud-last-sync", remoteUpdatedAt);
+          cloudState.lastSyncAt = remoteUpdatedAt;
+          renderCloudStatus();
+          console.log("Background sync complete. Reloading...");
+          window.location.reload();
+        }
+      }
+    } else {
+      cloudState.lastSyncAt = localLastSync;
+      renderCloudStatus();
+    }
+  } catch (err) {
+    console.warn("Background cloud sync check failed:", err.message);
+  }
+}
+
 async function initializeCloud() {
   const config = await loadCloudConfig();
   const isSystemConfig = config.source === "system";
@@ -2407,7 +2453,7 @@ async function initializeCloud() {
     if (error) throw error;
     cloudState = { ...cloudState, client, session: data.session, enabled: true, ready: true, lastError: "" };
     
-    if (data.session) {
+     if (data.session) {
       const email = normalizeEmail(data.session.user.email);
       const localEmail = localSession ? normalizeEmail(localSession.email) : "";
       if (email && localEmail && email !== localEmail) {
@@ -2421,6 +2467,7 @@ async function initializeCloud() {
           createdAt: new Date().toISOString()
         });
       }
+      checkAndSyncCloudBackground();
     }
 
     client.auth.onAuthStateChange((_event, session) => {
@@ -2513,6 +2560,7 @@ async function signOutFromCloud() {
     const { error } = await cloudState.client.auth.signOut();
     if (error) throw error;
     cloudState.session = null;
+    localStorage.removeItem("sorubank:cloud-last-sync");
     showToast("Bulut hesabından çıkış yapıldı.");
   } catch (error) {
     cloudState.lastError = `Çıkış yapılamadı: ${error.message}`;
@@ -2551,6 +2599,7 @@ async function pushCloudState(options = {}) {
       .upsert(payload, { onConflict: "user_id" });
     if (error) throw error;
     cloudState.lastSyncAt = payload.updated_at;
+    localStorage.setItem("sorubank:cloud-last-sync", payload.updated_at);
     cloudState.lastError = "";
     if (!options.silent) showToast("Veriler buluta gönderildi.");
   } catch (error) {
@@ -2566,6 +2615,7 @@ function applyCloudState(remoteState, updatedAt = "") {
   state = normalizeState({ ...structuredClone(initialState), ...(remoteState || {}) });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   cloudState.lastSyncAt = updatedAt || new Date().toISOString();
+  localStorage.setItem("sorubank:cloud-last-sync", cloudState.lastSyncAt);
   cloudState.lastError = "";
   render();
   renderCloudStatus();
@@ -2635,6 +2685,7 @@ async function syncCloudNow() {
       if (useRemote) {
         if (isBackupPackage) {
           applyBackupPackage(remote.state, "replace");
+          localStorage.setItem("sorubank:cloud-last-sync", remote.updated_at || new Date().toISOString());
           showToast("Buluttaki veriler bu cihaza yüklendi. Sayfa yenileniyor...");
           setTimeout(() => window.location.reload(), 800);
         } else {
