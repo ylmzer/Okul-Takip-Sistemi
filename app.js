@@ -2676,6 +2676,15 @@ function registerPwa() {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./service-worker.js").catch(() => {});
   });
+
+  // Automatically reload when a new service worker takes control (cache update)
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!refreshing) {
+      refreshing = true;
+      window.location.reload();
+    }
+  });
 }
 
 function getSkillBusiness(id) {
