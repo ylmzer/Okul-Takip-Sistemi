@@ -4256,8 +4256,14 @@ body.dark-mode .skill-alert > span {
     width: 100% !important;
   }
 
-  /* Evrensel Sol Mobil Modül Seçim FAB Butonu */
-  .module-float-switcher {
+  /* Evrensel Sol Mobil Modül Seçim FAB Butonu (Sadece aktif oturumlarda görünür) */
+  body.module-mode .module-float-switcher,
+  body.app-mode .module-float-switcher,
+  body.skill-mode .module-float-switcher,
+  body.student-mode .module-float-switcher,
+  body.annual-mode .module-float-switcher,
+  body.course-mode .module-float-switcher,
+  body.global-settings-mode .module-float-switcher {
     display: block !important;
     position: static !important;
     width: auto !important;
@@ -4668,9 +4674,14 @@ body.module-mode .compact-module-header {
   margin: 0 !important;
   font-size: 2.2rem !important;
   font-weight: 800 !important;
-  color: #ffffff !important;
+  color: #0d363d !important;
   text-align: center !important;
   letter-spacing: -0.03em !important;
+  text-shadow: none !important;
+}
+
+body.dark-mode .hub-title {
+  color: #ffffff !important;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
