@@ -2352,13 +2352,55 @@ function renderCloudStatus() {
   if (els.syncNowBtn) els.syncNowBtn.disabled = !connected || busy;
 }
 
-function scheduleCloudSave() {
+let isPushing = false;
+let hasPendingPush = false;
+
+async function scheduleCloudSave() {
   localStorage.setItem("sorubank:cloud-local-write", new Date().toISOString());
-  if (!cloudState.client || !cloudState.session || cloudState.syncing) return;
-  window.clearTimeout(cloudSyncTimer);
-  cloudSyncTimer = window.setTimeout(() => {
-    pushCloudState({ silent: true });
-  }, 1100);
+  if (!cloudState.client || !cloudState.session) return;
+
+  if (isPushing) {
+    hasPendingPush = true;
+    return;
+  }
+
+  isPushing = true;
+  const statusIndicator = document.getElementById("cloudSaveStatusIndicator");
+  if (statusIndicator) {
+    statusIndicator.textContent = "Buluta kaydediliyor...";
+    statusIndicator.className = "cloud-save-status-indicator is-saving";
+    statusIndicator.removeAttribute("hidden");
+  }
+
+  while (true) {
+    hasPendingPush = false;
+    try {
+      await pushCloudState({ silent: true });
+    } catch (err) {
+      console.error("Cloud save failed:", err);
+      if (statusIndicator) {
+        statusIndicator.textContent = "Buluta kaydedilemedi!";
+        statusIndicator.className = "cloud-save-status-indicator is-error";
+        setTimeout(() => {
+          statusIndicator.setAttribute("hidden", "true");
+        }, 3000);
+      }
+      isPushing = false;
+      return;
+    }
+    if (!hasPendingPush) break;
+  }
+
+  isPushing = false;
+  if (statusIndicator) {
+    statusIndicator.textContent = "Buluta kaydedildi";
+    statusIndicator.className = "cloud-save-status-indicator is-saved";
+    setTimeout(() => {
+      if (!isPushing) {
+        statusIndicator.setAttribute("hidden", "true");
+      }
+    }, 1500);
+  }
 }
 
 async function checkAndSyncCloudBackground() {
@@ -2372,6 +2414,9 @@ async function checkAndSyncCloudBackground() {
     return;
   }
 
+  const overlay = document.getElementById("cloudLoadingOverlay");
+  if (overlay) overlay.removeAttribute("hidden");
+
   try {
     const userId = cloudState.session.user.id;
     const { data, error } = await cloudState.client
@@ -2381,7 +2426,10 @@ async function checkAndSyncCloudBackground() {
       .maybeSingle();
 
     if (error) throw error;
-    if (!data) return;
+    if (!data) {
+      if (overlay) overlay.setAttribute("hidden", "true");
+      return;
+    }
 
     const remoteUpdatedAt = data.updated_at;
     const localLastSync = localStorage.getItem("sorubank:cloud-last-sync") || "";
@@ -2404,6 +2452,7 @@ async function checkAndSyncCloudBackground() {
           renderCloudStatus();
           console.log("Background sync complete. Reloading...");
           window.location.reload();
+          return;
         }
       }
     } else {
@@ -2412,6 +2461,8 @@ async function checkAndSyncCloudBackground() {
     }
   } catch (err) {
     console.warn("Background cloud sync check failed:", err.message);
+  } finally {
+    if (overlay) overlay.setAttribute("hidden", "true");
   }
 }
 

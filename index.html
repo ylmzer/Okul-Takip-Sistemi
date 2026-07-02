@@ -12,7 +12,7 @@
     <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg" />
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=71" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=71" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=73" />
   </head>
   <body class="auth-mode">
     <section class="auth-shell" id="authShell" aria-label="Giriş ve modül seçimi">
@@ -3775,10 +3775,19 @@
           <button type="button" data-floating-module="settings"><span>AY</span><strong>Ayarlar</strong><small class="module-desc">Genel Ayarlar</small></button>
         </div>
       </div>
+    <!-- Bulut Veri Yükleme ve Kaydetme Bildirimleri -->
+    <div id="cloudLoadingOverlay" class="cloud-loading-overlay" hidden>
+      <div class="cloud-loading-content">
+        <div class="cloud-spinner"></div>
+        <strong>Veriler buluttan yükleniyor...</strong>
+        <p>Lütfen bekleyin, güncel veriler alınıyor.</p>
+      </div>
     </div>
+    <div id="cloudSaveStatusIndicator" class="cloud-save-status-indicator" hidden></div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
-    <script src="./app.js?v=72"></script>
+    <script src="./app.js?v=73"></script>
     <script src="./scripts/modules/settings/index.js?v=5"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=5"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=11"></script>
