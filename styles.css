@@ -6602,10 +6602,10 @@ dialog::backdrop {
 
 .empty-state {
   padding: 26px;
-  color: var(--muted);
+  color: var(--muted) !important;
   text-align: center;
-  background: #fff;
-  border: 1px dashed var(--line);
+  background: var(--panel) !important;
+  border: 1px dashed var(--line) !important;
   border-radius: 8px;
 }
 
