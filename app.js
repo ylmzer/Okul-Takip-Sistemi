@@ -2449,10 +2449,19 @@ async function checkAndSyncCloudBackground() {
       cloudState.lastSyncAt = localLastSync;
       renderCloudStatus();
     }
+    // Başarılı bittiğinde loading ekranını gizle
+    if (overlay) overlay.setAttribute("hidden", "true");
   } catch (err) {
     console.warn("Background cloud sync check failed:", err.message);
-  } finally {
-    if (overlay) overlay.setAttribute("hidden", "true");
+    const spinner = document.getElementById("cloudLoadingSpinner");
+    const title = document.getElementById("cloudLoadingTitle");
+    const desc = document.getElementById("cloudLoadingDesc");
+    const errContainer = document.getElementById("cloudLoadingError");
+    if (spinner) spinner.style.display = "none";
+    if (title) title.textContent = "Bağlantı Hatası";
+    if (desc) desc.textContent = "Bulut veritabanına bağlanılamadı.";
+    if (errContainer) errContainer.style.display = "block";
+    // Overlay'i gizlemiyoruz, kilitli kalıyor ve kullanıcı "Tekrar Dene" butonunu görüyor
   }
 }
 
@@ -2498,9 +2507,23 @@ async function initializeCloud() {
     return;
   }
 
+  const overlay = document.getElementById("cloudLoadingOverlay");
+  const hasLocalUser = Boolean(localSession?.name);
+  if (hasLocalUser && overlay) {
+    overlay.removeAttribute("hidden");
+    const spinner = document.getElementById("cloudLoadingSpinner");
+    const title = document.getElementById("cloudLoadingTitle");
+    const desc = document.getElementById("cloudLoadingDesc");
+    const errContainer = document.getElementById("cloudLoadingError");
+    if (spinner) spinner.style.display = "block";
+    if (title) title.textContent = "Veriler buluttan yükleniyor...";
+    if (desc) desc.textContent = "Lütfen bekleyin, güncel veriler alınıyor.";
+    if (errContainer) errContainer.style.display = "none";
+  }
+
   try {
     const client = window.supabase.createClient(config.url, config.anonKey);
-    const { data, error } = await client.auth.getSession();
+    const { data, error } = await withTimeout(client.auth.getSession(), 6000);
     if (error) throw error;
     cloudState = { ...cloudState, client, session: data.session, enabled: true, ready: true, lastError: "" };
     
@@ -2518,7 +2541,9 @@ async function initializeCloud() {
           createdAt: new Date().toISOString()
         });
       }
-      checkAndSyncCloudBackground();
+      await checkAndSyncCloudBackground();
+    } else {
+      if (overlay) overlay.setAttribute("hidden", "true");
     }
 
     client.auth.onAuthStateChange((_event, session) => {
@@ -2543,6 +2568,18 @@ async function initializeCloud() {
   } catch (error) {
     cloudState = { ...cloudState, enabled: true, ready: false, client: null, session: null, lastError: `Supabase bağlantısı kurulamadı: ${error.message}` };
     renderCloudStatus();
+    if (hasLocalUser) {
+      const spinner = document.getElementById("cloudLoadingSpinner");
+      const title = document.getElementById("cloudLoadingTitle");
+      const desc = document.getElementById("cloudLoadingDesc");
+      const errContainer = document.getElementById("cloudLoadingError");
+      if (spinner) spinner.style.display = "none";
+      if (title) title.textContent = "Bağlantı Hatası";
+      if (desc) desc.textContent = "Bulut veritabanına bağlanılamadı.";
+      if (errContainer) errContainer.style.display = "block";
+    } else {
+      if (overlay) overlay.setAttribute("hidden", "true");
+    }
   }
 }
 
