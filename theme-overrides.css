@@ -4966,35 +4966,4 @@ body.dark-mode .cloud-loading-overlay {
   to { transform: rotate(360deg); }
 }
 
-/* Bulut Kaydetme Durum Bildirim Kapsülü */
-.cloud-save-status-indicator {
-  position: fixed !important;
-  top: 16px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  padding: 8px 16px !important;
-  border-radius: 20px !important;
-  font-size: 0.85rem !important;
-  font-weight: 600 !important;
-  z-index: 10000 !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-  transition: all 0.3s ease !important;
-}
 
-.cloud-save-status-indicator.is-saving {
-  background: #0f766e !important;
-  color: #ffffff !important;
-}
-
-.cloud-save-status-indicator.is-saved {
-  background: #15803d !important;
-  color: #ffffff !important;
-}
-
-.cloud-save-status-indicator.is-error {
-  background: #b91c1c !important;
-  color: #ffffff !important;
-}

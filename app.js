@@ -2365,42 +2365,19 @@ async function scheduleCloudSave() {
   }
 
   isPushing = true;
-  const statusIndicator = document.getElementById("cloudSaveStatusIndicator");
-  if (statusIndicator) {
-    statusIndicator.textContent = "Buluta kaydediliyor...";
-    statusIndicator.className = "cloud-save-status-indicator is-saving";
-    statusIndicator.removeAttribute("hidden");
-  }
-
   while (true) {
     hasPendingPush = false;
     try {
       await pushCloudState({ silent: true });
     } catch (err) {
       console.error("Cloud save failed:", err);
-      if (statusIndicator) {
-        statusIndicator.textContent = "Buluta kaydedilemedi!";
-        statusIndicator.className = "cloud-save-status-indicator is-error";
-        setTimeout(() => {
-          statusIndicator.setAttribute("hidden", "true");
-        }, 3000);
-      }
+      showToast("Değişiklikler buluta kaydedilemedi. İnternet bağlantınızı kontrol edin.", "error");
       isPushing = false;
       return;
     }
     if (!hasPendingPush) break;
   }
-
   isPushing = false;
-  if (statusIndicator) {
-    statusIndicator.textContent = "Buluta kaydedildi";
-    statusIndicator.className = "cloud-save-status-indicator is-saved";
-    setTimeout(() => {
-      if (!isPushing) {
-        statusIndicator.setAttribute("hidden", "true");
-      }
-    }, 1500);
-  }
 }
 
 async function checkAndSyncCloudBackground() {

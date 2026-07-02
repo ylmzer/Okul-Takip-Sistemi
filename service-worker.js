@@ -1,10 +1,10 @@
-const CACHE_NAME = "ots-pwa-v16";
+const CACHE_NAME = "ots-pwa-v17";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=71",
-  "./theme-overrides.css?v=73",
-  "./app.js?v=73",
+  "./theme-overrides.css?v=74",
+  "./app.js?v=74",
   "./icons/logo-clean.svg",
   "./scripts/modules/sorubank/index.js",
   "./scripts/modules/skill-training/index.js",
