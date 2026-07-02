@@ -2380,6 +2380,13 @@ async function scheduleCloudSave() {
   isPushing = false;
 }
 
+function withTimeout(promise, ms = 6000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error("Bağlantı zaman aşımına uğradı")), ms))
+  ]);
+}
+
 async function checkAndSyncCloudBackground() {
   if (!cloudState.client || !cloudState.session) return;
   
@@ -2396,11 +2403,14 @@ async function checkAndSyncCloudBackground() {
 
   try {
     const userId = cloudState.session.user.id;
-    const { data, error } = await cloudState.client
-      .from("sorubank_cloud_states")
-      .select("updated_at")
-      .eq("user_id", userId)
-      .maybeSingle();
+    const { data, error } = await withTimeout(
+      cloudState.client
+        .from("sorubank_cloud_states")
+        .select("updated_at")
+        .eq("user_id", userId)
+        .maybeSingle(),
+      6000
+    );
 
     if (error) throw error;
     if (!data) {
@@ -2413,11 +2423,14 @@ async function checkAndSyncCloudBackground() {
 
     if (remoteUpdatedAt && remoteUpdatedAt !== localLastSync) {
       console.log("Newer remote state detected. Syncing background...");
-      const { data: remoteStateData, error: readError } = await cloudState.client
-        .from("sorubank_cloud_states")
-        .select("state, updated_at")
-        .eq("user_id", userId)
-        .maybeSingle();
+      const { data: remoteStateData, error: readError } = await withTimeout(
+        cloudState.client
+          .from("sorubank_cloud_states")
+          .select("state, updated_at")
+          .eq("user_id", userId)
+          .maybeSingle(),
+        6000
+      );
       
       if (readError) throw readError;
       if (remoteStateData?.state) {
