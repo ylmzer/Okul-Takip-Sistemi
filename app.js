@@ -2353,6 +2353,7 @@ function renderCloudStatus() {
 }
 
 function scheduleCloudSave() {
+  localStorage.setItem("sorubank:cloud-local-write", new Date().toISOString());
   if (!cloudState.client || !cloudState.session || cloudState.syncing) return;
   window.clearTimeout(cloudSyncTimer);
   cloudSyncTimer = window.setTimeout(() => {
@@ -2362,6 +2363,15 @@ function scheduleCloudSave() {
 
 async function checkAndSyncCloudBackground() {
   if (!cloudState.client || !cloudState.session) return;
+  
+  // Eğer sunucuya henüz gönderilmemiş yerel değişiklikler varsa, önce onları gönder
+  const hasLocalWrite = localStorage.getItem("sorubank:cloud-local-write");
+  if (hasLocalWrite) {
+    console.log("Unsaved local changes detected on init. Pushing to cloud...");
+    await pushCloudState({ silent: true });
+    return;
+  }
+
   try {
     const userId = cloudState.session.user.id;
     const { data, error } = await cloudState.client
@@ -2600,6 +2610,7 @@ async function pushCloudState(options = {}) {
     if (error) throw error;
     cloudState.lastSyncAt = payload.updated_at;
     localStorage.setItem("sorubank:cloud-last-sync", payload.updated_at);
+    localStorage.removeItem("sorubank:cloud-local-write");
     cloudState.lastError = "";
     if (!options.silent) showToast("Veriler buluta gönderildi.");
   } catch (error) {
@@ -2616,6 +2627,7 @@ function applyCloudState(remoteState, updatedAt = "") {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   cloudState.lastSyncAt = updatedAt || new Date().toISOString();
   localStorage.setItem("sorubank:cloud-last-sync", cloudState.lastSyncAt);
+  localStorage.removeItem("sorubank:cloud-local-write");
   cloudState.lastError = "";
   render();
   renderCloudStatus();
@@ -2686,6 +2698,7 @@ async function syncCloudNow() {
         if (isBackupPackage) {
           applyBackupPackage(remote.state, "replace");
           localStorage.setItem("sorubank:cloud-last-sync", remote.updated_at || new Date().toISOString());
+          localStorage.removeItem("sorubank:cloud-local-write");
           showToast("Buluttaki veriler bu cihaza yüklendi. Sayfa yenileniyor...");
           setTimeout(() => window.location.reload(), 800);
         } else {
