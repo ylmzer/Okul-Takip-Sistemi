@@ -2354,8 +2354,11 @@ function renderCloudStatus() {
 
 let isPushing = false;
 let hasPendingPush = false;
+let isSyncingFromCloud = false;
 
 async function scheduleCloudSave() {
+  // Buluttan veri indirilirken push yapma - sonsuz döngüyü engeller
+  if (isSyncingFromCloud) return;
   localStorage.setItem("sorubank:cloud-local-write", new Date().toISOString());
   if (!cloudState.client || !cloudState.session) return;
 
@@ -2389,14 +2392,6 @@ function withTimeout(promise, ms = 6000) {
 
 async function checkAndSyncCloudBackground() {
   if (!cloudState.client || !cloudState.session) return;
-  
-  // Eğer sunucuya henüz gönderilmemiş yerel değişiklikler varsa, önce onları gönder
-  const hasLocalWrite = localStorage.getItem("sorubank:cloud-local-write");
-  if (hasLocalWrite) {
-    console.log("Unsaved local changes detected on init. Pushing to cloud...");
-    await pushCloudState({ silent: true });
-    return;
-  }
 
   const overlay = document.getElementById("cloudLoadingOverlay");
   if (overlay) overlay.removeAttribute("hidden");
@@ -2436,8 +2431,10 @@ async function checkAndSyncCloudBackground() {
       if (remoteStateData?.state) {
         const isBackupPackage = remoteStateData.state.type === "sorubank-backup" && remoteStateData.state.storage;
         if (isBackupPackage) {
+          isSyncingFromCloud = true;
           applyBackupPackage(remoteStateData.state, "replace");
           localStorage.setItem("sorubank:cloud-last-sync", remoteUpdatedAt);
+          localStorage.removeItem("sorubank:cloud-local-write");
           cloudState.lastSyncAt = remoteUpdatedAt;
           renderCloudStatus();
           console.log("Background sync complete. Reloading...");
@@ -2648,6 +2645,7 @@ async function signInToCloud() {
       if (remoteStateData?.state) {
         const isBackupPackage = remoteStateData.state.type === "sorubank-backup" && remoteStateData.state.storage;
         if (isBackupPackage) {
+          isSyncingFromCloud = true;
           applyBackupPackage(remoteStateData.state, "replace");
           localStorage.setItem("sorubank:cloud-last-sync", remoteStateData.updated_at || new Date().toISOString());
           localStorage.removeItem("sorubank:cloud-local-write");
@@ -2843,6 +2841,7 @@ async function syncCloudNow() {
       
       if (useRemote) {
         if (isBackupPackage) {
+          isSyncingFromCloud = true;
           applyBackupPackage(remote.state, "replace");
           localStorage.setItem("sorubank:cloud-last-sync", remote.updated_at || new Date().toISOString());
           localStorage.removeItem("sorubank:cloud-local-write");
