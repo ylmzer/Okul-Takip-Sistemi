@@ -2820,46 +2820,57 @@ async function syncCloudNow() {
     showToast("Eşitleme için önce giriş yapın.", "warning");
     return;
   }
-  cloudState.syncing = true;
-  renderCloudStatus();
+
+  const overlay = document.getElementById("cloudLoadingOverlay");
+  if (overlay) {
+    overlay.removeAttribute("hidden");
+    const spinner = document.getElementById("cloudLoadingSpinner");
+    const title = document.getElementById("cloudLoadingTitle");
+    const desc = document.getElementById("cloudLoadingDesc");
+    const errContainer = document.getElementById("cloudLoadingError");
+    if (spinner) spinner.style.display = "block";
+    if (title) title.textContent = "Veriler buluttan yükleniyor...";
+    if (desc) desc.textContent = "Lütfen bekleyin, güncel veriler alınıyor.";
+    if (errContainer) errContainer.style.display = "none";
+  }
+
   try {
-    const remote = await readCloudState();
-    cloudState.syncing = false;
-    renderCloudStatus();
+    const userId = cloudState.session.user.id;
+    const { data: remote, error } = await withTimeout(
+      cloudState.client
+        .from("sorubank_cloud_states")
+        .select("state, updated_at")
+        .eq("user_id", userId)
+        .maybeSingle(),
+      8000
+    );
+    if (error) throw error;
+
     if (remote?.state) {
       const isBackupPackage = remote.state.type === "sorubank-backup" && remote.state.storage;
-      
-      const isLocalEmpty = checkIsLocalStateEmpty();
-      let useRemote = true;
-      if (!isLocalEmpty) {
-        useRemote = await appConfirm("Bulutta kayıtlı verileriniz bulundu. Buluttaki verileri bu cihaza yükleyelim mi? Vazgeçerseniz bu cihazdaki veriler buluta gönderilir.", {
-          title: "Bulut eşitleme",
-          okText: "Buluttan yükle",
-          cancelText: "Cihazdakini gönder"
-        });
-      }
-      
-      if (useRemote) {
-        if (isBackupPackage) {
-          isSyncingFromCloud = true;
-          applyBackupPackage(remote.state, "replace");
-          localStorage.setItem("sorubank:cloud-last-sync", remote.updated_at || new Date().toISOString());
-          localStorage.removeItem("sorubank:cloud-local-write");
-          showToast("Buluttaki veriler bu cihaza yüklendi. Sayfa yenileniyor...");
-          setTimeout(() => window.location.reload(), 800);
-        } else {
-          applyCloudState(remote.state, remote.updated_at);
-          showToast("Buluttaki veri bu cihaza yüklendi.");
-        }
+      if (isBackupPackage) {
+        isSyncingFromCloud = true;
+        applyBackupPackage(remote.state, "replace");
+        localStorage.setItem("sorubank:cloud-last-sync", remote.updated_at || new Date().toISOString());
+        localStorage.removeItem("sorubank:cloud-local-write");
+        window.location.reload();
         return;
       }
+    } else {
+      // Bulutta veri yok, yereli gönder
+      await withTimeout(pushCloudState({ silent: true }), 8000);
     }
-    await pushCloudState();
+
+    if (overlay) overlay.setAttribute("hidden", "true");
   } catch (error) {
-    cloudState.syncing = false;
-    cloudState.lastError = `Eşitleme tamamlanamadı: ${error.message}`;
-    renderCloudStatus();
-    showToast(cloudState.lastError, "error");
+    const spinner = document.getElementById("cloudLoadingSpinner");
+    const title = document.getElementById("cloudLoadingTitle");
+    const desc = document.getElementById("cloudLoadingDesc");
+    const errContainer = document.getElementById("cloudLoadingError");
+    if (spinner) spinner.style.display = "none";
+    if (title) title.textContent = "Bağlantı Hatası";
+    if (desc) desc.textContent = error.message || "Bulut veritabanına bağlanılamadı.";
+    if (errContainer) errContainer.style.display = "block";
   }
 }
 
