@@ -1,10 +1,10 @@
-const CACHE_NAME = "ots-pwa-v20";
+const CACHE_NAME = "ots-pwa-v21";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css?v=71",
   "./theme-overrides.css?v=74",
-  "./app.js?v=77",
+  "./app.js?v=78",
   "./icons/logo-clean.svg",
   "./scripts/modules/sorubank/index.js",
   "./scripts/modules/skill-training/index.js",
@@ -32,7 +32,13 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (request.method !== "GET") return;
-  if (new URL(request.url).pathname.startsWith("/api/")) return;
+
+  const url = new URL(request.url);
+
+  // Supabase API, CDN kütüphaneleri ve API isteklerini asla cache'leme
+  if (url.pathname.startsWith("/api/")) return;
+  if (url.hostname.includes("supabase")) return;
+  if (url.hostname.includes("cdn.jsdelivr.net")) return;
 
   event.respondWith(
     fetch(request)

@@ -2382,7 +2382,7 @@ async function scheduleCloudSave() {
 
 function withTimeout(promise, ms = 6000) {
   return Promise.race([
-    promise,
+    Promise.resolve(promise),
     new Promise((_, reject) => setTimeout(() => reject(new Error("Bağlantı zaman aşımına uğradı")), ms))
   ]);
 }
@@ -2590,22 +2590,91 @@ async function signInToCloud() {
     showToast("E-posta ve şifre girin.", "warning");
     return;
   }
-  cloudState.syncing = true;
-  renderCloudStatus();
+
+  // Overlay'ı göster
+  const overlay = document.getElementById("cloudLoadingOverlay");
+  if (overlay) {
+    overlay.removeAttribute("hidden");
+    const spinner = document.getElementById("cloudLoadingSpinner");
+    const title = document.getElementById("cloudLoadingTitle");
+    const desc = document.getElementById("cloudLoadingDesc");
+    const errContainer = document.getElementById("cloudLoadingError");
+    if (spinner) spinner.style.display = "block";
+    if (title) title.textContent = "Giriş yapılıyor...";
+    if (desc) desc.textContent = "Lütfen bekleyin, hesabınıza bağlanılıyor.";
+    if (errContainer) errContainer.style.display = "none";
+  }
+
   try {
-    const { data, error } = await cloudState.client.auth.signInWithPassword({ email, password });
+    const { data, error } = await withTimeout(
+      cloudState.client.auth.signInWithPassword({ email, password }),
+      8000
+    );
     if (error) throw error;
     cloudState.session = data.session;
     els.authPasswordInput.value = "";
-    renderCloudStatus();
-    await syncCloudNow();
-    showToast("Bulut hesabına giriş yapıldı.");
+
+    if (data.session) {
+      // Giriş yapıldı, profili ayarla
+      const userEmail = normalizeEmail(data.session.user.email);
+      const name = data.session.user.user_metadata?.name || data.session.user.user_metadata?.full_name || userEmail.split("@")[0];
+      saveLocalSession({
+        id: data.session.user.id,
+        name: name,
+        email: userEmail,
+        activeModule: localSession?.activeModule || "",
+        createdAt: new Date().toISOString()
+      });
+      renderAccessShell();
+
+      // Overlay'ı güncelle - veri indiriliyor
+      const titleEl = document.getElementById("cloudLoadingTitle");
+      const descEl = document.getElementById("cloudLoadingDesc");
+      if (titleEl) titleEl.textContent = "Veriler buluttan yükleniyor...";
+      if (descEl) descEl.textContent = "Lütfen bekleyin, güncel veriler alınıyor.";
+
+      // Buluttaki veriyi oku
+      const userId = data.session.user.id;
+      const { data: remoteStateData, error: readError } = await withTimeout(
+        cloudState.client
+          .from("sorubank_cloud_states")
+          .select("state, updated_at")
+          .eq("user_id", userId)
+          .maybeSingle(),
+        8000
+      );
+      if (readError) throw readError;
+
+      if (remoteStateData?.state) {
+        const isBackupPackage = remoteStateData.state.type === "sorubank-backup" && remoteStateData.state.storage;
+        if (isBackupPackage) {
+          applyBackupPackage(remoteStateData.state, "replace");
+          localStorage.setItem("sorubank:cloud-last-sync", remoteStateData.updated_at || new Date().toISOString());
+          localStorage.removeItem("sorubank:cloud-local-write");
+          window.location.reload();
+          return;
+        }
+      } else {
+        // Bulutta veri yok, yerel veriyi gönder
+        await withTimeout(pushCloudState({ silent: true }), 8000);
+      }
+
+      if (overlay) overlay.setAttribute("hidden", "true");
+      renderCloudStatus();
+      showToast("Bulut hesabına giriş yapıldı.");
+    } else {
+      if (overlay) overlay.setAttribute("hidden", "true");
+    }
   } catch (error) {
     cloudState.lastError = `Giriş yapılamadı: ${error.message}`;
-    showToast(cloudState.lastError, "error");
-  } finally {
-    cloudState.syncing = false;
-    renderCloudStatus();
+    const spinner = document.getElementById("cloudLoadingSpinner");
+    const title = document.getElementById("cloudLoadingTitle");
+    const desc = document.getElementById("cloudLoadingDesc");
+    const errContainer = document.getElementById("cloudLoadingError");
+    if (spinner) spinner.style.display = "none";
+    if (title) title.textContent = "Bağlantı Hatası";
+    if (desc) desc.textContent = error.message || "Sunucuya bağlanılamadı.";
+    if (errContainer) errContainer.style.display = "block";
   }
 }
 
@@ -2816,7 +2885,7 @@ async function saveCloudConfigFromForm() {
 function registerPwa() {
   if (!("serviceWorker" in navigator)) return;
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+    navigator.serviceWorker.register("./service-worker.js", { updateViaCache: "none" }).catch(() => {});
   });
 
   // Automatically reload when a new service worker takes control (cache update)
