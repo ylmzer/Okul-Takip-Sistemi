@@ -4929,6 +4929,10 @@ body.module-mode .module-float-switcher {
   color: #ffffff !important;
 }
 
+.cloud-loading-overlay[hidden] {
+  display: none !important;
+}
+
 body.dark-mode .cloud-loading-overlay {
   background: rgba(5, 8, 16, 0.85) !important;
 }
