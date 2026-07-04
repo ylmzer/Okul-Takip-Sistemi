@@ -2390,6 +2390,37 @@ function withTimeout(promise, ms = 6000) {
   ]);
 }
 
+function reloadAppState() {
+  // localStorage'daki güncel verileri okuyarak tüm modülleri yeniden başlat
+  // window.location.reload() kullanmıyoruz çünkü o sonsuz döngüye neden oluyor
+  try {
+    // Soru Bankası state'ini yeniden yükle
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      state = normalizeState(JSON.parse(raw));
+    }
+    // Modülleri yeniden başlat
+    if (window.CourseTrackingModule?.init) {
+      window.CourseTrackingModule.init({ returnToModuleHub });
+    }
+    if (window.StudentTrackingModule?.init) {
+      window.StudentTrackingModule.init({ returnToModuleHub });
+    }
+    if (window.AnnualPlanModule?.init) {
+      window.AnnualPlanModule.init({ returnToModuleHub });
+    }
+    // Skill modülünü yeniden yükle
+    if (typeof loadSkillProfileStore === "function") loadSkillProfileStore();
+    if (typeof renderSkillModule === "function") renderSkillModule();
+    // Render
+    render();
+    renderAccessShell();
+    setView(state.currentView || "bank");
+  } catch (e) {
+    console.warn("reloadAppState failed:", e);
+  }
+}
+
 async function checkAndSyncCloudBackground() {
   if (!cloudState.client || !cloudState.session) return;
 
@@ -2437,9 +2468,9 @@ async function checkAndSyncCloudBackground() {
           localStorage.removeItem("sorubank:cloud-local-write");
           cloudState.lastSyncAt = remoteUpdatedAt;
           renderCloudStatus();
-          console.log("Background sync complete. Reloading...");
-          window.location.reload();
-          return;
+          console.log("Background sync complete. Refreshing UI...");
+          reloadAppState();
+          isSyncingFromCloud = false;
         }
       }
     } else {
@@ -2649,8 +2680,9 @@ async function signInToCloud() {
           applyBackupPackage(remoteStateData.state, "replace");
           localStorage.setItem("sorubank:cloud-last-sync", remoteStateData.updated_at || new Date().toISOString());
           localStorage.removeItem("sorubank:cloud-local-write");
-          window.location.reload();
-          return;
+          cloudState.lastSyncAt = remoteStateData.updated_at;
+          reloadAppState();
+          isSyncingFromCloud = false;
         }
       } else {
         // Bulutta veri yok, yerel veriyi gönder
@@ -2853,8 +2885,9 @@ async function syncCloudNow() {
         applyBackupPackage(remote.state, "replace");
         localStorage.setItem("sorubank:cloud-last-sync", remote.updated_at || new Date().toISOString());
         localStorage.removeItem("sorubank:cloud-local-write");
-        window.location.reload();
-        return;
+        cloudState.lastSyncAt = remote.updated_at;
+        reloadAppState();
+        isSyncingFromCloud = false;
       }
     } else {
       // Bulutta veri yok, yereli gönder
