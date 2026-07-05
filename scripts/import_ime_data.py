@@ -129,9 +129,184 @@ def parse_excel(file_path, known_teachers=None):
     import pandas as pd
     
     xls = pd.ExcelFile(file_path)
-    records = []
     
-    df = xls.parse(xls.sheet_names[0], header=None)
+    # --- Try to detect Nazilli "Haftalık Öğretmen Görev Formu" format ---
+    # In this format:
+    #   - Row 0 of Sheet 1 contains the week date and coordinator teacher info
+    #   - Row 1-2 are table headers (İŞLETMENİN / ÖĞRENCİNİN / HAFTALIK KONTROL)
+    #   - Row 3+ are data rows
+    #   - Business name is in the first column and may be empty when the student 
+    #     belongs to the same business as the row above (merged cell pattern)
+    #   - Multiple sheets may contain continuation data
+    
+    first_df = xls.parse(xls.sheet_names[0], header=None)
+    
+    is_nazilli_excel = False
+    coordinator_teacher = ""
+    week_date = ""
+    
+    # Check first few rows for Nazilli format markers
+    for r_idx in range(min(5, len(first_df))):
+        row_vals = [str(v).strip() if pd.notna(v) else '' for v in first_df.iloc[r_idx]]
+        row_text = turkish_clean(' '.join(row_vals))
+        if 'isletmenin' in row_text and 'ogrencinin' in row_text:
+            is_nazilli_excel = True
+            break
+    
+    if is_nazilli_excel:
+        # Extract week date and coordinator from row 0 of first sheet
+        row0_vals = [str(v).strip() if pd.notna(v) else '' for v in first_df.iloc[0]]
+        
+        for val in row0_vals:
+            if not val:
+                continue
+            # Clean newlines
+            val_clean = val.replace('\n', ' ').replace('\r', ' ').strip()
+            val_lower = turkish_clean(val_clean)
+            
+            # Check for week date (e.g. "6-10 Temmuz 2026")
+            months = ["ocak", "subat", "mart", "nisan", "mayis", "haziran", 
+                       "temmuz", "agustos", "eylul", "ekim", "kasim", "aralik"]
+            if any(m in val_lower for m in months) and not week_date:
+                # Extract just the date portion
+                import re as _re
+                date_match = _re.search(
+                    r'(\d{1,2}\s*[-–]\s*\d{1,2}\s+[a-zA-ZğüşıöçĞÜŞİÖÇ]+\s*\d{4})',
+                    val_clean
+                )
+                if date_match:
+                    week_date = date_match.group(1).strip()
+                else:
+                    # Try multiline: "6-10 Temmuz\n2026"
+                    date_match2 = _re.search(
+                        r'(\d{1,2}\s*[-–]\s*\d{1,2}\s+[a-zA-ZğüşıöçĞÜŞİÖÇ]+)',
+                        val_clean
+                    )
+                    year_match = _re.search(r'(202\d)', val_clean)
+                    if date_match2 and year_match:
+                        week_date = date_match2.group(1).strip() + " " + year_match.group(1)
+                    elif date_match2:
+                        week_date = date_match2.group(1).strip()
+            
+            # Check for coordinator teacher (e.g. "Yılmaz ER İmza")
+            if 'imza' in val_lower and not coordinator_teacher:
+                import re as _re
+                # Extract name before "İmza"
+                imza_match = _re.search(r'^(.+?)\s*[İi]mza', val_clean, _re.IGNORECASE)
+                if imza_match:
+                    coordinator_teacher = imza_match.group(1).strip()
+        
+        # Now parse data rows from all sheets
+        records = []
+        
+        for sheet_name in xls.sheet_names:
+            df = xls.parse(sheet_name, header=None)
+            
+            # Find the header row (contains "ad soyad" and "sinif" or "no")
+            data_start_row = 0
+            for r_idx in range(min(10, len(df))):
+                row_vals = [turkish_clean(str(v).replace('\n', ' ')) if pd.notna(v) else '' for v in df.iloc[r_idx]]
+                row_text = ' '.join(row_vals)
+                if ('ad soyad' in row_text or 'adi' in row_text) and ('sinif' in row_text or 'no' in row_text):
+                    data_start_row = r_idx + 1
+                    break
+            
+            # Detect column indices from the header row
+            header_row_idx = data_start_row - 1 if data_start_row > 0 else None
+            
+            # Column mapping for Nazilli format
+            # The columns vary slightly between sheets but the pattern is:
+            # BusinessName | BusinessAddress | (BusinessPhone) | SıraNo | Sınıf | No | AdSoyad | ... | Usta
+            col_biz_name = 0
+            col_biz_addr = 1
+            col_biz_phone = -1
+            col_sira = -1
+            col_sinif = -1
+            col_no = -1
+            col_adsoyad = -1
+            col_usta = -1
+            
+            if header_row_idx is not None:
+                header_vals = [turkish_clean(str(v).replace('\n', ' ')) if pd.notna(v) else '' for v in df.iloc[header_row_idx]]
+                
+                for c_idx, hv in enumerate(header_vals):
+                    if 'telefon' in hv:
+                        col_biz_phone = c_idx
+                    elif hv.startswith('sira') or ('sira' in hv and 'no' in hv):
+                        col_sira = c_idx
+                    elif 'sinif' in hv:
+                        col_sinif = c_idx
+                    elif hv == 'no' and col_sinif >= 0 and c_idx > col_sinif:
+                        col_no = c_idx
+                    elif 'ad soyad' in hv or 'adsoyad' in hv or 'ad' == hv:
+                        col_adsoyad = c_idx
+                    elif 'ustanin' in hv or 'isverenin' in hv or 'imzasi' in hv:
+                        col_usta = c_idx
+                
+                # Fallback: try to find columns by position pattern
+                if col_adsoyad < 0:
+                    # In Nazilli format, Ad soyad is typically the column after No
+                    if col_no >= 0:
+                        col_adsoyad = col_no + 1
+                
+                # Fallback for usta: last column
+                if col_usta < 0:
+                    col_usta = len(header_vals) - 1
+            
+            # Track current business across rows (merged cell pattern)
+            current_biz_name = ""
+            current_biz_addr = ""
+            current_biz_phone = ""
+            
+            for r_idx in range(data_start_row, len(df)):
+                row = df.iloc[r_idx]
+                row_cells = [clean_string(str(v)).replace('\n', ' ').replace('\r', ' ').strip() if pd.notna(v) else '' for v in row]
+                
+                # Skip empty rows
+                if not any(row_cells):
+                    continue
+                
+                # Check if this row has a new business name
+                biz_name_val = row_cells[col_biz_name] if col_biz_name < len(row_cells) else ""
+                if biz_name_val:
+                    current_biz_name = biz_name_val
+                    current_biz_addr = row_cells[col_biz_addr] if col_biz_addr >= 0 and col_biz_addr < len(row_cells) else ""
+                    current_biz_phone = row_cells[col_biz_phone] if col_biz_phone >= 0 and col_biz_phone < len(row_cells) else ""
+                
+                # Extract student data
+                student_name = row_cells[col_adsoyad] if col_adsoyad >= 0 and col_adsoyad < len(row_cells) else ""
+                student_no = row_cells[col_no] if col_no >= 0 and col_no < len(row_cells) else ""
+                class_name = row_cells[col_sinif] if col_sinif >= 0 and col_sinif < len(row_cells) else ""
+                usta_name = row_cells[col_usta] if col_usta >= 0 and col_usta < len(row_cells) else ""
+                
+                # Clean student_no (remove .0 from float parsing)
+                if student_no and '.' in student_no:
+                    student_no = student_no.split('.')[0]
+                
+                # Skip if no student name
+                if not student_name or len(student_name) < 2:
+                    continue
+                
+                # Guess field from business name
+                field = _guess_field_excel(current_biz_name)
+                
+                records.append({
+                    "student_name": student_name,
+                    "student_no": student_no,
+                    "class_name": class_name,
+                    "field": field,
+                    "business_name": current_biz_name,
+                    "business_address": current_biz_addr,
+                    "business_phone": current_biz_phone,
+                    "coordinator_name": coordinator_teacher,
+                    "days": "Pzt, Sal"
+                })
+        
+        return records
+    
+    # --- Fallback: Generic Excel parsing (original logic) ---
+    records = []
+    df = first_df
     
     header_row_idx = None
     col_mapping = {}
@@ -195,6 +370,17 @@ def parse_excel(file_path, known_teachers=None):
             
     return records
 
+def _guess_field_excel(biz_name):
+    """Guess the training field from the business name."""
+    biz_clean = turkish_clean(biz_name)
+    if any(w in biz_clean for w in ["erkek", "berber", "boss", "cut", "man"]):
+        return "Güzellik ve Saç Bakım Hizmetleri / Erkek Kuaförlüğü"
+    if any(w in biz_clean for w in ["bayan", "coiffure", "kadin", "guzellik", "diva", "nilufer"]):
+        return "Güzellik ve Saç Bakım Hizmetleri / Kadın Kuaförlüğü"
+    if any(w in biz_clean for w in ["kuafor", "kuaforu", "hair", "club"]):
+        return "Güzellik ve Saç Bakım Hizmetleri / Erkek Kuaförlüğü"
+    return "Belirtilmedi"
+
 def turkish_clean(val):
     if not val:
         return ""
@@ -209,101 +395,26 @@ def parse_pdf(file_path, known_teachers=None):
     reader = PdfReader(file_path)
     records = []
     
+    # Check if Nazilli format
     is_nazilli_format = False
-    for page in reader.pages[:2]:
-        text = page.extract_text() or ""
-        if "HAFTALIK ÖĞRETMEN GÖREV FORMU" in text or "ÇIRAK ÖĞRENCİLER İÇİN" in text:
-            is_nazilli_format = True
-            break
-            
-    if not is_nazilli_format:
-        # Fallback to the original parsing logic
-        for page in reader.pages:
-            text = page.extract_text()
-            if not text:
-                continue
-                
-            lines = text.split('\n')
-            for line in lines:
-                line_clean = line.strip()
-                if not line_clean:
-                    continue
-                    
-                parts = [p.strip() for p in re.split(r'\t|\s{2,}', line_clean) if p.strip()]
-                if len(parts) < 3:
-                    continue
-                    
-                record = classify_row_parts(parts, known_teachers)
-                if record["student_name"] and len(record["student_name"]) > 2:
-                    if record["class_name"] or record["student_no"] or record["business_name"]:
-                        records.append(record)
-        return records
-        
-    # Extract coordinator teacher
-    coordinator_teacher = ""
-    first_page_text = reader.pages[0].extract_text() or ""
-    first_page_lines = [l.strip() for l in first_page_text.split('\n') if l.strip()]
-    for idx, line in enumerate(first_page_lines):
-        clean_line = turkish_clean(line)
-        if clean_line == "imza" and idx > 0:
-            teacher_candidate = first_page_lines[idx - 1]
-            if len(teacher_candidate.split()) >= 2 and not any(kw in turkish_clean(teacher_candidate) for kw in ["mudur", "mudurlugu", "md.yrd", "oguzhan", "unal"]):
-                coordinator_teacher = teacher_candidate.strip()
-                break
-                
-    if not coordinator_teacher:
-        for page in reader.pages[1:]:
-            page_text = page.extract_text() or ""
-            page_lines = [l.strip() for l in page_text.split('\n') if l.strip()]
-            for idx, line in enumerate(page_lines):
-                clean_line = turkish_clean(line)
-                if clean_line == "imza" and idx > 0:
-                    teacher_candidate = page_lines[idx - 1]
-                    if len(teacher_candidate.split()) >= 2 and not any(kw in turkish_clean(teacher_candidate) for kw in ["mudur", "mudurlugu", "md.yrd", "oguzhan", "unal"]):
-                        coordinator_teacher = teacher_candidate.strip()
-                        break
-            if coordinator_teacher:
-                break
+    
+    # Decryption maps
+    turkish_map = {
+        'ø': 'İ',
+        'ù': 'Ş',
+        'h': 'Ü',
+        'g': 'Ö',
+        'ö': 'Ğ',
+        '÷': 'Ğ',
+        'd': 'Ç',
+        '|': 'Ö',
+        'Õ': 'I'
+    }
+    normal_lowercase = set("abcefijklmnopqrtuvwxyzıüşçğ")
+    # Removed '-' from non_alphanumeric_encoded to prevent standard hyphens from triggering encoding
+    non_alphanumeric_encoded = set("$%&'()*+,./<=>[\\]^_`{|}~øùö÷Õ|")
+    punctuation_to_strip = ".-,"
 
-    boilerplate_keywords = [
-        "valiligi", "mudurlugu", "gorev formu", "oguzhan unal", "md.yrd", 
-        "gorev ozeti", "ogrenci sayisi", "isyeri sayisi", "imza", "kontrol", 
-        "adi adresi", "sinif no", "sira no", "ad soyad", "surdurmektedir", 
-        "ayrilmistir", "gorus alinamadi", "devamsizlik", "yapmistir", 
-        "pratik egitim", "gorus ve", "gozlemleri", "imzasi, kasesi", 
-        "yilinda", "sayili kanun", "is gunu", "teslim ediniz", "gorevi", 
-        "tc", "t.c.", "aydin", "merkezi", "mesleki egitim",
-        "beceri egitimini", "isveren olmadigindan", "isverenin, ustanin",
-        "kasesi", "gorusu", "ogretmenin", "gozlemleri", "pratik egitim konusu",
-        "adi soyadi", "imzasi"
-    ]
-    
-    date_pattern = re.compile(r'\d{2}-\d{2}\s+[a-zA-ZğüşıöçĞÜŞİÖÇ]+', re.IGNORECASE)
-    year_pattern = re.compile(r'\b(2025|2026)\b')
-    page_num_pattern = re.compile(r'^\s*\d+\s*$')
-    slash_pattern = re.compile(r'^\s*/\s*$')
-    
-    def is_boilerplate(line):
-        line_clean = turkish_clean(line)
-        if len(line.strip()) <= 1:
-            return True
-        if any(kw in line_clean for kw in boilerplate_keywords):
-            return True
-        if date_pattern.search(line) or year_pattern.search(line):
-            return True
-        if page_num_pattern.match(line) or slash_pattern.match(line):
-            return True
-        if line_clean in ["imza", "imzasi", "kasesi", "imzasi, kasesi"]:
-            return True
-        if coordinator_teacher and line_clean == turkish_clean(coordinator_teacher):
-            return True
-        return False
-        
-    student_pattern = re.compile(r'\b(\d+)\s+(9|10|11|12)\s+(\d+)\s+([a-zA-ZğüşıöçĞÜŞİÖÇ\s\-\.\'\`\’]+)$', re.IGNORECASE)
-    phone_pattern = re.compile(r'\b5\d{9}\b|\b\d{10}\b')
-    
-    address_keywords = ['mah', 'sok', 'sk', 'cad', 'cd', 'apt', 'no:', 'nazilli', 'ordu', 'altintas', 'yeni mah']
-    
     def guess_field(biz_name):
         biz_clean = turkish_clean(biz_name)
         if any(w in biz_clean for w in ["erkek", "berber", "boss", "cut", "man"]):
@@ -313,92 +424,308 @@ def parse_pdf(file_path, known_teachers=None):
         if any(w in biz_clean for w in ["kuafor", "kuaforu", "hair", "club"]):
             return "Güzellik ve Saç Bakım Hizmetleri / Erkek Kuaförlüğü"
         return "Belirtilmedi"
+
+    def decode_char(c):
+        if c in turkish_map:
+            return turkish_map[c]
+        val = ord(c)
+        if 36 <= val <= 61:
+            return chr(val + 29)
+        if 68 <= val <= 93:
+            return chr(val - 3)
+        return c
+
+    def is_encoded_word(word):
+        # Clean up word by stripping common trailing/leading punctuation
+        check_word = word.strip(punctuation_to_strip)
+        if not check_word:
+            return False
+            
+        if re.match(r'^\d{10}$', check_word):  # phone
+            return False
+        if re.match(r'^\d{1,2}/[A-Z0-9]+$', check_word, re.IGNORECASE):  # class
+            return False
+        if re.match(r'^\d+$', check_word) and (1 <= len(check_word) <= 3):  # student no or row no
+            return False
+        if re.match(r'^\d{1,2}-\d{1,2}$', check_word):  # date range like 6-10
+            return False
+        if re.match(r'^202\d$', check_word):  # year like 2025 or 2026
+            return False
+            
+        if any(c in normal_lowercase for c in check_word):
+            return False
+            
+        if any(c in non_alphanumeric_encoded for c in check_word):
+            return True
+            
+        return False
+
+    def decode_word(word):
+        if not is_encoded_word(word):
+            return word
+            
+        # Check if this word contains standard plain Latin uppercase A, B, or C.
+        # If it does, we do NOT apply Font A (-3) decoding to standard letters in this word.
+        has_plain_abc = any(c in "ABC" for c in word)
         
-    current_business_lines = []
-    current_business_info = { "name": "", "address": "", "phone": "" }
-    
-    for page_idx, page in enumerate(reader.pages):
-        text = page.extract_text() or ""
-        lines = [l.strip() for l in text.split('\n') if l.strip()]
-        
-        just_processed_student = False
-        
-        for line in lines:
-            found_phone = ""
-            phone_match = phone_pattern.search(line)
-            if phone_match:
-                found_phone = phone_match.group(0)
-                line = phone_pattern.sub("", line).strip()
-                
-            student_match = student_pattern.search(line)
-            if student_match:
-                row_no = student_match.group(1)
-                class_name = student_match.group(2)
-                student_no = student_match.group(3)
-                student_name = student_match.group(4)
-                
-                if row_no == "1" or not current_business_info["name"]:
-                    if current_business_lines:
-                        full_text = " ".join(current_business_lines)
-                        clean_full_text = turkish_clean(full_text)
-                        
-                        split_idx = -1
-                        for kw in address_keywords:
-                            kw_match = re.search(r'\b' + re.escape(kw) + r'\b', clean_full_text, re.IGNORECASE)
-                            if kw_match:
-                                if split_idx == -1 or kw_match.start() < split_idx:
-                                    split_idx = kw_match.start()
-                                    
-                        if split_idx != -1:
-                            name = full_text[:split_idx].strip().strip('-').strip()
-                            address = full_text[split_idx:].strip()
-                        else:
-                            if len(current_business_lines) > 1:
-                                name = current_business_lines[0].strip()
-                                address = " ".join(current_business_lines[1:]).strip()
-                            else:
-                                name = full_text
-                                address = ""
-                                
-                        current_business_info = {
-                            "name": name,
-                            "address": address,
-                            "phone": found_phone or current_business_info.get("phone", "")
-                        }
-                    else:
-                        if not current_business_info["name"]:
-                            current_business_info = {
-                                "name": "Bilinmeyen İşletme",
-                                "address": "",
-                                "phone": found_phone or ""
-                            }
-                    current_business_lines = []
-                    
-                if found_phone and not current_business_info["phone"]:
-                    current_business_info["phone"] = found_phone
-                    
-                records.append({
-                    "student_name": student_name.strip(),
-                    "student_no": student_no.strip(),
-                    "class_name": class_name.strip(),
-                    "field": guess_field(current_business_info["name"]),
-                    "business_name": current_business_info["name"],
-                    "business_address": current_business_info["address"],
-                    "business_phone": current_business_info["phone"],
-                    "coordinator_name": coordinator_teacher or "",
-                    "days": "Pzt, Sal"
-                })
-                just_processed_student = True
-            elif is_boilerplate(line):
-                continue
+        decoded_chars = []
+        for c in word:
+            if c in turkish_map:
+                decoded_chars.append(turkish_map[c])
             else:
-                if just_processed_student:
-                    just_processed_student = False
+                val = ord(c)
+                if 36 <= val <= 61:
+                    decoded_chars.append(chr(val + 29))
+                elif 68 <= val <= 93 and not has_plain_abc:
+                    decoded_chars.append(chr(val - 3))
+                else:
+                    decoded_chars.append(c)
+                    
+        return "".join(decoded_chars)
+
+    def decode_string(s):
+        if not s:
+            return ""
+        words = s.split()
+        decoded_words = [decode_word(w) for w in words]
+        return " ".join(decoded_words)
+
+    def clean_text(text):
+        if not text:
+            return ""
+        # Replace control characters with space
+        text = re.sub(r'[\x00-\x1f\x7f-\x9f\xad]', ' ', text)
+        # Normalize multiple spaces
+        text = re.sub(r'\s+', ' ', text)
+        return text.strip()
+
+    # Check format using both raw and decoded checks
+    for page in reader.pages[:2]:
+        text = page.extract_text() or ""
+        decoded_text = decode_string(clean_text(text))
+        if "HAFTALIK ÖĞRETMEN GÖREV FORMU" in text or "ÇIRAK ÖĞRENCİLER İÇİN" in text or \
+           "HAFTALIK ÖĞRETMEN GÖREV FORMU" in decoded_text or "ÇIRAK ÖĞRENCİLER İÇİN" in decoded_text:
+            is_nazilli_format = True
+            break
+
+    if not is_nazilli_format:
+        # Fallback to the original parsing logic
+        for page in reader.pages:
+            text = page.extract_text()
+            if not text:
+                continue
+            lines = text.split('\n')
+            for line in lines:
+                line_clean = line.strip()
+                if not line_clean:
                     continue
+                parts = [p.strip() for p in re.split(r'\t|\s{2,}', line_clean) if p.strip()]
+                if len(parts) < 3:
+                    continue
+                record = classify_row_parts(parts, known_teachers)
+                if record["student_name"] and len(record["student_name"]) > 2:
+                    if record["class_name"] or record["student_no"] or record["business_name"]:
+                        records.append(record)
+        return records
+
+    # 1. Extract, decode and clean all lines per page
+    all_pages_lines = []
+    for page in reader.pages:
+        text = page.extract_text() or ""
+        # Clean control characters before decoding string so that split() works on spaces!
+        lines = [decode_string(clean_text(l.strip())) for l in text.split('\n') if l.strip()]
+        all_pages_lines.append(lines)
+
+    # 2. Extract week date and coordinator teacher from page 1 top section
+    week_date = ""
+    coordinator_teacher = ""
+    
+    # Search for date pattern in the first page
+    date_pattern = re.compile(r'(\d{1,2}[-./]\d{1,2}[-./]\d{4})|(\d{1,2}\s*-\s*\d{1,2}\s+[a-zA-ZğüşıöçĞÜŞİÖÇ]+)', re.IGNORECASE)
+    year_pattern = re.compile(r'\b(2025|2026)\b')
+    
+    first_page_lines = all_pages_lines[0]
+    
+    # Simple search for week date at the top
+    for line in first_page_lines[:6]:
+        if date_pattern.search(line) or any(m in turkish_clean(line) for m in ["ocak", "subat", "mart", "nisan", "mayis", "haziran", "temmuz", "agustos", "eylul", "ekim", "kasim", "aralik"]):
+            week_date = line
+            # Check if next line contains year to merge them
+            line_idx = first_page_lines.index(line)
+            if line_idx + 1 < len(first_page_lines) and year_pattern.match(first_page_lines[line_idx + 1]):
+                week_date += " " + first_page_lines[line_idx + 1]
+            break
+            
+    # Search for coordinator teacher (line before "İmza")
+    for idx, line in enumerate(first_page_lines[:20]):
+        if turkish_clean(line) == "imza" and idx > 0:
+            coordinator_teacher = first_page_lines[idx - 1]
+            break
+
+    # 3. Filter out boilerplate lines
+    def is_boilerplate_line(line):
+        line_comp = turkish_clean(line).replace(" ", "")
+        if not line_comp:
+            return True
+        
+        # Exact match keywords after cleaning
+        exact_boilerplates = {
+            "adi", "acresi", "telefonu", "sira", "no", "sinif", "adsoyad", 
+            "tc", "imza", "imzasi", "kasesi", "gorusu", "gorus", "gozlemleri",
+            "pratikegitimkonusu", "isletmenin", "ogrencinin", "haftalikkontrol",
+            "tkck", "qkck"
+        }
+        if line_comp in exact_boilerplates:
+            return True
+            
+        # Substring matches
+        boilerplates = [
+            "valiligi", "mudurlugu", "meslekiegitim", "gorevformu", "cirakogrenci",
+            "ogrencisayisi", "isyerisayisi", "gorevozeti", "mdyrd", "oguzhanunal",
+            "teslimediniz", "kkkkkkkk", "qkck", "surdurmektedir", "ayrilmistir",
+            "olmadigindan", "gorusalinamadi", "devamsizlikyapmistir", "ogretmeninustanin",
+            "imzasikasesi", "haftasindansonrakihafta", "sayilikanun", "uhdenize", "haftasindan",
+            "egitimogretim", "beceri", "ayril", "alinamadi", "devam", "pratik",
+            "veren", "ustanin", "usta", "adisoyadi", "imza", "isyeri", "sayi", "qkc", "adresi", 
+            "kase", "uver", "yapm", "3udw", "rqvx", "omose", "tkck"
+        ]
+        if any(bp in line_comp for bp in boilerplates):
+            return True
+            
+        # Page coords/numbers
+        if line_comp in ["114", "115", "116", "120", "121", "122"]:
+            return True
+            
+        return False
+
+    cleaned_lines = []
+    for page_lines in all_pages_lines:
+        for line in page_lines:
+            line_clean = line.strip()
+            if not line_clean:
+                continue
+            if len(line_clean) <= 1 and not line_clean.isdigit():
+                continue
+            
+            # Skip page numbers/garbage
+            if line_clean in ["{", "}", "/"] or re.match(r'^\d+\s*/\s*\d+$', line_clean):
+                continue
+                
+            if is_boilerplate_line(line_clean):
+                continue
+                
+            # Skip week date line from data stream (safeguarded for length)
+            if week_date and len(line_clean) > 3 and (line_clean == week_date or line_clean in week_date or week_date in line_clean):
+                continue
+                
+            # Skip coordinator teacher line itself from the data stream
+            if coordinator_teacher and line_clean == coordinator_teacher:
+                continue
+                
+            # Skip date signature line
+            if re.match(r'^\.*\/.*\/\d{4}$', line_clean):
+                continue
+                
+            cleaned_lines.append(line_clean)
+
+    # 4. Parse the stream of lines
+    class_pattern = re.compile(r'^\d{1,2}/[A-Z0-9]+$', re.IGNORECASE)
+    
+    # First, let's identify the indices of student blocks in the cleaned_lines list
+    student_indices = []
+    i = 0
+    while i < len(cleaned_lines) - 4:
+        # Check if i matches a student block
+        line_1 = cleaned_lines[i]      # Row No
+        line_2 = cleaned_lines[i+1]    # Class Name
+        line_3 = cleaned_lines[i+2]    # Student No
+        line_4 = cleaned_lines[i+3]    # Student Name
+        line_5 = cleaned_lines[i+4]    # Trainer Name
+        
+        if line_1.isdigit() and class_pattern.match(line_2) and line_3.isdigit() and len(line_4.split()) >= 1 and len(line_5.split()) >= 1:
+            student_indices.append(i)
+            i += 5  # Skip past this student block
+        else:
+            i += 1
+
+    if not student_indices:
+        return []
+        
+    # Group by businesses
+    address_keywords = ['mah', 'sok', 'sk', 'cad', 'cd', 'apt', 'no:', 'blv', 'bulvar', 'nazilli', 'kuyucak', 'aydin', 'aydın', 'pamukören', 'pamukoren', 'horsunlu']
+    phone_pattern = re.compile(r'\b5\d{9}\b|\b\d{10}\b')
+    
+    current_business = { "name": "Bilinmeyen İşletme", "address": "", "phone": "" }
+    
+    for idx, start_idx in enumerate(student_indices):
+        row_no = cleaned_lines[start_idx]
+        class_name = cleaned_lines[start_idx+1]
+        student_no = cleaned_lines[start_idx+2]
+        student_name = cleaned_lines[start_idx+3]
+        trainer_name = cleaned_lines[start_idx+4]
+        
+        # If row_no is 1 (or it's the first student block), parse the business details preceding it
+        if row_no == "1" or idx == 0:
+            # The business lines are between the end of the previous student block (if any) and start_idx
+            prev_end_idx = student_indices[idx-1] + 5 if idx > 0 else 0
+            biz_lines = cleaned_lines[prev_end_idx:start_idx]
+            
+            # Parse business details from biz_lines
+            biz_name = ""
+            biz_address = ""
+            biz_phone = ""
+            
+            # Find phone number
+            remaining_biz_lines = []
+            for bl in biz_lines:
+                phone_match = phone_pattern.search(bl)
+                if phone_match:
+                    biz_phone = phone_match.group(0)
+                elif bl.isdigit():
+                    # Skip standalone coordinates or counts like 14, 10
+                    continue
+                else:
+                    remaining_biz_lines.append(bl)
                     
-                if line.strip():
-                    current_business_lines.append(line.strip())
+            # Split remaining lines into name and address
+            name_parts = []
+            address_parts = []
+            found_address_start = False
+            
+            for bl in remaining_biz_lines:
+                bl_comp = turkish_clean(bl)
+                if any(kw in bl_comp for kw in address_keywords) or found_address_start:
+                    found_address_start = True
+                    address_parts.append(bl)
+                else:
+                    name_parts.append(bl)
                     
+            if name_parts:
+                biz_name = " ".join(name_parts)
+            else:
+                biz_name = "Belirtilmedi"
+                
+            biz_address = " ".join(address_parts)
+            
+            current_business = {
+                "name": biz_name,
+                "address": biz_address,
+                "phone": biz_phone
+            }
+            
+        # Append record
+        records.append({
+            "student_name": student_name,
+            "student_no": student_no,
+            "class_name": class_name,
+            "field": guess_field(current_business["name"]),
+            "business_name": current_business["name"],
+            "business_address": current_business["address"],
+            "business_phone": current_business["phone"],
+            "coordinator_name": coordinator_teacher.upper() if coordinator_teacher else "",
+            "days": "Pzt, Sal"
+        })
+        
     return records
 
 def main():
