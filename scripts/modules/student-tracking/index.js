@@ -653,6 +653,9 @@ window.StudentTrackingModule = {
     this.callbacks = { ...this.callbacks, ...callbacks };
     studentCallbacks = this.callbacks;
   },
+  loadState() {
+    studentState = loadStudentState();
+  },
   get shell() {
     return studentEls.shell;
   },

@@ -2797,6 +2797,9 @@ window.CourseTrackingModule = {
   init(callbacks = {}) {
     this.callbacks = { ...this.callbacks, ...callbacks };
   },
+  loadState() {
+    loadCourseState();
+  },
   get shell() {
     return courseEls.courseShell;
   },

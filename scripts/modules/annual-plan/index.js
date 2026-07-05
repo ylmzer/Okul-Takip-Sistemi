@@ -3197,6 +3197,9 @@ window.AnnualPlanModule = {
     this.callbacks = { ...this.callbacks, ...callbacks };
     annualCallbacks = this.callbacks;
   },
+  loadState() {
+    annualState = loadAnnualState();
+  },
   get shell() {
     return annualEls.shell;
   },

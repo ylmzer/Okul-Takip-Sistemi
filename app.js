@@ -2288,25 +2288,27 @@ function withTimeout(promise, ms = 6000) {
 
 function reloadAppState() {
   // localStorage'daki güncel verileri okuyarak tüm modülleri yeniden başlat
-  // window.location.reload() kullanmıyoruz çünkü o sonsuz döngüye neden oluyor
   try {
     // Soru Bankası state'ini yeniden yükle
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       state = normalizeState(JSON.parse(raw));
     }
-    // Modülleri yeniden başlat
-    if (window.CourseTrackingModule?.init) {
-      window.CourseTrackingModule.init({ returnToModuleHub });
+    // Modülleri yeniden başlat ve yeni verileri localStorage'dan oku
+    if (window.CourseTrackingModule?.loadState) {
+      window.CourseTrackingModule.loadState();
     }
-    if (window.StudentTrackingModule?.init) {
-      window.StudentTrackingModule.init({ returnToModuleHub });
+    if (window.StudentTrackingModule?.loadState) {
+      window.StudentTrackingModule.loadState();
     }
-    if (window.AnnualPlanModule?.init) {
-      window.AnnualPlanModule.init({ returnToModuleHub });
+    if (window.AnnualPlanModule?.loadState) {
+      window.AnnualPlanModule.loadState();
     }
     // Skill modülünü yeniden yükle
-    if (typeof loadSkillProfileStore === "function") loadSkillProfileStore();
+    if (typeof loadSkillProfileStore === "function") {
+      skillProfileStore = loadSkillProfileStore();
+      skillState = getActiveSkillProfileState();
+    }
     if (typeof renderSkillModule === "function") renderSkillModule();
     // Render
     render();
@@ -2364,9 +2366,9 @@ async function checkAndSyncCloudBackground(options = {}) {
           localStorage.removeItem("sorubank:cloud-local-write");
           cloudState.lastSyncAt = remoteUpdatedAt;
           renderCloudStatus();
-          console.log("Background sync complete. Reloading...");
-          window.location.reload();
-          return;
+          console.log("Background sync complete. Refreshing UI...");
+          reloadAppState();
+          isSyncingFromCloud = false;
         }
       }
     } else {
@@ -2791,8 +2793,8 @@ async function syncCloudNow() {
         localStorage.setItem("sorubank:cloud-last-sync", remote.updated_at || new Date().toISOString());
         localStorage.removeItem("sorubank:cloud-local-write");
         cloudState.lastSyncAt = remote.updated_at;
-        window.location.reload();
-        return;
+        reloadAppState();
+        isSyncingFromCloud = false;
       }
     } else {
       // Bulutta veri yok, yereli gönder
