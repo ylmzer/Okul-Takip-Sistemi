@@ -2364,9 +2364,9 @@ async function checkAndSyncCloudBackground(options = {}) {
           localStorage.removeItem("sorubank:cloud-local-write");
           cloudState.lastSyncAt = remoteUpdatedAt;
           renderCloudStatus();
-          console.log("Background sync complete. Refreshing UI...");
-          reloadAppState();
-          isSyncingFromCloud = false;
+          console.log("Background sync complete. Reloading...");
+          window.location.reload();
+          return;
         }
       }
     } else {
@@ -2583,9 +2583,8 @@ async function signInToCloud() {
           localStorage.setItem("sorubank:cloud-last-sync", remoteStateData.updated_at || new Date().toISOString());
           localStorage.removeItem("sorubank:cloud-local-write");
           cloudState.lastSyncAt = remoteStateData.updated_at;
-          reloadAppState();
-          isSyncingFromCloud = false;
-          finalizeCloudInitialization();
+          window.location.reload();
+          return;
         }
       } else {
         // Bulutta veri yok, yerel veriyi gönder
@@ -2792,8 +2791,8 @@ async function syncCloudNow() {
         localStorage.setItem("sorubank:cloud-last-sync", remote.updated_at || new Date().toISOString());
         localStorage.removeItem("sorubank:cloud-local-write");
         cloudState.lastSyncAt = remote.updated_at;
-        reloadAppState();
-        isSyncingFromCloud = false;
+        window.location.reload();
+        return;
       }
     } else {
       // Bulutta veri yok, yereli gönder
