@@ -1082,121 +1082,7 @@ function loadState() {
   }
 }
 
-function normalizeSkillSchoolType(value = "") {
-  return value === "lise" ? "lise" : "mesem";
-}
 
-function getSkillProfilesStorageKey() {
-  return `${SKILL_PROFILES_KEY}:${localSession?.id || "guest"}`;
-}
-
-function hasAnyScopedSkillProfileStore() {
-  const prefix = `${SKILL_PROFILES_KEY}:`;
-  for (let index = 0; index < localStorage.length; index += 1) {
-    if (String(localStorage.key(index) || "").startsWith(prefix)) return true;
-  }
-  return false;
-}
-
-function getSkillSchoolTypeLabel(value = getActiveSkillSchoolType()) {
-  return normalizeSkillSchoolType(value) === "lise" ? "Meslek Lisesi" : "Mesem";
-}
-
-function normalizeSkillStateShape(value = {}) {
-  const nextState = {
-    ...structuredClone(initialSkillState),
-    ...(value || {})
-  };
-  nextState.schoolType = normalizeSkillSchoolType(nextState.schoolType);
-  if (!Array.isArray(nextState.schoolRecords)) nextState.schoolRecords = structuredClone(initialSkillState.schoolRecords);
-  if (!Array.isArray(nextState.teacherPool)) nextState.teacherPool = structuredClone(initialSkillState.teacherPool);
-  if (!Array.isArray(nextState.fields)) nextState.fields = structuredClone(initialSkillState.fields);
-  if (!Array.isArray(nextState.businesses)) nextState.businesses = structuredClone(initialSkillState.businesses);
-  if (!Array.isArray(nextState.students)) nextState.students = structuredClone(initialSkillState.students);
-  if (!Array.isArray(nextState.coordinators)) nextState.coordinators = structuredClone(initialSkillState.coordinators);
-  if (!Array.isArray(nextState.holidays)) nextState.holidays = [];
-  if (!nextState.wageManualAbsences || Array.isArray(nextState.wageManualAbsences)) nextState.wageManualAbsences = {};
-  if (!nextState.absenceRecords || Array.isArray(nextState.absenceRecords)) nextState.absenceRecords = {};
-  if (!Array.isArray(nextState.reports)) nextState.reports = [];
-  nextState.students = nextState.students.map((student) => ({ ...student, active: student.active !== false }));
-  return nextState;
-}
-
-function createBlankSkillState(schoolType = "mesem") {
-  return normalizeSkillStateShape({
-    ...structuredClone(initialSkillState),
-    schoolType: normalizeSkillSchoolType(schoolType),
-    school: {
-      name: "Okul bilgisi girilmedi",
-      year: initialSkillState.school.year
-    },
-    schoolRecords: [],
-    teacherPool: [],
-    fields: [],
-    businesses: [],
-    students: [],
-    coordinators: [],
-    holidays: [],
-    wageManualAbsences: {},
-    reports: []
-  });
-}
-
-function createSkillProfile(name = "Yeni İME Profili", schoolType = "mesem", stateValue = null) {
-  const nextState = normalizeSkillStateShape(stateValue || createBlankSkillState(schoolType));
-  nextState.schoolType = normalizeSkillSchoolType(schoolType);
-  return {
-    id: uid("ime-profile"),
-    name: String(name || "Yeni İME Profili").trim() || "Yeni İME Profili",
-    schoolType: nextState.schoolType,
-    state: nextState,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
-}
-
-function inferSkillProfileName(stateValue = {}) {
-  const schoolName = stateValue.schoolRecords?.[0]?.name || stateValue.school?.name;
-  return schoolName && schoolName !== "Okul bilgisi girilmedi" ? schoolName : "Varsayılan İME Profili";
-}
-
-function normalizeSkillProfileStore(store = {}) {
-  const profiles = Array.isArray(store.profiles) ? store.profiles : [];
-  const nextProfiles = profiles.map((profile, index) => {
-    const stateValue = normalizeSkillStateShape(profile.state || {});
-    const schoolType = normalizeSkillSchoolType(profile.schoolType || stateValue.schoolType);
-    stateValue.schoolType = schoolType;
-    return {
-      id: profile.id || `ime-profile-${index + 1}`,
-      name: String(profile.name || inferSkillProfileName(stateValue)).trim() || `İME Profili ${index + 1}`,
-      schoolType,
-      state: stateValue,
-      createdAt: profile.createdAt || new Date().toISOString(),
-      updatedAt: profile.updatedAt || new Date().toISOString()
-    };
-  });
-  if (!nextProfiles.length) {
-    nextProfiles.push(createSkillProfile("Varsayılan Mesem Profili", "mesem", structuredClone(initialSkillState)));
-  }
-  const activeProfileId = nextProfiles.some((profile) => profile.id === store.activeProfileId)
-    ? store.activeProfileId
-    : nextProfiles[0].id;
-  return { activeProfileId, profiles: nextProfiles };
-}
-
-function loadSkillProfileStore() {
-  try {
-    const scopedKey = getSkillProfilesStorageKey();
-    const savedProfiles = localStorage.getItem(scopedKey);
-    if (savedProfiles) return normalizeSkillProfileStore(JSON.parse(savedProfiles));
-    const shouldMigrateLegacy = !hasAnyScopedSkillProfileStore();
-    const legacyProfiles = shouldMigrateLegacy ? localStorage.getItem(SKILL_PROFILES_KEY) : "";
-    if (legacyProfiles) return normalizeSkillProfileStore(JSON.parse(legacyProfiles));
-    return normalizeState(nextState);
-  } catch {
-    return normalizeState(structuredClone(initialState));
-  }
-}
 
 function normalizeSkillSchoolType(value = "") {
   return value === "lise" ? "lise" : "mesem";
@@ -2355,10 +2241,20 @@ function renderCloudStatus() {
 let isPushing = false;
 let hasPendingPush = false;
 let isSyncingFromCloud = false;
+let isCloudInitialized = false;
+
+function finalizeCloudInitialization() {
+  isCloudInitialized = true;
+  const hasLocalWrite = localStorage.getItem("sorubank:cloud-local-write");
+  if (hasLocalWrite && cloudState.client && cloudState.session) {
+    console.log("Pending local write detected after cloud init. Pushing to cloud...");
+    scheduleCloudSave();
+  }
+}
 
 async function scheduleCloudSave() {
-  // Buluttan veri indirilirken push yapma - sonsuz döngüyü engeller
-  if (isSyncingFromCloud) return;
+  // Buluttan veri indirilirken veya bulut başlatılırken push yapma - race condition engeller
+  if (isSyncingFromCloud || !isCloudInitialized) return;
   localStorage.setItem("sorubank:cloud-local-write", new Date().toISOString());
   if (!cloudState.client || !cloudState.session) return;
 
@@ -2421,10 +2317,10 @@ function reloadAppState() {
   }
 }
 
-async function checkAndSyncCloudBackground() {
+async function checkAndSyncCloudBackground(options = {}) {
   if (!cloudState.client || !cloudState.session) return;
 
-  const overlay = document.getElementById("cloudLoadingOverlay");
+  const overlay = options.silent ? null : document.getElementById("cloudLoadingOverlay");
   if (overlay) overlay.removeAttribute("hidden");
 
   try {
@@ -2481,15 +2377,17 @@ async function checkAndSyncCloudBackground() {
     if (overlay) overlay.setAttribute("hidden", "true");
   } catch (err) {
     console.warn("Background cloud sync check failed:", err.message);
-    const spinner = document.getElementById("cloudLoadingSpinner");
-    const title = document.getElementById("cloudLoadingTitle");
-    const desc = document.getElementById("cloudLoadingDesc");
-    const errContainer = document.getElementById("cloudLoadingError");
-    if (spinner) spinner.style.display = "none";
-    if (title) title.textContent = "Bağlantı Hatası";
-    if (desc) desc.textContent = "Bulut veritabanına bağlanılamadı.";
-    if (errContainer) errContainer.style.display = "block";
-    // Overlay'i gizlemiyoruz, kilitli kalıyor ve kullanıcı "Tekrar Dene" butonunu görüyor
+    if (!options.silent) {
+      const spinner = document.getElementById("cloudLoadingSpinner");
+      const title = document.getElementById("cloudLoadingTitle");
+      const desc = document.getElementById("cloudLoadingDesc");
+      const errContainer = document.getElementById("cloudLoadingError");
+      if (spinner) spinner.style.display = "none";
+      if (title) title.textContent = "Bağlantı Hatası";
+      if (desc) desc.textContent = "Bulut veritabanına bağlanılamadı.";
+      if (errContainer) errContainer.style.display = "block";
+      // Overlay'i gizlemiyoruz, kilitli kalıyor ve kullanıcı "Tekrar Dene" butonunu görüyor
+    }
   }
 }
 
@@ -2527,11 +2425,13 @@ async function initializeCloud() {
   if (!config.url || !config.anonKey) {
     cloudState = { ...cloudState, enabled: false, ready: true, client: null, session: null, lastError: "" };
     renderCloudStatus();
+    finalizeCloudInitialization();
     return;
   }
   if (!window.supabase?.createClient) {
     cloudState = { ...cloudState, enabled: true, ready: false, client: null, session: null, lastError: "Supabase kütüphanesi yüklenemedi. İnternet bağlantısını veya CDN erişimini kontrol edin." };
     renderCloudStatus();
+    finalizeCloudInitialization();
     return;
   }
 
@@ -2593,6 +2493,7 @@ async function initializeCloud() {
       renderCloudStatus();
     });
     renderCloudStatus();
+    finalizeCloudInitialization();
   } catch (error) {
     cloudState = { ...cloudState, enabled: true, ready: false, client: null, session: null, lastError: `Supabase bağlantısı kurulamadı: ${error.message}` };
     renderCloudStatus();
@@ -2608,6 +2509,7 @@ async function initializeCloud() {
     } else {
       if (overlay) overlay.setAttribute("hidden", "true");
     }
+    finalizeCloudInitialization();
   }
 }
 
@@ -2683,10 +2585,12 @@ async function signInToCloud() {
           cloudState.lastSyncAt = remoteStateData.updated_at;
           reloadAppState();
           isSyncingFromCloud = false;
+          finalizeCloudInitialization();
         }
       } else {
         // Bulutta veri yok, yerel veriyi gönder
         await withTimeout(pushCloudState({ silent: true }), 8000);
+        finalizeCloudInitialization();
       }
 
       if (overlay) overlay.setAttribute("hidden", "true");
@@ -2694,6 +2598,7 @@ async function signInToCloud() {
       showToast("Bulut hesabına giriş yapıldı.");
     } else {
       if (overlay) overlay.setAttribute("hidden", "true");
+      finalizeCloudInitialization();
     }
   } catch (error) {
     cloudState.lastError = `Giriş yapılamadı: ${error.message}`;
@@ -2705,6 +2610,7 @@ async function signInToCloud() {
     if (title) title.textContent = "Bağlantı Hatası";
     if (desc) desc.textContent = error.message || "Sunucuya bağlanılamadı.";
     if (errContainer) errContainer.style.display = "block";
+    finalizeCloudInitialization();
   }
 }
 
@@ -12555,18 +12461,33 @@ function parseBackupStorageValue(value) {
 
 function backupSummaryFromStorage(storage = {}) {
   const sorubank = parseBackupStorageValue(storage[STORAGE_KEY]) || {};
-  const skill = parseBackupStorageValue(storage[SKILL_STORAGE_KEY]) || {};
   const course = parseBackupStorageValue(storage[COURSE_STORAGE_KEY]) || {};
   const studentTracking = parseBackupStorageValue(storage[STUDENT_TRACKING_STORAGE_KEY]) || {};
   const annualPlan = parseBackupStorageValue(storage[ANNUAL_PLAN_STORAGE_KEY]) || {};
   const skillProfileKeys = Object.keys(storage).filter((key) => key === SKILL_PROFILES_KEY || key.startsWith(`${SKILL_PROFILES_KEY}:`));
+
+  let skillSchools = 0;
+  let skillStudents = 0;
+  let skillBusinesses = 0;
+  skillProfileKeys.forEach((key) => {
+    const store = parseBackupStorageValue(storage[key]) || {};
+    if (Array.isArray(store.profiles)) {
+      store.profiles.forEach((profile) => {
+        const stateVal = profile.state || {};
+        if (Array.isArray(stateVal.schoolRecords)) skillSchools += stateVal.schoolRecords.length;
+        if (Array.isArray(stateVal.students)) skillStudents += stateVal.students.length;
+        if (Array.isArray(stateVal.businesses)) skillBusinesses += stateVal.businesses.length;
+      });
+    }
+  });
+
   return {
     courses: Array.isArray(sorubank.courses) ? sorubank.courses.length : 0,
     questions: Array.isArray(sorubank.questions) ? sorubank.questions.length : 0,
     curriculumItems: Array.isArray(sorubank.curriculumItems) ? sorubank.curriculumItems.length : 0,
-    skillSchools: Array.isArray(skill.schoolRecords) ? skill.schoolRecords.length : 0,
-    skillStudents: Array.isArray(skill.students) ? skill.students.length : 0,
-    skillBusinesses: Array.isArray(skill.businesses) ? skill.businesses.length : 0,
+    skillSchools,
+    skillStudents,
+    skillBusinesses,
     courseModules: Array.isArray(course.modules) ? course.modules.length : 0,
     courseStudents: Array.isArray(course.students) ? course.students.length : 0,
     courseQuestions: course.questions && typeof course.questions === "object"
@@ -12717,9 +12638,18 @@ function applyBackupPackage(backup, mode = "replace", modulesToRestore = backup.
       if (key !== BACKUP_SNAPSHOT_KEY) localStorage.removeItem(key);
     });
   }
-  const allowedKeys = new Set(backupKeysForModules(modulesToRestore));
+  const allowedKeys = new Set();
+  const allowedPrefixes = [];
+  modulesToRestore.forEach((moduleKey) => {
+    const module = BACKUP_MODULES[moduleKey];
+    if (!module) return;
+    (module.keys || []).forEach((key) => allowedKeys.add(key));
+    (module.prefixes || []).forEach((prefix) => allowedPrefixes.push(prefix));
+  });
+
   Object.entries(storage).forEach(([key, incomingRaw]) => {
-    if (!allowedKeys.has(key)) return;
+    const isAllowed = allowedKeys.has(key) || allowedPrefixes.some((prefix) => key.startsWith(prefix));
+    if (!isAllowed) return;
     if (incomingRaw == null) {
       localStorage.removeItem(key);
       return;
@@ -13046,6 +12976,12 @@ window.addEventListener("DOMContentLoaded", () => {
   renderSkillModule();
   updateBackupSnapshotStatus();
   initializeCloud();
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && isCloudInitialized) {
+      console.log("App active. Running silent background cloud sync check...");
+      checkAndSyncCloudBackground({ silent: true });
+    }
+  });
   registerPwa();
   initMobileNavigation();
 });
