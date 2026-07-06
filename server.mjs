@@ -6,6 +6,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
+import { parsePdf, parseExcel } from "./scripts/import_ime_data.js";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const port = Number(process.env.PORT || 4173);
@@ -624,31 +625,17 @@ async function handleImeDataImport(request, response) {
   const tempPath = join(tmpdir(), `sorubank-${Date.now()}${ext}`);
   await writeFile(tempPath, fileBuffer);
   try {
-    const importerPath = join(root, "scripts", "import_ime_data.py");
-    const teachersJson = knownTeachers || "[]";
-    const { stdout } = await execFileAsync(pythonPath, [importerPath, tempPath, teachersJson], {
-      env: pythonEnv,
-      maxBuffer: 1024 * 1024 * 10
-    });
+    let records;
+    if (ext === ".pdf") {
+      records = await parsePdf(tempPath);
+    } else {
+      records = await parseExcel(tempPath);
+    }
     response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
-    response.end(stdout);
+    response.end(JSON.stringify({ records }));
   } catch (error) {
-    let errorMsg = error.message;
-    if (error.stdout) {
-      try {
-        const parsed = JSON.parse(error.stdout);
-        if (parsed.error) {
-          errorMsg = parsed.error;
-        }
-      } catch {
-        errorMsg = `${error.message}\nStdout: ${error.stdout}`;
-      }
-    }
-    if (error.stderr) {
-      errorMsg = `${errorMsg}\nStderr: ${error.stderr}`;
-    }
     response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
-    response.end(JSON.stringify({ error: errorMsg || "Execution error" }));
+    response.end(JSON.stringify({ error: error.message || "Parsing error" }));
   } finally {
     await unlink(tempPath).catch(() => {});
   }
