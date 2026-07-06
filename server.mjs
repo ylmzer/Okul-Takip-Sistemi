@@ -633,7 +633,20 @@ async function handleImeDataImport(request, response) {
     response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
     response.end(stdout);
   } catch (error) {
-    const errorMsg = error.stderr ? `${error.message}\nStderr: ${error.stderr}` : error.message;
+    let errorMsg = error.message;
+    if (error.stdout) {
+      try {
+        const parsed = JSON.parse(error.stdout);
+        if (parsed.error) {
+          errorMsg = parsed.error;
+        }
+      } catch {
+        errorMsg = `${error.message}\nStdout: ${error.stdout}`;
+      }
+    }
+    if (error.stderr) {
+      errorMsg = `${errorMsg}\nStderr: ${error.stderr}`;
+    }
     response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
     response.end(JSON.stringify({ error: errorMsg || "Execution error" }));
   } finally {
