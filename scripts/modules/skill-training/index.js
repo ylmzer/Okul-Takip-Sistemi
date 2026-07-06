@@ -454,12 +454,12 @@ function renderImportPreviewTable() {
     
     // Autocomplete datalist input instead of dropdown select
     let fieldInputHtml = `
-      <input class="import-field-input" type="text" list="importAlanDalList" data-index="${idx}" value="${escapeHtml(r.field)}" placeholder="Alan/Dal ara ve seç..." style="padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 100%; max-width: 250px; font-size: 0.78rem; outline: none; box-sizing: border-box;" />
+      <input class="import-field-input" type="text" list="importAlanDalList" data-index="${idx}" value="${escapeHtml(r.field)}" placeholder="Alan/Dal ara..." style="padding: 2px 6px !important; border-radius: 6px !important; border: 1px solid var(--line) !important; background: var(--surface) !important; color: var(--ink) !important; width: 100% !important; max-width: 250px !important; font-size: 0.78rem !important; height: 26px !important; outline: none !important; box-sizing: border-box !important; margin: 0 !important;" />
     `;
     
     const days = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma"];
-    let daySelectHtml = `<select class="import-coord-day-select" data-index="${idx}" style="padding: 2px 4px; font-size: 0.78rem; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); margin-top: 4px; display: block; outline: none; cursor: pointer;">`;
-    daySelectHtml += `<option value="">Ziyaret Günü Seçin</option>`;
+    let daySelectHtml = `<select class="import-coord-day-select" data-index="${idx}" style="padding: 2px 4px !important; font-size: 0.75rem !important; border-radius: 4px !important; border: 1px solid var(--line) !important; background: var(--surface) !important; color: var(--ink) !important; margin: 0 !important; height: 24px !important; outline: none !important; cursor: pointer !important; max-width: 120px !important; flex-shrink: 0 !important;">`;
+    daySelectHtml += `<option value="">Gün Seçin</option>`;
     for (const d of days) {
       const isSelected = r.coord_day === d;
       daySelectHtml += `<option value="${d}" ${isSelected ? "selected" : ""}>${d}</option>`;
@@ -469,18 +469,20 @@ function renderImportPreviewTable() {
     const isChecked = r.selected ? "checked" : "";
     
     html += `
-      <tr>
-        <td style="text-align: center; padding: 8px; vertical-align: middle;">
+      <tr style="height: 34px !important;">
+        <td style="text-align: center !important; padding: 3px 4px !important; vertical-align: middle !important;">
           <input type="checkbox" class="import-row-checkbox" data-index="${idx}" ${isChecked} style="cursor: pointer; width: 15px; height: 15px; margin: 0; vertical-align: middle;" />
         </td>
-        <td>${escapeHtml(r.student_no || "-")}</td>
-        <td><strong>${escapeHtml(r.student_name || "-")}</strong></td>
-        <td>${escapeHtml(r.class_name || "-")}</td>
-        <td style="padding: 6px 12px; vertical-align: middle;">${fieldInputHtml}</td>
-        <td>${escapeHtml(r.business_name || "-")}</td>
-        <td>
-          <div style="font-weight: 700;">${escapeHtml(r.coordinator_name || "-")}</div>
-          ${daySelectHtml}
+        <td style="padding: 3px 6px !important; vertical-align: middle !important;">${escapeHtml(r.student_no || "-")}</td>
+        <td style="padding: 3px 6px !important; vertical-align: middle !important;"><strong>${escapeHtml(r.student_name || "-")}</strong></td>
+        <td style="padding: 3px 6px !important; vertical-align: middle !important;">${escapeHtml(r.class_name || "-")}</td>
+        <td style="padding: 3px 6px !important; vertical-align: middle !important;">${fieldInputHtml}</td>
+        <td style="padding: 3px 6px !important; vertical-align: middle !important; font-size: 0.78rem !important; max-width: 250px !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important;" title="${escapeHtml(r.business_name || "")}">${escapeHtml(r.business_name || "-")}</td>
+        <td style="padding: 3px 6px !important; vertical-align: middle !important;">
+          <div style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; width: 100% !important;">
+            <span style="font-weight: 700; white-space: nowrap !important; font-size: 0.8rem !important;">${escapeHtml(r.coordinator_name || "-")}</span>
+            ${daySelectHtml}
+          </div>
         </td>
       </tr>
     `;

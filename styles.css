@@ -8982,7 +8982,7 @@ body.skill-mode .skill-class-day-dialog .skill-day-picker button,
 
 /* IME Import Dialog Styles */
 .skill-import-dialog {
-  width: min(1000px, calc(100vw - 28px)) !important;
+  width: min(1280px, calc(100vw - 28px)) !important;
   height: min(720px, calc(100vh - 40px)) !important;
   box-sizing: border-box !important;
 }
@@ -8993,6 +8993,7 @@ body.skill-mode .skill-class-day-dialog .skill-day-picker button,
   flex-direction: column !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
+  padding: 16px !important;
 }
 
 #skillImportPreviewArea {
