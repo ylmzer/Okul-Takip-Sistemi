@@ -535,25 +535,104 @@ body.global-settings-mode .mobile-module-hub-btn span::before {
   mask: var(--module-icon-mask) center / contain no-repeat !important;
 }
 
+/* Modüller Switcher Paneli (Yüzen Menü) */
+@keyframes floatPanelSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
 body.app-mode .module-float-panel,
 body.skill-mode .module-float-panel,
 body.student-mode .module-float-panel,
 body.annual-mode .module-float-panel,
 body.course-mode .module-float-panel,
 body.global-settings-mode .module-float-panel {
-  top: auto !important;
-  right: auto !important;
-  bottom: calc(100% + 8px) !important;
-  left: 0 !important;
-  width: 100% !important;
+  display: none;
   max-height: min(472px, calc(100vh - 112px)) !important;
-  overflow: auto !important;
+  overflow-y: auto !important;
   gap: 6px !important;
-  padding: 8px !important;
-  background: #ffffff !important;
-  border: 1px solid var(--corp-line-soft) !important;
-  border-radius: 10px !important;
-  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.2) !important;
+  padding: 10px !important;
+  border-radius: 14px !important;
+  box-sizing: border-box !important;
+  z-index: 10000 !important;
+}
+
+body.app-mode .module-float-panel:not([hidden]),
+body.skill-mode .module-float-panel:not([hidden]),
+body.student-mode .module-float-panel:not([hidden]),
+body.annual-mode .module-float-panel:not([hidden]),
+body.course-mode .module-float-panel:not([hidden]),
+body.global-settings-mode .module-float-panel:not([hidden]) {
+  display: grid !important;
+  animation: floatPanelSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+/* Desktop: Float next to the sidebar */
+@media (min-width: 992px) {
+  body.app-mode .module-float-panel,
+  body.skill-mode .module-float-panel,
+  body.student-mode .module-float-panel,
+  body.annual-mode .module-float-panel,
+  body.course-mode .module-float-panel,
+  body.global-settings-mode .module-float-panel {
+    top: auto !important;
+    right: auto !important;
+    bottom: 12px !important;
+    left: calc(100% + 12px) !important;
+    width: 270px !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+    box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+  }
+
+  body.dark-mode.app-mode .module-float-panel,
+  body.dark-mode.skill-mode .module-float-panel,
+  body.dark-mode.student-mode .module-float-panel,
+  body.dark-mode.annual-mode .module-float-panel,
+  body.dark-mode.course-mode .module-float-panel,
+  body.dark-mode.global-settings-mode .module-float-panel {
+    background: rgba(11, 18, 32, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45) !important;
+  }
+}
+
+/* Mobile & Tablet: Standard positioning */
+@media (max-width: 991px) {
+  body.app-mode .module-float-panel,
+  body.skill-mode .module-float-panel,
+  body.student-mode .module-float-panel,
+  body.annual-mode .module-float-panel,
+  body.course-mode .module-float-panel,
+  body.global-settings-mode .module-float-panel {
+    top: auto !important;
+    right: 0 !important;
+    bottom: calc(100% + 8px) !important;
+    left: 0 !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    border: 1px solid var(--corp-line-soft) !important;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.2) !important;
+  }
+
+  body.dark-mode.app-mode .module-float-panel,
+  body.dark-mode.skill-mode .module-float-panel,
+  body.dark-mode.student-mode .module-float-panel,
+  body.dark-mode.annual-mode .module-float-panel,
+  body.dark-mode.course-mode .module-float-panel,
+  body.dark-mode.global-settings-mode .module-float-panel {
+    background: #0b1220 !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4) !important;
+  }
 }
 
 body.app-mode .module-float-panel-links,
@@ -578,14 +657,15 @@ body.global-settings-mode .module-float-panel button {
   width: 100% !important;
   box-sizing: border-box !important;
   grid-template-columns: 34px minmax(0, 1fr) !important;
-  min-height: 42px !important;
-  padding: 6px 12px !important;
+  min-height: 44px !important;
+  padding: 8px 12px !important;
   color: #334155 !important;
   background: transparent !important;
   border: 1px solid transparent !important;
-  border-radius: 8px !important;
+  border-radius: 9px !important;
   font-size: 0.88rem !important;
   font-weight: 800 !important;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 body.app-mode .module-float-panel button:hover,
@@ -593,16 +673,24 @@ body.skill-mode .module-float-panel button:hover,
 body.student-mode .module-float-panel button:hover,
 body.annual-mode .module-float-panel button:hover,
 body.course-mode .module-float-panel button:hover,
-body.global-settings-mode .module-float-panel button:hover,
+body.global-settings-mode .module-float-panel button:hover {
+  color: var(--accent-strong) !important;
+  background: rgba(45, 212, 191, 0.1) !important;
+  border-color: rgba(45, 212, 191, 0.15) !important;
+  transform: translateX(4px) !important;
+}
+
 body.app-mode .module-float-panel button.is-active,
 body.skill-mode .module-float-panel button.is-active,
 body.student-mode .module-float-panel button.is-active,
 body.annual-mode .module-float-panel button.is-active,
 body.course-mode .module-float-panel button.is-active,
 body.global-settings-mode .module-float-panel button.is-active {
-  color: #0f172a !important;
-  background: var(--module-soft, #e0f2f1) !important;
-  border-color: color-mix(in srgb, var(--module-color, #0f766e) 30%, transparent) !important;
+  color: var(--accent-strong) !important;
+  background: rgba(45, 212, 191, 0.14) !important;
+  border-color: rgba(45, 212, 191, 0.22) !important;
+  border-left: 3px solid var(--accent) !important;
+  padding-left: 10px !important;
 }
 
 body.app-mode .module-float-panel button span,
