@@ -8919,9 +8919,9 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row sm
 .skill-class-day-dialog .skill-day-picker {
   width: 100%;
   padding: 8px;
-  border: 1px solid rgba(10, 45, 57, 0.18);
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: rgba(246, 249, 250, 0.92);
+  background: var(--surface-strong);
 }
 
 body.skill-mode .skill-view[data-skill-panel="students"] .skill-day-picker {
@@ -8939,8 +8939,10 @@ body.skill-mode .skill-class-day-dialog .skill-day-picker button,
 .skill-class-day-dialog .skill-day-picker button {
   min-width: 58px;
   min-height: 42px;
-  border: 1px solid rgba(10, 45, 57, 0.2);
+  border: 1px solid var(--line);
   border-radius: 10px;
+  background: var(--surface);
+  color: var(--muted);
 }
 
 @media (max-width: 720px) {

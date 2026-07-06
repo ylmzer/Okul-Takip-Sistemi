@@ -79,6 +79,16 @@
     <link rel="stylesheet" href="./theme-overrides.css?v=75" />
   </head>
   <body class="auth-mode">
+    <script>
+      (function() {
+        try {
+          const settings = JSON.parse(localStorage.getItem("sorubank:global-settings:v1") || "{}");
+          if (settings.theme === "dark") {
+            document.body.classList.add("dark-mode");
+          }
+        } catch (e) {}
+      })();
+    </script>
     <section class="auth-shell" id="authShell" aria-label="Giriş ve modül seçimi">
       <div class="auth-brand">
         <img src="icons/logo-clean.svg" class="auth-brand-mark" alt="Logo" style="filter: drop-shadow(0 3px 6px rgba(0,0,0,0.15));" />
