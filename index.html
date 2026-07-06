@@ -2134,6 +2134,18 @@
           <!-- Preview Area (Shared) -->
           <div id="skillImportPreviewArea" style="display: flex; flex-direction: column; flex: 1; min-height: 0; margin-top: 5px; border: 1px solid var(--line); padding: 12px; border-radius: 8px;">
             <h3 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--ink);">Çözümleme Sonucu</h3>
+            <div id="skillImportSettings" style="display: flex; gap: 15px; margin-bottom: 12px; background: var(--surface); border: 1px solid var(--line); padding: 10px; border-radius: 8px; font-size: 0.85rem; align-items: center; width: 100%; box-sizing: border-box;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="font-weight: bold; color: var(--ink);">Okul Türü:</span>
+                <select id="skillImportSchoolType" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: bold; outline: none; cursor: pointer;">
+                  <option value="mesem" selected>Mesleki Eğitim Merkezi (MESEM)</option>
+                  <option value="mtal">Mesleki ve Teknik Anadolu Lisesi (MTAL)</option>
+                </select>
+              </div>
+              <div style="font-size: 0.78rem; color: var(--muted);">
+                Okul türü değiştiğinde aşağıdaki Alan/Dal seçenekleri güncellenir.
+              </div>
+            </div>
             <div id="skillImportStats" class="skill-import-stats" style="margin-bottom: 10px; font-size: 0.88rem; line-height: 1.4; color: var(--ink);"></div>
             <div class="skill-table-card" style="margin-top: 0; padding: 0; flex: 1; min-height: 0; overflow-y: auto;">
               <table class="skill-data-table" style="font-size: 0.85rem;">

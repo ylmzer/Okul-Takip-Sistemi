@@ -1,0 +1,506 @@
+{
+  "mtal": {
+    "Adalet": [
+      "İnfaz ve Koruma",
+      "Zabıt Kâtipliği"
+    ],
+    "Aile ve Tüketici Hizmetleri": [
+      "Sosyal Destek Hizmetleri",
+      "Tüketici Hizmetleri"
+    ],
+    "Bilişim Teknolojileri": [
+      "Ağ İşletmenliği",
+      "Yazılım Geliştirme"
+    ],
+    "Biyomedikal Cihaz Teknolojileri": [
+      "Fizyolojik Sinyal İzleme Teşhis ve Kayıt Cihazları",
+      "Tıbbi Görüntüleme Sistemleri",
+      "Tıbbi Laboratuvar ve Hasta Dışı Uygulama Cihazları"
+    ],
+    "Büro Yönetimi ve Yönetici Asistanlığı": [
+      "Yaşam Destek ve Tedavi Cihazları",
+      "Büro Yönetimi ve Yönetici Asistanlığı"
+    ],
+    "Çocuk Gelişimi ve Eğitimi": [
+      "Erken Çocukluk ve Özel Eğitim"
+    ],
+    "Denizcilik": [
+      "Güverte İşletme",
+      "Gemi Makineleri İşletme",
+      "Gemi Elektroniği ve Haberleşme"
+    ],
+    "El Sanatları Teknolojisi": [
+      "Dekoratif El Sanatları",
+      "Dekoratif Ev Tekstili",
+      "Asansör Sistemleri"
+    ],
+    "Elektrik-Elektronik Teknolojisi": [
+      "Elektrikli Cihazlar Teknik Servisi",
+      "Elektrik Tesisatları ve Dağıtımı",
+      "Endüstriyel Bakım Onarım",
+      "Elektronik ve Haberleşme"
+    ],
+    "Endüstriyel Otomasyon Teknolojileri": [
+      "Savunma Elektronik Sistemleri (Sadece Anadolu Teknik Programında)",
+      "Endüstriyel Otomasyon Teknolojileri"
+    ],
+    "Gazetecilik": [
+      "Gazetecilik"
+    ],
+    "Geleneksel Türk Sanatları": [
+      "Geleneksel Türk Sanatları",
+      "Gemi İnşa"
+    ],
+    "Gemi Yapımı": [
+      "Yat İnşa"
+    ],
+    "Gıda Teknolojisi": [
+      "Gemi Donatım",
+      "Gıda Teknolojisi"
+    ],
+    "Grafik ve Fotoğraf": [
+      "Fotoğraf",
+      "Grafik"
+    ],
+    "Güzellik Hizmetleri": [
+      "Güzellik Hizmetleri"
+    ],
+    "Halkla İlişkiler": [
+      "Halkla İlişkiler"
+    ],
+    "Harita-Tapu-Kadastro": [
+      "Harita Kadastro",
+      "Tapu"
+    ],
+    "Hasta ve Yaşlı Hizmetleri": [
+      "Hasta ve Yaşlı Bakımı"
+    ],
+    "Hayvan Yetiştiriciliği ve Sağlığı": [
+      "Hayvan Yetiştiriciliği ve Sağlığı",
+      "İnşaat Üstyapı"
+    ],
+    "İnşaat Teknolojisi": [
+      "İnşaat Altyapı",
+      "Mimari Yapı Teknik Ressamlığı",
+      "Statik Yapı Teknik Ressamlığı",
+      "Mimari Restorasyon"
+    ],
+    "İtfaiyecilik ve Yangın Güvenliği": [
+      "Yapı Yüzey Kaplama ve Yalıtım",
+      "İtfaiyecilik ve Yangın Güvenliği",
+      "Kimya Laboratuvarı"
+    ],
+    "Kimya Teknolojisi": [
+      "Petrol Endüstrisi"
+    ],
+    "Konaklama ve Seyahat Hizmetleri": [
+      "Proses",
+      "Animatörlük",
+      "Konaklama Hizmetleri"
+    ],
+    "Kuyumculuk Teknolojisi": [
+      "Seyahat Acenteciliği",
+      "Takı İmalatı"
+    ],
+    "Laboratuvar Hizmetleri": [
+      "Gıda, Tarım ve Hayvan Sağlığı Laboratuvarı"
+    ],
+    "Maden Teknolojisi": [
+      "Madencilik",
+      "Bilgisayar Destekli Endüstriyel Modelleme",
+      "Bilgisayar Destekli Makine Ressamlığı"
+    ],
+    "Makine ve Tasarım Teknolojisi": [
+      "Bilgisayarlı Makine İmalatı",
+      "Değirmencilik",
+      "Endüstriyel Kalıp",
+      "Makine Bakım Onarım",
+      "Savunma Mekanik Sistemleri (Sadece Anadolu Teknik Programında)"
+    ],
+    "Matbaa Teknolojisi": [
+      "Tıbbi Cihaz Üretimi",
+      "Endüstriyel Ürünler Tasarımı",
+      "Baskı Öncesi",
+      "Ofset Baskı Sistemleri"
+    ],
+    "Metal Teknolojisi": [
+      "Metal Doğrama",
+      "Kaynakçılık"
+    ],
+    "Metalürji Teknolojisi": [
+      "Döküm",
+      "İzabe"
+    ],
+    "M ikrome kanik": [
+      "Mikromekanik ve Saatçilik"
+    ],
+    "Mobilya ve İç Mekân Tasarımı": [
+      "Mobilya Üretim Teknolojisi",
+      "Mobilya İç Mekân Ressamlığı"
+    ],
+    "Moda Tasarım Teknolojileri": [
+      "Terzilik",
+      "Giysi Kalıp Tasarımı ve Üretimi",
+      "İş Makineleri"
+    ],
+    "Motorlu Araçlar Teknolojisi": [
+      "Otomotiv Boya",
+      "Otomotiv Elektromekanik",
+      "Otomotiv Gövde"
+    ],
+    "Muhasebe ve Finansman": [
+      "Elektrikli Araçlar",
+      "Muhasebe",
+      "Dış Ticaret"
+    ],
+    "Pazarlama ve Perakende": [
+      "Satış Danışmanlığı",
+      "Sigortacılık"
+    ],
+    "Plastik Teknolojisi": [
+      "Plastik Teknolojisi"
+    ],
+    "Plastik Sanatlar": [
+      "Plastik Sanatlar"
+    ],
+    "Radyo-Televizyon": [
+      "Radyo-Televizyon",
+      "Raylı Sistemler Elektrik-Elektronik"
+    ],
+    "Raylı Sistemler Teknolojisi": [
+      "Raylı Sistemler Yol",
+      "Raylı Sistem Araçları"
+    ],
+    "Sağlık Hizmetleri": [
+      "Ebe Yardımcılığı",
+      "Hemşire Yardımcılığı"
+    ],
+    "Siber Güvenlik": [
+      "Sağlık Bakım Teknisyenliği",
+      "Siber Güvenlik"
+    ],
+    "Tarım": [
+      "Tarım"
+    ],
+    "Tekstil Teknolojisi": [
+      "Dokuma Üretim Teknolojisi",
+      "Örme Üretim Teknolojisi",
+      "İplik Üretim Teknolojisi",
+      "Tekstil Baskı ve Desenciliği",
+      "Tekstil Boya Apre ve Laborantlığı"
+    ],
+    "Tesisat Teknolojisi ve İklimlendirme": [
+      "Soğutma ve İklimlendirme Sistemleri",
+      "Tesisat ve Enerji Sistemleri"
+    ],
+    "Uçak Bakım": [
+      "Uçak Elektroniği",
+      "Uçak Gövde-Motor"
+    ],
+    "Ulaştırma Hizmetleri": [
+      "Sivil Havacılık",
+      "Lojistik"
+    ],
+    "Yenilenebilir Enerji Teknolojileri": [
+      "Yenilenebilir Enerji Teknolojileri"
+    ],
+    "Yiyecek İçecek Hizmetleri": [
+      "Yiyecek İçecek Hizmetleri",
+      "Mutfak Sanatları",
+      "Pastacılık ve Ekmekçilik",
+      "Servis ve Kahve Hazırlama"
+    ],
+    "Ayakkabı ve Saraciye Teknolojisi": [
+      "Ayakkabı Tasarımı ve Üretimi",
+      "Saraciye Tasarımı ve Üretimi"
+    ],
+    "Seramik ve Cam Teknolojisi (Protokol Kapsamında)": [
+      "Seramik",
+      "Cam"
+    ],
+    "Havacılık ve Uzay Teknolojisi": [
+      "Tasarım ve İmalat",
+      "İtki Sistemleri",
+      "Elektronik Sistemler"
+    ],
+    "Yapay Zekâ": [
+      "Yapay Zekâ"
+    ],
+    "Endüstriyel Kalite Kontrol": [
+      "Endüstriyel Kalite Kontrol"
+    ]
+  },
+  "mesem": {
+    "Ayakkabı ve Saraciye Teknolojisi": [
+      "Ayakkabı Modelistliği",
+      "Ayakkabı Üretimi",
+      "Saraciye Modelistliği",
+      "Saraciye Üretimi"
+    ],
+    "Bilişim Teknolojileri": [
+      "Bilgisayar Teknik Servisi",
+      "Yazılım Geliştirme"
+    ],
+    "Büro Yönetimi": [
+      "Yönetici Sekreterliği"
+    ],
+    "Denizcilik": [
+      "Balıkçılık ve Su Ürünleri"
+    ],
+    "El Sanatları Teknolojisi": [
+      "Dekoratif El Sanatları",
+      "Dekoratif Ev Tekstili",
+      "El Dokuma",
+      "El ve Makine Nakışı",
+      "Halı Desinatörlüğü",
+      "Sanayi Nakışı"
+    ],
+    "Elektrik-Elektronik Teknolojisi": [
+      "Asansör Sistemleri",
+      "Bobinaj",
+      "Büro Makineleri Teknik Servisi",
+      "Elektrik Tesisatları ve Pano Montörlüğü",
+      "Elektrikli Ev Aletleri Teknik Servisi",
+      "Endüstriyel Bakım Onarım",
+      "Görüntü ve Ses Sistemleri",
+      "Güvenlik Sistemleri",
+      "Haberleşme Sistemleri",
+      "Yüksek Gerilim Sistemleri"
+    ],
+    "Endüstriyel Otomasyon Teknolojileri": [
+      "Endüstriyel Kontrol",
+      "Gemi Donatımı"
+    ],
+    "Gemi Yapımı": [
+      "Gemi İnşa",
+      "Kompozit Tekne İmalatı",
+      "Yat İnşa"
+    ],
+    "Gıda Teknolojisi": [
+      "Bitkisel Yağ Üretim",
+      "Çay İşleme",
+      "Endüstriyel Et İşleme",
+      "Hububat İşleme",
+      "Sebze ve Meyve İşleme",
+      "Su Ürünleri İşleme",
+      "Süt İşleme",
+      "Şekerleme ve Çikolata Üretim"
+    ],
+    "Grafik ve Fotoğraf": [
+      "Zeytin İşleme",
+      "Fotoğraf",
+      "Animasyon",
+      "Grafik"
+    ],
+    "Güzellik ve Saç Bakım Hizmetleri": [
+      "Cilt Bakımı ve Makyaj",
+      "Erkek Kuaförlüğü",
+      "Kadın Kuaförlüğü"
+    ],
+    "Harita-Tapu-Kadastro": [
+      "Harita Kadastro"
+    ],
+    "Hayvan Yetiştiriciliği ve Sağlığı": [
+      "Arıcılık",
+      "Büyükbaş Hayvan Yetiştiriciliği",
+      "Ev ve Süs Hayvanları",
+      "Evcil Hayvan Kuaförlüğü",
+      "Kanatlı Hayvan Yetiştiriciliği",
+      "Küçükbaş Hayvan Yetiştiriciliği"
+    ],
+    "İnşaat Teknolojisi": [
+      "Ahşap Yapı Sistemleri",
+      "Betonarme Kalıp ve Donatı Sistemleri",
+      "Yapı Duvar ve Sıva Sistemleri",
+      "Beton-Çimento ve Zemin Teknolojisi",
+      "Cephe Sistemleri ve PVC Doğrama",
+      "Çatı Sistemleri",
+      "Çelik Yapı Teknik Ressamlığı",
+      "İç Mekân Teknik Ressamlığı",
+      "Mimari Restorasyon",
+      "Mimari Yapı Teknik Ressamlığı",
+      "Statik Yapı Teknik Ressamlığı",
+      "Yapı Dekorasyonu",
+      "Yapı Yalıtımı",
+      "Yapı Yüzey Kaplama"
+    ],
+    "Kimya Teknolojisi": [
+      "Boya Üretimi ve Kontrolü",
+      "Çimento ve Yapı Kimyasalları Üretimi",
+      "Deri İşleme",
+      "Kağıt Üretimi",
+      "Temizlik, Kozmetik ve Parfümeri Ürünleri Üretimi",
+      "Halı Temizleme ve Bakım",
+      "Kuru Temizleme"
+    ],
+    "Konaklama ve Seyahat Hizmetleri": [
+      "Kat Hizmetleri",
+      "Operasyon",
+      "Ön Büro",
+      "Rezervasyon"
+    ],
+    "Kuyumculuk Teknolojisi": [
+      "Değerli ve Yarı Değerli Taş İşlemeciliği",
+      "Takı İmalatı",
+      "Vitrin Kuyumculuğu"
+    ],
+    "Makine Teknolojisi": [
+      "Anahtarcılık ve Çilingirlik",
+      "Bilgisayar Destekli Endüstriyel Modelleme",
+      "Bilgisayar Destekli Makine Ressamlığı",
+      "Bilgisayarlı Makine İmalatı",
+      "Değirmencilik",
+      "Endüstriyel Kalıp",
+      "Makine Bakım Onarım",
+      "Mermer İşleme",
+      "Saat Tamirciliği"
+    ],
+    "Matbaa Teknolojisi": [
+      "Baskı Öncesi",
+      "Baskı Sonrası",
+      "Dijital Baskı",
+      "Flekso Baskı",
+      "Ofset Baskı",
+      "Serigrafi Baskı",
+      "Tampon Baskı",
+      "Tifdruk Baskı"
+    ],
+    "Metal Teknolojisi": [
+      "Avizecilik",
+      "Çelik Konstrüksiyon",
+      "Endüstriyel Reklam Tabelacılığı",
+      "Isıl İşlem",
+      "Karosercilik",
+      "Kaynakçılık",
+      "Metal Doğrama",
+      "Metal Levha İşlemeciliği"
+    ],
+    "Metalürji Teknolojisi": [
+      "Metal Yüzey Boyama",
+      "Sac İşleri",
+      "Döküm",
+      "İzabe ve Haddecilik"
+    ],
+    "Mobilya ve İç Mekân Tasarımı": [
+      "Ahşap Doğrama Teknolojisi",
+      "İç Mekân ve Mobilya Teknolojisi",
+      "Mobilya İskeleti ve Döşemesi",
+      "Mobilya Süsleme Sanatları",
+      "Oto Döşemeciliği"
+    ],
+    "Moda Tasarım Teknolojileri": [
+      "Deri Giyim",
+      "Erkek Terziliği",
+      "Hazır Giyim Model Makineciliği",
+      "İç Giyim Modelistliği",
+      "Kadın Terziliği",
+      "Kesim",
+      "Modelistlik"
+    ],
+    "Motorlu Araçlar Teknolojisi": [
+      "Dizel Motorları Yakıt Pompası ve Enjektör Ayarcılığı",
+      "İş Makineleri",
+      "Motorlu Araçlar LPG Sistemleri Bakım ve Onarımcılığı",
+      "Motosiklet Tamirciliği",
+      "Otomotiv Boya",
+      "Otomotiv Elektrikçiliği",
+      "Otomotiv Elektromekanik",
+      "Otomotiv Gövde"
+    ],
+    "Muhasebe ve Finansman": [
+      "Otomotiv Mekanikerliği",
+      "Otomotiv Motor Yenileştirmeciliği",
+      "Ön Düzen Ayarcılığı ve Lastikçilik",
+      "Muhasebe"
+    ],
+    "Müzik Aletleri Yapımı": [
+      "Mızraplı Batı Müziği Enstrümanları Yapımı",
+      "Mızraplı Halk Müziği Enstrümanları Yapımı",
+      "Mızraplı Sanat Müziği Enstrümanları Yapımı"
+    ],
+    "Pazarlama ve Perakende": [
+      "Yaylı Enstrüman Yapımı",
+      "Emlak Komisyonculuğu",
+      "Satış Elemanlığı"
+    ],
+    "Plastik Teknolojisi": [
+      "Sigortacılık",
+      "Plastik İşleme",
+      "Plastik Kalıp"
+    ],
+    "Seramik ve Cam Teknolojisi": [
+      "Alçı Model Kalıp",
+      "Çinicilik",
+      "Dekoratif Cam",
+      "Endüstriyel Cam"
+    ],
+    "Tarım": [
+      "Serbest Seramik Şekillendirme",
+      "Sır Üstü Dekorlama",
+      "Tornada Form Şekillendirme",
+      "Bağcılık",
+      "Mantar Yetiştiriciliği",
+      "Meyve Yetiştiriciliği",
+      "Sebze Yetiştiriciliği",
+      "Bahçıvanlık",
+      "Endüstri Bitkileri Yetiştiriciliği",
+      "Tarla Bitkileri Yetiştiriciliği"
+    ],
+    "Tekstil Teknolojisi": [
+      "Tıbbi Aromatik Bitkiler Yetiştiriciliği",
+      "Çiçekçilik ve Süs Bitkileri",
+      "Seracılık",
+      "Çay Yetiştiriciliği",
+      "Orman Yetiştiriciliği",
+      "Dokuma Operatörlüğü",
+      "Dokusuz Yüzeyler",
+      "Endüstriyel Çorap Örme",
+      "Endüstriyel Düz Örme",
+      "Endüstriyel Yuvarlak Örme"
+    ],
+    "Tesisat Teknolojisi ve İklimlendirme": [
+      "İplik Üretim Teknolojisi",
+      "Tekstil Baskı ve Desenciliği",
+      "Tekstil Bitim İşlemleri (Apre)",
+      "Tesktil Boyacılığı",
+      "Gaz Tesisat Sistemleri",
+      "Gaz Yakıcı Cihazlar ve Servis",
+      "Isıtma ve Sıhhi Tesisat Sistemleri",
+      "Kazan Yakma ve Bakımı",
+      "Su Arıtma Sistemleri"
+    ],
+    "Ulaştırma Hizmetleri": [
+      "Güneş Enerjisi ve Tesisat Sistemleri",
+      "İklimlendirme Sistemleri",
+      "Soğutma Sistemleri",
+      "Lojistik",
+      "Kargo ve Kurye Hizmetleri"
+    ],
+    "Yiyecek İçecek Hizmetleri": [
+      "Otopark ve Vale Hizmetleri",
+      "Aşçılık",
+      "Fırıncılık",
+      "Kantin İşletmeciliği"
+    ],
+    "Siber Güvenlik": [
+      "Kasaplık",
+      "Pasta ve Tatlı Yapımı",
+      "Servis",
+      "Siber Güvenlik"
+    ],
+    "Gazetecilik": [
+      "Web İçerik Editörü",
+      "Sosyal Medya"
+    ],
+    "Radyo-Televizyon": [
+      "Medya Yazılımı",
+      "Video, Ses Üretim ve Kurgu"
+    ],
+    "Yenilenebilir Enerji Teknolojileri": [
+      "Güneş Panel Entegre Sistemleri"
+    ],
+    "Uçak Bakım (Protokol Kapsamında)": [
+      "Hava Aracı Montaj"
+    ]
+  }
+}

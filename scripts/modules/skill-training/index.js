@@ -2,6 +2,8 @@
    İŞLETMELERDE BECERİ EĞİTİMİ MODÜLÜ - EKRAN BAĞLARI VE ETKİLEŞİMLER
    ========================================================================== */
 
+let alanDalListesi = null;
+
 els.skillModuleSwitchBtn?.addEventListener("click", returnToModuleHub);
 
 if (els.skillGlobalSearchInput) {
@@ -332,6 +334,133 @@ function openSkillImportDialog() {
   els.skillImportDialog?.showModal();
 }
 
+async function loadAlanDalListesi() {
+  if (alanDalListesi) return alanDalListesi;
+  try {
+    const response = await fetch("scripts/modules/skill-training/alan_dal_listesi.json");
+    if (!response.ok) throw new Error("JSON listesi yüklenemedi");
+    alanDalListesi = await response.json();
+    return alanDalListesi;
+  } catch (error) {
+    console.error("Alan/Dal listesi yüklenemedi:", error);
+    alanDalListesi = { mtal: {}, mesem: {} };
+    return alanDalListesi;
+  }
+}
+
+function turkishClean(val) {
+  if (!val) return "";
+  let s = String(val).trim().toLowerCase();
+  s = s.replace(/\u0307/g, '');
+  s = s.replace(/ı/g, 'i')
+       .replace(/i̇/g, 'i')
+       .replace(/ö/g, 'o')
+       .replace(/ü/g, 'u')
+       .replace(/ş/g, 's')
+       .replace(/ç/g, 'c')
+       .replace(/ğ/g, 'g');
+  return s;
+}
+
+function findClosestMatch(importedField, listType) {
+  if (!importedField || importedField === "Belirtilmedi") return "Belirtilmedi";
+  if (!alanDalListesi || !alanDalListesi[listType]) return "Belirtilmedi";
+  
+  const cleanedImport = turkishClean(importedField);
+  const typeList = alanDalListesi[listType];
+  
+  for (const alan of Object.keys(typeList)) {
+    for (const dal of typeList[alan]) {
+      const optionValue = `${alan} / ${dal}`;
+      if (turkishClean(optionValue) === cleanedImport) {
+        return optionValue;
+      }
+    }
+  }
+  
+  const importParts = cleanedImport.split("/");
+  const importDalClean = (importParts[1] || importParts[0]).trim();
+  
+  for (const alan of Object.keys(typeList)) {
+    for (const dal of typeList[alan]) {
+      const dalClean = turkishClean(dal);
+      if (dalClean === importDalClean || dalClean.includes(importDalClean) || importDalClean.includes(dalClean)) {
+        return `${alan} / ${dal}`;
+      }
+    }
+  }
+  
+  const importAlanClean = importParts[0].trim();
+  for (const alan of Object.keys(typeList)) {
+    const alanClean = turkishClean(alan);
+    if (alanClean === importAlanClean || alanClean.includes(importAlanClean) || importAlanClean.includes(alanClean)) {
+      if (typeList[alan].length > 0) {
+        return `${alan} / ${typeList[alan][0]}`;
+      }
+    }
+  }
+  
+  return "Belirtilmedi";
+}
+
+function renderImportPreviewTable() {
+  const tableBody = document.getElementById("skillImportPreviewTable");
+  if (!tableBody) return;
+  
+  const schoolTypeSelect = document.getElementById("skillImportSchoolType");
+  const schoolType = schoolTypeSelect ? schoolTypeSelect.value : "mesem";
+  
+  const typeList = alanDalListesi[schoolType] || {};
+  
+  let html = "";
+  parsedImportRecords.forEach((r, idx) => {
+    if (!r.originalField) {
+      r.originalField = r.field;
+    }
+    const matchedField = findClosestMatch(r.originalField, schoolType);
+    r.field = matchedField;
+    
+    let fieldSelectHtml = `<select class="import-field-select" data-index="${idx}" style="padding: 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 100%; max-width: 250px; font-size: 0.78rem; outline: none; cursor: pointer;">`;
+    fieldSelectHtml += `<option value="Belirtilmedi" ${r.field === "Belirtilmedi" ? "selected" : ""}>Belirtilmedi</option>`;
+    
+    for (const alan of Object.keys(typeList)) {
+      fieldSelectHtml += `<optgroup label="${escapeHtml(alan)}">`;
+      for (const dal of typeList[alan]) {
+        const optionValue = `${alan} / ${dal}`;
+        const isSelected = r.field === optionValue;
+        fieldSelectHtml += `<option value="${escapeHtml(optionValue)}" ${isSelected ? "selected" : ""}>${escapeHtml(dal)}</option>`;
+      }
+      fieldSelectHtml += `</optgroup>`;
+    }
+    fieldSelectHtml += `</select>`;
+    
+    const days = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma"];
+    let daySelectHtml = `<select class="import-coord-day-select" data-index="${idx}" style="padding: 2px 4px; font-size: 0.78rem; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); margin-top: 4px; display: block; outline: none; cursor: pointer;">`;
+    daySelectHtml += `<option value="">Ziyaret Günü Seçin</option>`;
+    for (const d of days) {
+      const isSelected = r.coord_day === d;
+      daySelectHtml += `<option value="${d}" ${isSelected ? "selected" : ""}>${d}</option>`;
+    }
+    daySelectHtml += `</select>`;
+    
+    html += `
+      <tr>
+        <td>${escapeHtml(r.student_no || "-")}</td>
+        <td><strong>${escapeHtml(r.student_name || "-")}</strong></td>
+        <td>${escapeHtml(r.class_name || "-")}</td>
+        <td style="padding: 6px 12px; vertical-align: middle;">${fieldSelectHtml}</td>
+        <td>${escapeHtml(r.business_name || "-")}</td>
+        <td>
+          <div style="font-weight: 700;">${escapeHtml(r.coordinator_name || "-")}</div>
+          ${daySelectHtml}
+        </td>
+      </tr>
+    `;
+  });
+  
+  tableBody.innerHTML = html;
+}
+
 async function analyzeImeImportFile(file) {
   if (!file) return;
   const prevBtn = document.getElementById("skillImportPrevBtn");
@@ -351,6 +480,9 @@ async function analyzeImeImportFile(file) {
   if (els.skillImportStats) els.skillImportStats.textContent = "";
   
   try {
+    // Load Alan/Dal list from JSON before rendering preview
+    await loadAlanDalListesi();
+
     const formData = new FormData();
     formData.append("file", file);
     
@@ -419,18 +551,8 @@ async function analyzeImeImportFile(file) {
       `;
     }
     
-    if (els.skillImportPreviewTable) {
-      els.skillImportPreviewTable.innerHTML = parsedImportRecords.map(r => `
-        <tr>
-          <td>${escapeHtml(r.student_no || "-")}</td>
-          <td><strong>${escapeHtml(r.student_name || "-")}</strong></td>
-          <td>${escapeHtml(r.class_name || "-")}</td>
-          <td>${escapeHtml(r.field || "-")}</td>
-          <td>${escapeHtml(r.business_name || "-")}</td>
-          <td>${escapeHtml(r.coordinator_name || "-")}</td>
-        </tr>
-      `).join("");
-    }
+    // Render the interactive preview table using loaded lists and selections
+    renderImportPreviewTable();
     
     if (els.skillImportSaveBtn) els.skillImportSaveBtn.disabled = false;
     
@@ -509,6 +631,27 @@ function saveImeImportedData(event) {
       }
     }
     
+    // Add selected Alan/Dal field to state fields list if not already present
+    let fieldVal = (rec.field || "Belirtilmedi").trim();
+    if (fieldVal && fieldVal !== "Belirtilmedi") {
+      const parts = fieldVal.split("/");
+      const area = parts[0]?.trim() || "Belirtilmedi";
+      const branch = parts[1]?.trim() || "Belirtilmedi";
+      
+      if (!skillState.fields) skillState.fields = [];
+      const fieldExists = skillState.fields.some(f => 
+        f.area.toLowerCase() === area.toLowerCase() && 
+        f.branch.toLowerCase() === branch.toLowerCase()
+      );
+      if (!fieldExists) {
+        skillState.fields.push({
+          id: uid("field"),
+          area: area,
+          branch: branch
+        });
+      }
+    }
+
     let stuNo = (rec.student_no || "").trim();
     let stuName = (rec.student_name || "").trim();
     let student = skillState.students.find(s => 
@@ -523,7 +666,7 @@ function saveImeImportedData(event) {
         no: stuNo,
         name: stuName,
         className: rec.class_name || "12/A",
-        field: rec.field || "Belirtilmedi",
+        field: fieldVal,
         businessId: biz.id,
         days: days,
         active: true
@@ -534,7 +677,7 @@ function saveImeImportedData(event) {
       student.no = stuNo || student.no;
       student.name = stuName || student.name;
       student.className = rec.class_name || student.className;
-      student.field = rec.field || student.field;
+      student.field = fieldVal;
       student.businessId = biz.id;
       student.days = days;
     }
@@ -549,9 +692,11 @@ function saveImeImportedData(event) {
           id: uid("coord"),
           teacher: teacherName,
           businessId: biz.id,
-          day: ""
+          day: rec.coord_day || ""
         };
         skillState.coordinators.push(coord);
+      } else {
+        coord.day = rec.coord_day || coord.day || "";
       }
     }
   });
@@ -575,6 +720,40 @@ document.getElementById("skillImportTabSqlite")?.addEventListener("click", () =>
 document.getElementById("skillImportSqliteSelect")?.addEventListener("change", updateImportNextBtnState);
 document.getElementById("skillImportNextBtn")?.addEventListener("click", handleImportNextStep);
 document.getElementById("skillImportPrevBtn")?.addEventListener("click", handleImportPrevStep);
+
+document.getElementById("skillImportSchoolType")?.addEventListener("change", () => {
+  renderImportPreviewTable();
+});
+
+document.getElementById("skillImportPreviewTable")?.addEventListener("change", (e) => {
+  if (e.target.classList.contains("import-field-select")) {
+    const idx = parseInt(e.target.dataset.index);
+    const selectedField = e.target.value;
+    if (parsedImportRecords[idx]) {
+      parsedImportRecords[idx].field = selectedField;
+    }
+  }
+  
+  if (e.target.classList.contains("import-coord-day-select")) {
+    const idx = parseInt(e.target.dataset.index);
+    const selectedDay = e.target.value;
+    const currentRec = parsedImportRecords[idx];
+    if (currentRec) {
+      currentRec.coord_day = selectedDay;
+      
+      // Auto-update other rows with the same business name
+      parsedImportRecords.forEach((rec, rIdx) => {
+        if (rec.business_name === currentRec.business_name) {
+          rec.coord_day = selectedDay;
+          const selectEl = document.querySelector(`.import-coord-day-select[data-index="${rIdx}"]`);
+          if (selectEl) {
+            selectEl.value = selectedDay;
+          }
+        }
+      });
+    }
+  }
+});
 
 if (els.skillImeProfileBtn) els.skillImeProfileBtn.addEventListener("click", openSkillImeProfileDialog);
 if (els.skillImeProfileCloseBtn) els.skillImeProfileCloseBtn.addEventListener("click", () => els.skillImeProfileDialog?.close());
