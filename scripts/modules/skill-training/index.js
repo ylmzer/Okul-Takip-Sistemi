@@ -1736,7 +1736,18 @@ function initStudentAlanDalAutocomplete() {
 
   function getCombinedFields() {
     const localFields = Array.isArray(skillState.fields) ? skillState.fields : [];
-    const union = new Set([...localFields, ...allAlanDalSuggestions]);
+    const localLabels = localFields.map(f => {
+      if (typeof f === "object" && f !== null) {
+        const area = String(f.area || "").trim();
+        const branch = String(f.branch || "").trim();
+        if (!area && !branch) return "";
+        if (!branch || branch.toLowerCase() === "belirtilmedi") return area;
+        if (!area || area.toLowerCase() === "belirtilmedi") return branch;
+        return `${area} / ${branch}`;
+      }
+      return String(f);
+    }).filter(Boolean);
+    const union = new Set([...localLabels, ...allAlanDalSuggestions]);
     return Array.from(union);
   }
 
@@ -1813,8 +1824,22 @@ function initStudentAlanDalAutocomplete() {
     
     if (item.type === "add-new") {
       const val = item.value;
-      if (!skillState.fields.includes(val)) {
-        skillState.fields.push(val);
+      const parts = val.split("/");
+      const area = parts[0]?.trim() || "Belirtilmedi";
+      const branch = parts[1]?.trim() || "";
+      
+      if (!skillState.fields) skillState.fields = [];
+      const fieldExists = skillState.fields.some(f => 
+        f.area.toLowerCase() === area.toLowerCase() && 
+        (branch ? f.branch.toLowerCase() === branch.toLowerCase() : true)
+      );
+      
+      if (!fieldExists) {
+        skillState.fields.push({
+          id: "field_" + Math.random().toString(36).substr(2, 9),
+          area: area,
+          branch: branch
+        });
         saveSkillProfileStore();
       }
       input.value = val;
