@@ -756,28 +756,60 @@ document.getElementById("skillImportSelectAll")?.addEventListener("change", (e) 
 
 document.getElementById("skillImportBulkApplyBtn")?.addEventListener("click", () => {
   const bulkInput = document.getElementById("skillImportBulkFieldInput");
-  const selectedValue = bulkInput ? bulkInput.value.trim() : "";
-  if (!selectedValue) {
-    showToast("Lütfen toplu atanacak alan/dal bilgisini seçin.", "warning");
+  const bulkDaySelect = document.getElementById("skillImportBulkDaySelect");
+  
+  const bulkField = bulkInput ? bulkInput.value.trim() : "";
+  const bulkDay = bulkDaySelect ? bulkDaySelect.value : "";
+  
+  if (!bulkField && !bulkDay) {
+    showToast("Lütfen toplu atanacak alan/dal veya ziyaret günü seçin.", "warning");
     return;
   }
   
-  let appliedCount = 0;
+  let appliedFieldCount = 0;
+  let appliedDayCount = 0;
+  
   parsedImportRecords.forEach((r, idx) => {
     if (r.selected) {
-      r.field = selectedValue;
-      const inputEl = document.querySelector(`.import-field-input[data-index="${idx}"]`);
-      if (inputEl) {
-        inputEl.value = selectedValue;
+      if (bulkField) {
+        r.field = bulkField;
+        const inputEl = document.querySelector(`.import-field-input[data-index="${idx}"]`);
+        if (inputEl) {
+          inputEl.value = bulkField;
+        }
+        appliedFieldCount++;
       }
-      appliedCount++;
+      
+      if (bulkDay) {
+        r.coord_day = bulkDay;
+        const selectEl = document.querySelector(`.import-coord-day-select[data-index="${idx}"]`);
+        if (selectEl) {
+          selectEl.value = bulkDay;
+        }
+        appliedDayCount++;
+        
+        // Also sync day with other students of the same business (even if they are not selected)
+        parsedImportRecords.forEach((rec, rIdx) => {
+          if (rec.business_name === r.business_name) {
+            rec.coord_day = bulkDay;
+            const subSelectEl = document.querySelector(`.import-coord-day-select[data-index="${rIdx}"]`);
+            if (subSelectEl) {
+              subSelectEl.value = bulkDay;
+            }
+          }
+        });
+      }
     }
   });
   
-  showToast(`${appliedCount} öğrenciye toplu Alan/Dal atandı.`, "success");
+  let msg = [];
+  if (appliedFieldCount > 0) msg.push(`${appliedFieldCount} öğrenciye Alan/Dal`);
+  if (appliedDayCount > 0) msg.push(`${appliedDayCount} öğrenciye Ziyaret Günü`);
+  showToast(`${msg.join(" ve ")} toplu atandı.`, "success");
   
   parsedImportRecords.forEach(r => r.selected = false);
   if (bulkInput) bulkInput.value = "";
+  if (bulkDaySelect) bulkDaySelect.value = "";
   document.querySelectorAll(".import-row-checkbox").forEach(cb => cb.checked = false);
   const selectAllCheckbox = document.getElementById("skillImportSelectAll");
   if (selectAllCheckbox) selectAllCheckbox.checked = false;
