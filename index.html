@@ -21,50 +21,6 @@
         }
       })();
     </script>
-    <script>
-      (function() {
-        const LOCAL_SESSION_KEY = 'sorubank:local-session';
-        try {
-          const session = JSON.parse(localStorage.getItem(LOCAL_SESSION_KEY));
-          if (session && session.name) {
-            document.documentElement.classList.add('is-authenticated');
-            const activeModule = session.activeModule || "";
-            if (activeModule === "sorubank") {
-              document.documentElement.classList.add('app-mode-init');
-            } else if (activeModule === "skill-training") {
-              document.documentElement.classList.add('skill-mode-init');
-            } else if (activeModule === "student-tracking") {
-              document.documentElement.classList.add('student-mode-init');
-            } else if (activeModule === "annual-plan") {
-              document.documentElement.classList.add('annual-mode-init');
-            } else if (activeModule === "course-tracking") {
-              document.documentElement.classList.add('course-mode-init');
-            } else if (activeModule === "settings") {
-              document.documentElement.classList.add('global-settings-mode-init');
-            } else {
-              document.documentElement.classList.add('module-mode-init');
-            }
-          } else {
-            document.documentElement.classList.add('auth-mode-init');
-          }
-        } catch (e) {
-          document.documentElement.classList.add('auth-mode-init');
-        }
-      })();
-    </script>
-    <style>
-      /* Prevent flash of login screen if authenticated */
-      html.is-authenticated .auth-shell {
-        display: none !important;
-      }
-      /* Show correct initial shell */
-      html.app-mode-init .app-shell { display: grid !important; }
-      html.skill-mode-init .skill-shell { display: grid !important; }
-      html.student-mode-init .student-shell { display: grid !important; }
-      html.annual-mode-init .annual-shell { display: grid !important; }
-      html.course-mode-init .course-shell { display: grid !important; }
-      html.global-settings-mode-init .global-settings-shell { display: grid !important; }
-    </style>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Okul Takip Sistemi</title>
@@ -85,6 +41,26 @@
           const settings = JSON.parse(localStorage.getItem("sorubank:global-settings:v1") || "{}");
           if (settings.theme === "dark") {
             document.body.classList.add("dark-mode");
+          }
+          const session = JSON.parse(localStorage.getItem("sorubank:local-session"));
+          if (session && session.name) {
+            document.body.classList.remove("auth-mode");
+            const activeModule = session.activeModule || "";
+            if (activeModule === "sorubank") {
+              document.body.classList.add("app-mode");
+            } else if (activeModule === "skill-training") {
+              document.body.classList.add("skill-mode");
+            } else if (activeModule === "student-tracking") {
+              document.body.classList.add("student-mode");
+            } else if (activeModule === "annual-plan") {
+              document.body.classList.add("annual-mode");
+            } else if (activeModule === "course-tracking") {
+              document.body.classList.add("course-mode");
+            } else if (activeModule === "settings") {
+              document.body.classList.add("global-settings-mode");
+            } else {
+              document.body.classList.add("module-mode");
+            }
           }
         } catch (e) {}
       })();
