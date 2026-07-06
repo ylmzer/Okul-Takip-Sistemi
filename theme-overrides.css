@@ -4979,95 +4979,69 @@ body.dark-mode .cloud-loading-overlay {
   }
 }
 
-/* Autocomplete Dropdown Menu Styles */
-.autocomplete-dropdown {
-  position: absolute !important;
-  top: 100% !important;
-  left: 0 !important;
-  width: 100% !important;
-  min-width: 380px !important;
-  max-height: 260px !important;
-  overflow-y: auto !important;
-  background: #ffffff !important;
-  border: 1px solid var(--line) !important;
-  border-radius: 8px !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
-  z-index: 1000 !important;
-  box-sizing: border-box !important;
-  margin-top: 4px !important;
-}
-
-body.dark-mode .autocomplete-dropdown {
-  background: var(--surface-strong) !important;
-  border-color: var(--line) !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important;
-}
-
-.autocomplete-item {
-  padding: 10px 14px !important;
-  cursor: pointer !important;
-  font-size: 0.85rem !important;
-  color: var(--ink) !important;
+/* Alan/Dal Seçici Dialog Stilleri */
+.field-selector-row {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  transition: background 0.15s ease, color 0.15s ease !important;
-  text-align: left !important;
+  padding: 10px 14px !important;
+  border-bottom: 1px solid var(--line) !important;
+  transition: background 0.15s ease !important;
+  background: var(--surface) !important;
 }
 
-.autocomplete-item:hover,
-.autocomplete-item.is-active {
-  background: rgba(45, 212, 191, 0.1) !important;
-  color: var(--accent-strong) !important;
+.field-selector-row:last-child {
+  border-bottom: none !important;
 }
 
-.autocomplete-item strong {
-  color: var(--accent) !important;
-}
-
-.autocomplete-action-item {
-  font-weight: 600 !important;
-  border-top: 1px dashed var(--line) !important;
-}
-
-.autocomplete-action-item.add-new {
-  color: #10b981 !important;
-  background: rgba(16, 185, 129, 0.04) !important;
-}
-
-.autocomplete-action-item.add-new:hover,
-.autocomplete-action-item.add-new.is-active {
-  background: rgba(16, 185, 129, 0.12) !important;
-  color: #059669 !important;
-}
-
-.autocomplete-action-item.manage {
-  color: var(--accent) !important;
+.field-selector-row:hover {
   background: rgba(45, 212, 191, 0.04) !important;
 }
 
-.autocomplete-action-item.manage:hover,
-.autocomplete-action-item.manage.is-active {
-  background: rgba(45, 212, 191, 0.12) !important;
-  color: var(--accent-strong) !important;
+.field-selector-info {
+  flex: 1 !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  padding-right: 12px !important;
 }
 
-/* Custom Scrollbar for Autocomplete Dropdown */
-.autocomplete-dropdown::-webkit-scrollbar {
-  width: 6px !important;
+.field-selector-info strong {
+  font-size: 0.85rem !important;
+  display: block !important;
+  color: var(--ink) !important;
 }
 
-.autocomplete-dropdown::-webkit-scrollbar-track {
-  background: transparent !important;
+.field-selector-info span {
+  font-size: 0.76rem !important;
+  color: var(--muted) !important;
+  display: block !important;
+  margin-top: 2px !important;
 }
 
-.autocomplete-dropdown::-webkit-scrollbar-thumb {
-  background: var(--line) !important;
-  border-radius: 4px !important;
+.field-selector-actions {
+  display: flex !important;
+  gap: 6px !important;
+  align-items: center !important;
 }
 
-.autocomplete-dropdown::-webkit-scrollbar-thumb:hover {
-  background: var(--accent) !important;
+.field-selector-actions button {
+  min-height: 28px !important;
+  padding: 4px 10px !important;
+  font-size: 0.76rem !important;
+  font-weight: 700 !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+}
+
+.field-selector-actions .edit-input {
+  padding: 6px 10px !important;
+  font-size: 0.78rem !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 6px !important;
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  outline: none !important;
+  width: 150px !important;
 }
 
 

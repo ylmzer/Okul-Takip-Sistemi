@@ -1722,201 +1722,308 @@ function populateStudentAlanDalDatalist() {
   });
   allAlanDalSuggestions = Array.from(uniqueOptions).sort();
   
-  // Initialize the custom autocomplete element
-  initStudentAlanDalAutocomplete();
+  // Initialize the custom dialog elements
+  initStudentAlanDalDialog();
 }
 
-function initStudentAlanDalAutocomplete() {
+function initStudentAlanDalDialog() {
   const input = document.getElementById("skillStudentField");
-  const dropdown = document.getElementById("skillStudentFieldDropdown");
-  if (!input || !dropdown) return;
+  const dialog = document.getElementById("skillFieldSelectorDialog");
+  const searchInput = document.getElementById("skillFieldSelectorSearch");
+  const listContainer = document.getElementById("skillFieldSelectorList");
+  const newAreaInput = document.getElementById("skillFieldSelectorNewArea");
+  const newBranchInput = document.getElementById("skillFieldSelectorNewBranch");
+  const addBtn = document.getElementById("skillFieldSelectorAddBtn");
 
-  let activeIndex = -1;
-  let visibleSuggestions = [];
+  if (!input || !dialog || !listContainer) return;
 
-  function getCombinedFields() {
+  // Click on the student field opens the dialog
+  input.addEventListener("click", () => {
+    if (searchInput) searchInput.value = "";
+    if (newAreaInput) newAreaInput.value = "";
+    if (newBranchInput) newBranchInput.value = "";
+    renderFieldSelectorList();
+    dialog.showModal();
+  });
+
+  // Keep track of which item is being edited
+  let editingId = null;
+
+  function renderFieldSelectorList() {
+    const filterText = searchInput ? searchInput.value.trim().toLocaleLowerCase("tr-TR") : "";
     const localFields = Array.isArray(skillState.fields) ? skillState.fields : [];
-    const localLabels = localFields.map(f => {
-      if (typeof f === "object" && f !== null) {
-        const area = String(f.area || "").trim();
-        const branch = String(f.branch || "").trim();
-        if (!area && !branch) return "";
-        if (!branch || branch.toLowerCase() === "belirtilmedi") return area;
-        if (!area || area.toLowerCase() === "belirtilmedi") return branch;
-        return `${area} / ${branch}`;
-      }
-      return String(f);
-    }).filter(Boolean);
-    const union = new Set([...localLabels, ...allAlanDalSuggestions]);
-    return Array.from(union);
-  }
-
-  function renderSuggestions(filterText = "") {
-    const term = filterText.trim().toLocaleLowerCase("tr-TR");
-    const combined = getCombinedFields();
     
-    // Filter matches
-    let matches = [];
-    if (term === "") {
-      matches = combined.slice(0, 150);
-    } else {
-      matches = combined.filter(opt => opt.toLocaleLowerCase("tr-TR").includes(term));
-    }
-    
-    // Sort and limit to 40 items
-    matches = matches.slice(0, 40);
-    
-    visibleSuggestions = matches.map(text => ({ type: "suggestion", value: text }));
-    
-    // Add custom "add-new" action if typed value doesn't exactly match and isn't empty
-    const typedOriginal = filterText.trim();
-    if (typedOriginal && !combined.some(opt => opt.toLocaleLowerCase("tr-TR") === term)) {
-      visibleSuggestions.push({
-        type: "add-new",
-        value: typedOriginal,
-        label: `+ "${typedOriginal}" Alanını Yeni Ekle`
-      });
-    }
-    
-    // Add manage redirect action
-    visibleSuggestions.push({
-      type: "manage",
-      value: "",
-      label: "⚙ Alan/Dalları Yönet"
+    const localItems = localFields.map(f => {
+      const label = getSkillFieldLabel(f);
+      return {
+        type: "project",
+        id: f.id,
+        area: f.area,
+        branch: f.branch,
+        label: label
+      };
     });
+
+    const mebItems = allAlanDalSuggestions.map(str => {
+      const parts = str.split("/");
+      const area = parts[0]?.trim() || "";
+      const branch = parts[1]?.trim() || "";
+      return {
+        type: "meb",
+        id: "meb_" + str,
+        area: area,
+        branch: branch,
+        label: str
+      };
+    });
+
+    const combined = [];
+    const labelsInProject = new Set(localItems.map(item => item.label.toLowerCase()));
     
-    if (visibleSuggestions.length === 0) {
-      dropdown.style.display = "none";
+    combined.push(...localItems);
+    
+    mebItems.forEach(item => {
+      if (!labelsInProject.has(item.label.toLowerCase())) {
+        combined.push(item);
+      }
+    });
+
+    let filtered = combined;
+    if (filterText !== "") {
+      filtered = combined.filter(item => 
+        item.label.toLocaleLowerCase("tr-TR").includes(filterText)
+      );
+    }
+
+    if (filtered.length === 0) {
+      listContainer.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--muted); font-size: 0.85rem;">Eşleşen alan/dal bulunamadı.</div>`;
       return;
     }
-    
-    // Render list
-    dropdown.innerHTML = visibleSuggestions.map((item, idx) => {
-      let cssClass = "autocomplete-item";
-      let content = "";
+
+    listContainer.innerHTML = filtered.map(item => {
+      const isEditing = item.id === editingId;
       
-      if (item.type === "add-new") {
-        cssClass += " autocomplete-action-item add-new";
-        content = `<span>${escapeHtml(item.label)}</span>`;
-      } else if (item.type === "manage") {
-        cssClass += " autocomplete-action-item manage";
-        content = `<span>${escapeHtml(item.label)}</span>`;
-      } else {
-        if (term !== "") {
-          const regex = new RegExp(`(${term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, "gi");
-          const highlighted = escapeHtml(item.value).replace(regex, "<strong>$1</strong>");
-          content = `<span>${highlighted}</span>`;
-        } else {
-          content = `<span>${escapeHtml(item.value)}</span>`;
+      if (isEditing) {
+        return `
+          <div class="field-selector-row" style="background: rgba(45, 212, 191, 0.06) !important;">
+            <div style="display: flex; gap: 8px; flex: 1; align-items: center; padding-right: 10px;">
+              <input type="text" class="edit-input" id="editArea_${item.id}" value="${escapeHtml(item.area)}" placeholder="Alan" style="flex: 1;" />
+              <input type="text" class="edit-input" id="editBranch_${item.id}" value="${escapeHtml(item.branch)}" placeholder="Dal" style="flex: 1;" />
+            </div>
+            <div class="field-selector-actions">
+              <button class="primary-action save-edit-btn" data-id="${item.id}" style="padding: 4px 8px; background: #10b981; color: white;" title="Kaydet">✓</button>
+              <button class="danger-action cancel-edit-btn" style="padding: 4px 8px; background: #ef4444; color: white;" title="İptal">✗</button>
+            </div>
+          </div>
+        `;
+      }
+
+      let actionButtonsHtml = `<button class="secondary-action select-field-btn" data-label="${escapeHtml(item.label)}" data-type="${item.type}" data-id="${item.id}">Seç</button>`;
+      
+      if (item.type === "project") {
+        actionButtonsHtml += `
+          <button class="ghost-action edit-field-btn" data-id="${item.id}" style="padding: 4px; color: var(--accent); border: 1px solid var(--line); border-radius: 6px;" title="Düzenle">✏</button>
+          <button class="danger-action delete-field-btn" data-id="${item.id}" style="padding: 4px 8px; font-weight: bold;" title="Sil">×</button>
+        `;
+      }
+
+      return `
+        <div class="field-selector-row">
+          <div class="field-selector-info select-field-trigger" data-label="${escapeHtml(item.label)}" data-type="${item.type}" data-id="${item.id}">
+            <strong>${escapeHtml(item.area)}</strong>
+            <span>${escapeHtml(item.branch || "Dal belirtilmedi")}</span>
+          </div>
+          <div class="field-selector-actions">
+            ${actionButtonsHtml}
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", renderFieldSelectorList);
+  }
+
+  listContainer.addEventListener("click", (e) => {
+    const selectBtn = e.target.closest(".select-field-btn");
+    const selectTrigger = e.target.closest(".select-field-trigger");
+    if (selectBtn || selectTrigger) {
+      const target = selectBtn || selectTrigger;
+      const label = target.dataset.label;
+      const type = target.dataset.type;
+      const id = target.dataset.id;
+
+      if (type === "meb") {
+        const parts = label.split("/");
+        const area = parts[0]?.trim() || "Belirtilmedi";
+        const branch = parts[1]?.trim() || "";
+        
+        if (!skillState.fields) skillState.fields = [];
+        const exists = skillState.fields.some(f => 
+          f.area.toLowerCase() === area.toLowerCase() && 
+          (branch ? f.branch.toLowerCase() === branch.toLowerCase() : true)
+        );
+        if (!exists) {
+          skillState.fields.push({
+            id: "field_" + Math.random().toString(36).substr(2, 9),
+            area: area,
+            branch: branch
+          });
+          saveSkillProfileStore();
         }
       }
-      
-      const isActive = idx === activeIndex ? " is-active" : "";
-      return `<div class="${cssClass}${isActive}" data-index="${idx}">${content}</div>`;
-    }).join("");
-    
-    dropdown.style.display = "block";
-  }
 
-  function selectItem(idx) {
-    const item = visibleSuggestions[idx];
-    if (!item) return;
-    
-    if (item.type === "add-new") {
-      const val = item.value;
-      const parts = val.split("/");
-      const area = parts[0]?.trim() || "Belirtilmedi";
-      const branch = parts[1]?.trim() || "";
-      
-      if (!skillState.fields) skillState.fields = [];
-      const fieldExists = skillState.fields.some(f => 
-        f.area.toLowerCase() === area.toLowerCase() && 
-        (branch ? f.branch.toLowerCase() === branch.toLowerCase() : true)
-      );
-      
-      if (!fieldExists) {
-        skillState.fields.push({
-          id: "field_" + Math.random().toString(36).substr(2, 9),
-          area: area,
-          branch: branch
-        });
-        saveSkillProfileStore();
-      }
-      input.value = val;
-      showToast("Yeni alan/dal listeye eklendi.");
-    } else if (item.type === "manage") {
-      setSkillView("fields");
-    } else {
-      input.value = item.value;
-    }
-    
-    dropdown.style.display = "none";
-    activeIndex = -1;
-  }
-
-  // Input & Focus
-  input.addEventListener("input", (e) => {
-    activeIndex = -1;
-    renderSuggestions(e.target.value);
-  });
-
-  input.addEventListener("focus", (e) => {
-    e.target.select();
-    renderSuggestions(e.target.value);
-  });
-
-  input.addEventListener("click", (e) => {
-    e.target.select();
-    renderSuggestions(e.target.value);
-  });
-
-  // Keyboard navigation
-  input.addEventListener("keydown", (e) => {
-    if (dropdown.style.display === "none" || visibleSuggestions.length === 0) {
+      input.value = label;
+      dialog.close();
       return;
     }
-    
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      activeIndex = (activeIndex + 1) % visibleSuggestions.length;
-      renderSuggestions(input.value);
-      
-      const activeEl = dropdown.querySelector(".autocomplete-item.is-active");
-      if (activeEl) activeEl.scrollIntoView({ block: "nearest" });
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      activeIndex = (activeIndex - 1 + visibleSuggestions.length) % visibleSuggestions.length;
-      renderSuggestions(input.value);
-      
-      const activeEl = dropdown.querySelector(".autocomplete-item.is-active");
-      if (activeEl) activeEl.scrollIntoView({ block: "nearest" });
-    } else if (e.key === "Enter") {
-      if (activeIndex >= 0 && activeIndex < visibleSuggestions.length) {
-        e.preventDefault();
-        selectItem(activeIndex);
+
+    const editBtn = e.target.closest(".edit-field-btn");
+    if (editBtn) {
+      editingId = editBtn.dataset.id;
+      renderFieldSelectorList();
+      return;
+    }
+
+    const cancelBtn = e.target.closest(".cancel-edit-btn");
+    if (cancelBtn) {
+      editingId = null;
+      renderFieldSelectorList();
+      return;
+    }
+
+    const saveBtn = e.target.closest(".save-edit-btn");
+    if (saveBtn) {
+      const id = saveBtn.dataset.id;
+      const editAreaInput = document.getElementById(`editArea_${id}`);
+      const editBranchInput = document.getElementById(`editBranch_${id}`);
+      if (!editAreaInput) return;
+
+      const newArea = editAreaInput.value.trim();
+      const newBranch = editBranchInput.value.trim();
+
+      if (!newArea) {
+        showToast("Alan adı boş bırakılamaz.", "warning");
+        return;
       }
-    } else if (e.key === "Escape") {
-      dropdown.style.display = "none";
-      activeIndex = -1;
+
+      const field = skillState.fields.find(f => f.id === id);
+      if (field) {
+        const oldLabel = getSkillFieldLabel(field);
+        field.area = newArea;
+        field.branch = newBranch;
+        const newLabel = getSkillFieldLabel(field);
+
+        saveSkillProfileStore();
+
+        if (oldLabel !== newLabel) {
+          let updatedCount = 0;
+          skillState.students.forEach(student => {
+            if (student.field === oldLabel) {
+              student.field = newLabel;
+              updatedCount++;
+            }
+          });
+          skillState.coordinators.forEach(coord => {
+            if (coord.field === oldLabel) {
+              coord.field = newLabel;
+              updatedCount++;
+            }
+          });
+          
+          if (updatedCount > 0) {
+            saveSkillProfileStore();
+            renderSkillModule();
+          }
+          showToast(`Alan/Dal güncellendi ve ${updatedCount} kayda uygulandı.`);
+        } else {
+          showToast("Alan/Dal güncellendi.");
+        }
+      }
+
+      editingId = null;
+      renderFieldSelectorList();
+      return;
+    }
+
+    const deleteBtn = e.target.closest(".delete-field-btn");
+    if (deleteBtn) {
+      const id = deleteBtn.dataset.id;
+      const field = skillState.fields.find(f => f.id === id);
+      if (!field) return;
+
+      const label = getSkillFieldLabel(field);
+
+      if (confirm(`"${label}" alanını silmek istediğinize emin misiniz?\nBu alana atanmış tüm öğrencilerin ve koordinatörlerin alan bilgisi temizlenecektir.`)) {
+        skillState.fields = skillState.fields.filter(f => f.id !== id);
+        
+        let clearedCount = 0;
+        skillState.students.forEach(student => {
+          if (student.field === label) {
+            student.field = "";
+            clearedCount++;
+          }
+        });
+        skillState.coordinators.forEach(coord => {
+          if (coord.field === label) {
+            coord.field = "";
+            clearedCount++;
+          }
+        });
+
+        saveSkillProfileStore();
+        if (clearedCount > 0) {
+          renderSkillModule();
+        }
+
+        if (input.value === label) {
+          input.value = "";
+        }
+
+        showToast(`Alan/Dal silindi ve ${clearedCount} kaydın ataması kaldırıldı.`);
+        renderFieldSelectorList();
+      }
+      return;
     }
   });
 
-  // Click selection
-  dropdown.addEventListener("click", (e) => {
-    const itemEl = e.target.closest(".autocomplete-item");
-    if (itemEl) {
-      const idx = parseInt(itemEl.dataset.index, 10);
-      selectItem(idx);
-    }
-  });
+  if (addBtn) {
+    addBtn.addEventListener("click", () => {
+      const areaVal = newAreaInput ? newAreaInput.value.trim() : "";
+      const branchVal = newBranchInput ? newBranchInput.value.trim() : "";
 
-  // Close dropdown on outside click
-  document.addEventListener("click", (e) => {
-    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
-      dropdown.style.display = "none";
-      activeIndex = -1;
-    }
-  });
+      if (!areaVal) {
+        showToast("Alan adı boş bırakılamaz.", "warning");
+        return;
+      }
+
+      if (!skillState.fields) skillState.fields = [];
+      const exists = skillState.fields.some(f => 
+        f.area.toLowerCase() === areaVal.toLowerCase() && 
+        (branchVal ? f.branch.toLowerCase() === branchVal.toLowerCase() : true)
+      );
+
+      if (exists) {
+        showToast("Bu alan/dal zaten kayıtlı.", "warning");
+        return;
+      }
+
+      skillState.fields.push({
+        id: "field_" + Math.random().toString(36).substr(2, 9),
+        area: areaVal,
+        branch: branchVal
+      });
+
+      saveSkillProfileStore();
+      
+      if (newAreaInput) newAreaInput.value = "";
+      if (newBranchInput) newBranchInput.value = "";
+
+      showToast("Yeni alan/dal başarıyla eklendi.");
+      renderFieldSelectorList();
+    });
+  }
 }
 
 // Populate the student form field list on load
