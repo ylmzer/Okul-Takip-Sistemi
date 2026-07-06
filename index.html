@@ -1159,7 +1159,10 @@
                 </label>
                 <label>
                   <span>Alan / dal</span>
-                  <input id="skillStudentField" type="text" list="studentAlanDalList" placeholder="Alan/Dal ara..." style="outline: none; min-width: 360px;" />
+                  <div class="custom-autocomplete" style="position: relative; width: 100%; min-width: 360px;">
+                    <input id="skillStudentField" type="text" placeholder="Alan/Dal ara veya yaz..." style="outline: none; width: 100%;" autocomplete="off" />
+                    <div id="skillStudentFieldDropdown" class="autocomplete-dropdown" style="display: none;"></div>
+                  </div>
                 </label>
                 <label>
                   <span>İşletme</span>
@@ -2253,7 +2256,6 @@
               </table>
             </div>
              <datalist id="importAlanDalList"></datalist>
-            <datalist id="studentAlanDalList"></datalist>
           </div>
 
           <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; width: 100%;">

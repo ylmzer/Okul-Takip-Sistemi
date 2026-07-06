@@ -1705,10 +1705,10 @@ if (els.skillCoordinatorSchool) {
   });
 }
 
+let allAlanDalSuggestions = [];
+
 function populateStudentAlanDalDatalist() {
   if (!alanDalListesi) return;
-  const datalist = document.getElementById("studentAlanDalList");
-  if (!datalist) return;
   
   const uniqueOptions = new Set();
   ["mesem", "mtal"].forEach(type => {
@@ -1720,22 +1720,182 @@ function populateStudentAlanDalDatalist() {
       }
     }
   });
+  allAlanDalSuggestions = Array.from(uniqueOptions).sort();
   
-  datalist.innerHTML = Array.from(uniqueOptions).sort().map(opt => 
-    `<option value="${escapeHtml(opt)}"></option>`
-  ).join("");
+  // Initialize the custom autocomplete element
+  initStudentAlanDalAutocomplete();
+}
+
+function initStudentAlanDalAutocomplete() {
+  const input = document.getElementById("skillStudentField");
+  const dropdown = document.getElementById("skillStudentFieldDropdown");
+  if (!input || !dropdown) return;
+
+  let activeIndex = -1;
+  let visibleSuggestions = [];
+
+  function getCombinedFields() {
+    const localFields = Array.isArray(skillState.fields) ? skillState.fields : [];
+    const union = new Set([...localFields, ...allAlanDalSuggestions]);
+    return Array.from(union);
+  }
+
+  function renderSuggestions(filterText = "") {
+    const term = filterText.trim().toLocaleLowerCase("tr-TR");
+    const combined = getCombinedFields();
+    
+    // Filter matches
+    let matches = [];
+    if (term === "") {
+      matches = combined.slice(0, 150);
+    } else {
+      matches = combined.filter(opt => opt.toLocaleLowerCase("tr-TR").includes(term));
+    }
+    
+    // Sort and limit to 40 items
+    matches = matches.slice(0, 40);
+    
+    visibleSuggestions = matches.map(text => ({ type: "suggestion", value: text }));
+    
+    // Add custom "add-new" action if typed value doesn't exactly match and isn't empty
+    const typedOriginal = filterText.trim();
+    if (typedOriginal && !combined.some(opt => opt.toLocaleLowerCase("tr-TR") === term)) {
+      visibleSuggestions.push({
+        type: "add-new",
+        value: typedOriginal,
+        label: `+ "${typedOriginal}" Alanını Yeni Ekle`
+      });
+    }
+    
+    // Add manage redirect action
+    visibleSuggestions.push({
+      type: "manage",
+      value: "",
+      label: "⚙ Alan/Dalları Yönet"
+    });
+    
+    if (visibleSuggestions.length === 0) {
+      dropdown.style.display = "none";
+      return;
+    }
+    
+    // Render list
+    dropdown.innerHTML = visibleSuggestions.map((item, idx) => {
+      let cssClass = "autocomplete-item";
+      let content = "";
+      
+      if (item.type === "add-new") {
+        cssClass += " autocomplete-action-item add-new";
+        content = `<span>${escapeHtml(item.label)}</span>`;
+      } else if (item.type === "manage") {
+        cssClass += " autocomplete-action-item manage";
+        content = `<span>${escapeHtml(item.label)}</span>`;
+      } else {
+        if (term !== "") {
+          const regex = new RegExp(`(${term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')})`, "gi");
+          const highlighted = escapeHtml(item.value).replace(regex, "<strong>$1</strong>");
+          content = `<span>${highlighted}</span>`;
+        } else {
+          content = `<span>${escapeHtml(item.value)}</span>`;
+        }
+      }
+      
+      const isActive = idx === activeIndex ? " is-active" : "";
+      return `<div class="${cssClass}${isActive}" data-index="${idx}">${content}</div>`;
+    }).join("");
+    
+    dropdown.style.display = "block";
+  }
+
+  function selectItem(idx) {
+    const item = visibleSuggestions[idx];
+    if (!item) return;
+    
+    if (item.type === "add-new") {
+      const val = item.value;
+      if (!skillState.fields.includes(val)) {
+        skillState.fields.push(val);
+        saveSkillProfileStore();
+      }
+      input.value = val;
+      showToast("Yeni alan/dal listeye eklendi.");
+    } else if (item.type === "manage") {
+      setSkillView("fields");
+    } else {
+      input.value = item.value;
+    }
+    
+    dropdown.style.display = "none";
+    activeIndex = -1;
+  }
+
+  // Input & Focus
+  input.addEventListener("input", (e) => {
+    activeIndex = -1;
+    renderSuggestions(e.target.value);
+  });
+
+  input.addEventListener("focus", (e) => {
+    e.target.select();
+    renderSuggestions(e.target.value);
+  });
+
+  input.addEventListener("click", (e) => {
+    e.target.select();
+    renderSuggestions(e.target.value);
+  });
+
+  // Keyboard navigation
+  input.addEventListener("keydown", (e) => {
+    if (dropdown.style.display === "none" || visibleSuggestions.length === 0) {
+      return;
+    }
+    
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      activeIndex = (activeIndex + 1) % visibleSuggestions.length;
+      renderSuggestions(input.value);
+      
+      const activeEl = dropdown.querySelector(".autocomplete-item.is-active");
+      if (activeEl) activeEl.scrollIntoView({ block: "nearest" });
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      activeIndex = (activeIndex - 1 + visibleSuggestions.length) % visibleSuggestions.length;
+      renderSuggestions(input.value);
+      
+      const activeEl = dropdown.querySelector(".autocomplete-item.is-active");
+      if (activeEl) activeEl.scrollIntoView({ block: "nearest" });
+    } else if (e.key === "Enter") {
+      if (activeIndex >= 0 && activeIndex < visibleSuggestions.length) {
+        e.preventDefault();
+        selectItem(activeIndex);
+      }
+    } else if (e.key === "Escape") {
+      dropdown.style.display = "none";
+      activeIndex = -1;
+    }
+  });
+
+  // Click selection
+  dropdown.addEventListener("click", (e) => {
+    const itemEl = e.target.closest(".autocomplete-item");
+    if (itemEl) {
+      const idx = parseInt(itemEl.dataset.index, 10);
+      selectItem(idx);
+    }
+  });
+
+  // Close dropdown on outside click
+  document.addEventListener("click", (e) => {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.style.display = "none";
+      activeIndex = -1;
+    }
+  });
 }
 
 // Populate the student form field list on load
 loadAlanDalListesi().then(populateStudentAlanDalDatalist);
-
-// Bind auto-select on focus/click to student edit field
-document.getElementById("skillStudentField")?.addEventListener("focus", (e) => {
-  e.target.select();
-});
-document.getElementById("skillStudentField")?.addEventListener("click", (e) => {
-  e.target.select();
-});
 
 // Universal select-all togglers for all tables/grids
 document.addEventListener("change", (e) => {
