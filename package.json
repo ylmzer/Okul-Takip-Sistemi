@@ -5,7 +5,8 @@
   "main": "server.mjs",
   "type": "module",
   "scripts": {
-    "start": "node server.mjs"
+    "start": "node server.mjs",
+    "postinstall": "pip3 install -r requirements.txt || pip install -r requirements.txt || python3 -m pip install -r requirements.txt || python -m pip install -r requirements.txt"
   },
   "engines": {
     "node": ">=18.0.0"

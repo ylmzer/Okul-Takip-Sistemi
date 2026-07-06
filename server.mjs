@@ -21,7 +21,7 @@ if (!existsSync(pythonPath)) {
   if (existsSync(backupPath)) {
     pythonPath = backupPath;
   } else {
-    pythonPath = "python";
+    pythonPath = process.platform === "win32" ? "python" : "python3";
   }
 }
 const pythonEnv = { ...process.env, PYTHONIOENCODING: "utf-8" };
