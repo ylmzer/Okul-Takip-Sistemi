@@ -2134,23 +2134,26 @@
           <!-- Preview Area (Shared) -->
           <div id="skillImportPreviewArea" style="display: flex; flex-direction: column; flex: 1; min-height: 0; margin-top: 5px; border: 1px solid var(--line); padding: 12px; border-radius: 8px;">
             <h3 style="font-size: 0.95rem; margin-bottom: 8px; color: var(--ink);">Çözümleme Sonucu</h3>
-            <div id="skillImportSettings" style="display: flex; gap: 15px; margin-bottom: 12px; background: var(--surface); border: 1px solid var(--line); padding: 10px; border-radius: 8px; font-size: 0.85rem; align-items: center; width: 100%; box-sizing: border-box;">
+            <div id="skillImportSettings" style="display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 10px; background: var(--surface); border: 1px solid var(--line); padding: 6px 12px; border-radius: 8px; font-size: 0.82rem; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
               <div style="display: flex; align-items: center; gap: 6px;">
                 <span style="font-weight: bold; color: var(--ink);">Okul Türü:</span>
-                <select id="skillImportSchoolType" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: bold; outline: none; cursor: pointer;">
+                <select id="skillImportSchoolType" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: bold; outline: none; cursor: pointer; font-size: 0.8rem;">
                   <option value="mesem" selected>Mesleki Eğitim Merkezi (MESEM)</option>
                   <option value="mtal">Mesleki ve Teknik Anadolu Lisesi (MTAL)</option>
                 </select>
               </div>
-              <div style="font-size: 0.78rem; color: var(--muted);">
-                Okul türü değiştiğinde aşağıdaki Alan/Dal seçenekleri güncellenir.
-              </div>
+              <div id="skillImportStats" style="display: flex; align-items: center; gap: 12px; font-size: 0.8rem; font-weight: bold; color: var(--ink);"></div>
             </div>
-            <div id="skillImportStats" class="skill-import-stats" style="margin-bottom: 10px; font-size: 0.88rem; line-height: 1.4; color: var(--ink);"></div>
-            <div class="skill-table-card" style="margin-top: 0; padding: 0; flex: 1; min-height: 0; overflow-y: auto;">
+            <div id="skillImportBulkActions" style="display: none; align-items: center; gap: 10px; margin-bottom: 10px; background: rgba(var(--accent-rgb), 0.05); border: 1px dashed var(--accent); padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
+              <span style="font-weight: bold; color: var(--ink);"><span id="skillImportSelectedCount" style="color: var(--accent); font-size: 0.9rem;">0</span> öğrenci seçildi. Seçililere toplu Alan/Dal ata:</span>
+              <input id="skillImportBulkFieldInput" type="text" list="importAlanDalList" placeholder="Toplu Alan/Dal ara ve seç..." style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 250px; font-size: 0.78rem; outline: none; box-sizing: border-box;" />
+              <button id="skillImportBulkApplyBtn" type="button" class="primary-action" style="padding: 4px 12px; font-size: 0.75rem; font-weight: bold; min-height: 28px; border-radius: 6px; border: none; cursor: pointer; background: var(--accent); color: #fff;">Uygula</button>
+            </div>
+            <div class="skill-table-card" style="margin-top: 0; padding: 0; flex: 1; min-height: 0; overflow-y: auto; width: 100%;">
               <table class="skill-data-table" style="font-size: 0.85rem;">
                 <thead>
                   <tr>
+                    <th style="width: 40px; text-align: center; padding: 8px;"><input type="checkbox" id="skillImportSelectAll" style="cursor: pointer; width: 15px; height: 15px; margin: 0; vertical-align: middle;" /></th>
                     <th>Öğrenci No</th>
                     <th>Ad Soyad</th>
                     <th>Sınıf</th>
@@ -2162,6 +2165,7 @@
                 <tbody id="skillImportPreviewTable"></tbody>
               </table>
             </div>
+            <datalist id="importAlanDalList"></datalist>
           </div>
 
           <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; width: 100%;">

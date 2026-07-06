@@ -403,6 +403,26 @@ function findClosestMatch(importedField, listType) {
   return "Belirtilmedi";
 }
 
+function updateBulkActionsBar() {
+  const bulkBar = document.getElementById("skillImportBulkActions");
+  const selectedCountSpan = document.getElementById("skillImportSelectedCount");
+  const selectAllCheckbox = document.getElementById("skillImportSelectAll");
+  
+  if (!bulkBar) return;
+  
+  const checkedCount = parsedImportRecords.filter(r => r.selected).length;
+  if (checkedCount > 0) {
+    bulkBar.style.display = "flex";
+    if (selectedCountSpan) selectedCountSpan.textContent = checkedCount;
+  } else {
+    bulkBar.style.display = "none";
+  }
+  
+  if (selectAllCheckbox) {
+    selectAllCheckbox.checked = checkedCount === parsedImportRecords.length && parsedImportRecords.length > 0;
+  }
+}
+
 function renderImportPreviewTable() {
   const tableBody = document.getElementById("skillImportPreviewTable");
   if (!tableBody) return;
@@ -412,6 +432,18 @@ function renderImportPreviewTable() {
   
   const typeList = alanDalListesi[schoolType] || {};
   
+  // Update the datalist options
+  const datalist = document.getElementById("importAlanDalList");
+  if (datalist) {
+    let datalistHtml = "";
+    for (const alan of Object.keys(typeList)) {
+      for (const dal of typeList[alan]) {
+        datalistHtml += `<option value="${escapeHtml(alan)} / ${escapeHtml(dal)}"></option>`;
+      }
+    }
+    datalist.innerHTML = datalistHtml;
+  }
+  
   let html = "";
   parsedImportRecords.forEach((r, idx) => {
     if (!r.originalField) {
@@ -420,19 +452,10 @@ function renderImportPreviewTable() {
     const matchedField = findClosestMatch(r.originalField, schoolType);
     r.field = matchedField;
     
-    let fieldSelectHtml = `<select class="import-field-select" data-index="${idx}" style="padding: 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 100%; max-width: 250px; font-size: 0.78rem; outline: none; cursor: pointer;">`;
-    fieldSelectHtml += `<option value="Belirtilmedi" ${r.field === "Belirtilmedi" ? "selected" : ""}>Belirtilmedi</option>`;
-    
-    for (const alan of Object.keys(typeList)) {
-      fieldSelectHtml += `<optgroup label="${escapeHtml(alan)}">`;
-      for (const dal of typeList[alan]) {
-        const optionValue = `${alan} / ${dal}`;
-        const isSelected = r.field === optionValue;
-        fieldSelectHtml += `<option value="${escapeHtml(optionValue)}" ${isSelected ? "selected" : ""}>${escapeHtml(dal)}</option>`;
-      }
-      fieldSelectHtml += `</optgroup>`;
-    }
-    fieldSelectHtml += `</select>`;
+    // Autocomplete datalist input instead of dropdown select
+    let fieldInputHtml = `
+      <input class="import-field-input" type="text" list="importAlanDalList" data-index="${idx}" value="${escapeHtml(r.field)}" placeholder="Alan/Dal ara ve seç..." style="padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 100%; max-width: 250px; font-size: 0.78rem; outline: none; box-sizing: border-box;" />
+    `;
     
     const days = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma"];
     let daySelectHtml = `<select class="import-coord-day-select" data-index="${idx}" style="padding: 2px 4px; font-size: 0.78rem; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); margin-top: 4px; display: block; outline: none; cursor: pointer;">`;
@@ -443,12 +466,17 @@ function renderImportPreviewTable() {
     }
     daySelectHtml += `</select>`;
     
+    const isChecked = r.selected ? "checked" : "";
+    
     html += `
       <tr>
+        <td style="text-align: center; padding: 8px; vertical-align: middle;">
+          <input type="checkbox" class="import-row-checkbox" data-index="${idx}" ${isChecked} style="cursor: pointer; width: 15px; height: 15px; margin: 0; vertical-align: middle;" />
+        </td>
         <td>${escapeHtml(r.student_no || "-")}</td>
         <td><strong>${escapeHtml(r.student_name || "-")}</strong></td>
         <td>${escapeHtml(r.class_name || "-")}</td>
-        <td style="padding: 6px 12px; vertical-align: middle;">${fieldSelectHtml}</td>
+        <td style="padding: 6px 12px; vertical-align: middle;">${fieldInputHtml}</td>
         <td>${escapeHtml(r.business_name || "-")}</td>
         <td>
           <div style="font-weight: 700;">${escapeHtml(r.coordinator_name || "-")}</div>
@@ -459,6 +487,11 @@ function renderImportPreviewTable() {
   });
   
   tableBody.innerHTML = html;
+  
+  // Uncheck select all checkbox and reset bulk bar state
+  const selectAllCheckbox = document.getElementById("skillImportSelectAll");
+  if (selectAllCheckbox) selectAllCheckbox.checked = false;
+  updateBulkActionsBar();
 }
 
 async function analyzeImeImportFile(file) {
@@ -526,28 +559,11 @@ async function analyzeImeImportFile(file) {
     
     if (els.skillImportStats) {
       els.skillImportStats.innerHTML = `
-        <div class="skill-import-success-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.15); padding: 6px 12px; border-radius: 6px; color: #10b981; font-weight: bold; font-size: 0.85rem;">
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <span>✓</span> Dosya Analizi Başarılı!
-          </div>
-          <div style="font-size: 0.78rem; font-weight: normal; color: var(--muted);">
-            İçe aktarılmaya hazır veriler aşağıda listelenmiştir.
-          </div>
-        </div>
-        <div class="skill-import-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 15px;">
-          <div class="skill-import-stat-card" style="padding: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <div style="font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Toplam Öğrenci</div>
-            <div style="font-size: 1.35rem; font-weight: 800; color: var(--accent); margin-top: 4px;">${uniqueStudents.size}</div>
-          </div>
-          <div class="skill-import-stat-card" style="padding: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <div style="font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">İşletme</div>
-            <div style="font-size: 1.35rem; font-weight: 800; color: var(--accent); margin-top: 4px;">${uniqueBusinesses.size}</div>
-          </div>
-          <div class="skill-import-stat-card" style="padding: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <div style="font-size: 0.72rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Öğretmen</div>
-            <div style="font-size: 1.35rem; font-weight: 800; color: var(--accent); margin-top: 4px;">${uniqueTeachers.size}</div>
-          </div>
-        </div>
+        <span>Öğrenci: <strong style="color:var(--accent); font-size: 0.9rem;">${uniqueStudents.size}</strong></span>
+        <span style="color: var(--line);">|</span>
+        <span>İşletme: <strong style="color:var(--accent); font-size: 0.9rem;">${uniqueBusinesses.size}</strong></span>
+        <span style="color: var(--line);">|</span>
+        <span>Öğretmen: <strong style="color:var(--accent); font-size: 0.9rem;">${uniqueTeachers.size}</strong></span>
       `;
     }
     
@@ -725,12 +741,61 @@ document.getElementById("skillImportSchoolType")?.addEventListener("change", () 
   renderImportPreviewTable();
 });
 
+document.getElementById("skillImportSelectAll")?.addEventListener("change", (e) => {
+  const isChecked = e.target.checked;
+  parsedImportRecords.forEach(r => r.selected = isChecked);
+  
+  document.querySelectorAll(".import-row-checkbox").forEach(cb => {
+    cb.checked = isChecked;
+  });
+  
+  updateBulkActionsBar();
+});
+
+document.getElementById("skillImportBulkApplyBtn")?.addEventListener("click", () => {
+  const bulkInput = document.getElementById("skillImportBulkFieldInput");
+  const selectedValue = bulkInput ? bulkInput.value.trim() : "";
+  if (!selectedValue) {
+    showToast("Lütfen toplu atanacak alan/dal bilgisini seçin.", "warning");
+    return;
+  }
+  
+  let appliedCount = 0;
+  parsedImportRecords.forEach((r, idx) => {
+    if (r.selected) {
+      r.field = selectedValue;
+      const inputEl = document.querySelector(`.import-field-input[data-index="${idx}"]`);
+      if (inputEl) {
+        inputEl.value = selectedValue;
+      }
+      appliedCount++;
+    }
+  });
+  
+  showToast(`${appliedCount} öğrenciye toplu Alan/Dal atandı.`, "success");
+  
+  parsedImportRecords.forEach(r => r.selected = false);
+  if (bulkInput) bulkInput.value = "";
+  document.querySelectorAll(".import-row-checkbox").forEach(cb => cb.checked = false);
+  const selectAllCheckbox = document.getElementById("skillImportSelectAll");
+  if (selectAllCheckbox) selectAllCheckbox.checked = false;
+  
+  updateBulkActionsBar();
+});
+
 document.getElementById("skillImportPreviewTable")?.addEventListener("change", (e) => {
-  if (e.target.classList.contains("import-field-select")) {
+  if (e.target.classList.contains("import-row-checkbox")) {
     const idx = parseInt(e.target.dataset.index);
-    const selectedField = e.target.value;
     if (parsedImportRecords[idx]) {
-      parsedImportRecords[idx].field = selectedField;
+      parsedImportRecords[idx].selected = e.target.checked;
+    }
+    updateBulkActionsBar();
+  }
+  
+  if (e.target.classList.contains("import-field-input")) {
+    const idx = parseInt(e.target.dataset.index);
+    if (parsedImportRecords[idx]) {
+      parsedImportRecords[idx].field = e.target.value;
     }
   }
   
@@ -741,7 +806,6 @@ document.getElementById("skillImportPreviewTable")?.addEventListener("change", (
     if (currentRec) {
       currentRec.coord_day = selectedDay;
       
-      // Auto-update other rows with the same business name
       parsedImportRecords.forEach((rec, rIdx) => {
         if (rec.business_name === currentRec.business_name) {
           rec.coord_day = selectedDay;
@@ -751,6 +815,15 @@ document.getElementById("skillImportPreviewTable")?.addEventListener("change", (
           }
         }
       });
+    }
+  }
+});
+
+document.getElementById("skillImportPreviewTable")?.addEventListener("input", (e) => {
+  if (e.target.classList.contains("import-field-input")) {
+    const idx = parseInt(e.target.dataset.index);
+    if (parsedImportRecords[idx]) {
+      parsedImportRecords[idx].field = e.target.value;
     }
   }
 });
