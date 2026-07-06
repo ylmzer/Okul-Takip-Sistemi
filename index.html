@@ -1064,7 +1064,7 @@
           <div class="skill-subnav">
             <button data-skill-view="school" type="button"><span>⌘</span>Okul & Koordinatörler</button>
             <button data-skill-view="businesses" type="button"><span>▦</span>İşletmeler</button>
-            <button data-skill-view="fields" type="button"><span>◇</span>Alan / Dal</button>
+            <button data-skill-view="fields" type="button" style="display: none !important;"><span>◇</span>Alan / Dal</button>
             <button data-skill-view="coordinators" type="button"><span>♙</span>Koordinatör Tanımlama</button>
             <button data-skill-view="students" type="button"><span>♟</span>Öğrenciler</button>
             <button data-skill-view="holidays" type="button"><span>□</span>Resmi Tatiller</button>
@@ -1078,7 +1078,6 @@
             <optgroup label="Veri Yönetimi">
               <option value="school">⌘ Okul & Koordinatörler</option>
               <option value="businesses">▦ İşletmeler</option>
-              <option value="fields">◇ Alan / Dal</option>
               <option value="coordinators">♙ Koordinatör Tanımlama</option>
               <option value="students">♟ Öğrenciler</option>
               <option value="holidays">□ Resmi Tatiller</option>
@@ -3926,10 +3925,10 @@
         <!-- Arama ve Yeni Ekleme Bölümü -->
         <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; padding: 14px; background: rgba(45, 212, 191, 0.03); border: 1px solid var(--line); border-radius: 8px;">
           <strong style="font-size: 0.85rem; color: var(--accent-strong);">Yeni Alan veya Dal Ekle</strong>
-          <div style="display: flex; gap: 8px;">
-            <input type="text" id="skillFieldSelectorNewArea" placeholder="Alan (Örn. Bilişim Teknolojileri)" style="flex: 1; padding: 8px 12px; font-size: 0.8rem; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); outline: none;" />
-            <input type="text" id="skillFieldSelectorNewBranch" placeholder="Dal (Örn. Yazılım Geliştirme)" style="flex: 1; padding: 8px 12px; font-size: 0.8rem; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); outline: none;" />
-            <button class="primary-action" id="skillFieldSelectorAddBtn" type="button" style="padding: 8px 16px; font-weight: bold; font-size: 0.8rem; border-radius: 6px; cursor: pointer;">Ekle</button>
+          <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; align-items: center; width: 100%;">
+            <input type="text" id="skillFieldSelectorNewArea" placeholder="Alan (Örn. Bilişim)" style="width: 100%; padding: 8px 12px; font-size: 0.8rem; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); outline: none; box-sizing: border-box;" />
+            <input type="text" id="skillFieldSelectorNewBranch" placeholder="Dal (Örn. Yazılım)" style="width: 100%; padding: 8px 12px; font-size: 0.8rem; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); outline: none; box-sizing: border-box;" />
+            <button class="primary-action" id="skillFieldSelectorAddBtn" type="button" style="padding: 8px 16px; font-weight: bold; font-size: 0.8rem; border-radius: 6px; cursor: pointer; height: 33px; min-height: 33px !important; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box;">Ekle</button>
           </div>
         </div>
 

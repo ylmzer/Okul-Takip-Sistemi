@@ -1806,7 +1806,7 @@ function initStudentAlanDalDialog() {
       if (isEditing) {
         return `
           <div class="field-selector-row" style="background: rgba(45, 212, 191, 0.06) !important;">
-            <div style="display: flex; gap: 8px; flex: 1; align-items: center; padding-right: 10px;">
+            <div style="display: flex; gap: 8px; flex: 1; align-items: center; padding-right: 10px; min-width: 0;">
               <input type="text" class="edit-input" id="editArea_${item.id}" value="${escapeHtml(item.area)}" placeholder="Alan" style="flex: 1;" />
               <input type="text" class="edit-input" id="editBranch_${item.id}" value="${escapeHtml(item.branch)}" placeholder="Dal" style="flex: 1;" />
             </div>

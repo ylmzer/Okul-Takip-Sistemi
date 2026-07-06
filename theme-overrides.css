@@ -4981,10 +4981,11 @@ body.dark-mode .cloud-loading-overlay {
 
 /* Alan/Dal Seçici Dialog Stilleri */
 .field-selector-row {
-  display: flex !important;
+  display: grid !important;
+  grid-template-columns: 1fr auto !important;
+  gap: 12px !important;
   align-items: center !important;
-  justify-content: space-between !important;
-  padding: 10px 14px !important;
+  padding: 12px 14px !important;
   border-bottom: 1px solid var(--line) !important;
   transition: background 0.15s ease !important;
   background: var(--surface) !important;
@@ -4999,29 +5000,33 @@ body.dark-mode .cloud-loading-overlay {
 }
 
 .field-selector-info {
-  flex: 1 !important;
   cursor: pointer !important;
   text-align: left !important;
-  padding-right: 12px !important;
+  min-width: 0 !important;
 }
 
 .field-selector-info strong {
   font-size: 0.85rem !important;
   display: block !important;
   color: var(--ink) !important;
+  line-height: 1.3 !important;
+  word-break: break-word !important;
 }
 
 .field-selector-info span {
   font-size: 0.76rem !important;
   color: var(--muted) !important;
   display: block !important;
-  margin-top: 2px !important;
+  margin-top: 3px !important;
+  line-height: 1.3 !important;
+  word-break: break-word !important;
 }
 
 .field-selector-actions {
   display: flex !important;
   gap: 6px !important;
   align-items: center !important;
+  flex-shrink: 0 !important;
 }
 
 .field-selector-actions button {
@@ -5031,6 +5036,41 @@ body.dark-mode .cloud-loading-overlay {
   font-weight: 700 !important;
   border-radius: 6px !important;
   cursor: pointer !important;
+  border: 1px solid transparent !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.field-selector-actions .select-field-btn {
+  background: var(--accent) !important;
+  color: #0f172a !important;
+}
+
+.field-selector-actions .select-field-btn:hover {
+  background: var(--accent-strong) !important;
+}
+
+.field-selector-actions .edit-field-btn {
+  background: transparent !important;
+  border: 1px solid var(--line) !important;
+  color: var(--accent) !important;
+}
+
+.field-selector-actions .edit-field-btn:hover {
+  background: rgba(45, 212, 191, 0.08) !important;
+  border-color: var(--accent) !important;
+}
+
+.field-selector-actions .delete-field-btn {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #ef4444 !important;
+  border: 1px solid rgba(239, 68, 68, 0.2) !important;
+}
+
+.field-selector-actions .delete-field-btn:hover {
+  background: #ef4444 !important;
+  color: #ffffff !important;
 }
 
 .field-selector-actions .edit-input {
@@ -5041,7 +5081,8 @@ body.dark-mode .cloud-loading-overlay {
   background: var(--surface) !important;
   color: var(--ink) !important;
   outline: none !important;
-  width: 150px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 
