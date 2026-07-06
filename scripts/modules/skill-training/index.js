@@ -1529,6 +1529,16 @@ els.skillCoordinatorTable.addEventListener("click", handleSkillTableClick);
 // Initialize Devamsızlık Girişi panel bindings
 if (els.skillAbsenceEntryBtn) els.skillAbsenceEntryBtn.addEventListener("click", openSkillAbsenceEntryDialog);
 initAbsenceEntryEventBindings();
+if (els.skillCoordinatorSchool) {
+  els.skillCoordinatorSchool.addEventListener("change", () => {
+    const schoolId = els.skillCoordinatorSchool.value;
+    const school = skillState.schoolRecords.find((s) => s.id === schoolId);
+    if (school && school.deputy && els.skillCoordinatorDeputy) {
+      els.skillCoordinatorDeputy.value = school.deputy;
+    }
+  });
+}
+
 window.SkillTrainingModule = {
   get shell() {
     return els.skillShell;
