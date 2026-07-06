@@ -470,9 +470,47 @@ function updateBulkActionsBar() {
   if (!bulkBar) return;
   
   const checkedCount = parsedImportRecords.filter(r => r.selected).length;
-  if (checkedCount > 0) {
+  const hasRecords = parsedImportRecords.length > 0;
+  
+  if (hasRecords) {
     bulkBar.style.display = "flex";
-    if (selectedCountSpan) selectedCountSpan.textContent = checkedCount;
+    const bulkText = document.getElementById("skillImportBulkText");
+    if (bulkText) {
+      if (checkedCount > 0) {
+        bulkText.textContent = " öğrenci seçildi. Seçililere uygulanacak işlemler:";
+        if (selectedCountSpan) {
+          selectedCountSpan.textContent = checkedCount;
+          selectedCountSpan.style.display = "inline-flex";
+        }
+      } else {
+        bulkText.textContent = "Toplu İşlemler (Lütfen listeden öğrenci seçin):";
+        if (selectedCountSpan) {
+          selectedCountSpan.style.display = "none";
+        }
+      }
+    }
+    
+    // Enable/disable actions
+    const hasSelection = checkedCount > 0;
+    const elementsToDisable = [
+      document.getElementById("skillImportBulkFieldInput"),
+      document.getElementById("skillImportBulkDaySelect"),
+      document.getElementById("skillImportBulkApplyBtn"),
+      document.getElementById("skillImportBulkClearBtn")
+    ];
+    
+    elementsToDisable.forEach(el => {
+      if (el) {
+        el.disabled = !hasSelection;
+        if (!hasSelection) {
+          el.style.opacity = "0.5";
+          el.style.cursor = "not-allowed";
+        } else {
+          el.style.opacity = "1";
+          el.style.cursor = "";
+        }
+      }
+    });
   } else {
     bulkBar.style.display = "none";
   }
