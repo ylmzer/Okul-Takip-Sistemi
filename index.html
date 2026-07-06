@@ -2155,23 +2155,23 @@
             <p class="skill-profile-note" style="margin-bottom: 15px;">
               Hazır Excel veya PDF dosyasını seçerek işletmeleri, öğrencileri ve sınıfları sisteme otomatik aktarın ve koordinatör öğretmen atamalarını yapın.
             </p>
-            <div class="skill-form-grid" style="grid-template-columns: 1fr; margin-bottom: 12px; border: 1px solid var(--line); padding: 12px; border-radius: 8px; background: rgba(var(--accent-rgb), 0.02); box-sizing: border-box;">
-              <span style="font-weight: bold; font-size: 0.8rem; margin-bottom: 8px; color: var(--ink); display: block;">Aktarılacak Okul Hedefi:</span>
-              <div style="display: flex; flex-direction: column; gap: 8px;">
-                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; font-size: 0.8rem;">
-                  <input type="radio" name="skillImportSchoolType" id="skillImportSchoolTypeExisting" value="existing" checked style="cursor: pointer;" />
-                  <span>Sistemdeki Mevcut Okula Ekle</span>
-                </label>
-                <div id="skillImportSchoolExistingContainer" style="margin-left: 22px; margin-bottom: 4px;">
-                  <select id="skillImportSchoolExistingSelect" style="padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); font-size: 0.8rem; outline: none; width: 100%; max-width: 320px; font-weight: bold; cursor: pointer;"></select>
+            <div style="margin-bottom: 15px; border: 1px solid var(--line); padding: 12px 16px; border-radius: 8px; background: rgba(var(--accent-rgb), 0.02); box-sizing: border-box; width: 100%;">
+              <span style="font-weight: bold; font-size: 0.82rem; margin-bottom: 10px; color: var(--ink); display: block;">Aktarılacak Okul Hedefi:</span>
+              <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 10px; cursor: pointer; min-height: 28px; width: 100%;" onclick="document.getElementById('skillImportSchoolTypeExisting').click()">
+                  <input type="radio" name="skillImportSchoolType" id="skillImportSchoolTypeExisting" value="existing" checked style="width: 16px; height: 16px; margin: 0; cursor: pointer; flex-shrink: 0;" />
+                  <span style="font-size: 0.8rem; font-weight: 600; color: var(--ink); cursor: pointer;">Sistemdeki Mevcut Okula Ekle</span>
+                  <div id="skillImportSchoolExistingContainer" style="margin-left: 10px; flex: 1; max-width: 320px;" onclick="event.stopPropagation()">
+                    <select id="skillImportSchoolExistingSelect" style="padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); font-size: 0.8rem; outline: none; width: 100%; font-weight: bold; cursor: pointer; height: 28px; box-sizing: border-box;"></select>
+                  </div>
                 </div>
                 
-                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; font-size: 0.8rem;">
-                  <input type="radio" name="skillImportSchoolType" id="skillImportSchoolTypeNew" value="new" style="cursor: pointer;" />
-                  <span>Yeni Okul Oluştur ve Ona Aktar</span>
-                </label>
-                <div id="skillImportSchoolNewContainer" style="margin-left: 22px; display: none;">
-                  <input type="text" id="skillImportSchoolNewInput" placeholder="Yeni okul adını giriniz..." style="padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); font-size: 0.8rem; outline: none; width: 100%; max-width: 320px; box-sizing: border-box;" />
+                <div style="display: flex; align-items: center; gap: 10px; cursor: pointer; min-height: 28px; width: 100%;" onclick="document.getElementById('skillImportSchoolTypeNew').click()">
+                  <input type="radio" name="skillImportSchoolType" id="skillImportSchoolTypeNew" value="new" style="width: 16px; height: 16px; margin: 0; cursor: pointer; flex-shrink: 0;" />
+                  <span style="font-size: 0.8rem; font-weight: 600; color: var(--ink); cursor: pointer;">Yeni Okul Oluştur ve Ona Aktar</span>
+                  <div id="skillImportSchoolNewContainer" style="margin-left: 10px; display: none; flex: 1; max-width: 320px;" onclick="event.stopPropagation()">
+                    <input type="text" id="skillImportSchoolNewInput" placeholder="Yeni okul adını giriniz..." style="padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); font-size: 0.8rem; outline: none; width: 100%; height: 28px; box-sizing: border-box;" />
+                  </div>
                 </div>
               </div>
             </div>
