@@ -3899,15 +3899,19 @@
           <button type="button" data-floating-module="settings"><span>AY</span><strong>Ayarlar</strong><small class="module-desc">Genel Ayarlar</small></button>
         </div>
       </div>
+    </div>
+    
     <!-- Bulut Veri Yükleme ve Kaydetme Bildirimleri -->
     <div id="cloudLoadingOverlay" class="cloud-loading-overlay" hidden>
-      <div class="cloud-loading-content">
-        <div id="cloudLoadingSpinner" class="cloud-spinner"></div>
-        <strong id="cloudLoadingTitle">Veriler buluttan yükleniyor...</strong>
-        <p id="cloudLoadingDesc">Lütfen bekleyin, güncel veriler alınıyor.</p>
-        <div id="cloudLoadingError" style="display: none; margin-top: 16px; text-align: center;">
-          <p style="color: #ef4444; font-weight: 600; margin: 0 0 12px 0;">İnternet bağlantısı veya bulut sunucusu yanıt vermiyor.</p>
-          <button type="button" onclick="window.location.reload()" style="background: #2dd4bf; color: #0f172a; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 8px rgba(45, 212, 191, 0.3);">Tekrar Dene</button>
+      <div class="cloud-loading-content" style="display: flex; align-items: center; gap: 12px; text-align: left;">
+        <div id="cloudLoadingSpinner" class="cloud-spinner" style="flex-shrink: 0;"></div>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <strong id="cloudLoadingTitle" style="font-size: 0.85rem; font-weight: 700;">Veriler buluttan yükleniyor...</strong>
+          <p id="cloudLoadingDesc" style="margin: 0; font-size: 0.78rem; opacity: 0.85;">Lütfen bekleyin, güncel veriler alınıyor.</p>
+        </div>
+        <div id="cloudLoadingError" style="display: none; margin-top: 16px; text-align: center; width: 100%;">
+          <p style="color: #ef4444; font-weight: 600; margin: 0 0 12px 0; font-size: 0.8rem;">İnternet bağlantısı veya bulut sunucusu yanıt vermiyor.</p>
+          <button type="button" onclick="window.location.reload()" style="background: #2dd4bf; color: #0f172a; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 8px rgba(45, 212, 191, 0.3); font-size: 0.78rem;">Tekrar Dene</button>
         </div>
       </div>
     </div>
