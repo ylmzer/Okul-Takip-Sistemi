@@ -23,7 +23,7 @@
     </script>
     <script>
       (function() {
-        const LOCAL_SESSION_KEY = 'sorubank_local_session';
+        const LOCAL_SESSION_KEY = 'sorubank:local-session';
         try {
           const session = JSON.parse(localStorage.getItem(LOCAL_SESSION_KEY));
           if (session && session.name) {
@@ -1602,7 +1602,7 @@
                 </div>
                 <table class="skill-data-table">
                   <thead>
-                    <tr><th>Seç</th><th>No</th><th>Okul adı</th><th>İl</th><th>Tür</th><th>Yaz Tatili Başl.</th><th>Yaz Tatili Bit.</th><th>Müdür</th></tr>
+                    <tr><th><input type="checkbox" id="skillSchoolSelectAll" style="cursor: pointer;" /></th><th>No</th><th>Okul adı</th><th>İl</th><th>Tür</th><th>Yaz Tatili Başl.</th><th>Yaz Tatili Bit.</th><th>Müdür</th></tr>
                   </thead>
                   <tbody id="skillSchoolTable"></tbody>
                 </table>
@@ -1629,7 +1629,7 @@
               </div>
               <table class="skill-data-table">
                 <thead>
-                  <tr><th>Seç</th><th>No</th><th>Koordinatör öğretmen</th></tr>
+                  <tr><th><input type="checkbox" id="skillTeacherSelectAll" style="cursor: pointer;" /></th><th>No</th><th>Koordinatör öğretmen</th></tr>
                 </thead>
                 <tbody id="skillTeacherTable"></tbody>
               </table>
@@ -1665,7 +1665,7 @@
           <div class="skill-panel skill-table-card">
             <table class="skill-data-table">
               <thead>
-                <tr><th>Seç</th><th>No</th><th>Alan</th><th>Dal</th></tr>
+                <tr><th><input type="checkbox" id="skillFieldSelectAll" style="cursor: pointer;" /></th><th>No</th><th>Alan</th><th>Dal</th></tr>
               </thead>
               <tbody id="skillFieldTable"></tbody>
             </table>

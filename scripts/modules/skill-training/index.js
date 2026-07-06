@@ -1695,6 +1695,41 @@ document.getElementById("skillStudentField")?.addEventListener("click", (e) => {
   e.target.select();
 });
 
+// Universal select-all togglers for all tables/grids
+document.addEventListener("change", (e) => {
+  if (!e.target) return;
+  if (e.target.id === "skillSchoolSelectAll") {
+    const isChecked = e.target.checked;
+    document.getElementById("skillSchoolTable")?.querySelectorAll("[data-skill-select-school]").forEach(cb => cb.checked = isChecked);
+    updateSkillSchoolActionState?.();
+  }
+  else if (e.target.id === "skillTeacherSelectAll") {
+    const isChecked = e.target.checked;
+    document.getElementById("skillTeacherTable")?.querySelectorAll("[data-skill-select-teacher]").forEach(cb => cb.checked = isChecked);
+    updateSkillTeacherActionState?.();
+  }
+  else if (e.target.id === "skillFieldSelectAll") {
+    const isChecked = e.target.checked;
+    document.getElementById("skillFieldTable")?.querySelectorAll("[data-skill-select-field]").forEach(cb => cb.checked = isChecked);
+    updateSkillFieldActionState?.();
+  }
+  else if (e.target.id === "skillBusinessSelectAll") {
+    const isChecked = e.target.checked;
+    els.skillBusinessTable?.querySelectorAll("[data-skill-select-business]").forEach(cb => cb.checked = isChecked);
+    updateSkillBusinessActionState?.();
+  }
+  else if (e.target.id === "skillCoordinatorSelectAll") {
+    const isChecked = e.target.checked;
+    els.skillCoordinatorTable?.querySelectorAll("[data-skill-select-coordinator]").forEach(cb => cb.checked = isChecked);
+    updateSkillCoordinatorActionState?.();
+  }
+  else if (e.target.id === "skillHolidaySelectAll") {
+    const isChecked = e.target.checked;
+    document.getElementById("skillHolidayTable")?.querySelectorAll("[data-skill-select-holiday]").forEach(cb => cb.checked = isChecked);
+    updateSkillHolidayActionState?.();
+  }
+});
+
 window.SkillTrainingModule = {
   get shell() {
     return els.skillShell;

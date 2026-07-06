@@ -3285,6 +3285,8 @@ function setSkillView(view) {
 
 function renderSkillModule() {
   if (!els.skillShell) return;
+  const selectAlls = ["skillSchoolSelectAll", "skillTeacherSelectAll", "skillFieldSelectAll", "skillBusinessSelectAll", "skillCoordinatorSelectAll", "skillHolidaySelectAll", "skillStudentSelectAll"];
+  selectAlls.forEach(id => { const cb = document.getElementById(id); if (cb) cb.checked = false; });
   ensureSkillCollections();
   renderSkillProfileButton();
   renderSkillStats();
@@ -6255,7 +6257,7 @@ function renderSkillBusinesses() {
   `).join("") : `<div class="empty-state">İşletme kaydı bulunamadı.</div>`;
   els.skillBusinessTable.innerHTML = `
     <div class="skill-grid-row skill-grid-head">
-      <span>Seç</span><span>No</span><span>İşletme Adı</span><span>Telefon</span><span>Çalışan</span><span>Adres</span>
+      <span><input type="checkbox" id="skillBusinessSelectAll" style="cursor: pointer;" /></span><span>No</span><span>İşletme Adı</span><span>Telefon</span><span>Çalışan</span><span>Adres</span>
     </div>
     ${businessRows}
   `;
@@ -6298,7 +6300,7 @@ function renderSkillCoordinators() {
   }).join("") : `<div class="empty-state">Koordinatör görevi bulunamadı.</div>`;
   els.skillCoordinatorTable.innerHTML = `
     <div class="skill-grid-row coordinator-grid-row skill-grid-head">
-      <span>Seç</span><span>No</span><span>Okul</span><span>İşletme</span><span>Öğretmen</span><span>Müdür Yrd.</span><span>Gün</span>
+      <span><input type="checkbox" id="skillCoordinatorSelectAll" style="cursor: pointer;" /></span><span>No</span><span>Okul</span><span>İşletme</span><span>Öğretmen</span><span>Müdür Yrd.</span><span>Gün</span>
     </div>
     ${coordinatorRows}
   `;
