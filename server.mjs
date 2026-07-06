@@ -10,7 +10,20 @@ import { createHash } from "node:crypto";
 const root = dirname(fileURLToPath(import.meta.url));
 const port = Number(process.env.PORT || 4173);
 const execFileAsync = promisify(execFile);
-const pythonPath = join(process.env.USERPROFILE || "", ".cache", "codex-runtimes", "codex-primary-runtime", "dependencies", "python", "python.exe");
+import { existsSync } from "node:fs";
+
+let pythonPath = join(process.env.USERPROFILE || "", ".cache", "codex-runtimes", "codex-primary-runtime", "dependencies", "python", "python.exe");
+if (!existsSync(pythonPath)) {
+  const backupProfile = (process.env.HOMEDRIVE && process.env.HOMEPATH) 
+    ? join(process.env.HOMEDRIVE, process.env.HOMEPATH) 
+    : "C:\\Users\\eyilm";
+  const backupPath = join(backupProfile, ".cache", "codex-runtimes", "codex-primary-runtime", "dependencies", "python", "python.exe");
+  if (existsSync(backupPath)) {
+    pythonPath = backupPath;
+  } else {
+    pythonPath = "python";
+  }
+}
 const pythonEnv = { ...process.env, PYTHONIOENCODING: "utf-8" };
 const annualMebCacheDir = join(root, ".cache", "annual-meb");
 
