@@ -3,6 +3,9 @@
    ========================================================================== */
 
 let alanDalListesi = null;
+let importSchoolType = "existing";
+let importSchoolExistingId = "";
+let importSchoolNewName = "";
 
 els.skillModuleSwitchBtn?.addEventListener("click", returnToModuleHub);
 
@@ -68,6 +71,31 @@ async function handleImportNextStep() {
   const saveBtn = document.getElementById("skillImportSaveBtn");
   const prevBtn = document.getElementById("skillImportPrevBtn");
   
+  if (activeImportTab === "excel") {
+    const schoolTypeRadio = document.querySelector('input[name="skillImportSchoolType"]:checked');
+    importSchoolType = schoolTypeRadio ? schoolTypeRadio.value : "existing";
+    
+    if (importSchoolType === "new") {
+      const newNameInput = document.getElementById("skillImportSchoolNewInput");
+      const newName = newNameInput ? newNameInput.value.trim() : "";
+      if (!newName) {
+        showToast("Lütfen yeni okul adını giriniz.", "warning");
+        return;
+      }
+      importSchoolNewName = newName;
+      importSchoolExistingId = "";
+    } else {
+      const existingSelect = document.getElementById("skillImportSchoolExistingSelect");
+      const existingId = existingSelect ? existingSelect.value : "";
+      if (!existingId && skillState.schoolRecords.length > 0) {
+        showToast("Lütfen mevcut bir okul seçin veya yeni okul oluşturmayı tercih edin.", "warning");
+        return;
+      }
+      importSchoolExistingId = existingId;
+      importSchoolNewName = "";
+    }
+  }
+
   if (step1) step1.style.display = "none";
   if (tabContainer) tabContainer.style.display = "none";
   if (step2) step2.style.display = "flex";
@@ -331,6 +359,35 @@ function openSkillImportDialog() {
   parsedImportSqliteData = null;
   switchImportTab("excel");
   loadSqliteProfiles();
+
+  // Populate school targets
+  const schoolSelect = document.getElementById("skillImportSchoolExistingSelect");
+  const newInput = document.getElementById("skillImportSchoolNewInput");
+  if (newInput) newInput.value = "";
+
+  if (schoolSelect) {
+    schoolSelect.innerHTML = skillState.schoolRecords.map(s => 
+      `<option value="${s.id}">${escapeHtml(s.name)}</option>`
+    ).join("");
+    
+    if (skillState.schoolRecords.length === 0) {
+      const radioNew = document.getElementById("skillImportSchoolTypeNew");
+      if (radioNew) radioNew.checked = true;
+      const radioExisting = document.getElementById("skillImportSchoolTypeExisting");
+      if (radioExisting) radioExisting.disabled = true;
+      document.getElementById("skillImportSchoolExistingContainer").style.display = "none";
+      document.getElementById("skillImportSchoolNewContainer").style.display = "block";
+    } else {
+      const radioExisting = document.getElementById("skillImportSchoolTypeExisting");
+      if (radioExisting) {
+        radioExisting.disabled = false;
+        radioExisting.checked = true;
+      }
+      document.getElementById("skillImportSchoolExistingContainer").style.display = "block";
+      document.getElementById("skillImportSchoolNewContainer").style.display = "none";
+    }
+  }
+
   els.skillImportDialog?.showModal();
 }
 
@@ -618,6 +675,38 @@ function saveImeImportedData(event) {
 
   if (parsedImportRecords.length === 0) return;
   
+  let activeSchoolId = "";
+  if (importSchoolType === "new") {
+    activeSchoolId = uid("school");
+    const schoolTypeSelect = document.getElementById("skillImportTypeSelect");
+    const isLise = schoolTypeSelect ? schoolTypeSelect.value === "lise" : false;
+    const newSchool = {
+      id: activeSchoolId,
+      name: importSchoolNewName,
+      type: isLise ? "MTAL" : "MESEM",
+      principal: "",
+      deputy: ""
+    };
+    skillState.schoolRecords.push(newSchool);
+    if (!skillState.school || !skillState.school.id) {
+      skillState.school = newSchool;
+    }
+  } else {
+    activeSchoolId = importSchoolExistingId || (skillState.schoolRecords[0] ? skillState.schoolRecords[0].id : "");
+    if (!activeSchoolId) {
+      activeSchoolId = uid("school");
+      const newSchool = {
+        id: activeSchoolId,
+        name: "Yeni Okul",
+        type: "MESEM",
+        principal: "",
+        deputy: ""
+      };
+      skillState.schoolRecords.push(newSchool);
+      skillState.school = newSchool;
+    }
+  }
+
   let addedCount = 0;
   
   parsedImportRecords.forEach(rec => {
@@ -703,11 +792,13 @@ function saveImeImportedData(event) {
     if (teacherName) {
       let coord = skillState.coordinators.find(c => 
         c.teacher.toLowerCase() === teacherName.toLowerCase() && 
-        c.businessId === biz.id
+        c.businessId === biz.id &&
+        c.schoolId === activeSchoolId
       );
       if (!coord) {
         coord = {
           id: uid("coord"),
+          schoolId: activeSchoolId,
           teacher: teacherName,
           businessId: biz.id,
           day: rec.coord_day || ""
@@ -738,6 +829,16 @@ document.getElementById("skillImportTabSqlite")?.addEventListener("click", () =>
 document.getElementById("skillImportSqliteSelect")?.addEventListener("change", updateImportNextBtnState);
 document.getElementById("skillImportNextBtn")?.addEventListener("click", handleImportNextStep);
 document.getElementById("skillImportPrevBtn")?.addEventListener("click", handleImportPrevStep);
+
+document.addEventListener("change", (e) => {
+  if (e.target && e.target.name === "skillImportSchoolType") {
+    const isNew = e.target.value === "new";
+    const existingContainer = document.getElementById("skillImportSchoolExistingContainer");
+    const newContainer = document.getElementById("skillImportSchoolNewContainer");
+    if (existingContainer) existingContainer.style.display = isNew ? "none" : "block";
+    if (newContainer) newContainer.style.display = isNew ? "block" : "none";
+  }
+});
 
 document.getElementById("skillImportSchoolType")?.addEventListener("change", () => {
   renderImportPreviewTable();
@@ -1561,6 +1662,38 @@ if (els.skillCoordinatorSchool) {
     }
   });
 }
+
+function populateStudentAlanDalDatalist() {
+  if (!alanDalListesi) return;
+  const datalist = document.getElementById("studentAlanDalList");
+  if (!datalist) return;
+  
+  const uniqueOptions = new Set();
+  ["mesem", "mtal"].forEach(type => {
+    const list = alanDalListesi[type];
+    if (!list) return;
+    for (const alan of Object.keys(list)) {
+      for (const dal of list[alan]) {
+        uniqueOptions.add(`${alan} / ${dal}`);
+      }
+    }
+  });
+  
+  datalist.innerHTML = Array.from(uniqueOptions).sort().map(opt => 
+    `<option value="${escapeHtml(opt)}"></option>`
+  ).join("");
+}
+
+// Populate the student form field list on load
+loadAlanDalListesi().then(populateStudentAlanDalDatalist);
+
+// Bind auto-select on focus/click to student edit field
+document.getElementById("skillStudentField")?.addEventListener("focus", (e) => {
+  e.target.select();
+});
+document.getElementById("skillStudentField")?.addEventListener("click", (e) => {
+  e.target.select();
+});
 
 window.SkillTrainingModule = {
   get shell() {

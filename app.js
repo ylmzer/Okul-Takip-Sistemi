@@ -6172,15 +6172,7 @@ function renderSkillSelects() {
     ].join("");
     els.skillStudentClassFilter.value = classOptions.some((item) => item.name === currentClassFilter) ? currentClassFilter : "";
   }
-  if (els.skillStudentField) {
-    els.skillStudentField.innerHTML = [
-      `<option value="">Alan / dal seçiniz</option>`,
-      ...skillState.fields.map((field) => {
-        const label = getSkillFieldLabel(field);
-        return `<option value="${escapeHtml(label)}">${escapeHtml(label)}</option>`;
-      })
-    ].join("");
-  }
+  // els.skillStudentField is now a datalist-based input, so we don't populate options here.
   if (els.skillCoordinatorBusiness) els.skillCoordinatorBusiness.innerHTML = businessOptions;
   const teacherOptions = [
     `<option value="">Öğretmen seçiniz</option>`,
@@ -6348,12 +6340,33 @@ function clearSkillBusinessForm() {
 function saveSkillStudent(event) {
   event.preventDefault();
   const id = els.skillStudentId.value || uid("stu");
+  const fieldVal = els.skillStudentField.value.trim();
+  
+  if (fieldVal && fieldVal !== "Belirtilmedi") {
+    const parts = fieldVal.split("/");
+    const area = parts[0]?.trim() || "Belirtilmedi";
+    const branch = parts[1]?.trim() || "";
+    
+    if (!skillState.fields) skillState.fields = [];
+    const fieldExists = skillState.fields.some(f => 
+      f.area.toLowerCase() === area.toLowerCase() && 
+      (branch ? f.branch.toLowerCase() === branch.toLowerCase() : true)
+    );
+    if (!fieldExists) {
+      skillState.fields.push({
+        id: uid("field"),
+        area: area,
+        branch: branch
+      });
+    }
+  }
+
   const nextStudent = {
     id,
     no: els.skillStudentNo.value.trim(),
     name: els.skillStudentName.value.trim(),
     className: els.skillStudentClass.value.trim(),
-    field: els.skillStudentField.value.trim(),
+    field: fieldVal,
     active: skillState.students.find((student) => student.id === id)?.active !== false,
     businessId: els.skillStudentBusiness.value,
     days: els.skillStudentDays.value.trim()

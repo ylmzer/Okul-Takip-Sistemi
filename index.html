@@ -21,6 +21,50 @@
         }
       })();
     </script>
+    <script>
+      (function() {
+        const LOCAL_SESSION_KEY = 'sorubank_local_session';
+        try {
+          const session = JSON.parse(localStorage.getItem(LOCAL_SESSION_KEY));
+          if (session && session.name) {
+            document.documentElement.classList.add('is-authenticated');
+            const activeModule = session.activeModule || "";
+            if (activeModule === "sorubank") {
+              document.documentElement.classList.add('app-mode-init');
+            } else if (activeModule === "skill-training") {
+              document.documentElement.classList.add('skill-mode-init');
+            } else if (activeModule === "student-tracking") {
+              document.documentElement.classList.add('student-mode-init');
+            } else if (activeModule === "annual-plan") {
+              document.documentElement.classList.add('annual-mode-init');
+            } else if (activeModule === "course-tracking") {
+              document.documentElement.classList.add('course-mode-init');
+            } else if (activeModule === "settings") {
+              document.documentElement.classList.add('global-settings-mode-init');
+            } else {
+              document.documentElement.classList.add('module-mode-init');
+            }
+          } else {
+            document.documentElement.classList.add('auth-mode-init');
+          }
+        } catch (e) {
+          document.documentElement.classList.add('auth-mode-init');
+        }
+      })();
+    </script>
+    <style>
+      /* Prevent flash of login screen if authenticated */
+      html.is-authenticated .auth-shell {
+        display: none !important;
+      }
+      /* Show correct initial shell */
+      html.app-mode-init .app-shell { display: grid !important; }
+      html.skill-mode-init .skill-shell { display: grid !important; }
+      html.student-mode-init .student-shell { display: grid !important; }
+      html.annual-mode-init .annual-shell { display: grid !important; }
+      html.course-mode-init .course-shell { display: grid !important; }
+      html.global-settings-mode-init .global-settings-shell { display: grid !important; }
+    </style>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Okul Takip Sistemi</title>
@@ -1129,7 +1173,7 @@
                 </label>
                 <label>
                   <span>Alan / dal</span>
-                  <select id="skillStudentField"></select>
+                  <input id="skillStudentField" type="text" list="studentAlanDalList" placeholder="Alan/Dal ara..." style="outline: none;" />
                 </label>
                 <label>
                   <span>İşletme</span>
@@ -2111,6 +2155,26 @@
             <p class="skill-profile-note" style="margin-bottom: 15px;">
               Hazır Excel veya PDF dosyasını seçerek işletmeleri, öğrencileri ve sınıfları sisteme otomatik aktarın ve koordinatör öğretmen atamalarını yapın.
             </p>
+            <div class="skill-form-grid" style="grid-template-columns: 1fr; margin-bottom: 12px; border: 1px solid var(--line); padding: 12px; border-radius: 8px; background: rgba(var(--accent-rgb), 0.02); box-sizing: border-box;">
+              <span style="font-weight: bold; font-size: 0.8rem; margin-bottom: 8px; color: var(--ink); display: block;">Aktarılacak Okul Hedefi:</span>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; font-size: 0.8rem;">
+                  <input type="radio" name="skillImportSchoolType" id="skillImportSchoolTypeExisting" value="existing" checked style="cursor: pointer;" />
+                  <span>Sistemdeki Mevcut Okula Ekle</span>
+                </label>
+                <div id="skillImportSchoolExistingContainer" style="margin-left: 22px; margin-bottom: 4px;">
+                  <select id="skillImportSchoolExistingSelect" style="padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); font-size: 0.8rem; outline: none; width: 100%; max-width: 320px; font-weight: bold; cursor: pointer;"></select>
+                </div>
+                
+                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer; font-size: 0.8rem;">
+                  <input type="radio" name="skillImportSchoolType" id="skillImportSchoolTypeNew" value="new" style="cursor: pointer;" />
+                  <span>Yeni Okul Oluştur ve Ona Aktar</span>
+                </label>
+                <div id="skillImportSchoolNewContainer" style="margin-left: 22px; display: none;">
+                  <input type="text" id="skillImportSchoolNewInput" placeholder="Yeni okul adını giriniz..." style="padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); font-size: 0.8rem; outline: none; width: 100%; max-width: 320px; box-sizing: border-box;" />
+                </div>
+              </div>
+            </div>
             <div class="skill-form-grid" style="grid-template-columns: 1fr; margin-bottom: 15px;">
               <label class="wide">
                 <span>Yüklenecek Dosya (.xlsx, .xls, .pdf)</span>
@@ -2202,7 +2266,8 @@
                 <tbody id="skillImportPreviewTable"></tbody>
               </table>
             </div>
-            <datalist id="importAlanDalList"></datalist>
+             <datalist id="importAlanDalList"></datalist>
+            <datalist id="studentAlanDalList"></datalist>
           </div>
 
           <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; width: 100%;">
