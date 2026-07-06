@@ -363,8 +363,8 @@ function turkishClean(val) {
 }
 
 function findClosestMatch(importedField, listType) {
-  if (!importedField || importedField === "Belirtilmedi") return "Belirtilmedi";
-  if (!alanDalListesi || !alanDalListesi[listType]) return "Belirtilmedi";
+  if (!importedField || importedField === "Belirtilmedi") return "";
+  if (!alanDalListesi || !alanDalListesi[listType]) return "";
   
   const cleanedImport = turkishClean(importedField);
   const typeList = alanDalListesi[listType];
@@ -400,7 +400,7 @@ function findClosestMatch(importedField, listType) {
     }
   }
   
-  return "Belirtilmedi";
+  return "";
 }
 
 function updateBulkActionsBar() {
@@ -860,6 +860,26 @@ document.getElementById("skillImportPreviewTable")?.addEventListener("input", (e
       parsedImportRecords[idx].field = e.target.value;
     }
   }
+});
+
+document.getElementById("skillImportPreviewTable")?.addEventListener("focusin", (e) => {
+  if (e.target.classList.contains("import-field-input")) {
+    e.target.select();
+  }
+});
+
+document.getElementById("skillImportPreviewTable")?.addEventListener("click", (e) => {
+  if (e.target.classList.contains("import-field-input")) {
+    e.target.select();
+  }
+});
+
+document.getElementById("skillImportBulkFieldInput")?.addEventListener("focus", (e) => {
+  e.target.select();
+});
+
+document.getElementById("skillImportBulkFieldInput")?.addEventListener("click", (e) => {
+  e.target.select();
 });
 
 if (els.skillImeProfileBtn) els.skillImeProfileBtn.addEventListener("click", openSkillImeProfileDialog);
