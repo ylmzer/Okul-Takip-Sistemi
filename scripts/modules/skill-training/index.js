@@ -219,9 +219,11 @@ async function analyzeSqliteProfile() {
   if (els.skillImportPreviewTable) {
     els.skillImportPreviewTable.innerHTML = `
       <tr>
-        <td colspan="6" class="skill-import-loading">
-          <div class="skill-import-loading-spinner"></div>
-          <span>SQLite veritabanı çözümleniyor, lütfen bekleyin...</span>
+        <td colspan="7" style="padding: 0; border: none; display: table-cell;">
+          <div class="skill-import-loading">
+            <div class="skill-import-loading-spinner"></div>
+            <span>SQLite veritabanı çözümleniyor, lütfen bekleyin...</span>
+          </div>
         </td>
       </tr>
     `;
@@ -561,9 +563,11 @@ async function analyzeImeImportFile(file) {
   if (els.skillImportPreviewTable) {
     els.skillImportPreviewTable.innerHTML = `
       <tr>
-        <td colspan="6" class="skill-import-loading">
-          <div class="skill-import-loading-spinner"></div>
-          <span>Dosya analiz ediliyor, lütfen bekleyin...</span>
+        <td colspan="7" style="padding: 0; border: none; display: table-cell;">
+          <div class="skill-import-loading">
+            <div class="skill-import-loading-spinner"></div>
+            <span>Dosya analiz ediliyor, lütfen bekleyin...</span>
+          </div>
         </td>
       </tr>
     `;
