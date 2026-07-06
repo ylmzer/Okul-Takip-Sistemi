@@ -1753,6 +1753,7 @@ function initStudentAlanDalDialog() {
     const filterText = searchInput ? searchInput.value.trim().toLocaleLowerCase("tr-TR") : "";
     const localFields = Array.isArray(skillState.fields) ? skillState.fields : [];
     
+    // Project/School specific fields
     const localItems = localFields.map(f => {
       const label = getSkillFieldLabel(f);
       return {
@@ -1764,81 +1765,129 @@ function initStudentAlanDalDialog() {
       };
     });
 
-    const mebItems = allAlanDalSuggestions.map(str => {
-      const parts = str.split("/");
-      const area = parts[0]?.trim() || "";
-      const branch = parts[1]?.trim() || "";
-      return {
-        type: "meb",
-        id: "meb_" + str,
-        area: area,
-        branch: branch,
-        label: str
-      };
-    });
-
-    const combined = [];
-    const labelsInProject = new Set(localItems.map(item => item.label.toLowerCase()));
-    
-    combined.push(...localItems);
-    
-    mebItems.forEach(item => {
-      if (!labelsInProject.has(item.label.toLowerCase())) {
-        combined.push(item);
+    // If search is empty, show ONLY school fields
+    if (filterText === "") {
+      if (localItems.length === 0) {
+        listContainer.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--muted); font-size: 0.85rem;">Okulunuza tanımlı alan/dal bulunmamaktadır.<br>Yukarıdaki formdan yeni alan ekleyebilir veya arama yaparak standart MEB listesinden seçebilirsiniz.</div>`;
+        return;
       }
-    });
 
-    let filtered = combined;
-    if (filterText !== "") {
-      filtered = combined.filter(item => 
-        item.label.toLocaleLowerCase("tr-TR").includes(filterText)
-      );
+      listContainer.innerHTML = localItems.map(item => {
+        const isEditing = item.id === editingId;
+        if (isEditing) {
+          return `
+            <div style="display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--line); background: rgba(45, 212, 191, 0.06); box-sizing: border-box;">
+              <div style="display: flex; gap: 8px; flex: 1; align-items: center; padding-right: 10px; min-width: 0;">
+                <input type="text" class="edit-input" id="editArea_${item.id}" value="${escapeHtml(item.area)}" placeholder="Alan" style="flex: 1; padding: 6px 10px; font-size: 0.78rem; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); outline: none; box-sizing: border-box;" />
+                <input type="text" class="edit-input" id="editBranch_${item.id}" value="${escapeHtml(item.branch)}" placeholder="Dal" style="flex: 1; padding: 6px 10px; font-size: 0.78rem; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); outline: none; box-sizing: border-box;" />
+              </div>
+              <div style="display: flex; gap: 6px; align-items: center; flex-shrink: 0;">
+                <button class="primary-action save-edit-btn" data-id="${item.id}" style="padding: 4px 8px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; min-height: 28px;" title="Kaydet">✓</button>
+                <button class="danger-action cancel-edit-btn" style="padding: 4px 8px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; min-height: 28px;" title="İptal">✗</button>
+              </div>
+            </div>
+          `;
+        }
+
+        return `
+          <div style="display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--surface); box-sizing: border-box;">
+            <div class="select-field-trigger" data-label="${escapeHtml(item.label)}" data-type="${item.type}" data-id="${item.id}" style="cursor: pointer; text-align: left; min-width: 0;">
+              <strong style="font-size: 0.85rem; display: block; color: var(--ink); line-height: 1.3; font-weight: bold; word-break: break-word;">${escapeHtml(item.area)}</strong>
+              <span style="font-size: 0.76rem; color: var(--muted); display: block; margin-top: 3px; line-height: 1.3; word-break: break-word;">${escapeHtml(item.branch || "Dal belirtilmedi")}</span>
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center; flex-shrink: 0;">
+              <button class="ghost-action edit-field-btn" data-id="${item.id}" style="min-height: 28px; padding: 4px 8px; font-size: 0.76rem; color: var(--accent); border: 1px solid var(--line); border-radius: 6px; cursor: pointer; background: transparent;" title="Düzenle">✏</button>
+              <button class="danger-action delete-field-btn" data-id="${item.id}" style="min-height: 28px; padding: 4px 8px; font-size: 0.76rem; font-weight: bold; color: #ef4444; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 6px; cursor: pointer;" title="Sil">×</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+      return;
     }
 
-    if (filtered.length === 0) {
+    // If search has text, show filtered school fields, AND matching MEB suggestions below
+    const filteredSchool = localItems.filter(item => 
+      item.label.toLocaleLowerCase("tr-TR").includes(filterText)
+    );
+
+    const labelsInProject = new Set(localItems.map(item => item.label.toLowerCase()));
+    const matchingMeb = allAlanDalSuggestions
+      .filter(str => str.toLocaleLowerCase("tr-TR").includes(filterText) && !labelsInProject.has(str.toLowerCase()))
+      .slice(0, 40) // Limit suggestions to keep search fast
+      .map(str => {
+        const parts = str.split("/");
+        const area = parts[0]?.trim() || "";
+        const branch = parts[1]?.trim() || "";
+        return {
+          type: "meb",
+          id: "meb_" + str,
+          area: area,
+          branch: branch,
+          label: str
+        };
+      });
+
+    let html = "";
+
+    // 1. Okul Alanları (School fields matching)
+    if (filteredSchool.length > 0) {
+      html += `<div style="padding: 6px 14px; background: rgba(var(--accent-rgb), 0.02); font-size: 0.75rem; font-weight: bold; color: var(--muted); border-bottom: 1px solid var(--line);">Okula Tanımlı Alanlar</div>`;
+      html += filteredSchool.map(item => {
+        const isEditing = item.id === editingId;
+        if (isEditing) {
+          return `
+            <div style="display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--line); background: rgba(45, 212, 191, 0.06); box-sizing: border-box;">
+              <div style="display: flex; gap: 8px; flex: 1; align-items: center; padding-right: 10px; min-width: 0;">
+                <input type="text" class="edit-input" id="editArea_${item.id}" value="${escapeHtml(item.area)}" placeholder="Alan" style="flex: 1; padding: 6px 10px; font-size: 0.78rem; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); outline: none; box-sizing: border-box;" />
+                <input type="text" class="edit-input" id="editBranch_${item.id}" value="${escapeHtml(item.branch)}" placeholder="Dal" style="flex: 1; padding: 6px 10px; font-size: 0.78rem; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); outline: none; box-sizing: border-box;" />
+              </div>
+              <div style="display: flex; gap: 6px; align-items: center; flex-shrink: 0;">
+                <button class="primary-action save-edit-btn" data-id="${item.id}" style="padding: 4px 8px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; min-height: 28px;" title="Kaydet">✓</button>
+                <button class="danger-action cancel-edit-btn" style="padding: 4px 8px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; min-height: 28px;" title="İptal">✗</button>
+              </div>
+            </div>
+          `;
+        }
+
+        return `
+          <div style="display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--surface); box-sizing: border-box;">
+            <div class="select-field-trigger" data-label="${escapeHtml(item.label)}" data-type="${item.type}" data-id="${item.id}" style="cursor: pointer; text-align: left; min-width: 0;">
+              <strong style="font-size: 0.85rem; display: block; color: var(--ink); line-height: 1.3; font-weight: bold; word-break: break-word;">${escapeHtml(item.area)}</strong>
+              <span style="font-size: 0.76rem; color: var(--muted); display: block; margin-top: 3px; line-height: 1.3; word-break: break-word;">${escapeHtml(item.branch || "Dal belirtilmedi")}</span>
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center; flex-shrink: 0;">
+              <button class="ghost-action edit-field-btn" data-id="${item.id}" style="min-height: 28px; padding: 4px 8px; font-size: 0.76rem; color: var(--accent); border: 1px solid var(--line); border-radius: 6px; cursor: pointer; background: transparent;" title="Düzenle">✏</button>
+              <button class="danger-action delete-field-btn" data-id="${item.id}" style="min-height: 28px; padding: 4px 8px; font-size: 0.76rem; font-weight: bold; color: #ef4444; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 6px; cursor: pointer;" title="Sil">×</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // 2. Standart MEB Alanları (Matching MEB Suggestions)
+    if (matchingMeb.length > 0) {
+      html += `<div style="padding: 6px 14px; background: rgba(16, 185, 129, 0.05); font-size: 0.75rem; font-weight: bold; color: #10b981; border-bottom: 1px solid var(--line); border-top: 1px solid var(--line);">Standart MEB Listesinden Ekle</div>`;
+      html += matchingMeb.map(item => {
+        return `
+          <div style="display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--surface); box-sizing: border-box;">
+            <div class="select-field-trigger" data-label="${escapeHtml(item.label)}" data-type="${item.type}" data-id="${item.id}" style="cursor: pointer; text-align: left; min-width: 0;">
+              <strong style="font-size: 0.85rem; display: block; color: var(--ink); line-height: 1.3; font-weight: bold; word-break: break-word;">${escapeHtml(item.area)}</strong>
+              <span style="font-size: 0.76rem; color: var(--muted); display: block; margin-top: 3px; line-height: 1.3; word-break: break-word;">${escapeHtml(item.branch || "Dal belirtilmedi")}</span>
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center; flex-shrink: 0;">
+              <button class="select-field-btn" data-label="${escapeHtml(item.label)}" data-type="${item.type}" data-id="${item.id}" style="min-height: 28px; padding: 4px 10px; font-size: 0.76rem; font-weight: 700; border-radius: 6px; cursor: pointer; background: #10b981; color: white; border: none; display: inline-flex; align-items: center; justify-content: center;">+ Ekle</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    if (html === "") {
       listContainer.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--muted); font-size: 0.85rem;">Eşleşen alan/dal bulunamadı.</div>`;
       return;
     }
 
-    listContainer.innerHTML = filtered.map(item => {
-      const isEditing = item.id === editingId;
-      
-      if (isEditing) {
-        return `
-          <div class="field-selector-row" style="background: rgba(45, 212, 191, 0.06) !important;">
-            <div style="display: flex; gap: 8px; flex: 1; align-items: center; padding-right: 10px; min-width: 0;">
-              <input type="text" class="edit-input" id="editArea_${item.id}" value="${escapeHtml(item.area)}" placeholder="Alan" style="flex: 1;" />
-              <input type="text" class="edit-input" id="editBranch_${item.id}" value="${escapeHtml(item.branch)}" placeholder="Dal" style="flex: 1;" />
-            </div>
-            <div class="field-selector-actions">
-              <button class="primary-action save-edit-btn" data-id="${item.id}" style="padding: 4px 8px; background: #10b981; color: white;" title="Kaydet">✓</button>
-              <button class="danger-action cancel-edit-btn" style="padding: 4px 8px; background: #ef4444; color: white;" title="İptal">✗</button>
-            </div>
-          </div>
-        `;
-      }
-
-      let actionButtonsHtml = `<button class="secondary-action select-field-btn" data-label="${escapeHtml(item.label)}" data-type="${item.type}" data-id="${item.id}">Seç</button>`;
-      
-      if (item.type === "project") {
-        actionButtonsHtml += `
-          <button class="ghost-action edit-field-btn" data-id="${item.id}" style="padding: 4px; color: var(--accent); border: 1px solid var(--line); border-radius: 6px;" title="Düzenle">✏</button>
-          <button class="danger-action delete-field-btn" data-id="${item.id}" style="padding: 4px 8px; font-weight: bold;" title="Sil">×</button>
-        `;
-      }
-
-      return `
-        <div class="field-selector-row">
-          <div class="field-selector-info select-field-trigger" data-label="${escapeHtml(item.label)}" data-type="${item.type}" data-id="${item.id}">
-            <strong>${escapeHtml(item.area)}</strong>
-            <span>${escapeHtml(item.branch || "Dal belirtilmedi")}</span>
-          </div>
-          <div class="field-selector-actions">
-            ${actionButtonsHtml}
-          </div>
-        </div>
-      `;
-    }).join("");
+    listContainer.innerHTML = html;
   }
 
   if (searchInput) {
