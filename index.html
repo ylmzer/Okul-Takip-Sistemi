@@ -34,14 +34,14 @@
     <link rel="stylesheet" href="./styles.css?v=71" />
     <link rel="stylesheet" href="./theme-overrides.css?v=75" />
   </head>
-  <body>
+  <body class="auth-mode">
     <section class="auth-shell" id="authShell" aria-label="Giriş ve modül seçimi">
       <div class="auth-brand">
         <img src="icons/logo-clean.svg" class="auth-brand-mark" alt="Logo" style="filter: drop-shadow(0 3px 6px rgba(0,0,0,0.15));" />
         <strong>Okul Takip Sistemi</strong>
       </div>
 
-      <div class="auth-card" id="loginPanel">
+      <div class="auth-card" id="loginPanel" style="opacity: 0; transition: opacity 0.15s ease;">
         <div class="auth-intro">
           <p class="eyebrow">Hesap</p>
           <h1>Önce hesabınızı oluşturun</h1>

@@ -2250,6 +2250,8 @@ function finalizeCloudInitialization() {
     console.log("Pending local write detected after cloud init. Pushing to cloud...");
     scheduleCloudSave();
   }
+  const loginPanel = document.getElementById("loginPanel");
+  if (loginPanel) loginPanel.style.opacity = "1";
 }
 
 async function scheduleCloudSave() {
@@ -2423,6 +2425,7 @@ async function initializeCloud() {
     if (introTitle) {
       introTitle.textContent = "Hesabınıza giriş yapın";
     }
+    setAuthMode("login");
   }
   if (!config.url || !config.anonKey) {
     cloudState = { ...cloudState, enabled: false, ready: true, client: null, session: null, lastError: "" };

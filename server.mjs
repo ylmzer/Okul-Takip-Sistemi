@@ -633,8 +633,9 @@ async function handleImeDataImport(request, response) {
     response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
     response.end(stdout);
   } catch (error) {
+    const errorMsg = error.stderr ? `${error.message}\nStderr: ${error.stderr}` : error.message;
     response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
-    response.end(JSON.stringify({ error: error.message || "Execution error" }));
+    response.end(JSON.stringify({ error: errorMsg || "Execution error" }));
   } finally {
     await unlink(tempPath).catch(() => {});
   }
