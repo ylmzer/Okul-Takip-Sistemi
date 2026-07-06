@@ -454,7 +454,7 @@ function renderImportPreviewTable() {
     
     // Autocomplete datalist input instead of dropdown select
     let fieldInputHtml = `
-      <input class="import-field-input" type="text" list="importAlanDalList" data-index="${idx}" value="${escapeHtml(r.field)}" placeholder="Alan/Dal ara..." style="padding: 2px 6px !important; border-radius: 6px !important; border: 1px solid var(--line) !important; background: var(--surface) !important; color: var(--ink) !important; width: 100% !important; max-width: 250px !important; font-size: 0.78rem !important; height: 26px !important; outline: none !important; box-sizing: border-box !important; margin: 0 !important;" />
+      <input class="import-field-input" type="text" list="importAlanDalList" data-index="${idx}" value="${escapeHtml(r.field)}" placeholder="Alan/Dal ara..." style="padding: 2px 6px !important; border-radius: 6px !important; border: 1px solid var(--line) !important; background: var(--surface) !important; color: var(--ink) !important; width: 100% !important; max-width: 360px !important; font-size: 0.78rem !important; height: 26px !important; outline: none !important; box-sizing: border-box !important; margin: 0 !important;" />
     `;
     
     const days = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma"];
