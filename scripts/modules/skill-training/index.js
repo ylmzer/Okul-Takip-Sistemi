@@ -817,6 +817,18 @@ document.getElementById("skillImportBulkApplyBtn")?.addEventListener("click", ()
   updateBulkActionsBar();
 });
 
+document.getElementById("skillImportBulkClearBtn")?.addEventListener("click", () => {
+  parsedImportRecords.forEach(r => r.selected = false);
+  const bulkInput = document.getElementById("skillImportBulkFieldInput");
+  const bulkDaySelect = document.getElementById("skillImportBulkDaySelect");
+  if (bulkInput) bulkInput.value = "";
+  if (bulkDaySelect) bulkDaySelect.value = "";
+  document.querySelectorAll(".import-row-checkbox").forEach(cb => cb.checked = false);
+  const selectAllCheckbox = document.getElementById("skillImportSelectAll");
+  if (selectAllCheckbox) selectAllCheckbox.checked = false;
+  updateBulkActionsBar();
+});
+
 document.getElementById("skillImportPreviewTable")?.addEventListener("change", (e) => {
   if (e.target.classList.contains("import-row-checkbox")) {
     const idx = parseInt(e.target.dataset.index);

@@ -2144,22 +2144,37 @@
               </div>
               <div id="skillImportStats" style="display: flex; align-items: center; gap: 12px; font-size: 0.8rem; font-weight: bold; color: var(--ink);"></div>
             </div>
-            <div id="skillImportBulkActions" style="display: none; align-items: center; gap: 10px; margin-bottom: 6px; background: rgba(var(--accent-rgb), 0.05); border: 1px dashed var(--accent); padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
-              <span style="font-weight: bold; color: var(--ink);"><span id="skillImportSelectedCount" style="color: var(--accent); font-size: 0.9rem;">0</span> öğrenci seçildi.</span>
-              <span style="color: var(--line);">|</span>
-              <span style="font-weight: bold; color: var(--ink);">Toplu Alan/Dal:</span>
-              <input id="skillImportBulkFieldInput" type="text" list="importAlanDalList" placeholder="Alan/Dal ara..." style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 200px; font-size: 0.78rem; outline: none; box-sizing: border-box;" />
-              <span style="color: var(--line);">|</span>
-              <span style="font-weight: bold; color: var(--ink);">Toplu Ziyaret Günü:</span>
-              <select id="skillImportBulkDaySelect" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 0.78rem; outline: none; cursor: pointer;">
-                <option value="">Gün Seçin</option>
-                <option value="Pazartesi">Pazartesi</option>
-                <option value="Salı">Salı</option>
-                <option value="Çarşamba">Çarşamba</option>
-                <option value="Perşembe">Perşembe</option>
-                <option value="Cuma">Cuma</option>
-              </select>
-              <button id="skillImportBulkApplyBtn" type="button" class="primary-action" style="padding: 4px 12px; font-size: 0.75rem; font-weight: bold; min-height: 28px; border-radius: 6px; border: none; cursor: pointer; background: var(--accent); color: #fff;">Uygula</button>
+            <div id="skillImportBulkActions" style="display: none; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 10px; background: rgba(var(--accent-rgb), 0.04); border: 1px solid var(--accent); padding: 8px 16px; border-radius: 8px; font-size: 0.82rem; width: 100%; box-sizing: border-box; box-shadow: 0 2px 8px rgba(0,0,0,0.05); flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="display: inline-flex; align-items: center; justify-content: center; background: var(--accent); color: white; border-radius: 12px; padding: 2px 8px; font-weight: bold; font-size: 0.75rem;" id="skillImportSelectedCount">0</span>
+                <span style="font-weight: bold; color: var(--ink);">öğrenci seçildi. Seçililere uygulanacak işlemler:</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="color: var(--muted); font-weight: bold;">Alan/Dal:</span>
+                  <input id="skillImportBulkFieldInput" type="text" list="importAlanDalList" placeholder="Alan/Dal ara..." style="padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 220px; font-size: 0.78rem; height: 28px; outline: none; box-sizing: border-box;" />
+                </div>
+                <span style="color: var(--line);">|</span>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="color: var(--muted); font-weight: bold;">Ziyaret Günü:</span>
+                  <select id="skillImportBulkDaySelect" style="padding: 4px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 0.78rem; height: 28px; outline: none; cursor: pointer; max-width: 130px; box-sizing: border-box;">
+                    <option value="">Seçilmesin</option>
+                    <option value="Pazartesi">Pazartesi</option>
+                    <option value="Salı">Salı</option>
+                    <option value="Çarşamba">Çarşamba</option>
+                    <option value="Perşembe">Perşembe</option>
+                    <option value="Cuma">Cuma</option>
+                  </select>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; margin-left: 8px;">
+                  <button id="skillImportBulkApplyBtn" type="button" class="primary-action" style="padding: 0 16px; font-size: 0.78rem; font-weight: bold; height: 28px; min-height: 28px; border-radius: 6px; border: none; cursor: pointer; background: var(--accent); color: #fff; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s;">
+                    ✓ Uygula
+                  </button>
+                  <button id="skillImportBulkClearBtn" type="button" class="secondary-action" style="padding: 0 12px; font-size: 0.78rem; font-weight: bold; height: 28px; min-height: 28px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s;">
+                    Seçimi Temizle
+                  </button>
+                </div>
+              </div>
             </div>
             <div class="skill-table-card" style="margin-top: 0; padding: 0; flex: 1; min-height: 0; overflow-y: auto; width: 100%;">
               <table class="skill-data-table" style="font-size: 0.85rem;">
