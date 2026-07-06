@@ -1505,6 +1505,21 @@ if (els.skillClassDaySelect) {
     updateSkillClassDaySummary();
   });
 }
+
+document.getElementById("skillClassDayTarget")?.addEventListener("change", (e) => {
+  const selectContainer = document.getElementById("skillClassDaySelectContainer");
+  if (selectContainer) {
+    selectContainer.style.display = e.target.value === "class" ? "block" : "none";
+  }
+  
+  if (e.target.value === "class") {
+    setSkillClassDayPickerDays(getClassDaysFromStudents(els.skillClassDaySelect?.value));
+  } else {
+    setSkillClassDayPickerDays([]);
+  }
+  updateSkillClassDaySummary();
+});
+
 if (els.skillAssignClassDaysBtn) els.skillAssignClassDaysBtn.addEventListener("click", openSkillClassDayDialog);
 if (els.skillClassDayForm) els.skillClassDayForm.addEventListener("submit", assignDaysToClass);
 if (els.skillClassDayCloseBtn) els.skillClassDayCloseBtn.addEventListener("click", closeSkillClassDayDialog);

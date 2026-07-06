@@ -1923,27 +1923,37 @@
     <dialog id="skillClassDayDialog" class="skill-status-dialog skill-class-day-dialog">
       <form method="dialog" class="dialog-body skill-status-body" id="skillClassDayForm">
         <div class="skill-status-head">
-          <h2>Şubeye Okul Günü Ata</h2>
-          <button class="skill-close-x" id="skillClassDayCloseBtn" type="button">×</button>
+          <h2 id="skillClassDayTitle">Öğrenci / Şube Okul Günü Ata</h2>
+          <button class="skill-close-x" id="skillClassDayCloseBtn" type="button" style="border-radius: 8px !important;">×</button>
         </div>
-        <div class="skill-status-grid">
+        <div class="skill-status-grid" style="grid-template-columns: 1fr; gap: 15px; margin-top: 10px;">
           <label>
+            <span>Uygulanacak Hedef</span>
+            <select id="skillClassDayTarget" style="padding: 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 600; width: 100%; outline: none; cursor: pointer;">
+              <option value="selected">Seçili Öğrencilere (<span id="skillClassDaySelectedCount">0</span> öğrenci)</option>
+              <option value="class">Şube / Sınıf Bazında</option>
+            </select>
+          </label>
+          <label id="skillClassDaySelectContainer">
             <span>Şube / sınıf</span>
-            <select id="skillClassDaySelect"></select>
+            <select id="skillClassDaySelect" style="padding: 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 600; width: 100%; outline: none; cursor: pointer;"></select>
           </label>
           <label>
             <span>Okul günleri</span>
-            <div class="skill-day-picker" id="skillClassDayPicker" aria-label="Şube okul günü seçimi">
+            <div class="skill-day-picker" id="skillClassDayPicker" aria-label="Okul günü seçimi">
               <button type="button" data-skill-class-day="Pzt">Pzt</button>
               <button type="button" data-skill-class-day="Sal">Sal</button>
               <button type="button" data-skill-class-day="Çar">Çar</button>
               <button type="button" data-skill-class-day="Per">Per</button>
               <button type="button" data-skill-class-day="Cum">Cum</button>
             </div>
+            <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px;">
+              Okul günleri boş bırakılırsa öğrencinin tüm günleri staj/işletme günü sayılır.
+            </div>
           </label>
         </div>
-        <div class="dialog-actions">
-          <button class="primary-action" id="skillClassDaySaveBtn" type="submit">Günleri ata</button>
+        <div class="dialog-actions" style="margin-top: 20px;">
+          <button class="primary-action" id="skillClassDaySaveBtn" type="submit" style="width: 100%; min-height: 38px; font-weight: bold;">Günleri ata</button>
         </div>
       </form>
     </dialog>

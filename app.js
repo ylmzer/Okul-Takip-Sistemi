@@ -2955,9 +2955,40 @@ function renderSkillClassDayOptions(preferredClass = "") {
 
 function openSkillClassDayDialog() {
   const classes = getSkillStudentClassOptions();
-  if (!classes.length) return showToast("Gün atamak için önce sınıf bilgisi olan öğrenci ekleyin.", "warning");
+  if (!skillState.students.length) return showToast("Okul günü atamak için önce öğrenci ekleyin.", "warning");
   renderSkillClassDayOptions(getPreferredClassForDayDialog());
-  setSkillClassDayPickerDays(getClassDaysFromStudents(els.skillClassDaySelect?.value));
+  
+  const selectedIds = selectedSkillIds(els.skillStudentTable, "[data-skill-select-student]");
+  const targetSelect = document.getElementById("skillClassDayTarget");
+  const selectedCountSpan = document.getElementById("skillClassDaySelectedCount");
+  const selectContainer = document.getElementById("skillClassDaySelectContainer");
+  
+  if (selectedCountSpan) {
+    selectedCountSpan.textContent = selectedIds.length;
+  }
+  
+  if (targetSelect) {
+    const selectedOption = targetSelect.querySelector('option[value="selected"]');
+    if (selectedOption) {
+      if (selectedIds.length > 0) {
+        selectedOption.disabled = false;
+        selectedOption.textContent = `Seçili Öğrencilere (${selectedIds.length} öğrenci)`;
+        targetSelect.value = "selected";
+        if (selectContainer) selectContainer.style.display = "none";
+      } else {
+        selectedOption.disabled = true;
+        selectedOption.textContent = `Seçili Öğrencilere (Hiç öğrenci seçilmedi)`;
+        targetSelect.value = "class";
+        if (selectContainer) selectContainer.style.display = "block";
+      }
+    }
+  }
+  
+  if (targetSelect && targetSelect.value === "class") {
+    setSkillClassDayPickerDays(getClassDaysFromStudents(els.skillClassDaySelect?.value));
+  } else {
+    setSkillClassDayPickerDays([]);
+  }
   updateSkillClassDaySummary();
   els.skillClassDayDialog?.showModal();
 }
@@ -2968,22 +2999,44 @@ function closeSkillClassDayDialog() {
 
 function assignDaysToClass(event) {
   event.preventDefault();
-  const className = (els.skillClassDaySelect?.value || "").trim();
+  const targetSelect = document.getElementById("skillClassDayTarget");
+  const target = targetSelect ? targetSelect.value : "class";
   const days = selectedClassDays();
-  if (!className) return showToast("Gün atamak için şube / sınıf seçin.", "warning");
-  if (!days.length) return showToast("Şubeye atanacak okul günlerini seçin.", "warning");
-  const normalizedClass = normalizeSkillClass(className);
-  let updatedCount = 0;
-  skillState.students = skillState.students.map((student) => {
-    if (normalizeSkillClass(student.className) !== normalizedClass) return student;
-    updatedCount += 1;
-    return { ...student, days: days.join(", ") };
-  });
-  if (!updatedCount) return showToast(`${className} şubesinde öğrenci bulunamadı.`, "warning");
-  saveSkillState();
-  closeSkillClassDayDialog();
-  renderSkillModule();
-  showToast(`${className} şubesindeki ${updatedCount} öğrenciye okul günü atandı.`);
+  const daysStr = days.join(", ");
+  
+  if (target === "selected") {
+    const selectedIds = selectedSkillIds(els.skillStudentTable, "[data-skill-select-student]");
+    if (!selectedIds.length) return showToast("Okul günü atamak için öğrenci seçin.", "warning");
+    
+    skillState.students = skillState.students.map((student) => {
+      if (selectedIds.includes(student.id)) {
+        return { ...student, days: daysStr };
+      }
+      return student;
+    });
+    
+    saveSkillState();
+    closeSkillClassDayDialog();
+    renderSkillModule();
+    showToast(`Seçilen ${selectedIds.length} öğrenciye okul günü atandı.`);
+  } else {
+    const className = (els.skillClassDaySelect?.value || "").trim();
+    if (!className) return showToast("Gün atamak için şube / sınıf seçin.", "warning");
+    
+    const normalizedClass = normalizeSkillClass(className);
+    let updatedCount = 0;
+    skillState.students = skillState.students.map((student) => {
+      if (normalizeSkillClass(student.className) !== normalizedClass) return student;
+      updatedCount += 1;
+      return { ...student, days: daysStr };
+    });
+    
+    if (!updatedCount) return showToast(`${className} şubesinde öğrenci bulunamadı.`, "warning");
+    saveSkillState();
+    closeSkillClassDayDialog();
+    renderSkillModule();
+    showToast(`${className} şubesindeki ${updatedCount} öğrenciye okul günü atandı.`);
+  }
 }
 
 function getCurrentSkillHolidayYear() {
