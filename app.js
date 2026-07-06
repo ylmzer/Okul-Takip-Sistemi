@@ -6191,10 +6191,20 @@ function renderSkillSelects() {
     `<option value="">Okul seçiniz</option>`,
     ...skillState.schoolRecords.map((school) => `<option value="${school.id}">${escapeHtml(school.name)}</option>`)
   ].join("");
-  if (els.skillCoordinatorSchool) els.skillCoordinatorSchool.innerHTML = schoolOptions;
+  if (els.skillCoordinatorSchool) {
+    els.skillCoordinatorSchool.innerHTML = schoolOptions;
+    if (skillState.schoolRecords.length > 0) {
+      els.skillCoordinatorSchool.value = skillState.schoolRecords[0].id;
+    }
+  }
   const deputies = skillState.schoolRecords.map((school) => school.deputy).filter(Boolean);
   const deputyOptions = [`<option value="">Müdür yardımcısı seçiniz</option>`, ...[...new Set(deputies)].map((deputy) => `<option value="${escapeHtml(deputy)}">${escapeHtml(deputy)}</option>`)].join("");
-  if (els.skillCoordinatorDeputy) els.skillCoordinatorDeputy.innerHTML = deputyOptions;
+  if (els.skillCoordinatorDeputy) {
+    els.skillCoordinatorDeputy.innerHTML = deputyOptions;
+  }
+  if (els.skillCoordinatorSchool && skillState.schoolRecords.length > 0) {
+    els.skillCoordinatorSchool.dispatchEvent(new Event("change"));
+  }
 }
 
 function renderSkillStudents() {
@@ -6232,7 +6242,7 @@ function renderSkillStudents() {
   }).join("") : `<div class="empty-state">Öğrenci kaydı bulunamadı.</div>`;
   els.skillStudentTable.innerHTML = `
     <div class="skill-grid-row skill-grid-head skill-student-grid-row">
-      <span>Seç</span><span>No</span><span>Durum</span><span>Okul no</span><span>Ad soyad</span><span>İşletme</span><span>Alan / dal</span><span>Sınıf</span><span>Gün</span>
+      <span><input type="checkbox" id="skillStudentSelectAll" style="cursor: pointer;" /></span><span>No</span><span>Durum</span><span>Okul no</span><span>Ad soyad</span><span>İşletme</span><span>Alan / dal</span><span>Sınıf</span><span>Gün</span>
     </div>
     ${studentRows}
   `;
@@ -6431,9 +6441,22 @@ function saveSkillCoordinator(event) {
 
 function clearSkillCoordinatorForm() {
   if (els.skillCoordinatorId) els.skillCoordinatorId.value = "";
-  if (els.skillCoordinatorSchool) els.skillCoordinatorSchool.value = "";
+  if (els.skillCoordinatorSchool) {
+    if (skillState.schoolRecords.length > 0) {
+      els.skillCoordinatorSchool.value = skillState.schoolRecords[0].id;
+      els.skillCoordinatorSchool.dispatchEvent(new Event("change"));
+    } else {
+      els.skillCoordinatorSchool.value = "";
+    }
+  }
   if (els.skillCoordinatorTeacher) els.skillCoordinatorTeacher.value = "";
-  if (els.skillCoordinatorDeputy) els.skillCoordinatorDeputy.value = "";
+  if (els.skillCoordinatorDeputy) {
+    if (skillState.schoolRecords.length > 0 && skillState.schoolRecords[0].deputy) {
+      els.skillCoordinatorDeputy.value = skillState.schoolRecords[0].deputy;
+    } else {
+      els.skillCoordinatorDeputy.value = "";
+    }
+  }
   if (els.skillCoordinatorBusiness) els.skillCoordinatorBusiness.value = "";
   if (els.skillCoordinatorDay) els.skillCoordinatorDay.value = "";
 }

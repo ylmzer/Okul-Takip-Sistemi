@@ -1537,7 +1537,15 @@ if (els.skillStatusStudentSelect) els.skillStatusStudentSelect.addEventListener(
 if (els.skillStatusCloseBtn) els.skillStatusCloseBtn.addEventListener("click", closeSkillStudentStatusDialog);
 if (els.skillStatusCancelBtn) els.skillStatusCancelBtn.addEventListener("click", closeSkillStudentStatusDialog);
 els.skillStudentTable.addEventListener("click", handleSkillTableClick);
-els.skillStudentTable.addEventListener("change", updateSkillStudentActionState);
+els.skillStudentTable.addEventListener("change", (e) => {
+  if (e.target.id === "skillStudentSelectAll") {
+    const isChecked = e.target.checked;
+    els.skillStudentTable.querySelectorAll("[data-skill-select-student]").forEach((cb) => {
+      cb.checked = isChecked;
+    });
+  }
+  updateSkillStudentActionState();
+});
 els.skillBusinessTable.addEventListener("click", handleSkillTableClick);
 els.skillCoordinatorTable.addEventListener("click", handleSkillTableClick);
 
