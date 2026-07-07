@@ -1309,6 +1309,39 @@
                   <h2>Koordinatör görevleri</h2>
                 </div>
               </div>
+              
+              <!-- Toplu İşlemler Barı (Koordinatör Görevleri) -->
+              <div id="skillCoordinatorBulkActions" class="skill-import-actions" style="margin-bottom: 12px; display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: rgba(45, 212, 191, 0.03); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; box-sizing: border-box; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span id="skillCoordinatorBulkLabel" style="font-size: 0.85rem; font-weight: 700; color: var(--accent-strong);">Toplu İşlemler (Lütfen listeden görev seçin):</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;" id="skillCoordinatorBulkFields">
+                  <!-- Öğretmen Seçimi -->
+                  <select id="skillCoordinatorBulkTeacher" style="font-size: 0.8rem; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 160px; outline: none; cursor: not-allowed; opacity: 0.5;" disabled>
+                    <option value="">Öğretmen Değiştir...</option>
+                  </select>
+                  
+                  <!-- Gün Seçimi -->
+                  <select id="skillCoordinatorBulkDay" style="font-size: 0.8rem; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 120px; outline: none; cursor: not-allowed; opacity: 0.5;" disabled>
+                    <option value="">Gün Değiştir...</option>
+                    <option value="0">Belirtilmedi</option>
+                    <option value="1">Pazartesi</option>
+                    <option value="2">Salı</option>
+                    <option value="3">Çarşamba</option>
+                    <option value="4">Perşembe</option>
+                    <option value="5">Cuma</option>
+                  </select>
+
+                  <!-- Müdür Yrd. Seçimi -->
+                  <select id="skillCoordinatorBulkVicePrincipal" style="font-size: 0.8rem; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 160px; outline: none; cursor: not-allowed; opacity: 0.5;" disabled>
+                    <option value="">Müdür Yrd. Değiştir...</option>
+                  </select>
+
+                  <button class="primary-action" id="skillCoordinatorBulkApplyBtn" type="button" style="padding: 6px 14px; font-size: 0.8rem; font-weight: bold; border-radius: 6px; cursor: not-allowed; opacity: 0.5;" disabled>Uygula</button>
+                  <button class="ghost-action" id="skillCoordinatorBulkClearBtn" type="button" style="padding: 6px 10px; font-size: 0.8rem; font-weight: bold; border-radius: 6px; cursor: not-allowed; opacity: 0.5; border: 1px solid var(--line);" disabled>Seçimi Temizle</button>
+                </div>
+              </div>
+              
               <div class="skill-table" id="skillCoordinatorTable"></div>
             </section>
           </div>
@@ -3945,12 +3978,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
-    <script src="./app.js?v=88"></script>
+    <script src="./app.js?v=89"></script>
     <script src="./scripts/modules/settings/index.js?v=5"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=6"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=12"></script>
     <script src="./scripts/modules/sorubank/index.js?v=6"></script>
-    <script src="./scripts/modules/skill-training/index.js?v=7"></script>
+    <script src="./scripts/modules/skill-training/index.js?v=8"></script>
     <script src="./scripts/modules/student-tracking/index.js?v=6"></script>
   </body>
 </html>

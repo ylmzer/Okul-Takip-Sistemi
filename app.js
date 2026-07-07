@@ -6304,6 +6304,9 @@ function renderSkillCoordinators() {
     </div>
     ${coordinatorRows}
   `;
+  if (typeof updateSkillCoordinatorActionState === "function") {
+    updateSkillCoordinatorActionState();
+  }
   return;
   els.skillCoordinatorTable.innerHTML = skillState.coordinators.length ? skillState.coordinators.map((coordinator) => {
     const business = getSkillBusiness(coordinator.businessId);

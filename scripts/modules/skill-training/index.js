@@ -1691,6 +1691,12 @@ els.skillStudentTable.addEventListener("change", (e) => {
 });
 els.skillBusinessTable.addEventListener("click", handleSkillTableClick);
 els.skillCoordinatorTable.addEventListener("click", handleSkillTableClick);
+els.skillCoordinatorTable.addEventListener("change", (e) => {
+  if (e.target.hasAttribute("data-skill-select-coordinator") || e.target.id === "skillCoordinatorSelectAll") {
+    updateSkillCoordinatorActionState();
+  }
+});
+initCoordinatorBulkActions();
 
 // Initialize Devamsızlık Girişi panel bindings
 if (els.skillAbsenceEntryBtn) els.skillAbsenceEntryBtn.addEventListener("click", openSkillAbsenceEntryDialog);
@@ -2112,6 +2118,137 @@ document.addEventListener("change", (e) => {
     updateSkillHolidayActionState?.();
   }
 });
+
+window.updateSkillCoordinatorActionState = updateSkillCoordinatorActionState;
+function updateSkillCoordinatorActionState() {
+  const bulkBar = document.getElementById("skillCoordinatorBulkActions");
+  const label = document.getElementById("skillCoordinatorBulkLabel");
+  const teacherSelect = document.getElementById("skillCoordinatorBulkTeacher");
+  const daySelect = document.getElementById("skillCoordinatorBulkDay");
+  const viceSelect = document.getElementById("skillCoordinatorBulkVicePrincipal");
+  const applyBtn = document.getElementById("skillCoordinatorBulkApplyBtn");
+  const clearBtn = document.getElementById("skillCoordinatorBulkClearBtn");
+
+  if (!bulkBar) return;
+
+  if (teacherSelect && teacherSelect.options.length <= 1) {
+    populateCoordinatorBulkDropdowns();
+  }
+
+  const selectedCheckboxes = els.skillCoordinatorTable ? els.skillCoordinatorTable.querySelectorAll("[data-skill-select-coordinator]:checked") : [];
+  const count = selectedCheckboxes.length;
+
+  if (count === 0) {
+    if (label) label.innerHTML = `Toplu İşlemler (Lütfen listeden görev seçin):`;
+    [teacherSelect, daySelect, viceSelect, applyBtn, clearBtn].forEach(el => {
+      if (el) {
+        el.disabled = true;
+        el.style.opacity = "0.5";
+        el.style.cursor = "not-allowed";
+      }
+    });
+  } else {
+    if (label) label.innerHTML = `<span class="badge" style="background: var(--accent); color: #0f172a; padding: 2px 8px; border-radius: 4px; font-weight: bold; margin-right: 6px;">${count}</span> görev seçildi. Seçililere uygulanacak işlemler:`;
+    [teacherSelect, daySelect, viceSelect, applyBtn, clearBtn].forEach(el => {
+      if (el) {
+        el.disabled = false;
+        el.style.opacity = "1";
+        el.style.cursor = "pointer";
+      }
+    });
+  }
+}
+
+function populateCoordinatorBulkDropdowns() {
+  const teacherSelect = document.getElementById("skillCoordinatorBulkTeacher");
+  const viceSelect = document.getElementById("skillCoordinatorBulkVicePrincipal");
+
+  if (teacherSelect) {
+    teacherSelect.innerHTML = [
+      `<option value="">Öğretmen Değiştir...</option>`,
+      ...skillState.teacherPool.map((t) => `<option value="${escapeHtml(t.name)}">${escapeHtml(t.name)}</option>`)
+    ].join("");
+  }
+
+  if (viceSelect) {
+    const deputies = skillState.schoolRecords.map((school) => school.deputy).filter(Boolean);
+    const uniqueDeputies = [...new Set(deputies)];
+    viceSelect.innerHTML = [
+      `<option value="">Müdür Yrd. Değiştir...</option>`,
+      ...uniqueDeputies.map((d) => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`)
+    ].join("");
+  }
+}
+
+function initCoordinatorBulkActions() {
+  const applyBtn = document.getElementById("skillCoordinatorBulkApplyBtn");
+  const clearBtn = document.getElementById("skillCoordinatorBulkClearBtn");
+  const teacherSelect = document.getElementById("skillCoordinatorBulkTeacher");
+  const daySelect = document.getElementById("skillCoordinatorBulkDay");
+  const viceSelect = document.getElementById("skillCoordinatorBulkVicePrincipal");
+
+  if (applyBtn) {
+    applyBtn.addEventListener("click", () => {
+      const selectedCheckboxes = els.skillCoordinatorTable ? els.skillCoordinatorTable.querySelectorAll("[data-skill-select-coordinator]:checked") : [];
+      const count = selectedCheckboxes.length;
+      if (count === 0) return;
+
+      const targetTeacher = teacherSelect?.value;
+      const targetDay = daySelect?.value;
+      const targetVice = viceSelect?.value;
+
+      if (!targetTeacher && !targetDay && !targetVice) {
+        showToast("Lütfen atanacak en az bir alan seçin (Öğretmen, Gün veya Müdür Yrd.).", "warning");
+        return;
+      }
+
+      const ids = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+      let updatedCount = 0;
+      skillState.coordinators.forEach(coord => {
+        if (ids.includes(coord.id)) {
+          if (targetTeacher) coord.teacher = targetTeacher;
+          if (targetDay) coord.day = parseInt(targetDay, 10);
+          if (targetVice) coord.deputy = targetVice;
+          updatedCount++;
+        }
+      });
+
+      if (updatedCount > 0) {
+        saveSkillProfileStore();
+        renderSkillModule();
+        showToast(`${updatedCount} koordinatör görevi başarıyla güncellendi.`);
+      }
+
+      if (teacherSelect) teacherSelect.value = "";
+      if (daySelect) daySelect.value = "";
+      if (viceSelect) viceSelect.value = "";
+      
+      const selectAllCb = document.getElementById("skillCoordinatorSelectAll");
+      if (selectAllCb) selectAllCb.checked = false;
+      
+      updateSkillCoordinatorActionState();
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      if (els.skillCoordinatorTable) {
+        els.skillCoordinatorTable.querySelectorAll("[data-skill-select-coordinator]").forEach(cb => {
+          cb.checked = false;
+        });
+      }
+      const selectAllCb = document.getElementById("skillCoordinatorSelectAll");
+      if (selectAllCb) selectAllCb.checked = false;
+
+      if (teacherSelect) teacherSelect.value = "";
+      if (daySelect) daySelect.value = "";
+      if (viceSelect) viceSelect.value = "";
+
+      updateSkillCoordinatorActionState();
+    });
+  }
+}
 
 window.SkillTrainingModule = {
   get shell() {
