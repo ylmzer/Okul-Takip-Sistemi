@@ -1257,10 +1257,10 @@
         </section>
 
         <section class="skill-view" data-skill-panel="coordinators">
-          <div class="skill-panel" style="padding: 20px;">
-            <form class="skill-form" id="skillCoordinatorForm" style="margin-bottom: 20px;">
+          <div class="skill-two-column">
+            <form class="skill-panel skill-form" id="skillCoordinatorForm">
               <input id="skillCoordinatorId" type="hidden" />
-              <div class="panel-heading skill-form-title" style="margin-bottom: 12px;">
+              <div class="panel-heading skill-form-title">
                 <div>
                   <p class="eyebrow">Koordinatör</p>
                   <h2>Görev tanımı</h2>
@@ -1295,7 +1295,7 @@
                   </select>
                 </label>
               </div>
-              <div class="skill-inline-actions" style="margin-top: 12px;">
+              <div class="skill-inline-actions">
                 <button class="secondary-action" id="skillClearCoordinatorBtn" type="button">Yeni</button>
                 <button class="danger-action" id="skillDeleteSelectedCoordinatorBtn" type="button">Seçileni sil</button>
                 <button class="danger-action soft" id="skillDeleteAllCoordinatorBtn" type="button">Tümünü sil</button>
@@ -1304,16 +1304,16 @@
               </div>
             </form>
 
-            <hr style="border: none; border-top: 1px solid var(--line); margin: 20px 0;" />
-
-            <div class="skill-table-head" style="margin-bottom: 12px;">
-              <div>
-                <p class="eyebrow">Liste</p>
-                <h2>Koordinatör görevleri</h2>
+            <section class="skill-panel">
+              <div class="skill-table-head">
+                <div>
+                  <p class="eyebrow">Liste</p>
+                  <h2>Koordinatör görevleri</h2>
+                </div>
               </div>
-            </div>
-            
-            <div class="skill-table" id="skillCoordinatorTable"></div>
+              
+              <div class="skill-table" id="skillCoordinatorTable"></div>
+            </section>
           </div>
         </section>
 
@@ -3948,7 +3948,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
-    <script src="./app.js?v=91"></script>
+    <script src="./app.js?v=92"></script>
     <script src="./scripts/modules/settings/index.js?v=5"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=6"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=12"></script>
