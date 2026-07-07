@@ -2139,7 +2139,7 @@ function updateSkillCoordinatorActionState() {
   const count = selectedCheckboxes.length;
 
   if (count === 0) {
-    if (label) label.innerHTML = `Toplu İşlemler (Lütfen listeden görev seçin):`;
+    if (label) label.innerHTML = `Toplu İşlemler:`;
     [teacherSelect, daySelect, viceSelect, applyBtn, clearBtn].forEach(el => {
       if (el) {
         el.disabled = true;
@@ -2148,7 +2148,7 @@ function updateSkillCoordinatorActionState() {
       }
     });
   } else {
-    if (label) label.innerHTML = `<span class="badge" style="background: var(--accent); color: #0f172a; padding: 2px 8px; border-radius: 4px; font-weight: bold; margin-right: 6px;">${count}</span> görev seçildi. Seçililere uygulanacak işlemler:`;
+    if (label) label.innerHTML = `<span style="background: var(--accent); color: #0f172a; padding: 1px 6px; border-radius: 4px; font-weight: 800; font-size: 0.75rem; margin-right: 4px; display: inline-block;">${count}</span> Seçildi:`;
     [teacherSelect, daySelect, viceSelect, applyBtn, clearBtn].forEach(el => {
       if (el) {
         el.disabled = false;
