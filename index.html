@@ -1257,10 +1257,10 @@
         </section>
 
         <section class="skill-view" data-skill-panel="coordinators">
-          <div class="skill-two-column">
-            <form class="skill-panel skill-form" id="skillCoordinatorForm">
+          <div class="skill-panel" style="padding: 20px;">
+            <form class="skill-form" id="skillCoordinatorForm" style="margin-bottom: 20px;">
               <input id="skillCoordinatorId" type="hidden" />
-              <div class="panel-heading skill-form-title">
+              <div class="panel-heading skill-form-title" style="margin-bottom: 12px;">
                 <div>
                   <p class="eyebrow">Koordinatör</p>
                   <h2>Görev tanımı</h2>
@@ -1295,52 +1295,53 @@
                   </select>
                 </label>
               </div>
-              <div class="skill-inline-actions">
+              <div class="skill-inline-actions" style="margin-top: 12px;">
                 <button class="secondary-action" id="skillClearCoordinatorBtn" type="button">Yeni</button>
                 <button class="danger-action" id="skillDeleteSelectedCoordinatorBtn" type="button">Seçileni sil</button>
                 <button class="danger-action soft" id="skillDeleteAllCoordinatorBtn" type="button">Tümünü sil</button>
                 <button class="primary-action" type="submit">Görevi kaydet</button>
               </div>
             </form>
-            <section class="skill-panel">
-              <div class="skill-table-head">
-                <div>
-                  <p class="eyebrow">Liste</p>
-                  <h2>Koordinatör görevleri</h2>
-                </div>
-              </div>
-              
-              <!-- Toplu İşlemler Barı (Koordinatör Görevleri) -->
-              <div id="skillCoordinatorBulkActions" style="margin-bottom: 12px; display: flex; gap: 10px; align-items: center; background: rgba(45, 212, 191, 0.03); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; box-sizing: border-box; width: 100%; flex-wrap: nowrap; overflow-x: auto;">
-                <span id="skillCoordinatorBulkLabel" style="font-size: 0.8rem; font-weight: 700; color: var(--accent-strong); white-space: nowrap; flex-shrink: 0;">Toplu İşlemler:</span>
-                
-                <!-- Öğretmen Seçimi -->
-                <select id="skillCoordinatorBulkTeacher" style="font-size: 0.8rem; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 150px; outline: none; cursor: not-allowed; opacity: 0.5; flex-shrink: 0;" disabled>
-                  <option value="">Öğretmen Değiştir...</option>
-                </select>
-                
-                <!-- Gün Seçimi -->
-                <select id="skillCoordinatorBulkDay" style="font-size: 0.8rem; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 110px; outline: none; cursor: not-allowed; opacity: 0.5; flex-shrink: 0;" disabled>
-                  <option value="">Gün Değiştir...</option>
-                  <option value="0">Belirtilmedi</option>
-                  <option value="1">Pazartesi</option>
-                  <option value="2">Salı</option>
-                  <option value="3">Çarşamba</option>
-                  <option value="4">Perşembe</option>
-                  <option value="5">Cuma</option>
-                </select>
 
-                <!-- Müdür Yrd. Seçimi -->
-                <select id="skillCoordinatorBulkVicePrincipal" style="font-size: 0.8rem; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 150px; outline: none; cursor: not-allowed; opacity: 0.5; flex-shrink: 0;" disabled>
-                  <option value="">Müdür Yrd. Değiştir...</option>
-                </select>
+            <hr style="border: none; border-top: 1px solid var(--line); margin: 20px 0;" />
 
-                <button class="primary-action" id="skillCoordinatorBulkApplyBtn" type="button" style="padding: 0 12px; font-size: 0.8rem; font-weight: bold; border-radius: 6px; cursor: not-allowed; opacity: 0.5; width: auto !important; height: 30px; min-height: 30px !important; flex-shrink: 0;" disabled>Uygula</button>
-                <button class="ghost-action" id="skillCoordinatorBulkClearBtn" type="button" style="padding: 0 10px; font-size: 0.8rem; font-weight: bold; border-radius: 6px; cursor: not-allowed; opacity: 0.5; border: 1px solid var(--line); width: auto !important; height: 30px; min-height: 30px !important; flex-shrink: 0; background: transparent; color: var(--muted);" disabled>Temizle</button>
+            <div class="skill-table-head" style="margin-bottom: 12px;">
+              <div>
+                <p class="eyebrow">Liste</p>
+                <h2>Koordinatör görevleri</h2>
               </div>
+            </div>
+            
+            <!-- Toplu İşlemler Barı (Koordinatör Görevleri) -->
+            <div id="skillCoordinatorBulkActions" style="margin-bottom: 12px; display: flex; gap: 10px; align-items: center; background: rgba(45, 212, 191, 0.03); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; box-sizing: border-box; width: 100%; flex-wrap: nowrap; overflow-x: auto;">
+              <span id="skillCoordinatorBulkLabel" style="font-size: 0.8rem; font-weight: 700; color: var(--accent-strong); white-space: nowrap; flex-shrink: 0;">Toplu İşlemler:</span>
               
-              <div class="skill-table" id="skillCoordinatorTable"></div>
-            </section>
+              <!-- Öğretmen Seçimi -->
+              <select id="skillCoordinatorBulkTeacher" style="font-size: 0.8rem; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 150px; outline: none; cursor: not-allowed; opacity: 0.5; flex-shrink: 0;" disabled>
+                <option value="">Öğretmen Değiştir...</option>
+              </select>
+              
+              <!-- Gün Seçimi -->
+              <select id="skillCoordinatorBulkDay" style="font-size: 0.8rem; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 110px; outline: none; cursor: not-allowed; opacity: 0.5; flex-shrink: 0;" disabled>
+                <option value="">Gün Değiştir...</option>
+                <option value="0">Belirtilmedi</option>
+                <option value="1">Pazartesi</option>
+                <option value="2">Salı</option>
+                <option value="3">Çarşamba</option>
+                <option value="4">Perşembe</option>
+                <option value="5">Cuma</option>
+              </select>
+
+              <!-- Müdür Yrd. Seçimi -->
+              <select id="skillCoordinatorBulkVicePrincipal" style="font-size: 0.8rem; padding: 5px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 150px; outline: none; cursor: not-allowed; opacity: 0.5; flex-shrink: 0;" disabled>
+                <option value="">Müdür Yrd. Değiştir...</option>
+              </select>
+
+              <button class="primary-action" id="skillCoordinatorBulkApplyBtn" type="button" style="padding: 0 12px; font-size: 0.8rem; font-weight: bold; border-radius: 6px; cursor: not-allowed; opacity: 0.5; width: auto !important; height: 30px; min-height: 30px !important; flex-shrink: 0;" disabled>Uygula</button>
+              <button class="ghost-action" id="skillCoordinatorBulkClearBtn" type="button" style="padding: 0 10px; font-size: 0.8rem; font-weight: bold; border-radius: 6px; cursor: not-allowed; opacity: 0.5; border: 1px solid var(--line); width: auto !important; height: 30px; min-height: 30px !important; flex-shrink: 0; background: transparent; color: var(--muted);" disabled>Temizle</button>
+            </div>
+            
+            <div class="skill-table" id="skillCoordinatorTable"></div>
           </div>
         </section>
 
@@ -3975,7 +3976,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
-    <script src="./app.js?v=90"></script>
+    <script src="./app.js?v=91"></script>
     <script src="./scripts/modules/settings/index.js?v=5"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=6"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=12"></script>
