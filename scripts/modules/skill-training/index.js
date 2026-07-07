@@ -2121,84 +2121,34 @@ document.addEventListener("change", (e) => {
 
 window.updateSkillCoordinatorActionState = updateSkillCoordinatorActionState;
 function updateSkillCoordinatorActionState() {
-  const bulkBar = document.getElementById("skillCoordinatorBulkActions");
-  const label = document.getElementById("skillCoordinatorBulkLabel");
-  const teacherSelect = document.getElementById("skillCoordinatorBulkTeacher");
-  const daySelect = document.getElementById("skillCoordinatorBulkDay");
-  const viceSelect = document.getElementById("skillCoordinatorBulkVicePrincipal");
   const applyBtn = document.getElementById("skillCoordinatorBulkApplyBtn");
-  const clearBtn = document.getElementById("skillCoordinatorBulkClearBtn");
-
-  if (!bulkBar) return;
-
-  if (teacherSelect && teacherSelect.options.length <= 1) {
-    populateCoordinatorBulkDropdowns();
-  }
+  if (!applyBtn) return;
 
   const selectedCheckboxes = els.skillCoordinatorTable ? els.skillCoordinatorTable.querySelectorAll("[data-skill-select-coordinator]:checked") : [];
   const count = selectedCheckboxes.length;
 
   if (count === 0) {
-    if (label) label.innerHTML = `Toplu İşlemler:`;
-    [teacherSelect, daySelect, viceSelect, applyBtn, clearBtn].forEach(el => {
-      if (el) {
-        el.disabled = true;
-        el.style.opacity = "0.5";
-        el.style.cursor = "not-allowed";
-      }
-    });
+    applyBtn.style.display = "none";
   } else {
-    if (label) label.innerHTML = `<span style="background: var(--accent); color: #0f172a; padding: 1px 6px; border-radius: 4px; font-weight: 800; font-size: 0.75rem; margin-right: 4px; display: inline-block;">${count}</span> Seçildi:`;
-    [teacherSelect, daySelect, viceSelect, applyBtn, clearBtn].forEach(el => {
-      if (el) {
-        el.disabled = false;
-        el.style.opacity = "1";
-        el.style.cursor = "pointer";
-      }
-    });
-  }
-}
-
-function populateCoordinatorBulkDropdowns() {
-  const teacherSelect = document.getElementById("skillCoordinatorBulkTeacher");
-  const viceSelect = document.getElementById("skillCoordinatorBulkVicePrincipal");
-
-  if (teacherSelect) {
-    teacherSelect.innerHTML = [
-      `<option value="">Öğretmen Değiştir...</option>`,
-      ...skillState.teacherPool.map((t) => `<option value="${escapeHtml(t.name)}">${escapeHtml(t.name)}</option>`)
-    ].join("");
-  }
-
-  if (viceSelect) {
-    const deputies = skillState.schoolRecords.map((school) => school.deputy).filter(Boolean);
-    const uniqueDeputies = [...new Set(deputies)];
-    viceSelect.innerHTML = [
-      `<option value="">Müdür Yrd. Değiştir...</option>`,
-      ...uniqueDeputies.map((d) => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`)
-    ].join("");
+    applyBtn.style.display = "inline-flex";
+    applyBtn.textContent = `Seçilenlere Uygula (${count})`;
   }
 }
 
 function initCoordinatorBulkActions() {
   const applyBtn = document.getElementById("skillCoordinatorBulkApplyBtn");
-  const clearBtn = document.getElementById("skillCoordinatorBulkClearBtn");
-  const teacherSelect = document.getElementById("skillCoordinatorBulkTeacher");
-  const daySelect = document.getElementById("skillCoordinatorBulkDay");
-  const viceSelect = document.getElementById("skillCoordinatorBulkVicePrincipal");
-
   if (applyBtn) {
     applyBtn.addEventListener("click", () => {
       const selectedCheckboxes = els.skillCoordinatorTable ? els.skillCoordinatorTable.querySelectorAll("[data-skill-select-coordinator]:checked") : [];
       const count = selectedCheckboxes.length;
       if (count === 0) return;
 
-      const targetTeacher = teacherSelect?.value;
-      const targetDay = daySelect?.value;
-      const targetVice = viceSelect?.value;
+      const targetTeacher = els.skillCoordinatorTeacher?.value;
+      const targetDay = els.skillCoordinatorDay?.value;
+      const targetVice = els.skillCoordinatorDeputy?.value;
 
       if (!targetTeacher && !targetDay && !targetVice) {
-        showToast("Lütfen atanacak en az bir alan seçin (Öğretmen, Gün veya Müdür Yrd.).", "warning");
+        showToast("Lütfen yukarıdaki form alanlarından atanacak en az bir seçenek belirleyin (Öğretmen, Gün veya Müdür Yrd.).", "warning");
         return;
       }
 
@@ -2208,7 +2158,7 @@ function initCoordinatorBulkActions() {
       skillState.coordinators.forEach(coord => {
         if (ids.includes(coord.id)) {
           if (targetTeacher) coord.teacher = targetTeacher;
-          if (targetDay) coord.day = parseInt(targetDay, 10);
+          if (targetDay !== "") coord.day = parseInt(targetDay, 10);
           if (targetVice) coord.deputy = targetVice;
           updatedCount++;
         }
@@ -2217,34 +2167,12 @@ function initCoordinatorBulkActions() {
       if (updatedCount > 0) {
         saveSkillProfileStore();
         renderSkillModule();
-        showToast(`${updatedCount} koordinatör görevi başarıyla güncellendi.`);
+        showToast(`${updatedCount} koordinatör görevi seçilen bilgilerle toplu olarak güncellendi.`);
       }
 
-      if (teacherSelect) teacherSelect.value = "";
-      if (daySelect) daySelect.value = "";
-      if (viceSelect) viceSelect.value = "";
-      
       const selectAllCb = document.getElementById("skillCoordinatorSelectAll");
       if (selectAllCb) selectAllCb.checked = false;
       
-      updateSkillCoordinatorActionState();
-    });
-  }
-
-  if (clearBtn) {
-    clearBtn.addEventListener("click", () => {
-      if (els.skillCoordinatorTable) {
-        els.skillCoordinatorTable.querySelectorAll("[data-skill-select-coordinator]").forEach(cb => {
-          cb.checked = false;
-        });
-      }
-      const selectAllCb = document.getElementById("skillCoordinatorSelectAll");
-      if (selectAllCb) selectAllCb.checked = false;
-
-      if (teacherSelect) teacherSelect.value = "";
-      if (daySelect) daySelect.value = "";
-      if (viceSelect) viceSelect.value = "";
-
       updateSkillCoordinatorActionState();
     });
   }
