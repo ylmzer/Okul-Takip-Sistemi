@@ -5709,14 +5709,15 @@ function buildAbsenceReportHtml() {
           .date-head, .student-head, th.student-days, .total-head { border-top: 1px solid #000 !important; }
           .date-head {
             height: 22mm;
-            writing-mode: vertical-rl;
+            writing-mode: horizontal-tb !important;
             white-space: nowrap;
-            text-align: right;
-            vertical-align: middle;
-            padding: 1.5mm 0.5mm;
+            text-align: center;
+            vertical-align: bottom;
+            padding: 1.5mm 0;
           }
           .date-head span {
             display: inline-block;
+            writing-mode: vertical-rl;
             transform: rotate(180deg);
             color: #000;
             font-family: "Segoe UI Semibold", "Segoe UI", -apple-system, sans-serif;
@@ -5810,14 +5811,15 @@ function buildAbsenceReportHtml() {
           .absence-report-card.is-half.is-condensed tbody td { padding: 0.5mm 0.35mm; }
           .absence-report-card.is-half.is-condensed .date-head {
             height: 19mm;
-            padding: 1mm 0.3mm;
-            writing-mode: vertical-rl;
+            padding: 1mm 0;
+            writing-mode: horizontal-tb !important;
             white-space: nowrap;
-            text-align: right;
-            vertical-align: middle;
+            text-align: center;
+            vertical-align: bottom;
           }
           .absence-report-card.is-half.is-condensed .date-head span {
             display: inline-block;
+            writing-mode: vertical-rl;
             transform: rotate(180deg);
             font-size: 9.5px;
             font-weight: normal;
