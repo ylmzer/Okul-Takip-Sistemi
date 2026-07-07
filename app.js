@@ -4165,7 +4165,10 @@ function buildMonthlyGuidanceReportHtml() {
   const entries = getMonthlyGuidanceEntries(ids, startDate, endDate);
   const pageClass = perPage === 2 ? "two-up" : "one-up";
   const rows = buildMonthlyGuidanceRows();
-  const cards = entries.map((entry) => `
+
+  let pagesHtml = "";
+
+  const renderCard = (entry) => `
     <section class="monthly-guidance-card">
       <header>
         <h1>İŞLETMELERDE MESLEK EĞİTİMİ KOORDİNATÖRLERİNİN İŞLETMEYE YAPACAĞI<br>AYLIK REHBERLİK RAPOR FORMU</h1>
@@ -4206,7 +4209,26 @@ function buildMonthlyGuidanceReportHtml() {
       </table>
       <p class="monthly-note">Açıklama: Bu form her işletme için her ay ayrı ayrı doldurulacak, kurum idaresine verilecektir.</p>
     </section>
-  `).join("");
+  `;
+
+  if (perPage === 2) {
+    for (let i = 0; i < entries.length; i += 2) {
+      const pageEntries = entries.slice(i, i + 2);
+      const pageCards = pageEntries.map(renderCard).join("");
+      pagesHtml += `
+        <div class="report-page">
+          <main class="report-sheet two-up">${pageCards}</main>
+        </div>
+      `;
+    }
+  } else {
+    pagesHtml = entries.map((entry) => `
+      <div class="report-page">
+        <main class="report-sheet one-up">${renderCard(entry)}</main>
+      </div>
+    `).join("");
+  }
+
   return `
     <!doctype html>
     <html lang="tr">
@@ -4214,24 +4236,30 @@ function buildMonthlyGuidanceReportHtml() {
         <meta charset="utf-8" />
         <title>Aylık Rehberlik Önizleme</title>
         <style>
-          @page { size: ${perPage === 2 ? "A4 landscape" : "A4 portrait"}; margin: ${perPage === 2 ? "5mm" : "8mm"}; }
+          @page { size: ${perPage === 2 ? "A4 landscape" : "A4 portrait"}; margin: 0; }
           * { box-sizing: border-box; }
           body { margin: 0; font-family: "Segoe UI Semibold", "Segoe UI", -apple-system, sans-serif; color: #000; background: #fff; }
-          .report-sheet.one-up { width: 194mm; margin: 0 auto; }
-          .report-sheet.two-up { width: 287mm; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+          .report-sheet.one-up { width: 194mm; margin: 0 auto; padding-top: 8mm; }
+          .report-sheet.two-up { width: 287mm; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; padding-top: 5mm; }
           .monthly-guidance-card {
-            height: ${perPage === 2 ? "200mm" : "281mm"} !important;
+            height: ${perPage === 2 ? "190mm" : "272mm"} !important;
             padding: ${perPage === 2 ? "3mm" : "4mm"};
             border: 1.8px solid #111;
-            break-after: ${perPage === 2 ? "auto" : "page"};
-            page-break-after: ${perPage === 2 ? "auto" : "always"};
             background: #fff;
             font-size: ${perPage === 2 ? "7.2px" : "11px"};
             line-height: 1.18;
             box-sizing: border-box !important;
             overflow: hidden !important;
           }
-          .report-sheet.two-up .monthly-guidance-card:nth-child(2n) { break-after: page; page-break-after: always; }
+          .report-page {
+            box-sizing: border-box;
+            break-after: page;
+            page-break-after: always;
+          }
+          .report-page:last-child {
+            break-after: auto !important;
+            page-break-after: auto !important;
+          }
           header { text-align: center; margin-bottom: ${perPage === 2 ? "1.5mm" : "2mm"}; }
           h1 { margin: 0 0 ${perPage === 2 ? "1.5mm" : "2.5mm"}; font-size: ${perPage === 2 ? "10px" : "14px"}; line-height: 1.12; }
           h2 { margin: 0 0 ${perPage === 2 ? "2mm" : "4.5mm"}; font-size: ${perPage === 2 ? "8.8px" : "12px"}; }
@@ -4314,15 +4342,20 @@ function buildMonthlyGuidanceReportHtml() {
           .monthly-note { margin-top: ${perPage === 2 ? "3mm" : "4mm"}; }
           @media screen {
             body { background: #dfe4e9; padding: 8mm 0; }
-            .monthly-guidance-card { margin-bottom: 8mm; }
+            .report-page { margin-bottom: 8mm; }
           }
           @media print {
             body { background: #fff; }
-            .report-sheet { margin: 0; }
+            .report-page {
+              width: 100%;
+              height: 100%;
+              page-break-inside: avoid;
+              break-inside: avoid;
+            }
           }
         </style>
       </head>
-      <body><main class="report-sheet ${pageClass}">${cards}</main></body>
+      <body>${pagesHtml}</body>
     </html>
   `;
 }
