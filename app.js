@@ -5483,15 +5483,16 @@ function buildAbsenceReportHtml() {
         if (["İ", "I", "H", "R", "D", "T"].includes(amUpper)) hasAnyAbsenceMark = true;
         if (["İ", "I", "H", "R", "D", "T"].includes(pmUpper)) hasAnyAbsenceMark = true;
 
-        if (["İ", "I", "H", "R"].includes(amUpper)) excusedAm += 0.5;
-        if (["D", "T"].includes(amUpper)) unexcusedAm += 0.5;
-        if (["İ", "I", "H", "R"].includes(pmUpper)) excusedPm += 0.5;
-        if (["D", "T"].includes(pmUpper)) unexcusedPm += 0.5;
+        if (["İ", "I", "H", "R", "T"].includes(amUpper)) excusedAm += 0.5;
+        if (["D"].includes(amUpper)) unexcusedAm += 0.5;
+        if (["İ", "I", "H", "R", "T"].includes(pmUpper)) excusedPm += 0.5;
+        if (["D"].includes(pmUpper)) unexcusedPm += 0.5;
       });
-      const excusedAmStr = !hasAnyAbsenceMark ? "" : (excusedAm % 1 === 0 ? String(excusedAm) : excusedAm.toFixed(1).replace(".", ","));
-      const unexcusedAmStr = !hasAnyAbsenceMark ? "" : (unexcusedAm % 1 === 0 ? String(unexcusedAm) : unexcusedAm.toFixed(1).replace(".", ","));
-      const excusedPmStr = !hasAnyAbsenceMark ? "" : (excusedPm % 1 === 0 ? String(excusedPm) : excusedPm.toFixed(1).replace(".", ","));
-      const unexcusedPmStr = !hasAnyAbsenceMark ? "" : (unexcusedPm % 1 === 0 ? String(unexcusedPm) : unexcusedPm.toFixed(1).replace(".", ","));
+      const showTotals = els.skillReportBusinessSymbolEnabled?.checked !== false && els.skillReportSchoolSymbolEnabled?.checked !== false;
+      const excusedAmStr = (!hasAnyAbsenceMark || !showTotals) ? "" : (excusedAm % 1 === 0 ? String(excusedAm) : excusedAm.toFixed(1).replace(".", ","));
+      const unexcusedAmStr = (!hasAnyAbsenceMark || !showTotals) ? "" : (unexcusedAm % 1 === 0 ? String(unexcusedAm) : unexcusedAm.toFixed(1).replace(".", ","));
+      const excusedPmStr = (!hasAnyAbsenceMark || !showTotals) ? "" : (excusedPm % 1 === 0 ? String(excusedPm) : excusedPm.toFixed(1).replace(".", ","));
+      const unexcusedPmStr = (!hasAnyAbsenceMark || !showTotals) ? "" : (unexcusedPm % 1 === 0 ? String(unexcusedPm) : unexcusedPm.toFixed(1).replace(".", ","));
 
       return `
         <tr>
