@@ -4178,15 +4178,15 @@ function buildMonthlyGuidanceReportHtml() {
       <p class="monthly-request">Gereğini bilgilerinize arz ederim.</p>
       <div class="monthly-business-student-box">
         <div class="info-column">
-          <span class="info-label">Öğrencilerin Adı Soyadı:</span>
-          <span class="info-value"><strong class="highlight-student">${escapeHtml(entry.studentLine)}</strong></span>
-        </div>
-        <div class="info-column">
           <span class="info-label">İşletmenin Adı ve Adresi:</span>
           <span class="info-value">
             <strong class="highlight-business-name">${escapeHtml(entry.business?.name || "-")}</strong>
             <span class="business-address"> / ${escapeHtml(entry.business?.address || "-")}</span>
           </span>
+        </div>
+        <div class="info-column">
+          <span class="info-label">Öğrencilerin Adı Soyadı:</span>
+          <span class="info-value"><strong class="highlight-student">${escapeHtml(entry.studentLine)}</strong></span>
         </div>
       </div>
       <div class="monthly-people">
@@ -4296,9 +4296,9 @@ function buildMonthlyGuidanceReportHtml() {
           }
           .monthly-people {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1.1fr 1.1fr 0.8fr;
             align-items: stretch;
-            min-height: ${perPage === 2 ? "18mm" : "28mm"};
+            min-height: ${perPage === 2 ? "20mm" : "32mm"};
             margin: ${perPage === 2 ? "1.5mm 0" : "4mm 0"};
             text-align: center;
             border: 1.5px solid #111;
@@ -4333,8 +4333,8 @@ function buildMonthlyGuidanceReportHtml() {
             font-size: inherit;
             text-align: center;
           }
-          table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: ${perPage === 2 ? "7.2px" : "9.8px"}; line-height: 1.14; }
-          th, td { border: 1px solid #111; padding: ${perPage === 2 ? "1.0mm 0.75mm" : "1.8mm 1.5mm"}; vertical-align: middle; }
+          table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: ${perPage === 2 ? "7.2px" : "9.8px"}; line-height: 1.1; }
+          th, td { border: 1px solid #111; padding: ${perPage === 2 ? "0.85mm 0.75mm" : "1.55mm 1.5mm"}; vertical-align: middle; }
           th:first-child, td:first-child { width: ${perPage === 2 ? "76%" : "59%"}; }
           th:last-child, td:last-child { width: ${perPage === 2 ? "24%" : "41%"}; }
           th { text-align: center; font-weight: 800; }
