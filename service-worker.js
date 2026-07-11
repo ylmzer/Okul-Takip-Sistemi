@@ -1,17 +1,17 @@
-const CACHE_NAME = "ots-pwa-v28";
+const CACHE_NAME = "ots-pwa-v29";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css?v=71",
-  "./theme-overrides.css?v=75",
-  "./app.js?v=85",
+  "./styles.css?v=81",
+  "./theme-overrides.css?v=88",
+  "./app.js?v=95",
   "./icons/logo-clean.svg",
-  "./scripts/modules/sorubank/index.js",
-  "./scripts/modules/skill-training/index.js",
-  "./scripts/modules/student-tracking/index.js",
-  "./scripts/modules/annual-plan/index.js",
-  "./scripts/modules/course-tracking/index.js",
-  "./scripts/modules/settings/index.js",
+  "./scripts/modules/sorubank/index.js?v=6",
+  "./scripts/modules/skill-training/index.js?v=10",
+  "./scripts/modules/student-tracking/index.js?v=11",
+  "./scripts/modules/annual-plan/index.js?v=13",
+  "./scripts/modules/course-tracking/index.js?v=6",
+  "./scripts/modules/settings/index.js?v=5",
   "./manifest.webmanifest"
 ];
 

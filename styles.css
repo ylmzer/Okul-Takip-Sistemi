@@ -6678,7 +6678,6 @@ dialog::backdrop {
   .skill-dashboard-grid,
   .skill-two-column,
   .student-two-column,
-  .student-plan-layout,
   .skill-reports-layout {
     grid-template-columns: 1fr;
   }
@@ -6793,22 +6792,8 @@ dialog::backdrop {
   .student-stat-grid,
   .student-quick-grid,
   .student-filter-grid,
-  .student-plan-form-grid,
   .student-routine-row {
     grid-template-columns: 1fr;
-  }
-
-  .student-plan-card-head,
-  .student-plan-week {
-    grid-template-columns: 1fr;
-  }
-
-  .student-plan-actions {
-    justify-content: stretch;
-  }
-
-  .student-plan-actions button {
-    flex: 1;
   }
 
   .student-item-card {
@@ -10856,123 +10841,6 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row sm
   border-color: #efbbb5;
 }
 
-.student-plan-layout {
-  display: grid;
-  grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.22fr);
-  gap: 14px;
-  align-items: start;
-}
-
-.student-plan-form-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 110px;
-  gap: 10px;
-}
-
-.student-plan-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
-.student-plan-actions button {
-  width: auto;
-}
-
-.student-plan-list,
-.student-plan-week-list {
-  display: grid;
-  gap: 10px;
-}
-
-.student-plan-card {
-  display: grid;
-  gap: 12px;
-  padding: 12px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: var(--shadow);
-}
-
-.student-plan-card-head {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 10px;
-  align-items: center;
-}
-
-.student-plan-card-head strong,
-.student-plan-card-head small {
-  display: block;
-  min-width: 0;
-}
-
-.student-plan-card-head small {
-  margin-top: 3px;
-  color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 780;
-}
-
-.student-plan-week {
-  display: grid;
-  grid-template-columns: 118px minmax(0, 1fr);
-  gap: 12px;
-  padding: 10px;
-  background: #f8fbfb;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-}
-
-.student-plan-week-meta span,
-.student-plan-week-meta small {
-  display: block;
-}
-
-.student-plan-week-meta span {
-  color: var(--accent-strong);
-  font-size: 0.8rem;
-  font-weight: 900;
-}
-
-.student-plan-week-meta small {
-  margin-top: 4px;
-  color: var(--muted);
-  font-size: 0.72rem;
-  font-weight: 780;
-}
-
-.student-plan-topic {
-  display: grid;
-  gap: 3px;
-  padding: 8px 0;
-}
-
-.student-plan-topic + .student-plan-topic {
-  border-top: 1px solid var(--line);
-}
-
-.student-plan-topic strong {
-  color: var(--ink);
-  font-size: 0.9rem;
-}
-
-.student-plan-topic small,
-.student-plan-muted,
-.student-plan-skip {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 760;
-  line-height: 1.45;
-}
-
-.student-plan-skip {
-  color: #92400e;
-}
-
 .student-empty {
   padding: 16px;
   color: var(--muted);
@@ -11007,42 +10875,6 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row sm
   font-size: 0.76rem;
 }
 
-.student-routine-score {
-  display: grid;
-  gap: 8px;
-  min-width: 0;
-}
-
-.student-slider-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 850;
-}
-
-.student-slider-heading output {
-  min-width: 38px;
-  padding: 3px 8px;
-  color: var(--accent-strong);
-  text-align: center;
-  background: #e2f6f2;
-  border: 1px solid #a7ddd6;
-  border-radius: 999px;
-  font-size: 0.78rem;
-}
-
-.student-routine-score input[type="range"] {
-  width: 100%;
-  min-height: 34px;
-  margin: 0;
-  accent-color: var(--accent);
-  cursor: pointer;
-  touch-action: pan-y;
-}
-
 @media (max-width: 980px) {
   .student-shell {
     grid-template-columns: 1fr;
@@ -11060,8 +10892,7 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row sm
     grid-column: 1;
   }
 
-  .student-two-column,
-  .student-plan-layout {
+  .student-two-column {
     grid-template-columns: 1fr;
   }
 }
@@ -11104,20 +10935,9 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row sm
   .student-stat-grid,
   .student-quick-grid,
   .student-filter-grid,
-  .student-plan-form-grid,
   .student-routine-row,
-  .student-item-card,
-  .student-plan-card-head,
-  .student-plan-week {
+  .student-item-card {
     grid-template-columns: 1fr;
-  }
-
-  .student-plan-actions {
-    justify-content: stretch;
-  }
-
-  .student-plan-actions button {
-    flex: 1;
   }
 
   .student-card-actions,
@@ -13481,7 +13301,6 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row sm
   .skill-reports-layout,
   .skill-holiday-layout,
   .student-two-column,
-  .student-plan-layout,
   .course-split-layout,
   .course-form-grid,
   .course-form-row,
@@ -13523,7 +13342,6 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row sm
   .course-toolbar-actions,
   .course-report-card,
   .student-form-actions,
-  .student-plan-actions,
   .student-card-actions,
   .student-card-meta,
   .course-panel-title,
@@ -13537,8 +13355,7 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row sm
   .course-toolbar label,
   .course-toolbar label[style],
   .course-toolbar-actions button,
-  .student-form-actions button,
-  .student-plan-actions button {
+  .student-form-actions button {
     width: 100% !important;
     max-width: none !important;
     margin-left: 0 !important;
@@ -17972,4 +17789,3 @@ body.dark-mode input[type="radio"]:focus-visible {
     margin-right: 0 !important;
   }
 }
-

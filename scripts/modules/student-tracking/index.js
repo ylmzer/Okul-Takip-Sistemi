@@ -89,8 +89,8 @@ function loadStudentState() {
       lessons: Array.isArray(saved.lessons) ? saved.lessons : [],
       students: Array.isArray(saved.students) ? saved.students : [],
       routine: Array.isArray(saved.routine) ? saved.routine : [],
-      homework: Array.isArray(saved.homework) ? saved.homework : [],
-      projects: Array.isArray(saved.projects) ? saved.projects : []
+      homework: normalizeTaskRecords(saved.homework),
+      projects: normalizeTaskRecords(saved.projects)
     };
   } catch {
     return { ...studentDefaults };
@@ -339,9 +339,22 @@ function legacyTaskScore(status) {
   return 0;
 }
 
+function normalizeTaskRecords(items) {
+  if (!Array.isArray(items)) return [];
+  return items.map((item) => {
+    const scores = { ...(item.scores || {}) };
+    Object.entries(item.statuses || {}).forEach(([studentId, status]) => {
+      if (!Number.isFinite(Number(scores[studentId]))) scores[studentId] = legacyTaskScore(status);
+    });
+    const record = { ...item };
+    delete record.statuses;
+    return { ...record, scores };
+  });
+}
+
 function taskScore(item, studentId) {
   if (Number.isFinite(Number(item.scores?.[studentId]))) return evaluationScore(item.scores[studentId]);
-  return legacyTaskScore(item.statuses?.[studentId]);
+  return 0;
 }
 
 function taskScoreLabel(score) {
@@ -702,8 +715,7 @@ function saveTask(kind, event) {
     lessonId: studentEls[`${prefix}Lesson`].value,
     title: studentEls[`${prefix}Title`].value.trim(),
     due: studentEls[`${prefix}Due`].value,
-    scores: old?.scores || {},
-    statuses: old?.statuses || {}
+    scores: old?.scores || {}
   };
   if (!record.classId || !record.lessonId || !record.title) return toast("Sınıf, ders ve başlık girin.", "warning");
   studentState[kind] = studentState[kind].some((item) => item.id === id) ? studentState[kind].map((item) => item.id === id ? record : item) : [record, ...studentState[kind]];
@@ -766,6 +778,14 @@ function handleListClick(event) {
       } else if (action === "student") {
         studentState.students = studentState.students.filter((item) => item.id !== deleteId);
         studentState.routine = studentState.routine.filter((item) => item.studentId !== deleteId);
+        ["homework", "projects"].forEach((kind) => {
+          studentState[kind] = studentState[kind].map((item) => {
+            if (!Object.prototype.hasOwnProperty.call(item.scores || {}, deleteId)) return item;
+            const scores = { ...item.scores };
+            delete scores[deleteId];
+            return { ...item, scores };
+          });
+        });
       } else studentState[action === "project" ? "projects" : "homework"] = studentState[action === "project" ? "projects" : "homework"].filter((item) => item.id !== deleteId);
       saveStudentState(); renderStudentModule(); toast("Kayıt silindi."); return;
     }

@@ -3986,7 +3986,6 @@ body.dark-mode .student-panel,
 body.dark-mode .student-item-card,
 body.dark-mode .student-empty,
 body.dark-mode .student-routine-row,
-body.dark-mode .student-plan-card,
 body.dark-mode .annual-step,
 body.dark-mode .annual-panel,
 body.dark-mode .annual-empty,
@@ -4152,23 +4151,6 @@ body.dark-mode .skill-day-picker button {
 body.dark-mode .skill-day-picker button.is-active {
   background: var(--accent) !important;
   color: #fff !important;
-}
-
-/* Rutin Değerlendirme & Yıllık Plan Hafta */
-body.dark-mode .student-plan-week {
-  background: rgba(15, 118, 110, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  color: #cbd5e1 !important;
-}
-
-body.dark-mode .student-slider-heading output {
-  color: #5eead4 !important;
-  background: rgba(15, 118, 110, 0.15) !important;
-  border: 1px solid rgba(15, 118, 110, 0.3) !important;
-}
-
-body.dark-mode .student-plan-skip {
-  color: #fca5a5 !important;
 }
 
 /* --- Soru Bankası Bütünleşik Masaüstü Layout & İçerik Kaydırma (Scroll) Yapısı --- */
@@ -6262,6 +6244,7 @@ body.module-mode .module-hub {
   /* Dikey ayırıcı çizgiyi gizle */
   .skill-report-preview-right > div[style*="width: 1px"] {
     display: none !important;
+  }
 }
 
 /* Koyu mod için boş durum (.empty-state) uyumluluğu */

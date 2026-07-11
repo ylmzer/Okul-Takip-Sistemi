@@ -1287,31 +1287,6 @@ function ensureSkillCollections() {
 }
 
 
-function saveLocalUsers(users) {
-  localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
-}
-
-function normalizeEmail(email) {
-  return String(email || "").trim().toLocaleLowerCase("tr-TR");
-}
-
-function userInitials(name = "") {
-  const parts = String(name).trim().split(/\s+/).filter(Boolean);
-  if (!parts.length) return "K";
-  return parts.slice(0, 2).map((part) => part[0]?.toLocaleUpperCase("tr-TR")).join("");
-}
-
-function loadSkillState() {
-  try {
-    const saved = localStorage.getItem(SKILL_STORAGE_KEY);
-    if (!saved) return structuredClone(initialSkillState);
-    return normalizeSkillStateShape(JSON.parse(saved));
-  } catch (error) {
-    console.warn("İME modülü verisi okunamadı, varsayılan veri açıldı.", error);
-    return structuredClone(initialSkillState);
-  }
-}
-
 function loadLocalSession() {
   try {
     return JSON.parse(localStorage.getItem(LOCAL_SESSION_KEY) || "null");
@@ -2709,50 +2684,6 @@ async function pushCloudState(options = {}) {
   }
 }
 
-function applyCloudState(remoteState, updatedAt = "") {
-  state = normalizeState({ ...structuredClone(initialState), ...(remoteState || {}) });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  cloudState.lastSyncAt = updatedAt || new Date().toISOString();
-  localStorage.setItem("sorubank:cloud-last-sync", cloudState.lastSyncAt);
-  localStorage.removeItem("sorubank:cloud-local-write");
-  cloudState.lastError = "";
-  render();
-  renderCloudStatus();
-}
-
-function checkIsLocalStateEmpty() {
-  try {
-    // 1. Soru Bankası kontrolü
-    const qCount = state?.questions?.length || 0;
-    if (qCount > 0) return false;
-
-    // 2. Kurs takibi kontrolü
-    const courseStateRaw = localStorage.getItem("coursetracking_state");
-    if (courseStateRaw) {
-      const parsed = JSON.parse(courseStateRaw);
-      if (parsed?.courses?.length > 0 || parsed?.questions?.length > 0) return false;
-    }
-
-    // 3. Öğrenci takibi kontrolü
-    const studentStateRaw = localStorage.getItem("student-tracking:state:v1");
-    if (studentStateRaw) {
-      const parsed = JSON.parse(studentStateRaw);
-      if (parsed?.students?.length > 0) return false;
-    }
-
-    // 4. Yıllık plan kontrolü
-    const annualStateRaw = localStorage.getItem("annual-plan:state:v1");
-    if (annualStateRaw) {
-      const parsed = JSON.parse(annualStateRaw);
-      if (parsed?.plans?.length > 0) return false;
-    }
-
-    return true;
-  } catch (e) {
-    return true;
-  }
-}
-
 async function syncCloudNow() {
   if (!cloudState.client) {
     showToast("Önce Supabase bağlantı ayarını kaydedin.", "warning");
@@ -3591,11 +3522,6 @@ function getLongSkillDay(date) {
 
 function getSkillReportDayHeader(date) {
   return `${date.getDate()} ${getLongSkillDay(date)}`;
-}
-
-function formatSkillLongDate(date) {
-  const dateObject = typeof date === "string" ? new Date(`${date}T00:00:00`) : date;
-  return `${formatSkillDate(toSkillIsoDate(dateObject))} ${getLongSkillDay(dateObject)}`;
 }
 
 function isEntireWeekHoliday(date) {
@@ -4822,17 +4748,6 @@ function formatSkillMoney(value) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(Number(value || 0));
-}
-
-function getWageAbsenceDays() {
-  return 0;
-}
-
-function getWageManualStudentIds() {
-  const ids = getFlexibleReportBusinessIds();
-  return skillState.students
-    .filter((student) => ids.includes(student.businessId))
-    .map((student) => student.id);
 }
 
 function renderWageManualDialog() {
@@ -9657,19 +9572,6 @@ function positionResizePanel() {
   resizePanel.style.left = `${left}px`;
 }
 
-function applyResizableWidth(value) {
-  if (!selectedResizableElement) return;
-  const width = Math.max(10, Math.min(100, Number(value) || 100));
-  selectedResizableElement.style.width = `${width}%`;
-  selectedResizableElement.style.maxWidth = "100%";
-  if (selectedResizableElement.tagName === "IMG") {
-    selectedResizableElement.style.height = "auto";
-  }
-  const rangeInput = ensureResizePanel().querySelector("#resizeRange");
-  if (rangeInput) rangeInput.value = width;
-  positionResizePanel();
-}
-
 function handleEditorMediaClick(event) {
   const media = event.target.closest("img, table");
   if (!media || !event.currentTarget.contains(media)) {
@@ -10640,17 +10542,6 @@ async function importQuestionsDocx(file) {
 
 function examTitle() {
   return `${state.examMeta.term}. Dönem ${state.examMeta.examNumber}. Yazılı`;
-}
-
-function classGradeText() {
-  const grade = String(state.examMeta.className || "").match(/\d+/)?.[0] || String(currentCourse().grade || "").match(/\d+/)?.[0] || "";
-  return grade ? `${grade}. SINIFLAR` : "SINIFLAR";
-}
-
-function printHeaderTitle(mode) {
-  const courseName = currentCourse().name.toLocaleUpperCase("tr-TR");
-  const suffix = mode === "answer" ? "CEVAP ANAHTARI" : "SINAVI SORULARI";
-  return `${classGradeText()} "${courseName}" DERSİ\n${state.examMeta.term}. DÖNEM ${state.examMeta.examNumber}. YAZILI ${suffix}`;
 }
 
 function questionNumberHtml(index, points = null) {
@@ -12630,22 +12521,13 @@ function backupSummaryFromStorage(storage = {}) {
     trackingClasses: Array.isArray(studentTracking.classes) ? studentTracking.classes.length : 0,
     trackingLessons: Array.isArray(studentTracking.lessons) ? studentTracking.lessons.length : 0,
     trackingStudents: Array.isArray(studentTracking.students) ? studentTracking.students.length : 0,
-    trackingPlans: Array.isArray(studentTracking.plans) ? studentTracking.plans.length : 0,
+    trackingEvaluations: Array.isArray(studentTracking.routine) ? studentTracking.routine.length : 0,
+    trackingHomework: Array.isArray(studentTracking.homework) ? studentTracking.homework.length : 0,
+    trackingProjects: Array.isArray(studentTracking.projects) ? studentTracking.projects.length : 0,
     annualTemplates: Array.isArray(annualPlan.templates) ? annualPlan.templates.length : 0,
     annualGenerated: Array.isArray(annualPlan.generatedPlans) ? annualPlan.generatedPlans.length : 0,
     skillProfiles: skillProfileKeys.length
   };
-}
-
-function backupSummaryText(summary = {}) {
-  return [
-    `Soru Bankası: ${summary.courses || 0} ders, ${summary.questions || 0} soru, ${summary.curriculumItems || 0} kazanım`,
-    `İME: ${summary.skillSchools || 0} okul, ${summary.skillBusinesses || 0} işletme, ${summary.skillStudents || 0} öğrenci`,
-    `Kurs/Ders: ${summary.courseModules || 0} modül, ${summary.courseStudents || 0} öğrenci, ${summary.courseQuestions || 0} soru`,
-    `Ders Takibi: ${summary.trackingClasses || 0} sınıf, ${summary.trackingLessons || 0} ders, ${summary.trackingStudents || 0} öğrenci, ${summary.trackingPlans || 0} yıllık plan`,
-    `Yıllık Plan: ${summary.annualTemplates || 0} şablon, ${summary.annualGenerated || 0} üretilen plan`,
-    `Profil/Ayar: ${summary.skillProfiles || 0} İME profil kaydı`
-  ].join("\n");
 }
 
 function createBackupPackage(modules = Object.keys(BACKUP_MODULES), { reason = "manual" } = {}) {
@@ -12807,8 +12689,8 @@ function backupSummaryHtml(summary = {}, modulesToRestore = [], mode = "replace"
   if (modulesToRestore.includes("course") && (summary.courseModules || summary.courseStudents || summary.courseQuestions)) {
     lines.push(`<li><strong>Kurs/Ders Takibi:</strong> ${summary.courseModules || 0} modül, ${summary.courseStudents || 0} öğrenci, ${summary.courseQuestions || 0} soru</li>`);
   }
-  if (modulesToRestore.includes("student") && (summary.trackingClasses || summary.trackingLessons || summary.trackingStudents || summary.trackingPlans)) {
-    lines.push(`<li><strong>Ders Takibi:</strong> ${summary.trackingClasses || 0} sınıf, ${summary.trackingLessons || 0} ders, ${summary.trackingStudents || 0} öğrenci, ${summary.trackingPlans || 0} yıllık plan</li>`);
+  if (modulesToRestore.includes("student") && (summary.trackingClasses || summary.trackingLessons || summary.trackingStudents || summary.trackingEvaluations || summary.trackingHomework || summary.trackingProjects)) {
+    lines.push(`<li><strong>Öğrenci Takibi:</strong> ${summary.trackingClasses || 0} sınıf, ${summary.trackingLessons || 0} ders, ${summary.trackingStudents || 0} öğrenci, ${summary.trackingEvaluations || 0} değerlendirme, ${summary.trackingHomework || 0} ödev, ${summary.trackingProjects || 0} proje</li>`);
   }
   if (modulesToRestore.includes("annualPlan") && (summary.annualTemplates || summary.annualGenerated)) {
     lines.push(`<li><strong>Yıllık Plan:</strong> ${summary.annualTemplates || 0} şablon, ${summary.annualGenerated || 0} üretilen plan</li>`);

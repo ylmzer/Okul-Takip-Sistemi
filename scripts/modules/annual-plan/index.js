@@ -195,10 +195,6 @@ function currentAnnualYear() {
   return `${startYear}-${startYear + 1}`;
 }
 
-function annualTodayIso() {
-  return new Date().toISOString().slice(0, 10);
-}
-
 function cleanLessonName(title) {
   if (!title) return "";
   let name = title;
@@ -1009,14 +1005,6 @@ function annualSlug(value) {
     .replace(/^-+|-+$/g, "")
     || "plan";
 }
-
-function normalizeAnnualType(type) {
-  const value = String(type || "").toLocaleLowerCase("tr-TR");
-  if (["mesem", "me"].includes(value)) return "mesem";
-  if (["kurs", "hbo", "hem"].includes(value)) return "kurs";
-  return "mtal";
-}
-
 
 function selectedAnnualUnits(template) {
   const checkedUnits = [...(annualEls.unitList?.querySelectorAll("[data-annual-unit]") || [])]
