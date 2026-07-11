@@ -144,6 +144,40 @@ body.dark-mode.student-mode .student-task-students label > span {
   color: #5eead4 !important;
 }
 
+body.dark-mode.student-mode .student-evaluation-head > span {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode.student-mode .student-evaluation-head output {
+  color: #5eead4 !important;
+  background: rgba(15, 118, 110, 0.22) !important;
+  border-color: rgba(94, 234, 212, 0.2) !important;
+}
+
+body.dark-mode.student-mode .student-evaluation-field input[type="range"]::-webkit-slider-runnable-track {
+  background: linear-gradient(90deg, #2dd4bf 0 var(--score), rgba(255, 255, 255, 0.12) var(--score) 100%) !important;
+}
+
+body.dark-mode.student-mode .student-evaluation-field input[type="range"]::-webkit-slider-thumb {
+  background: #e2e8f0 !important;
+  border-color: #2dd4bf !important;
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.12) !important;
+}
+
+body.dark-mode.student-mode .student-evaluation-field input[type="range"]::-moz-range-track {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+body.dark-mode.student-mode .student-evaluation-field input[type="range"]::-moz-range-progress {
+  background: #2dd4bf !important;
+}
+
+body.dark-mode.student-mode .student-evaluation-field input[type="range"]::-moz-range-thumb {
+  background: #e2e8f0 !important;
+  border-color: #2dd4bf !important;
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.12) !important;
+}
+
 body.app-mode .app-shell,
 body.skill-mode .skill-shell,
 body.student-mode .student-shell,
@@ -1787,19 +1821,88 @@ body.student-mode .student-evaluation-grid {
 
 body.student-mode .student-evaluation-field {
   display: grid;
-  gap: 5px;
+  gap: 10px;
+  min-width: 0;
 }
 
-body.student-mode .student-evaluation-field > span {
+body.student-mode .student-evaluation-head {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+body.student-mode .student-evaluation-head > span {
   color: #607572;
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 800;
 }
 
-body.student-mode .student-evaluation-field select {
-  min-height: 38px !important;
-  padding: 0 30px 0 9px !important;
-  font-size: 0.74rem !important;
+body.student-mode .student-evaluation-head output {
+  min-width: 38px;
+  padding: 4px 7px;
+  color: #176258;
+  text-align: center;
+  background: #ddf3ee;
+  border: 1px solid #c5e8e0;
+  border-radius: 999px;
+  font-size: 0.73rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+body.student-mode .student-evaluation-field input[type="range"] {
+  width: 100%;
+  height: 30px;
+  min-height: 30px !important;
+  padding: 0 !important;
+  margin: 0;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  touch-action: pan-y;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+body.student-mode .student-evaluation-field input[type="range"]::-webkit-slider-runnable-track {
+  height: 8px;
+  background: linear-gradient(90deg, #18a28f 0 var(--score), #d7e4e1 var(--score) 100%);
+  border-radius: 999px;
+}
+
+body.student-mode .student-evaluation-field input[type="range"]::-webkit-slider-thumb {
+  width: 22px;
+  height: 22px;
+  margin-top: -7px;
+  background: #fff;
+  border: 3px solid #168879;
+  border-radius: 50%;
+  box-shadow: 0 2px 7px rgba(18, 89, 80, 0.24);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+body.student-mode .student-evaluation-field input[type="range"]::-moz-range-track {
+  height: 8px;
+  background: #d7e4e1;
+  border-radius: 999px;
+}
+
+body.student-mode .student-evaluation-field input[type="range"]::-moz-range-progress {
+  height: 8px;
+  background: #18a28f;
+  border-radius: 999px;
+}
+
+body.student-mode .student-evaluation-field input[type="range"]::-moz-range-thumb {
+  width: 17px;
+  height: 17px;
+  background: #fff;
+  border: 3px solid #168879;
+  border-radius: 50%;
+  box-shadow: 0 2px 7px rgba(18, 89, 80, 0.24);
 }
 
 body.student-mode .student-task-card {
@@ -1982,8 +2085,9 @@ body.student-mode .student-task-students select {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  body.student-mode .student-evaluation-field select {
-    min-height: 44px !important;
+  body.student-mode .student-evaluation-field input[type="range"] {
+    height: 36px;
+    min-height: 36px !important;
   }
 
   body.student-mode .student-class-actions {

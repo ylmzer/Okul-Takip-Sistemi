@@ -260,13 +260,20 @@ function renderStudents() {
     : `<div class="student-empty"><strong>Bu sınıfta öğrenci yok</strong><span>Tek öğrenci ekleyebilir veya e-okul listesini yapıştırabilirsiniz.</span></div>`;
 }
 
-function evaluationSelect(field, value) {
-  const score = Number.isFinite(Number(value)) ? Number(value) : 100;
-  return `<label class="student-evaluation-field"><span>${field.label}</span><select data-routine-field="${field.key}">
-    <option value="100" ${score >= 85 ? "selected" : ""}>İyi</option>
-    <option value="65" ${score >= 50 && score < 85 ? "selected" : ""}>Orta</option>
-    <option value="30" ${score < 50 ? "selected" : ""}>Geliştirilmeli</option>
-  </select></label>`;
+function evaluationScore(value) {
+  if (value === "ok") return 85;
+  if (value === "warn") return 55;
+  if (value === "bad") return 20;
+  const score = Number(value);
+  return Number.isFinite(score) ? Math.min(100, Math.max(0, Math.round(score))) : 100;
+}
+
+function evaluationSlider(field, value) {
+  const score = evaluationScore(value);
+  return `<label class="student-evaluation-field">
+    <span class="student-evaluation-head"><span>${field.label}</span><output data-routine-output="${field.key}">${score}</output></span>
+    <input type="range" min="0" max="100" step="1" value="${score}" data-routine-field="${field.key}" style="--score: ${score}%">
+  </label>`;
 }
 
 function renderRoutine() {
@@ -283,12 +290,12 @@ function renderRoutine() {
   const fields = [
     { key: "attendance", label: "Katılım" },
     { key: "prepared", label: "Hazırlık" },
-    { key: "notes", label: "Sorumluluk" },
+    { key: "notes", label: "Not Alma" },
     { key: "dress", label: "Davranış" }
   ];
   studentEls.routineList.innerHTML = students.length ? students.map((student) => {
     const record = studentState.routine.find((item) => item.studentId === student.id && item.date === date && item.lessonId === lessonId) || {};
-    return `<article class="student-routine-row" data-student-routine="${html(student.id)}"><div class="student-routine-person"><strong>${html(student.name)}</strong><small>${html(student.no || "Numara yok")}</small></div><div class="student-evaluation-grid">${fields.map((field) => evaluationSelect(field, record[field.key])).join("")}</div></article>`;
+    return `<article class="student-routine-row" data-student-routine="${html(student.id)}"><div class="student-routine-person"><strong>${html(student.name)}</strong><small>${html(student.no || "Numara yok")}</small></div><div class="student-evaluation-grid">${fields.map((field) => evaluationSlider(field, record[field.key])).join("")}</div></article>`;
   }).join("") : `<div class="student-empty"><strong>Bu sınıfta öğrenci yok</strong><span>Önce sınıfa öğrenci ekleyin.</span></div>`;
 }
 
@@ -555,6 +562,14 @@ function bindStudentEvents() {
   studentEls.clearProject?.addEventListener("click", () => clearTaskForm("projects"));
   studentEls.importBtn?.addEventListener("click", importStudents);
   studentEls.saveRoutine?.addEventListener("click", saveRoutine);
+  studentEls.routineList?.addEventListener("input", (event) => {
+    const slider = event.target.closest("[data-routine-field]");
+    if (!slider) return;
+    const value = evaluationScore(slider.value);
+    slider.style.setProperty("--score", `${value}%`);
+    const output = slider.closest(".student-evaluation-field")?.querySelector(`[data-routine-output="${slider.dataset.routineField}"]`);
+    if (output) output.textContent = value;
+  });
   studentEls.studentClass?.addEventListener("change", renderStudents);
   studentEls.lessonClass?.addEventListener("change", renderLessons);
   [studentEls.routineClass, studentEls.routineLesson, studentEls.routineDate].forEach((select) => select?.addEventListener("change", renderRoutine));
