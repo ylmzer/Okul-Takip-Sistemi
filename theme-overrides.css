@@ -1331,6 +1331,545 @@ body select.global-settings-mobile-select optgroup {
   padding: 8px !important;
 }
 
+/* Öğrenci takip v2: sınıf merkezli, dokunmatik kullanım odaklı arayüz */
+body.student-mode .student-workspace {
+  background: #f4f7f6 !important;
+  padding: 26px clamp(18px, 3vw, 38px) 48px !important;
+}
+
+body.student-mode .student-topbar {
+  max-width: 1240px;
+  margin: 0 auto 22px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+body.student-mode .student-topbar h1 {
+  color: #173b38 !important;
+  font-size: clamp(1.65rem, 2.6vw, 2.35rem) !important;
+  letter-spacing: -0.035em !important;
+}
+
+body.student-mode .student-view {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+body.student-mode .student-flow-card {
+  padding: 18px;
+  margin-bottom: 16px;
+  color: #f7fffd;
+  background: linear-gradient(125deg, #174d48 0%, #20746a 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(20, 72, 67, 0.16);
+}
+
+body.student-mode .student-flow-head {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+body.student-mode .student-flow-head span,
+body.student-mode .student-flow-head strong,
+body.student-mode .student-flow-head small {
+  display: block;
+}
+
+body.student-mode .student-flow-head span {
+  margin-bottom: 3px;
+  color: #a9ddd6;
+  font-size: 0.75rem;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+body.student-mode .student-flow-head strong {
+  font-size: 1.18rem;
+}
+
+body.student-mode .student-flow-head small {
+  color: rgba(247, 255, 253, 0.72);
+  font-weight: 650;
+}
+
+body.student-mode .student-flow-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+body.student-mode .student-flow-steps button {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  min-height: 46px;
+  padding: 8px 10px;
+  color: #ecfffb;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 11px;
+  box-shadow: none;
+}
+
+body.student-mode .student-flow-steps button > span {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.13);
+  border-radius: 50%;
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+body.student-mode .student-flow-steps button.is-done > span {
+  color: #164a45;
+  background: #a9eadf;
+}
+
+body.student-mode .student-stat-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin-bottom: 16px !important;
+}
+
+body.student-mode .student-stat-card {
+  display: flex !important;
+  min-height: 80px !important;
+  padding: 14px 16px !important;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left !important;
+  background: #fff !important;
+  border: 1px solid #dce7e4 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 7px 20px rgba(28, 67, 63, 0.06) !important;
+}
+
+body.student-mode .student-stat-card strong {
+  color: #173b38 !important;
+  font-size: 1.65rem !important;
+}
+
+body.student-mode .student-stat-card span {
+  margin-top: 5px;
+  color: #657b78 !important;
+  font-size: 0.73rem !important;
+}
+
+body.student-mode .student-quick-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+}
+
+body.student-mode .student-quick-grid button {
+  grid-template-columns: 38px minmax(0, 1fr) !important;
+  min-height: 92px !important;
+  padding: 14px !important;
+  background: #fff !important;
+  border: 1px solid #dce7e4 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 7px 20px rgba(28, 67, 63, 0.06) !important;
+}
+
+body.student-mode .student-quick-grid button > span {
+  grid-row: 1 / span 2;
+  width: 38px !important;
+  height: 38px !important;
+  color: #176258 !important;
+  background: #ddf3ee !important;
+  border-radius: 11px !important;
+}
+
+body.student-mode .student-quick-grid button > strong {
+  align-self: end;
+  color: #193d39;
+}
+
+body.student-mode .student-quick-grid button > small {
+  align-self: start;
+  color: #748784;
+  font-size: 0.7rem;
+  font-weight: 650;
+}
+
+body.student-mode .student-two-column {
+  grid-template-columns: minmax(270px, 0.62fr) minmax(0, 1.38fr) !important;
+  gap: 16px !important;
+}
+
+body.student-mode .student-panel,
+body.student-mode .student-item-card,
+body.student-mode .student-class-card,
+body.student-mode .student-task-card,
+body.student-mode .student-empty {
+  background: #fff !important;
+  border: 1px solid #dce7e4 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 7px 20px rgba(28, 67, 63, 0.055) !important;
+}
+
+body.student-mode .student-panel {
+  padding: 18px !important;
+}
+
+body.student-mode .student-list {
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  align-content: start;
+}
+
+body.student-mode .student-class-card {
+  display: grid;
+  gap: 13px;
+  padding: 16px;
+}
+
+body.student-mode .student-class-card-head,
+body.student-mode .student-person {
+  display: flex;
+  gap: 11px;
+  align-items: center;
+}
+
+body.student-mode .student-class-card-head > span,
+body.student-mode .student-person > span {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  color: #176258;
+  background: #ddf3ee;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 950;
+}
+
+body.student-mode .student-class-card-head strong,
+body.student-mode .student-class-card-head small {
+  display: block;
+}
+
+body.student-mode .student-class-card-head small {
+  margin-top: 3px;
+  color: #748784;
+  font-size: 0.75rem;
+}
+
+body.student-mode .student-class-counts,
+body.student-mode .student-class-actions {
+  display: flex;
+  gap: 8px;
+}
+
+body.student-mode .student-class-counts span {
+  flex: 1;
+  padding: 8px 10px;
+  color: #627774;
+  background: #f4f8f7;
+  border-radius: 9px;
+  font-size: 0.75rem;
+}
+
+body.student-mode .student-class-counts strong {
+  color: #173b38;
+}
+
+body.student-mode .student-class-actions button {
+  min-height: 36px;
+  flex: 1;
+  padding: 0 8px;
+  color: #176258;
+  background: #edf8f5;
+  border: 1px solid #cde7e1;
+  border-radius: 9px;
+  font-size: 0.73rem;
+  font-weight: 850;
+}
+
+body.student-mode .student-empty {
+  display: grid;
+  gap: 5px;
+  padding: 20px !important;
+}
+
+body.student-mode .student-empty strong {
+  color: #274b47;
+}
+
+body.student-mode .student-empty span {
+  color: #748784;
+  font-size: 0.8rem;
+}
+
+body.student-mode .student-filter-grid {
+  position: sticky;
+  top: -1px;
+  z-index: 3;
+  padding: 12px;
+  margin: -4px -4px 14px !important;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #dce7e4;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+body.student-mode .student-routine-list {
+  gap: 9px !important;
+}
+
+body.student-mode .student-routine-row {
+  display: grid !important;
+  grid-template-columns: minmax(170px, 0.52fr) minmax(0, 1.48fr) !important;
+  gap: 14px !important;
+  padding: 13px !important;
+  background: #fff !important;
+  border: 1px solid #dce7e4 !important;
+  border-radius: 12px !important;
+}
+
+body.student-mode .student-routine-person strong,
+body.student-mode .student-routine-person small {
+  display: block;
+}
+
+body.student-mode .student-routine-person small {
+  margin-top: 4px;
+  color: #778986;
+  font-size: 0.72rem;
+}
+
+body.student-mode .student-evaluation-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+body.student-mode .student-evaluation-field {
+  display: grid;
+  gap: 5px;
+}
+
+body.student-mode .student-evaluation-field > span {
+  color: #607572;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+body.student-mode .student-evaluation-field select {
+  min-height: 38px !important;
+  padding: 0 30px 0 9px !important;
+  font-size: 0.74rem !important;
+}
+
+body.student-mode .student-task-card {
+  display: grid;
+  gap: 12px;
+  padding: 15px;
+}
+
+body.student-mode .student-task-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+body.student-mode .student-task-head strong,
+body.student-mode .student-task-head small,
+body.student-mode .student-task-kind {
+  display: block;
+}
+
+body.student-mode .student-task-kind {
+  margin-bottom: 5px;
+  color: #278173;
+  font-size: 0.65rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+}
+
+body.student-mode .student-task-head small {
+  margin-top: 4px;
+  color: #748784;
+  font-size: 0.74rem;
+}
+
+body.student-mode .student-task-progress {
+  min-width: 48px;
+  padding: 7px 10px;
+  color: #176258;
+  text-align: center;
+  background: #ddf3ee;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+body.student-mode .student-task-card details {
+  border-top: 1px solid #e6eeec;
+  border-bottom: 1px solid #e6eeec;
+}
+
+body.student-mode .student-task-card summary {
+  padding: 11px 2px;
+  color: #315a55;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+body.student-mode .student-task-students {
+  display: grid;
+  gap: 7px;
+  max-height: 330px;
+  padding: 0 2px 12px;
+  overflow: auto;
+}
+
+body.student-mode .student-task-students label {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  background: #f6f9f8;
+  border-radius: 9px;
+}
+
+body.student-mode .student-task-students label > span {
+  color: #294a46;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+body.student-mode .student-task-students select {
+  min-height: 34px !important;
+  font-size: 0.72rem !important;
+}
+
+@media (max-width: 1050px) {
+  body.student-mode .student-flow-steps,
+  body.student-mode .student-quick-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body.student-mode .student-stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  body.student-mode .student-evaluation-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  body.student-mode .student-workspace {
+    padding: 16px 12px 90px !important;
+  }
+
+  body.student-mode .student-topbar {
+    margin-bottom: 15px !important;
+  }
+
+  body.student-mode .student-topbar p {
+    max-width: 30ch;
+    font-size: 0.76rem !important;
+  }
+
+  body.student-mode .student-flow-card {
+    padding: 14px;
+    border-radius: 15px;
+  }
+
+  body.student-mode .student-flow-head {
+    display: grid;
+    gap: 5px;
+    align-items: start;
+  }
+
+  body.student-mode .student-flow-steps {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.student-mode .student-flow-steps button {
+    min-height: 42px;
+  }
+
+  body.student-mode .student-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  body.student-mode .student-stat-card {
+    min-height: 70px !important;
+    padding: 11px 13px !important;
+  }
+
+  body.student-mode .student-quick-grid,
+  body.student-mode .student-two-column,
+  body.student-mode .student-filter-grid,
+  body.student-mode .student-routine-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.student-mode .student-quick-grid button {
+    min-height: 76px !important;
+  }
+
+  body.student-mode .student-panel {
+    padding: 13px !important;
+  }
+
+  body.student-mode .student-list {
+    grid-template-columns: 1fr;
+  }
+
+  body.student-mode .student-filter-grid {
+    top: 0;
+    padding: 10px;
+  }
+
+  body.student-mode .student-routine-row {
+    gap: 10px !important;
+  }
+
+  body.student-mode .student-routine-person {
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e6eeec;
+  }
+
+  body.student-mode .student-evaluation-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.student-mode .student-evaluation-field select {
+    min-height: 44px !important;
+  }
+
+  body.student-mode .student-class-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  body.student-mode .student-task-students label {
+    grid-template-columns: 1fr;
+  }
+
+  body.student-mode .student-task-students select {
+    min-height: 42px !important;
+  }
+}
+
 /* Mobil Görünüm Ayarlar Sekmeleri / Dropdown Seçici */
 .global-settings-mobile-select-container {
   display: none;
@@ -5172,5 +5711,4 @@ body.dark-mode .cloud-loading-overlay {
   width: 100% !important;
   box-sizing: border-box !important;
 }
-
 

@@ -32,7 +32,7 @@
     <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg" />
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=80" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=82" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=83" />
   </head>
   <body class="auth-mode">
     <script>
@@ -150,7 +150,7 @@
           <button class="module-card is-ready" type="button" data-module="student-tracking">
             <span class="module-icon module-icon-school" aria-hidden="true">DT</span>
             <span class="module-status">Aktif</span>
-            <strong>Ders Takibi</strong>
+            <strong>Öğrenci Takip</strong>
             <small>Sınıf ve öğrenci izleme</small>
             <em aria-hidden="true">·</em>
             <span class="module-card-art" aria-hidden="true"></span>
@@ -2832,32 +2832,30 @@
         <div class="student-brand module-sidebar-brand" data-module-brand="student-tracking">
           <span class="module-icon module-icon-school module-sidebar-icon" aria-hidden="true">DT</span>
           <div>
-            <strong>Ders Takibi</strong>
+            <strong>Öğrenci Takip</strong>
           </div>
         </div>
-        <p class="student-subtitle">Sınıf, ders ve öğrenci izleme</p>
+        <p class="student-subtitle">Sınıftan günlük değerlendirmeye</p>
 
         <nav class="student-nav" aria-label="Ders takibi bölümleri">
-          <button class="is-active" data-student-view="dashboard" type="button">Ana Ekran</button>
-          <button data-student-view="classes" type="button">Sınıflar</button>
-          <button data-student-view="lessons" type="button">Dersler</button>
+          <button class="is-active" data-student-view="dashboard" type="button">Bugün</button>
+          <button data-student-view="classes" type="button">Sınıflarım</button>
           <button data-student-view="students" type="button">Öğrenciler</button>
-          <button data-student-view="routine" type="button">Ders İçi Takip</button>
-          <button data-student-view="homework" type="button">Ödev Takibi</button>
-          <button data-student-view="projects" type="button">Proje Takibi</button>
-          <button data-student-view="reports" type="button">Raporlar</button>
+          <button data-student-view="lessons" type="button">Dersler</button>
+          <button data-student-view="routine" type="button">Günlük Değerlendirme</button>
+          <button data-student-view="homework" type="button">Ödevler</button>
+          <button data-student-view="projects" type="button">Projeler</button>
         </nav>
 
         <div class="student-nav-mobile-select-container">
           <select id="studentNavMobileSelect" class="student-nav-mobile-select" aria-label="Menü Seçin">
-            <option value="dashboard">Ana Ekran</option>
-            <option value="classes">Sınıflar</option>
-            <option value="lessons">Dersler</option>
+            <option value="dashboard">Bugün</option>
+            <option value="classes">Sınıflarım</option>
             <option value="students">Öğrenciler</option>
-            <option value="routine">Ders İçi Takip</option>
-            <option value="homework">Ödev Takibi</option>
-            <option value="projects">Proje Takibi</option>
-            <option value="reports">Raporlar</option>
+            <option value="lessons">Dersler</option>
+            <option value="routine">Günlük Değerlendirme</option>
+            <option value="homework">Ödevler</option>
+            <option value="projects">Projeler</option>
           </select>
         </div>
       </aside>
@@ -2865,19 +2863,20 @@
       <main class="student-workspace">
         <header class="student-topbar">
           <div>
-            <h1 id="studentPageTitle">Ders ve Öğrenci Takibi</h1>
-            <p id="studentPageSubtitle">Sınıf, ders, rutin takip, ödev ve proje kayıtları</p>
+            <h1 id="studentPageTitle">Bugün</h1>
+            <p id="studentPageSubtitle">Günün sınıfları, değerlendirmeleri ve yaklaşan çalışmaları</p>
           </div>
           <button class="secondary-action module-switch-action" id="studentModuleSwitchBtn" type="button">Modüller</button>
         </header>
 
         <section class="student-view is-active" data-student-panel="dashboard">
+          <div class="student-flow-card" id="studentFlowCard"></div>
           <div class="student-stat-grid" id="studentStatGrid"></div>
           <div class="student-quick-grid">
-            <button data-student-target="classes" type="button"><span>SN</span><strong>Sınıf ekle</strong></button>
-            <button data-student-target="lessons" type="button"><span>DR</span><strong>Ders ata</strong></button>
-            <button data-student-target="students" type="button"><span>EO</span><strong>E-okul liste al</strong></button>
-            <button data-student-target="routine" type="button"><span>TK</span><strong>Ders içi takip</strong></button>
+            <button data-student-target="routine" type="button"><span>01</span><strong>Bugünü değerlendir</strong><small>Sınıf ve dersi seç</small></button>
+            <button data-student-target="classes" type="button"><span>02</span><strong>Sınıfları yönet</strong><small>Öğrenci ve dersleri gör</small></button>
+            <button data-student-target="homework" type="button"><span>03</span><strong>Ödev durumları</strong><small>Teslimleri işaretle</small></button>
+            <button data-student-target="projects" type="button"><span>04</span><strong>Proje durumları</strong><small>İlerlemeyi takip et</small></button>
           </div>
         </section>
 
@@ -2955,10 +2954,10 @@
           <div class="student-panel">
             <div class="student-panel-title">
               <div>
-                <p class="eyebrow">Ders içi</p>
-                <h2>Rutin değerlendirme</h2>
+                <p class="eyebrow">Günlük takip</p>
+                <h2>Günlük öğrenci değerlendirmesi</h2>
               </div>
-              <button class="primary-action" id="studentSaveRoutineBtn" type="button">Kaydet</button>
+              <button class="primary-action" id="studentSaveRoutineBtn" type="button">Tümünü kaydet</button>
             </div>
             <div class="student-filter-grid">
               <label><span>Tarih</span><input id="studentRoutineDate" type="date" /></label>
@@ -3954,7 +3953,7 @@
     <script src="./scripts/modules/annual-plan/index.js?v=12"></script>
     <script src="./scripts/modules/sorubank/index.js?v=6"></script>
     <script src="./scripts/modules/skill-training/index.js?v=10"></script>
-    <script src="./scripts/modules/student-tracking/index.js?v=6"></script>
+    <script src="./scripts/modules/student-tracking/index.js?v=7"></script>
   </body>
 </html>
 
