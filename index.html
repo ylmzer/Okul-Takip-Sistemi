@@ -32,7 +32,7 @@
     <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg" />
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=80" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=85" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=86" />
   </head>
   <body class="auth-mode">
     <script>
@@ -2845,6 +2845,7 @@
           <button data-student-view="routine" type="button">Günlük Değerlendirme</button>
           <button data-student-view="homework" type="button">Ödevler</button>
           <button data-student-view="projects" type="button">Projeler</button>
+          <button data-student-view="reports" type="button">Raporlar</button>
         </nav>
 
         <div class="student-nav-mobile-select-container">
@@ -2856,6 +2857,7 @@
             <option value="routine">Günlük Değerlendirme</option>
             <option value="homework">Ödevler</option>
             <option value="projects">Projeler</option>
+            <option value="reports">Raporlar</option>
           </select>
         </div>
       </aside>
@@ -3015,11 +3017,17 @@
         </section>
 
         <section class="student-view" data-student-panel="reports">
-          <div class="student-panel student-empty-panel">
-            <p class="eyebrow">Raporlar</p>
-            <h2>Rapor ekranı sonraki adımda şekillendirilecek</h2>
-            <p>Bu bölüm, sınıf/ders/öğrenci bazlı takip çıktıları için ayrıldı.</p>
+          <div class="student-report-filters">
+            <label><span>Sınıf</span><select id="studentReportClass"></select></label>
+            <label><span>Ders</span><select id="studentReportLesson"></select></label>
+            <label><span>Rapor kapsamı</span><select id="studentReportType">
+              <option value="all">Tüm değerlendirmeler</option>
+              <option value="daily">Günlük değerlendirme</option>
+              <option value="homework">Ödev değerlendirmesi</option>
+              <option value="projects">Proje değerlendirmesi</option>
+            </select></label>
           </div>
+          <div id="studentReportContent" class="student-report-content"></div>
         </section>
       </main>
     </div>
@@ -3953,7 +3961,7 @@
     <script src="./scripts/modules/annual-plan/index.js?v=12"></script>
     <script src="./scripts/modules/sorubank/index.js?v=6"></script>
     <script src="./scripts/modules/skill-training/index.js?v=10"></script>
-    <script src="./scripts/modules/student-tracking/index.js?v=8"></script>
+    <script src="./scripts/modules/student-tracking/index.js?v=9"></script>
   </body>
 </html>
 

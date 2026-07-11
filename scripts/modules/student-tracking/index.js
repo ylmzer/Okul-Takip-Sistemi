@@ -63,7 +63,11 @@ const studentEls = {
   projectTitle: document.querySelector("#studentProjectTitle"),
   projectDue: document.querySelector("#studentProjectDue"),
   projectList: document.querySelector("#studentProjectList"),
-  clearProject: document.querySelector("#studentClearProjectBtn")
+  clearProject: document.querySelector("#studentClearProjectBtn"),
+  reportClass: document.querySelector("#studentReportClass"),
+  reportLesson: document.querySelector("#studentReportLesson"),
+  reportType: document.querySelector("#studentReportType"),
+  reportContent: document.querySelector("#studentReportContent")
 };
 
 let studentState = loadStudentState();
@@ -72,7 +76,7 @@ let studentCallbacks = { returnToModuleHub: typeof returnToModuleHub === "functi
 function loadStudentState() {
   try {
     const saved = JSON.parse(localStorage.getItem(STUDENT_TRACKING_KEY) || "{}");
-    const validViews = ["dashboard", "classes", "students", "lessons", "routine", "homework", "projects"];
+    const validViews = ["dashboard", "classes", "students", "lessons", "routine", "homework", "projects", "reports"];
     return {
       ...studentDefaults,
       ...saved,
@@ -158,6 +162,9 @@ function renderSelects() {
   syncLessonSelect(studentEls.routineClass, studentEls.routineLesson, true);
   syncLessonSelect(studentEls.homeworkClass, studentEls.homeworkLesson);
   syncLessonSelect(studentEls.projectClass, studentEls.projectLesson);
+  fillSelect(studentEls.reportClass, studentState.classes, "Tüm sınıflar");
+  const reportLessons = studentEls.reportClass?.value ? lessonsForClass(studentEls.reportClass.value) : studentState.lessons;
+  fillSelect(studentEls.reportLesson, reportLessons, "Tüm dersler");
 }
 
 function setStudentView(view) {
@@ -173,7 +180,8 @@ function setStudentView(view) {
     lessons: ["Dersler", "Dersleri ilgili sınıfa atayın"],
     routine: ["Günlük Değerlendirme", "Tarih, sınıf ve dersi seçerek öğrencileri hızlıca değerlendirin"],
     homework: ["Ödevler", "Ödev verin ve her öğrencinin teslim durumunu izleyin"],
-    projects: ["Projeler", "Projeleri tanımlayın ve öğrenci ilerlemesini izleyin"]
+    projects: ["Projeler", "Projeleri tanımlayın ve öğrenci ilerlemesini izleyin"],
+    reports: ["Raporlar", "Sınıf ve ders bazında gelişimi istatistiklerle inceleyin"]
   };
   const [title, subtitle] = titles[view] || titles.dashboard;
   if (studentEls.title) studentEls.title.textContent = title;
@@ -299,11 +307,32 @@ function renderRoutine() {
   }).join("") : `<div class="student-empty"><strong>Bu sınıfta öğrenci yok</strong><span>Önce sınıfa öğrenci ekleyin.</span></div>`;
 }
 
-function taskStatusOptions(kind, selected) {
-  const options = kind === "homework"
-    ? [["pending", "Bekliyor"], ["done", "Teslim edildi"], ["missing", "Eksik"]]
-    : [["pending", "Başlamadı"], ["progress", "Devam ediyor"], ["done", "Tamamlandı"]];
-  return options.map(([value, label]) => `<option value="${value}" ${selected === value ? "selected" : ""}>${label}</option>`).join("");
+function legacyTaskScore(status) {
+  if (status === "done") return 100;
+  if (status === "progress") return 50;
+  return 0;
+}
+
+function taskScore(item, studentId) {
+  if (Number.isFinite(Number(item.scores?.[studentId]))) return evaluationScore(item.scores[studentId]);
+  return legacyTaskScore(item.statuses?.[studentId]);
+}
+
+function taskScoreLabel(score) {
+  if (score === 0) return "Yapmadı";
+  if (score < 50) return "Başlangıç";
+  if (score < 80) return "Kısmen yaptı";
+  if (score < 100) return "Tamamladı";
+  return "Eksiksiz";
+}
+
+function taskStudentSlider(kind, item, student) {
+  const score = taskScore(item, student.id);
+  return `<label class="student-task-student">
+    <span class="student-task-student-name">${html(student.name)}</span>
+    <span class="student-task-score-head"><small data-task-score-label>${taskScoreLabel(score)}</small><output data-task-score-output>${score}</output></span>
+    <input type="range" min="0" max="100" step="1" value="${score}" data-task-score data-kind="${kind}" data-task-id="${html(item.id)}" data-student-id="${html(student.id)}" style="--score: ${score}%">
+  </label>`;
 }
 
 function renderTasks(kind) {
@@ -317,14 +346,112 @@ function renderTasks(kind) {
   }
   list.innerHTML = items.map((item) => {
     const students = studentsForClass(item.classId);
-    const statuses = item.statuses || {};
-    const doneCount = students.filter((student) => statuses[student.id] === "done").length;
+    const average = students.length ? Math.round(students.reduce((sum, student) => sum + taskScore(item, student.id), 0) / students.length) : 0;
     return `<article class="student-task-card">
-      <div class="student-task-head"><div><span class="student-task-kind">${isHomework ? "ÖDEV" : "PROJE"}</span><strong>${html(item.title)}</strong><small>${html(classById(item.classId)?.name || "Sınıf yok")} · ${html(lessonById(item.lessonId)?.name || "Ders yok")} · ${item.due ? `Son gün ${html(item.due)}` : "Tarih yok"}</small></div><span class="student-task-progress">${doneCount}/${students.length}</span></div>
-      <details><summary>Öğrenci durumlarını aç</summary><div class="student-task-students">${students.length ? students.map((student) => `<label><span>${html(student.name)}</span><select data-task-status data-kind="${kind}" data-task-id="${html(item.id)}" data-student-id="${html(student.id)}">${taskStatusOptions(kind, statuses[student.id] || "pending")}</select></label>`).join("") : `<p>Bu sınıfta öğrenci yok.</p>`}</div></details>
+      <div class="student-task-head"><div><span class="student-task-kind">${isHomework ? "ÖDEV" : "PROJE"}</span><strong>${html(item.title)}</strong><small>${html(classById(item.classId)?.name || "Sınıf yok")} · ${html(lessonById(item.lessonId)?.name || "Ders yok")} · ${item.due ? `Son gün ${html(item.due)}` : "Tarih yok"}</small></div><span class="student-task-progress">${average}%</span></div>
+      <details><summary>Öğrenci değerlendirmelerini aç</summary><div class="student-task-students">${students.length ? students.map((student) => taskStudentSlider(kind, item, student)).join("") : `<p>Bu sınıfta öğrenci yok.</p>`}</div></details>
       <div class="student-card-actions"><button type="button" data-edit-${isHomework ? "homework" : "project"}="${html(item.id)}">Düzenle</button><button type="button" data-delete-${isHomework ? "homework" : "project"}="${html(item.id)}">Sil</button></div>
     </article>`;
   }).join("");
+}
+
+function averageOf(values) {
+  const valid = values.filter((value) => value !== null && value !== undefined && value !== "").map(Number).filter(Number.isFinite);
+  return valid.length ? Math.round(valid.reduce((sum, value) => sum + value, 0) / valid.length) : null;
+}
+
+function routineAverage(record) {
+  return averageOf([record.attendance, record.prepared, record.notes, record.dress].map(evaluationScore));
+}
+
+function reportBar(label, score, note = "") {
+  const value = score ?? 0;
+  return `<div class="student-report-bar"><div><span>${html(label)}</span>${note ? `<small>${html(note)}</small>` : ""}<strong>${score == null ? "—" : `${value}%`}</strong></div><span class="student-report-meter"><i style="width:${value}%"></i></span></div>`;
+}
+
+function renderReports() {
+  if (!studentEls.reportContent) return;
+  const classId = studentEls.reportClass?.value || "";
+  const lessonId = studentEls.reportLesson?.value || "";
+  const type = studentEls.reportType?.value || "all";
+  const students = studentState.students.filter((student) => !classId || student.classId === classId);
+  const studentIds = new Set(students.map((student) => student.id));
+  const routine = studentState.routine.filter((item) => studentIds.has(item.studentId) && (!classId || item.classId === classId) && (!lessonId || item.lessonId === lessonId));
+  const homework = studentState.homework.filter((item) => (!classId || item.classId === classId) && (!lessonId || item.lessonId === lessonId));
+  const projects = studentState.projects.filter((item) => (!classId || item.classId === classId) && (!lessonId || item.lessonId === lessonId));
+  const dailyScore = averageOf(routine.map(routineAverage));
+  const homeworkScores = homework.flatMap((item) => studentsForClass(item.classId).map((student) => taskScore(item, student.id)));
+  const projectScores = projects.flatMap((item) => studentsForClass(item.classId).map((student) => taskScore(item, student.id)));
+  const homeworkScore = averageOf(homeworkScores);
+  const projectScore = averageOf(projectScores);
+  const selectedScores = [
+    ...(type === "all" || type === "daily" ? routine.map(routineAverage) : []),
+    ...(type === "all" || type === "homework" ? homeworkScores : []),
+    ...(type === "all" || type === "projects" ? projectScores : [])
+  ];
+  const overall = averageOf(selectedScores);
+  const evaluatedIds = new Set(routine.map((item) => item.studentId));
+
+  const dimensions = [
+    ["Katılım", averageOf(routine.map((item) => evaluationScore(item.attendance)))],
+    ["Hazırlık", averageOf(routine.map((item) => evaluationScore(item.prepared)))],
+    ["Not Alma", averageOf(routine.map((item) => evaluationScore(item.notes)))],
+    ["Davranış", averageOf(routine.map((item) => evaluationScore(item.dress)))]
+  ];
+
+  const trendMap = new Map();
+  routine.forEach((item) => {
+    if (!trendMap.has(item.date)) trendMap.set(item.date, []);
+    trendMap.get(item.date).push(routineAverage(item));
+  });
+  const trend = [...trendMap.entries()].sort(([a], [b]) => a.localeCompare(b)).slice(-8).map(([date, values]) => [date, averageOf(values) || 0]);
+
+  const studentRows = students.map((student) => {
+    const daily = routine.filter((item) => item.studentId === student.id).map(routineAverage);
+    const hw = homework.filter((item) => item.classId === student.classId).map((item) => taskScore(item, student.id));
+    const pr = projects.filter((item) => item.classId === student.classId).map((item) => taskScore(item, student.id));
+    const scores = [
+      ...(type === "all" || type === "daily" ? daily : []),
+      ...(type === "all" || type === "homework" ? hw : []),
+      ...(type === "all" || type === "projects" ? pr : [])
+    ];
+    return { student, score: averageOf(scores), daily: averageOf(daily), homework: averageOf(hw), project: averageOf(pr) };
+  }).sort((a, b) => (b.score ?? -1) - (a.score ?? -1));
+
+  const metricCards = type === "daily" ? [
+    ["Günlük ortalama", dailyScore, `${routine.length} değerlendirme`],
+    ["Değerlendirilen", evaluatedIds.size, `${students.length} öğrenciden`],
+    ["Katılım", dimensions[0][1], "Ölçüt ortalaması"],
+    ["Davranış", dimensions[3][1], "Ölçüt ortalaması"]
+  ] : type === "homework" ? [
+    ["Ödev ortalaması", homeworkScore, `${homework.length} ödev`],
+    ["Ödev sayısı", homework.length, "Seçili kapsamda"],
+    ["Tamamlayan", homeworkScores.filter((score) => score >= 80).length, `${homeworkScores.length} değerlendirmeden`],
+    ["Yapılmayan", homeworkScores.filter((score) => score === 0).length, `${homeworkScores.length} değerlendirmeden`]
+  ] : type === "projects" ? [
+    ["Proje ortalaması", projectScore, `${projects.length} proje`],
+    ["Proje sayısı", projects.length, "Seçili kapsamda"],
+    ["Tamamlayan", projectScores.filter((score) => score >= 80).length, `${projectScores.length} değerlendirmeden`],
+    ["Yapılmayan", projectScores.filter((score) => score === 0).length, `${projectScores.length} değerlendirmeden`]
+  ] : [
+    ["Genel ortalama", overall, "Tüm değerlendirmeler"],
+    ["Günlük değerlendirme", dailyScore, `${evaluatedIds.size} öğrenci`],
+    ["Ödev ortalaması", homeworkScore, `${homework.length} ödev`],
+    ["Proje ortalaması", projectScore, `${projects.length} proje`]
+  ];
+  const overviewBars = type === "daily" ? [["Günlük değerlendirme", dailyScore]]
+    : type === "homework" ? [["Ödevler", homeworkScore]]
+    : type === "projects" ? [["Projeler", projectScore]]
+    : [["Günlük değerlendirme", dailyScore], ["Ödevler", homeworkScore], ["Projeler", projectScore]];
+
+  studentEls.reportContent.innerHTML = `
+    <div class="student-report-kpis">${metricCards.map(([label, value, note]) => `<article><span>${label}</span><strong>${value == null ? "—" : value}</strong><small>${note}</small></article>`).join("")}</div>
+    <div class="student-report-grid">
+      <article class="student-report-card student-report-overview"><div class="student-report-card-head"><div><span>BAŞARI ÖZETİ</span><h2>Genel performans</h2></div><div class="student-report-donut" style="--value:${overall || 0}"><strong>${overall == null ? "—" : overall}</strong><small>/ 100</small></div></div>${overviewBars.map(([label, score]) => reportBar(label, score)).join("")}</article>
+      ${(type === "all" || type === "daily") ? `<article class="student-report-card"><div class="student-report-card-head"><div><span>GÜNLÜK DEĞERLENDİRME</span><h2>Ölçüt ortalamaları</h2></div></div><div class="student-report-bars">${dimensions.map(([label, score]) => reportBar(label, score)).join("")}</div></article>` : ""}
+      ${(type === "all" || type === "daily") ? `<article class="student-report-card student-report-trend"><div class="student-report-card-head"><div><span>ZAMAN EĞİLİMİ</span><h2>Son değerlendirmeler</h2></div></div>${trend.length ? `<div class="student-report-columns">${trend.map(([date, value]) => `<div><span style="height:${Math.max(4, value)}%"><i>${value}</i></span><small>${html(date.slice(5).split("-").reverse().join("."))}</small></div>`).join("")}</div>` : `<div class="student-report-empty">Henüz günlük değerlendirme yok.</div>`}</article>` : ""}
+      <article class="student-report-card student-report-ranking"><div class="student-report-card-head"><div><span>ÖĞRENCİ ANALİZİ</span><h2>Başarı sıralaması</h2></div><small>${studentRows.length} öğrenci</small></div>${studentRows.length ? `<div class="student-report-table"><div class="student-report-table-head"><span>Öğrenci</span><span>Günlük</span><span>Ödev</span><span>Proje</span><span>Genel</span></div>${studentRows.map(({ student, score, daily, homework: hw, project: pr }, index) => `<div class="student-report-table-row"><span><i>${index + 1}</i><strong>${html(student.name)}</strong><small>${html(classById(student.classId)?.name || "")}</small></span><span>${daily ?? "—"}</span><span>${hw ?? "—"}</span><span>${pr ?? "—"}</span><span class="is-score">${score ?? "—"}</span></div>`).join("")}</div>` : `<div class="student-report-empty">Seçili kapsamda öğrenci bulunamadı.</div>`}</article>
+    </div>`;
 }
 
 function renderStudentModule() {
@@ -337,6 +464,7 @@ function renderStudentModule() {
   renderRoutine();
   renderTasks("homework");
   renderTasks("projects");
+  renderReports();
 }
 
 function clearClassForm() {
@@ -455,6 +583,7 @@ function saveTask(kind, event) {
     lessonId: studentEls[`${prefix}Lesson`].value,
     title: studentEls[`${prefix}Title`].value.trim(),
     due: studentEls[`${prefix}Due`].value,
+    scores: old?.scores || {},
     statuses: old?.statuses || {}
   };
   if (!record.classId || !record.lessonId || !record.title) return toast("Sınıf, ders ve başlık girin.", "warning");
@@ -524,20 +653,30 @@ function handleListClick(event) {
   }
 }
 
-function handleTaskStatus(event) {
-  const select = event.target.closest("[data-task-status]");
-  if (!select) return;
-  const item = studentState[select.dataset.kind]?.find((entry) => entry.id === select.dataset.taskId);
+function handleTaskScore(event, persist = false) {
+  const slider = event.target.closest("[data-task-score]");
+  if (!slider) return;
+  const item = studentState[slider.dataset.kind]?.find((entry) => entry.id === slider.dataset.taskId);
   if (!item) return;
-  item.statuses = { ...(item.statuses || {}), [select.dataset.studentId]: select.value };
-  saveStudentState();
-  renderStats();
-  const card = select.closest(".student-task-card");
+  const score = evaluationScore(slider.value);
+  item.scores = { ...(item.scores || {}), [slider.dataset.studentId]: score };
+  slider.style.setProperty("--score", `${score}%`);
+  const row = slider.closest(".student-task-student");
+  const output = row?.querySelector("[data-task-score-output]");
+  const label = row?.querySelector("[data-task-score-label]");
+  if (output) output.textContent = score;
+  if (label) label.textContent = taskScoreLabel(score);
+  const card = slider.closest(".student-task-card");
   if (card) {
     const students = studentsForClass(item.classId);
-    const done = students.filter((student) => item.statuses[student.id] === "done").length;
+    const average = students.length ? Math.round(students.reduce((sum, student) => sum + taskScore(item, student.id), 0) / students.length) : 0;
     const progress = card.querySelector(".student-task-progress");
-    if (progress) progress.textContent = `${done}/${students.length}`;
+    if (progress) progress.textContent = `${average}%`;
+  }
+  if (persist) {
+    saveStudentState();
+    renderStats();
+    renderReports();
   }
 }
 
@@ -576,9 +715,18 @@ function bindStudentEvents() {
   [studentEls.homeworkClass, studentEls.projectClass].forEach((select) => select?.addEventListener("change", () => {
     syncLessonSelect(select, select === studentEls.homeworkClass ? studentEls.homeworkLesson : studentEls.projectLesson);
   }));
+  studentEls.reportClass?.addEventListener("change", () => {
+    const lessons = studentEls.reportClass.value ? lessonsForClass(studentEls.reportClass.value) : studentState.lessons;
+    fillSelect(studentEls.reportLesson, lessons, "Tüm dersler");
+    renderReports();
+  });
+  studentEls.reportLesson?.addEventListener("change", renderReports);
+  studentEls.reportType?.addEventListener("change", renderReports);
   [studentEls.classList, studentEls.lessonList, studentEls.studentList, studentEls.homeworkList, studentEls.projectList].forEach((list) => list?.addEventListener("click", handleListClick));
-  studentEls.homeworkList?.addEventListener("change", handleTaskStatus);
-  studentEls.projectList?.addEventListener("change", handleTaskStatus);
+  [studentEls.homeworkList, studentEls.projectList].forEach((list) => {
+    list?.addEventListener("input", (event) => handleTaskScore(event));
+    list?.addEventListener("change", (event) => handleTaskScore(event, true));
+  });
 }
 
 bindStudentEvents();

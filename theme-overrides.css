@@ -1991,6 +1991,474 @@ body.student-mode .student-task-students select {
   font-size: 0.72rem !important;
 }
 
+body.student-mode .student-task-student {
+  display: grid !important;
+  grid-template-columns: minmax(130px, 0.8fr) 120px minmax(180px, 1.2fr) !important;
+  gap: 12px !important;
+  align-items: center !important;
+  padding: 10px 12px !important;
+  background: #f6f9f8 !important;
+  border-radius: 10px !important;
+}
+
+body.student-mode .student-task-student-name {
+  color: #294a46;
+  font-size: 0.79rem;
+  font-weight: 800;
+}
+
+body.student-mode .student-task-score-head {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+body.student-mode .student-task-score-head small {
+  color: #70837f;
+  font-size: 0.67rem;
+  font-weight: 750;
+}
+
+body.student-mode .student-task-score-head output {
+  min-width: 38px;
+  padding: 4px 7px;
+  color: #176258;
+  text-align: center;
+  background: #ddf3ee;
+  border: 1px solid #c5e8e0;
+  border-radius: 999px;
+  font-size: 0.73rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+body.student-mode .student-task-student input[type="range"] {
+  width: 100%;
+  height: 30px;
+  min-height: 30px !important;
+  padding: 0 !important;
+  margin: 0;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  touch-action: pan-y;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+body.student-mode .student-task-student input[type="range"]::-webkit-slider-runnable-track {
+  height: 8px;
+  background: linear-gradient(90deg, #18a28f 0 var(--score), #d7e4e1 var(--score) 100%);
+  border-radius: 999px;
+}
+
+body.student-mode .student-task-student input[type="range"]::-webkit-slider-thumb {
+  width: 22px;
+  height: 22px;
+  margin-top: -7px;
+  background: #fff;
+  border: 3px solid #168879;
+  border-radius: 50%;
+  box-shadow: 0 2px 7px rgba(18, 89, 80, 0.24);
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+body.student-mode .student-task-student input[type="range"]::-moz-range-track {
+  height: 8px;
+  background: #d7e4e1;
+  border-radius: 999px;
+}
+
+body.student-mode .student-task-student input[type="range"]::-moz-range-progress {
+  height: 8px;
+  background: #18a28f;
+  border-radius: 999px;
+}
+
+body.student-mode .student-task-student input[type="range"]::-moz-range-thumb {
+  width: 17px;
+  height: 17px;
+  background: #fff;
+  border: 3px solid #168879;
+  border-radius: 50%;
+}
+
+body.student-mode .student-report-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+  background: #fff;
+  border: 1px solid #dce7e4;
+  border-radius: 14px;
+  box-shadow: 0 7px 20px rgba(28, 67, 63, 0.055);
+}
+
+body.student-mode .student-report-content {
+  display: grid;
+  gap: 14px;
+}
+
+body.student-mode .student-report-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+body.student-mode .student-report-kpis article,
+body.student-mode .student-report-card {
+  background: #fff;
+  border: 1px solid #dce7e4;
+  border-radius: 14px;
+  box-shadow: 0 7px 20px rgba(28, 67, 63, 0.055);
+}
+
+body.student-mode .student-report-kpis article {
+  display: grid;
+  gap: 5px;
+  min-height: 104px;
+  padding: 15px;
+}
+
+body.student-mode .student-report-kpis span,
+body.student-mode .student-report-kpis small {
+  color: #6e827e;
+  font-size: 0.72rem;
+  font-weight: 760;
+}
+
+body.student-mode .student-report-kpis strong {
+  color: #173b38;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+body.student-mode .student-report-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+body.student-mode .student-report-card {
+  display: grid;
+  gap: 14px;
+  padding: 17px;
+}
+
+body.student-mode .student-report-card-head {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+body.student-mode .student-report-card-head > div > span {
+  display: block;
+  margin-bottom: 4px;
+  color: #278173;
+  font-size: 0.65rem;
+  font-weight: 950;
+  letter-spacing: 0.09em;
+}
+
+body.student-mode .student-report-card-head h2 {
+  margin: 0;
+  color: #183d39;
+  font-size: 1rem;
+}
+
+body.student-mode .student-report-donut {
+  display: grid;
+  width: 76px;
+  height: 76px;
+  flex: 0 0 auto;
+  place-content: center;
+  text-align: center;
+  background: radial-gradient(circle at center, #fff 57%, transparent 59%), conic-gradient(#18a28f calc(var(--value) * 1%), #dce7e4 0);
+  border-radius: 50%;
+}
+
+body.student-mode .student-report-donut strong {
+  color: #173b38;
+  font-size: 1.18rem;
+  line-height: 1;
+}
+
+body.student-mode .student-report-donut small {
+  margin-top: 2px;
+  color: #778986;
+  font-size: 0.57rem;
+}
+
+body.student-mode .student-report-bars,
+body.student-mode .student-report-overview {
+  align-content: start;
+}
+
+body.student-mode .student-report-bar {
+  display: grid;
+  gap: 6px;
+}
+
+body.student-mode .student-report-bar > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+body.student-mode .student-report-bar > div > span {
+  color: #385b56;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+body.student-mode .student-report-bar > div > small {
+  display: none;
+}
+
+body.student-mode .student-report-bar > div > strong {
+  color: #176258;
+  font-size: 0.75rem;
+}
+
+body.student-mode .student-report-meter {
+  display: block;
+  height: 8px;
+  overflow: hidden;
+  background: #e4ecea;
+  border-radius: 999px;
+}
+
+body.student-mode .student-report-meter i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #1fa18f, #50c5b4);
+  border-radius: inherit;
+}
+
+body.student-mode .student-report-columns {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  height: 190px;
+  padding: 16px 8px 0;
+  border-bottom: 1px solid #dce7e4;
+}
+
+body.student-mode .student-report-columns > div {
+  display: grid;
+  height: 100%;
+  flex: 1;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 7px;
+  align-items: end;
+  text-align: center;
+}
+
+body.student-mode .student-report-columns > div > span {
+  position: relative;
+  display: block;
+  min-height: 5px;
+  background: linear-gradient(180deg, #56caba, #168879);
+  border-radius: 7px 7px 2px 2px;
+}
+
+body.student-mode .student-report-columns i {
+  position: absolute;
+  top: -19px;
+  left: 50%;
+  color: #176258;
+  font-size: 0.63rem;
+  font-style: normal;
+  font-weight: 900;
+  transform: translateX(-50%);
+}
+
+body.student-mode .student-report-columns small {
+  color: #7b8d8a;
+  font-size: 0.62rem;
+}
+
+body.student-mode .student-report-ranking {
+  grid-column: 1 / -1;
+}
+
+body.student-mode .student-report-table {
+  display: grid;
+  overflow: auto;
+  border: 1px solid #e1e9e7;
+  border-radius: 11px;
+}
+
+body.student-mode .student-report-table-head,
+body.student-mode .student-report-table-row {
+  display: grid;
+  grid-template-columns: minmax(210px, 1.5fr) repeat(4, minmax(72px, 0.5fr));
+  gap: 8px;
+  align-items: center;
+  min-width: 600px;
+  padding: 9px 11px;
+}
+
+body.student-mode .student-report-table-head {
+  color: #67807b;
+  background: #f3f7f6;
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+body.student-mode .student-report-table-row + .student-report-table-row {
+  border-top: 1px solid #e7eeec;
+}
+
+body.student-mode .student-report-table-row > span:not(:first-child) {
+  color: #45635f;
+  text-align: center;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+body.student-mode .student-report-table-row > span:first-child {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 1px 8px;
+  align-items: center;
+}
+
+body.student-mode .student-report-table-row i {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  grid-row: 1 / span 2;
+  place-items: center;
+  color: #176258;
+  background: #ddf3ee;
+  border-radius: 7px;
+  font-size: 0.65rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+body.student-mode .student-report-table-row strong,
+body.student-mode .student-report-table-row small {
+  display: block;
+}
+
+body.student-mode .student-report-table-row strong {
+  color: #294a46;
+  font-size: 0.78rem;
+}
+
+body.student-mode .student-report-table-row small {
+  color: #83928f;
+  font-size: 0.64rem;
+}
+
+body.student-mode .student-report-table-row .is-score {
+  color: #176258 !important;
+  font-size: 0.9rem !important;
+}
+
+body.student-mode .student-report-empty {
+  padding: 24px;
+  color: #748784;
+  text-align: center;
+  background: #f6f9f8;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+body.dark-mode.student-mode .student-task-student,
+body.dark-mode.student-mode .student-report-filters,
+body.dark-mode.student-mode .student-report-kpis article,
+body.dark-mode.student-mode .student-report-card {
+  color: #cbd5e1 !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+  border-color: rgba(255, 255, 255, 0.09) !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode.student-mode .student-task-student-name,
+body.dark-mode.student-mode .student-report-card-head h2,
+body.dark-mode.student-mode .student-report-kpis strong,
+body.dark-mode.student-mode .student-report-donut strong,
+body.dark-mode.student-mode .student-report-table-row strong {
+  color: #f8fafc !important;
+}
+
+body.dark-mode.student-mode .student-task-score-head small,
+body.dark-mode.student-mode .student-report-kpis span,
+body.dark-mode.student-mode .student-report-kpis small,
+body.dark-mode.student-mode .student-report-columns small,
+body.dark-mode.student-mode .student-report-table-row small,
+body.dark-mode.student-mode .student-report-empty {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode.student-mode .student-task-score-head output,
+body.dark-mode.student-mode .student-report-table-row i {
+  color: #5eead4 !important;
+  background: rgba(15, 118, 110, 0.22) !important;
+  border-color: rgba(94, 234, 212, 0.2) !important;
+}
+
+body.dark-mode.student-mode .student-task-student input[type="range"]::-webkit-slider-runnable-track {
+  background: linear-gradient(90deg, #2dd4bf 0 var(--score), rgba(255, 255, 255, 0.12) var(--score) 100%) !important;
+}
+
+body.dark-mode.student-mode .student-task-student input[type="range"]::-webkit-slider-thumb {
+  background: #e2e8f0 !important;
+  border-color: #2dd4bf !important;
+}
+
+body.dark-mode.student-mode .student-task-student input[type="range"]::-moz-range-track {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+body.dark-mode.student-mode .student-task-student input[type="range"]::-moz-range-progress {
+  background: #2dd4bf !important;
+}
+
+body.dark-mode.student-mode .student-task-student input[type="range"]::-moz-range-thumb {
+  background: #e2e8f0 !important;
+  border-color: #2dd4bf !important;
+}
+
+body.dark-mode.student-mode .student-report-card-head > div > span,
+body.dark-mode.student-mode .student-report-bar > div > strong,
+body.dark-mode.student-mode .student-report-table-row .is-score,
+body.dark-mode.student-mode .student-report-columns i {
+  color: #5eead4 !important;
+}
+
+body.dark-mode.student-mode .student-report-bar > div > span,
+body.dark-mode.student-mode .student-report-table-row > span:not(:first-child) {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode.student-mode .student-report-meter,
+body.dark-mode.student-mode .student-report-table-head,
+body.dark-mode.student-mode .student-report-empty {
+  background: rgba(255, 255, 255, 0.055) !important;
+}
+
+body.dark-mode.student-mode .student-report-donut {
+  background: radial-gradient(circle at center, #151e2d 57%, transparent 59%), conic-gradient(#2dd4bf calc(var(--value) * 1%), rgba(255, 255, 255, 0.1) 0) !important;
+}
+
+body.dark-mode.student-mode .student-report-columns,
+body.dark-mode.student-mode .student-report-table,
+body.dark-mode.student-mode .student-report-table-row + .student-report-table-row {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
 @media (max-width: 1050px) {
   body.student-mode .student-flow-steps,
   body.student-mode .student-quick-grid {
@@ -2002,6 +2470,10 @@ body.student-mode .student-task-students select {
   }
 
   body.student-mode .student-evaluation-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.student-mode .student-report-kpis {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -2051,7 +2523,9 @@ body.student-mode .student-task-students select {
   body.student-mode .student-quick-grid,
   body.student-mode .student-two-column,
   body.student-mode .student-filter-grid,
-  body.student-mode .student-routine-row {
+  body.student-mode .student-routine-row,
+  body.student-mode .student-report-filters,
+  body.student-mode .student-report-grid {
     grid-template-columns: 1fr !important;
   }
 
@@ -2097,6 +2571,29 @@ body.student-mode .student-task-students select {
 
   body.student-mode .student-task-students label {
     grid-template-columns: 1fr;
+  }
+
+  body.student-mode .student-task-student {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+
+  body.student-mode .student-task-student input[type="range"] {
+    grid-column: 1 / -1;
+    height: 36px;
+    min-height: 36px !important;
+  }
+
+  body.student-mode .student-report-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.student-mode .student-report-kpis article {
+    min-height: 90px;
+    padding: 12px;
+  }
+
+  body.student-mode .student-report-ranking {
+    grid-column: auto;
   }
 
   body.student-mode .student-task-students select {
