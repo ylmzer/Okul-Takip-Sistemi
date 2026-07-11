@@ -14,6 +14,136 @@
   --corp-sidebar-2: #0b1220;
 }
 
+/* Öğrenci takip v2 - koyu tema */
+body.dark-mode.student-mode .student-flow-card {
+  background: linear-gradient(125deg, rgba(15, 118, 110, 0.28), rgba(13, 78, 74, 0.34)) !important;
+  border-color: rgba(94, 234, 212, 0.18) !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode.student-mode .student-flow-head span,
+body.dark-mode.student-mode .student-flow-head small {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode.student-mode .student-flow-head strong,
+body.dark-mode.student-mode .student-flow-steps button strong {
+  color: #f8fafc !important;
+}
+
+body.dark-mode.student-mode .student-flow-steps button {
+  color: #e2e8f0 !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode.student-mode .student-flow-steps button:hover {
+  background: rgba(94, 234, 212, 0.1) !important;
+  border-color: rgba(94, 234, 212, 0.25) !important;
+}
+
+body.dark-mode.student-mode .student-flow-steps button > span {
+  color: #cbd5e1 !important;
+  background: rgba(255, 255, 255, 0.09) !important;
+}
+
+body.dark-mode.student-mode .student-flow-steps button.is-done > span {
+  color: #062e2a !important;
+  background: #5eead4 !important;
+}
+
+body.dark-mode.student-mode .student-quick-grid button,
+body.dark-mode.student-mode .student-class-card,
+body.dark-mode.student-mode .student-task-card {
+  color: #cbd5e1 !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+  border-color: rgba(255, 255, 255, 0.09) !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode.student-mode .student-quick-grid button:hover,
+body.dark-mode.student-mode .student-class-card:hover,
+body.dark-mode.student-mode .student-task-card:hover {
+  background: rgba(255, 255, 255, 0.055) !important;
+  border-color: rgba(94, 234, 212, 0.2) !important;
+}
+
+body.dark-mode.student-mode .student-quick-grid button > span,
+body.dark-mode.student-mode .student-class-card-head > span,
+body.dark-mode.student-mode .student-person > span,
+body.dark-mode.student-mode .student-task-progress {
+  color: #5eead4 !important;
+  background: rgba(15, 118, 110, 0.22) !important;
+}
+
+body.dark-mode.student-mode .student-quick-grid button > strong,
+body.dark-mode.student-mode .student-class-card-head strong,
+body.dark-mode.student-mode .student-class-counts strong,
+body.dark-mode.student-mode .student-task-head strong,
+body.dark-mode.student-mode .student-routine-person strong,
+body.dark-mode.student-mode .student-person strong,
+body.dark-mode.student-mode .student-empty strong {
+  color: #f8fafc !important;
+}
+
+body.dark-mode.student-mode .student-quick-grid button > small,
+body.dark-mode.student-mode .student-class-card-head small,
+body.dark-mode.student-mode .student-task-head small,
+body.dark-mode.student-mode .student-routine-person small,
+body.dark-mode.student-mode .student-empty span,
+body.dark-mode.student-mode .student-evaluation-field > span {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode.student-mode .student-class-counts span,
+body.dark-mode.student-mode .student-task-students label {
+  color: #cbd5e1 !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+}
+
+body.dark-mode.student-mode .student-class-actions button {
+  color: #5eead4 !important;
+  background: rgba(15, 118, 110, 0.14) !important;
+  border-color: rgba(94, 234, 212, 0.18) !important;
+}
+
+body.dark-mode.student-mode .student-class-actions button:hover {
+  color: #ecfeff !important;
+  background: rgba(15, 118, 110, 0.28) !important;
+  border-color: rgba(94, 234, 212, 0.35) !important;
+}
+
+body.dark-mode.student-mode .student-card-actions button {
+  color: #5eead4 !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode.student-mode .student-card-actions button:last-child {
+  color: #fda4af !important;
+  background: rgba(190, 24, 93, 0.1) !important;
+  border-color: rgba(251, 113, 133, 0.2) !important;
+}
+
+body.dark-mode.student-mode .student-filter-grid {
+  background: rgba(15, 23, 42, 0.94) !important;
+  border-color: rgba(255, 255, 255, 0.09) !important;
+}
+
+body.dark-mode.student-mode .student-routine-person {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode.student-mode .student-task-card details {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode.student-mode .student-task-card summary,
+body.dark-mode.student-mode .student-task-kind,
+body.dark-mode.student-mode .student-task-students label > span {
+  color: #5eead4 !important;
+}
+
 body.app-mode .app-shell,
 body.skill-mode .skill-shell,
 body.student-mode .student-shell,
@@ -5711,4 +5841,3 @@ body.dark-mode .cloud-loading-overlay {
   width: 100% !important;
   box-sizing: border-box !important;
 }
-
