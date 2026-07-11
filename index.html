@@ -32,7 +32,7 @@
     <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg" />
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=80" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=86" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=87" />
   </head>
   <body class="auth-mode">
     <script>
@@ -3026,6 +3026,10 @@
               <option value="homework">Ödev değerlendirmesi</option>
               <option value="projects">Proje değerlendirmesi</option>
             </select></label>
+            <label><span>Başlangıç tarihi</span><input id="studentReportStart" type="date" /></label>
+            <label><span>Bitiş tarihi</span><input id="studentReportEnd" type="date" /></label>
+            <label><span>Ödev / proje konusu</span><select id="studentReportTask"></select></label>
+            <button class="primary-action student-report-print" id="studentReportPrintBtn" type="button">Yazdırılabilir rapor oluştur</button>
           </div>
           <div id="studentReportContent" class="student-report-content"></div>
         </section>
@@ -3961,7 +3965,7 @@
     <script src="./scripts/modules/annual-plan/index.js?v=12"></script>
     <script src="./scripts/modules/sorubank/index.js?v=6"></script>
     <script src="./scripts/modules/skill-training/index.js?v=10"></script>
-    <script src="./scripts/modules/student-tracking/index.js?v=9"></script>
+    <script src="./scripts/modules/student-tracking/index.js?v=10"></script>
   </body>
 </html>
 

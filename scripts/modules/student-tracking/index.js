@@ -67,6 +67,10 @@ const studentEls = {
   reportClass: document.querySelector("#studentReportClass"),
   reportLesson: document.querySelector("#studentReportLesson"),
   reportType: document.querySelector("#studentReportType"),
+  reportStart: document.querySelector("#studentReportStart"),
+  reportEnd: document.querySelector("#studentReportEnd"),
+  reportTask: document.querySelector("#studentReportTask"),
+  reportPrint: document.querySelector("#studentReportPrintBtn"),
   reportContent: document.querySelector("#studentReportContent")
 };
 
@@ -155,6 +159,27 @@ function syncLessonSelect(classSelect, lessonSelect, chooseFirst = false) {
   fillSelect(lessonSelect, classId ? lessonsForClass(classId) : [], classId ? "Ders seçiniz" : "Önce sınıf seçiniz", chooseFirst);
 }
 
+function reportTaskItems() {
+  const classId = studentEls.reportClass?.value || "";
+  const lessonId = studentEls.reportLesson?.value || "";
+  const type = studentEls.reportType?.value || "all";
+  const groups = [];
+  if (type === "all" || type === "homework") groups.push(...studentState.homework.map((item) => ({ ...item, kind: "homework" })));
+  if (type === "all" || type === "projects") groups.push(...studentState.projects.map((item) => ({ ...item, kind: "projects" })));
+  return groups
+    .filter((item) => (!classId || item.classId === classId) && (!lessonId || item.lessonId === lessonId))
+    .map((item) => ({ id: `${item.kind}:${item.id}`, name: `${item.kind === "homework" ? "Ödev" : "Proje"} · ${item.title}` }));
+}
+
+function syncReportTaskSelect() {
+  const isDaily = studentEls.reportType?.value === "daily";
+  const usesDaily = !studentEls.reportType?.value || studentEls.reportType.value === "all" || isDaily;
+  fillSelect(studentEls.reportTask, isDaily ? [] : reportTaskItems(), isDaily ? "Günlük raporda kullanılmaz" : "Tüm ödev / proje konuları");
+  if (studentEls.reportTask) studentEls.reportTask.disabled = isDaily;
+  if (studentEls.reportStart) studentEls.reportStart.disabled = !usesDaily;
+  if (studentEls.reportEnd) studentEls.reportEnd.disabled = !usesDaily;
+}
+
 function renderSelects() {
   [studentEls.lessonClass, studentEls.studentClass, studentEls.routineClass, studentEls.homeworkClass, studentEls.projectClass]
     .forEach((select) => fillSelect(select, studentState.classes, "Sınıf seçiniz", select === studentEls.routineClass));
@@ -165,6 +190,7 @@ function renderSelects() {
   fillSelect(studentEls.reportClass, studentState.classes, "Tüm sınıflar");
   const reportLessons = studentEls.reportClass?.value ? lessonsForClass(studentEls.reportClass.value) : studentState.lessons;
   fillSelect(studentEls.reportLesson, reportLessons, "Tüm dersler");
+  syncReportTaskSelect();
 }
 
 function setStudentView(view) {
@@ -374,11 +400,15 @@ function renderReports() {
   const classId = studentEls.reportClass?.value || "";
   const lessonId = studentEls.reportLesson?.value || "";
   const type = studentEls.reportType?.value || "all";
+  const startDate = type === "all" || type === "daily" ? studentEls.reportStart?.value || "" : "";
+  const endDate = type === "all" || type === "daily" ? studentEls.reportEnd?.value || "" : "";
+  const taskKey = studentEls.reportTask?.value || "";
+  const [taskKind, taskId] = taskKey ? taskKey.split(":") : ["", ""];
   const students = studentState.students.filter((student) => !classId || student.classId === classId);
   const studentIds = new Set(students.map((student) => student.id));
-  const routine = studentState.routine.filter((item) => studentIds.has(item.studentId) && (!classId || item.classId === classId) && (!lessonId || item.lessonId === lessonId));
-  const homework = studentState.homework.filter((item) => (!classId || item.classId === classId) && (!lessonId || item.lessonId === lessonId));
-  const projects = studentState.projects.filter((item) => (!classId || item.classId === classId) && (!lessonId || item.lessonId === lessonId));
+  const routine = studentState.routine.filter((item) => studentIds.has(item.studentId) && (!classId || item.classId === classId) && (!lessonId || item.lessonId === lessonId) && (!startDate || item.date >= startDate) && (!endDate || item.date <= endDate));
+  const homework = studentState.homework.filter((item) => (!classId || item.classId === classId) && (!lessonId || item.lessonId === lessonId) && (!taskKey || (taskKind === "homework" && item.id === taskId)));
+  const projects = studentState.projects.filter((item) => (!classId || item.classId === classId) && (!lessonId || item.lessonId === lessonId) && (!taskKey || (taskKind === "projects" && item.id === taskId)));
   const dailyScore = averageOf(routine.map(routineAverage));
   const homeworkScores = homework.flatMap((item) => studentsForClass(item.classId).map((student) => taskScore(item, student.id)));
   const projectScores = projects.flatMap((item) => studentsForClass(item.classId).map((student) => taskScore(item, student.id)));
@@ -452,6 +482,95 @@ function renderReports() {
       ${(type === "all" || type === "daily") ? `<article class="student-report-card student-report-trend"><div class="student-report-card-head"><div><span>ZAMAN EĞİLİMİ</span><h2>Son değerlendirmeler</h2></div></div>${trend.length ? `<div class="student-report-columns">${trend.map(([date, value]) => `<div><span style="height:${Math.max(4, value)}%"><i>${value}</i></span><small>${html(date.slice(5).split("-").reverse().join("."))}</small></div>`).join("")}</div>` : `<div class="student-report-empty">Henüz günlük değerlendirme yok.</div>`}</article>` : ""}
       <article class="student-report-card student-report-ranking"><div class="student-report-card-head"><div><span>ÖĞRENCİ ANALİZİ</span><h2>Başarı sıralaması</h2></div><small>${studentRows.length} öğrenci</small></div>${studentRows.length ? `<div class="student-report-table"><div class="student-report-table-head"><span>Öğrenci</span><span>Günlük</span><span>Ödev</span><span>Proje</span><span>Genel</span></div>${studentRows.map(({ student, score, daily, homework: hw, project: pr }, index) => `<div class="student-report-table-row"><span><i>${index + 1}</i><strong>${html(student.name)}</strong><small>${html(classById(student.classId)?.name || "")}</small></span><span>${daily ?? "—"}</span><span>${hw ?? "—"}</span><span>${pr ?? "—"}</span><span class="is-score">${score ?? "—"}</span></div>`).join("")}</div>` : `<div class="student-report-empty">Seçili kapsamda öğrenci bulunamadı.</div>`}</article>
     </div>`;
+}
+
+function printDate(value) {
+  if (!value) return "—";
+  const [year, month, day] = value.split("-");
+  return `${day}.${month}.${year}`;
+}
+
+function buildPrintableStudentReport() {
+  const classId = studentEls.reportClass?.value || "";
+  const lessonId = studentEls.reportLesson?.value || "";
+  const type = studentEls.reportType?.value || "all";
+  const startDate = type === "all" || type === "daily" ? studentEls.reportStart?.value || "" : "";
+  const endDate = type === "all" || type === "daily" ? studentEls.reportEnd?.value || "" : "";
+  const taskKey = studentEls.reportTask?.value || "";
+  const [taskKind, taskId] = taskKey ? taskKey.split(":") : ["", ""];
+  const students = studentState.students.filter((student) => !classId || student.classId === classId);
+  const studentIds = new Set(students.map((student) => student.id));
+  const routine = studentState.routine.filter((item) => studentIds.has(item.studentId) && (!classId || item.classId === classId) && (!lessonId || item.lessonId === lessonId) && (!startDate || item.date >= startDate) && (!endDate || item.date <= endDate));
+  const homework = studentState.homework.filter((item) => (!classId || item.classId === classId) && (!lessonId || item.lessonId === lessonId) && (!taskKey || (taskKind === "homework" && item.id === taskId)));
+  const projects = studentState.projects.filter((item) => (!classId || item.classId === classId) && (!lessonId || item.lessonId === lessonId) && (!taskKey || (taskKind === "projects" && item.id === taskId)));
+  const typeLabels = { all: "Tüm Değerlendirmeler", daily: "Günlük Değerlendirme", homework: "Ödev Değerlendirmesi", projects: "Proje Değerlendirmesi" };
+  const selectedTask = taskKey ? [...studentState.homework.map((item) => ({ ...item, kind: "homework" })), ...studentState.projects.map((item) => ({ ...item, kind: "projects" }))].find((item) => item.kind === taskKind && item.id === taskId) : null;
+  const reportMeta = [
+    ["Sınıf", classById(classId)?.name || "Tüm sınıflar"],
+    ["Ders", lessonById(lessonId)?.name || "Tüm dersler"],
+    ["Rapor", typeLabels[type]],
+    ["Tarih aralığı", startDate || endDate ? `${printDate(startDate)} – ${printDate(endDate)}` : "Tüm tarihler"],
+    ["Konu", selectedTask?.title || "Tüm ödev / proje konuları"]
+  ];
+
+  const dailyRows = students.map((student) => {
+    const records = routine.filter((item) => item.studentId === student.id);
+    const attendance = averageOf(records.map((item) => evaluationScore(item.attendance)));
+    const prepared = averageOf(records.map((item) => evaluationScore(item.prepared)));
+    const notes = averageOf(records.map((item) => evaluationScore(item.notes)));
+    const dress = averageOf(records.map((item) => evaluationScore(item.dress)));
+    return { student, count: records.length, attendance, prepared, notes, dress, overall: averageOf([attendance, prepared, notes, dress]) };
+  }).filter((row) => row.count > 0);
+  const dailySection = (type === "all" || type === "daily") ? `<section class="report-section"><h2>Günlük Değerlendirme</h2><p class="section-note">${routine.length} kayıt · ${dailyRows.length} öğrenci · Genel ortalama: ${averageOf(routine.map(routineAverage)) ?? "—"}</p><table><thead><tr><th>No</th><th>Öğrenci</th><th>Sınıf</th><th>Kayıt</th><th>Katılım</th><th>Hazırlık</th><th>Not Alma</th><th>Davranış</th><th>Ortalama</th></tr></thead><tbody>${dailyRows.length ? dailyRows.map(({ student, count, attendance, prepared, notes, dress, overall }) => `<tr><td>${html(student.no || "—")}</td><td class="name">${html(student.name)}</td><td>${html(classById(student.classId)?.name || "—")}</td><td>${count}</td><td>${attendance ?? "—"}</td><td>${prepared ?? "—"}</td><td>${notes ?? "—"}</td><td>${dress ?? "—"}</td><td class="score">${overall ?? "—"}</td></tr>`).join("") : `<tr><td colspan="9">Seçili tarih aralığında değerlendirme bulunamadı.</td></tr>`}</tbody></table></section>` : "";
+
+  function taskPrintSection(kind, items, heading) {
+    if (!items.length) return `<section class="report-section"><h2>${heading}</h2><p class="empty-print">Seçili kapsamda kayıt bulunamadı.</p></section>`;
+    return `<section class="report-section"><h2>${heading}</h2>${items.map((item) => {
+      const rows = studentsForClass(item.classId).map((student) => ({ student, score: taskScore(item, student.id) }));
+      const average = averageOf(rows.map((row) => row.score));
+      return `<article class="task-block"><div class="task-heading"><div><strong>${html(item.title)}</strong><small>${html(classById(item.classId)?.name || "—")} · ${html(lessonById(item.lessonId)?.name || "—")} · Teslim: ${printDate(item.due)}</small></div><span>Ortalama ${average ?? "—"}</span></div><table><thead><tr><th>No</th><th>Öğrenci</th><th>Puan</th><th>Yapılma derecesi</th></tr></thead><tbody>${rows.map(({ student, score }) => `<tr><td>${html(student.no || "—")}</td><td class="name">${html(student.name)}</td><td class="score">${score}</td><td>${html(taskScoreLabel(score))}</td></tr>`).join("")}</tbody></table></article>`;
+    }).join("")}</section>`;
+  }
+
+  const homeworkSection = (type === "all" || type === "homework") ? taskPrintSection("homework", homework, "Ödev Değerlendirmesi") : "";
+  const projectSection = (type === "all" || type === "projects") ? taskPrintSection("projects", projects, "Proje Değerlendirmesi") : "";
+  const now = new Date().toLocaleString("tr-TR", { dateStyle: "long", timeStyle: "short" });
+  return `<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>${html(typeLabels[type])} Raporu</title><style>
+    @page { size: A4 landscape; margin: 11mm; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #172b29; background: #eef2f1; font: 11px/1.35 "Segoe UI", Arial, sans-serif; }
+    .toolbar { position: sticky; top: 0; z-index: 5; display: flex; justify-content: flex-end; gap: 8px; padding: 10px 18px; background: #132f2c; }
+    .toolbar button { min-height: 36px; padding: 0 18px; color: #fff; background: #168879; border: 0; border-radius: 8px; font-weight: 800; cursor: pointer; }
+    .toolbar button:last-child { background: rgba(255,255,255,.12); }
+    .sheet { width: 275mm; min-height: 188mm; margin: 10mm auto; padding: 10mm; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.12); }
+    .report-head { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 6mm; border-bottom: 2px solid #183f3a; }
+    h1 { margin: 0 0 4px; font-size: 20px; } .report-head p { margin: 0; color: #61736f; }
+    .date { color: #61736f; text-align: right; }
+    .meta { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 7px; margin: 5mm 0; }
+    .meta div { padding: 8px; background: #f3f7f6; border: 1px solid #dce7e4; border-radius: 6px; }
+    .meta span,.meta strong { display: block; } .meta span { margin-bottom: 3px; color: #687b77; font-size: 9px; } .meta strong { font-size: 10px; }
+    .report-section { margin-top: 6mm; break-inside: auto; } h2 { margin: 0 0 2mm; color: #176258; font-size: 14px; }
+    .section-note { margin: 0 0 3mm; color: #61736f; }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; break-inside: auto; } tr { break-inside: avoid; }
+    th,td { padding: 5px 6px; text-align: center; border: 1px solid #cedbd8; } th { color: #173b38; background: #e7f2ef; font-size: 9px; } td { font-size: 9px; }
+    td.name { text-align: left; font-weight: 700; } td.score { color: #176258; font-weight: 900; }
+    .task-block { margin: 0 0 5mm; break-inside: avoid; } .task-heading { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 7px 9px; background: #f3f7f6; border: 1px solid #dce7e4; border-bottom: 0; }
+    .task-heading strong,.task-heading small { display: block; } .task-heading small { margin-top: 2px; color: #6b7c78; } .task-heading > span { color: #176258; font-weight: 900; }
+    .empty-print { padding: 10px; color: #687b77; background: #f3f7f6; }
+    @media print { body { background: #fff; } .toolbar { display: none; } .sheet { width: auto; min-height: 0; margin: 0; padding: 0; box-shadow: none; } }
+  </style></head><body><div class="toolbar"><button onclick="window.print()">Yazdır / PDF Kaydet</button><button onclick="window.close()">Kapat</button></div><main class="sheet"><header class="report-head"><div><h1>${html(typeLabels[type])} Raporu</h1><p>Öğrenci Takip Modülü</p></div><div class="date">Oluşturulma tarihi<br><strong>${html(now)}</strong></div></header><section class="meta">${reportMeta.map(([label, value]) => `<div><span>${html(label)}</span><strong>${html(value)}</strong></div>`).join("")}</section>${dailySection}${homeworkSection}${projectSection}</main></body></html>`;
+}
+
+function openPrintableStudentReport() {
+  if (studentEls.reportStart?.value && studentEls.reportEnd?.value && studentEls.reportStart.value > studentEls.reportEnd.value) {
+    return toast("Başlangıç tarihi bitiş tarihinden sonra olamaz.", "warning");
+  }
+  const reportWindow = window.open("", "_blank", "width=1280,height=860");
+  if (!reportWindow) return toast("Rapor önizlemesi için açılır pencereye izin verin.", "warning");
+  reportWindow.document.open();
+  reportWindow.document.write(buildPrintableStudentReport());
+  reportWindow.document.close();
+  reportWindow.focus();
 }
 
 function renderStudentModule() {
@@ -718,10 +837,15 @@ function bindStudentEvents() {
   studentEls.reportClass?.addEventListener("change", () => {
     const lessons = studentEls.reportClass.value ? lessonsForClass(studentEls.reportClass.value) : studentState.lessons;
     fillSelect(studentEls.reportLesson, lessons, "Tüm dersler");
+    syncReportTaskSelect();
     renderReports();
   });
-  studentEls.reportLesson?.addEventListener("change", renderReports);
-  studentEls.reportType?.addEventListener("change", renderReports);
+  studentEls.reportLesson?.addEventListener("change", () => { syncReportTaskSelect(); renderReports(); });
+  studentEls.reportType?.addEventListener("change", () => { syncReportTaskSelect(); renderReports(); });
+  studentEls.reportTask?.addEventListener("change", renderReports);
+  studentEls.reportStart?.addEventListener("change", renderReports);
+  studentEls.reportEnd?.addEventListener("change", renderReports);
+  studentEls.reportPrint?.addEventListener("click", openPrintableStudentReport);
   [studentEls.classList, studentEls.lessonList, studentEls.studentList, studentEls.homeworkList, studentEls.projectList].forEach((list) => list?.addEventListener("click", handleListClick));
   [studentEls.homeworkList, studentEls.projectList].forEach((list) => {
     list?.addEventListener("input", (event) => handleTaskScore(event));
