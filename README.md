@@ -49,6 +49,15 @@ Uygulama, öğretmenlerin günlük okul işlerini kolaylaştırmak adına birbir
 * **Otomatik Bulut Senkronizasyonu (Supabase):** Canlı ortama alındığında Supabase Auth ve Database API'leri ile kullanıcı bazlı gerçek zamanlı veri eşitleme.
 * **PWA (Progressive Web App):** Güvenli bağlantılar (HTTPS) üzerinde çalışırken mobil cihazlara veya bilgisayara yerel bir uygulama gibi yüklenebilme, ana ekrana eklenebilme özelliği.
 
+### Modüler Mimari
+
+* `scripts/core/module-registry.js`: Modüllerin kaydedilmesi, bulunması ve ortak uygulama servisleriyle başlatılmasından sorumludur.
+* `scripts/modules/<modül>/index.js`: Her modülün kendi durumu, olayları ve ekran davranışlarını içerir.
+* `scripts/modules/<modül>/styles.css`: Yalnızca ilgili modüle ait görsel kuralları içerir. Yeni modül stilleri merkezî tema dosyalarına eklenmemelidir.
+* `app.js`: Oturum, modül yönlendirme, yedekleme ve bulut eşitleme gibi uygulama genelindeki servisleri yönetir. Modüllere doğrudan global değişkenlerle değil, `AppModules` kayıt sistemi üzerinden erişir.
+
+Yeni bir modül eklenirken modül nesnesi `AppModules.register("modül-adı", modül)` ile kaydedilmeli; başka bir modülün özel durumuna veya DOM alanına doğrudan erişilmemelidir.
+
 ---
 
 ## 🚀 Kurulum ve Çalıştırma

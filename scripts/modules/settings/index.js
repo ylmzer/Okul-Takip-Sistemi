@@ -171,7 +171,7 @@
     callbacks.updateBackupSnapshotStatus?.();
   }
 
-  window.SorubankSettingsModule = {
+  const settingsModule = {
     init,
     render,
     setPanel,
@@ -179,4 +179,5 @@
     backupRestoreMode,
     clearImportInput
   };
+  window.AppModules.register("settings", settingsModule);
 })();

@@ -143,6 +143,7 @@ let courseState = {
   examSummaries: {},   // key: `${studentId}_${moduleId}_${date}`, value: { Y1, Y2, Y3, P1, P2, didNotAttend }
   questions: {}        // key: moduleId, value: [ { id, questionNumber, questionText, optionA-E, correctOption } ]
 };
+let courseCallbacks = {};
 
 function loadCourseState() {
   try {
@@ -2537,7 +2538,7 @@ function initCourseEventBindings() {
     courseEls.courseActiveModuleCard.addEventListener("click", openModuleSelectDialog);
   }
   if (courseEls.courseModuleSwitchBtn) {
-    courseEls.courseModuleSwitchBtn.addEventListener("click", () => window.CourseTrackingModule?.callbacks?.returnToModuleHub?.());
+    courseEls.courseModuleSwitchBtn.addEventListener("click", () => courseCallbacks.returnToModuleHub?.());
   }
   
   if (courseEls.courseDialogModuleList) {
@@ -2792,10 +2793,9 @@ function initCourseEventBindings() {
 initCourseEventBindings();
 
 
-window.CourseTrackingModule = {
-  callbacks: {},
+const courseTrackingModule = {
   init(callbacks = {}) {
-    this.callbacks = { ...this.callbacks, ...callbacks };
+    courseCallbacks = { ...courseCallbacks, ...callbacks };
   },
   loadState() {
     loadCourseState();
@@ -2813,3 +2813,4 @@ window.CourseTrackingModule = {
     return setCourseView(view);
   }
 };
+window.AppModules.register("course-tracking", courseTrackingModule);

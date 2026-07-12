@@ -3,6 +3,11 @@ function applyTheme(theme) {
   document.body.classList.toggle("dark-mode", theme === "dark");
 }
 window.applyTheme = applyTheme;
+
+function getAppModule(name) {
+  return window.AppModules?.get(name) || null;
+}
+
 try {
   const settings = JSON.parse(localStorage.getItem("sorubank:global-settings:v1") || "{}");
   applyTheme(settings.theme || "light");
@@ -1411,20 +1416,25 @@ function renderAccessShell() {
   if (els.loginPanel) els.loginPanel.hidden = hasUser;
   if (els.moduleHub) els.moduleHub.hidden = !showModules;
   if (els.globalSettingsShell) els.globalSettingsShell.hidden = !showGlobalSettings;
-  const sorubankShell = window.SorubankModule?.shell || document.querySelector(".app-shell");
+  const sorubankModule = getAppModule("sorubank");
+  const skillModule = getAppModule("skill-training");
+  const studentModule = getAppModule("student-tracking");
+  const annualModule = getAppModule("annual-plan");
+  const courseModule = getAppModule("course-tracking");
+  const sorubankShell = sorubankModule?.shell || document.querySelector(".app-shell");
   if (sorubankShell) sorubankShell.hidden = !showApp;
-  const skillShell = window.SkillTrainingModule?.shell || els.skillShell;
+  const skillShell = skillModule?.shell || els.skillShell;
   if (skillShell) skillShell.hidden = !showSkill;
-  if (window.StudentTrackingModule?.shell) window.StudentTrackingModule.shell.hidden = !showStudent;
-  if (window.AnnualPlanModule?.shell) window.AnnualPlanModule.shell.hidden = !showAnnualPlan;
-  if (window.CourseTrackingModule?.shell) window.CourseTrackingModule.shell.hidden = !showCourse;
+  if (studentModule?.shell) studentModule.shell.hidden = !showStudent;
+  if (annualModule?.shell) annualModule.shell.hidden = !showAnnualPlan;
+  if (courseModule?.shell) courseModule.shell.hidden = !showCourse;
   if (els.localUserPasswordInput) els.localUserPasswordInput.value = "";
   if (els.registerPasswordInput) els.registerPasswordInput.value = "";
   renderUserCards();
-  if (showSkill) (window.SkillTrainingModule?.render || renderSkillModule)();
-  if (showStudent) window.StudentTrackingModule?.render();
-  if (showAnnualPlan) window.AnnualPlanModule?.render();
-  if (showCourse) window.CourseTrackingModule?.render();
+  if (showSkill) (skillModule?.render || renderSkillModule)();
+  if (showStudent) studentModule?.render();
+  if (showAnnualPlan) annualModule?.render();
+  if (showCourse) courseModule?.render();
   if (showGlobalSettings) renderGlobalSettings();
   updateFloatingModuleSwitcher();
 }
@@ -1438,7 +1448,7 @@ function renderUserCards() {
   [els.moduleUserAvatar, els.profileAvatar].forEach((element) => {
     if (element) element.textContent = initials;
   });
-  (window.SkillTrainingModule?.renderProfileButton || renderSkillProfileButton)();
+  (getAppModule("skill-training")?.renderProfileButton || renderSkillProfileButton)();
 }
 
 function closeFloatingModuleSwitcher() {
@@ -1475,7 +1485,7 @@ function handleFloatingModuleChoice(moduleKey) {
 }
 
 function renderGlobalSettings() {
-  window.SorubankSettingsModule?.render(localSession, {
+  getAppModule("settings")?.render(localSession, {
     renderCloudStatus,
     updateBackupSnapshotStatus
   });
@@ -1677,14 +1687,24 @@ function openModule(moduleKey) {
     activeModule: moduleKey,
     lastModuleAt: new Date().toISOString()
   });
-  if (moduleKey === "sorubank") (window.SorubankModule?.setView || setView)("bank");
+  if (moduleKey === "sorubank") (getAppModule("sorubank")?.setView || setView)("bank");
   if (moduleKey === "skill-training") {
-    const activeView = window.SkillTrainingModule?.state?.activeView || skillState.activeView || "dashboard";
-    (window.SkillTrainingModule?.setView || setSkillView)(activeView);
+    const skillModule = getAppModule("skill-training");
+    const activeView = skillModule?.state?.activeView || skillState.activeView || "dashboard";
+    (skillModule?.setView || setSkillView)(activeView);
   }
-  if (moduleKey === "student-tracking") window.StudentTrackingModule?.setView(window.StudentTrackingModule.state?.activeView || "dashboard");
-  if (moduleKey === "annual-plan") window.AnnualPlanModule?.setView(window.AnnualPlanModule.state?.activeView || "wizard");
-  if (moduleKey === "course-tracking") window.CourseTrackingModule?.setView(window.CourseTrackingModule.state?.activeView || "tracking");
+  if (moduleKey === "student-tracking") {
+    const module = getAppModule("student-tracking");
+    module?.setView(module.state?.activeView || "dashboard");
+  }
+  if (moduleKey === "annual-plan") {
+    const module = getAppModule("annual-plan");
+    module?.setView(module.state?.activeView || "wizard");
+  }
+  if (moduleKey === "course-tracking") {
+    const module = getAppModule("course-tracking");
+    module?.setView(module.state?.activeView || "tracking");
+  }
   if (moduleKey === "settings") renderGlobalSettings();
 }
 
@@ -2272,15 +2292,7 @@ function reloadAppState() {
       state = normalizeState(JSON.parse(raw));
     }
     // Modülleri yeniden başlat ve yeni verileri localStorage'dan oku
-    if (window.CourseTrackingModule?.loadState) {
-      window.CourseTrackingModule.loadState();
-    }
-    if (window.StudentTrackingModule?.loadState) {
-      window.StudentTrackingModule.loadState();
-    }
-    if (window.AnnualPlanModule?.loadState) {
-      window.AnnualPlanModule.loadState();
-    }
+    ["course-tracking", "student-tracking", "annual-plan"].forEach((moduleName) => getAppModule(moduleName)?.loadState?.());
     // Skill modülünü yeniden yükle
     if (typeof loadSkillProfileStore === "function") {
       skillProfileStore = loadSkillProfileStore();
@@ -12452,7 +12464,7 @@ function exportWordDocument(mode) {
 }
 
 function backupSelectedModules() {
-  return window.SorubankSettingsModule?.selectedBackupModules(Object.keys(BACKUP_MODULES)) || Object.keys(BACKUP_MODULES);
+  return getAppModule("settings")?.selectedBackupModules(Object.keys(BACKUP_MODULES)) || Object.keys(BACKUP_MODULES);
 }
 
 function backupKeysForModules(modules = Object.keys(BACKUP_MODULES)) {
@@ -12756,12 +12768,13 @@ function importData(file) {
     try {
       const imported = JSON.parse(reader.result);
       const backup = normalizeBackupPackage(imported);
-      const mode = window.SorubankSettingsModule?.backupRestoreMode("replace") || "replace";
+      const settingsModule = getAppModule("settings");
+      const mode = settingsModule?.backupRestoreMode("replace") || "replace";
       await restoreBackupPackage(backup, mode);
     } catch {
       showToast("Bu dosya geçerli bir yedek dosyası gibi görünmüyor.", "error");
     } finally {
-      window.SorubankSettingsModule?.clearImportInput();
+      settingsModule?.clearImportInput();
     }
   };
   reader.readAsText(file);
@@ -12951,16 +12964,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (themeSelect) themeSelect.value = nextTheme;
     });
   }
-  window.CourseTrackingModule?.init({
-    returnToModuleHub
-  });
-  window.StudentTrackingModule?.init({
-    returnToModuleHub
-  });
-  window.AnnualPlanModule?.init({
-    returnToModuleHub
-  });
-  window.SorubankSettingsModule?.init({
+  window.AppModules.configure({
     returnToModuleHub,
     openProfileDialog,
     exportData,

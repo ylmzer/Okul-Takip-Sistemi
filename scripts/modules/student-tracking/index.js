@@ -875,7 +875,7 @@ function bindStudentEvents() {
 
 bindStudentEvents();
 
-window.StudentTrackingModule = {
+const studentTrackingModule = {
   callbacks: {},
   init(callbacks = {}) { this.callbacks = { ...this.callbacks, ...callbacks }; studentCallbacks = this.callbacks; },
   loadState() { studentState = loadStudentState(); },
@@ -884,3 +884,4 @@ window.StudentTrackingModule = {
   render() { renderStudentModule(); setStudentView(studentState.activeView); },
   setView(view) { setStudentView(view); }
 };
+window.AppModules.register("student-tracking", studentTrackingModule);

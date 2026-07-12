@@ -718,7 +718,7 @@ initTableManipulation();
 initJournalEntryTools();
 
 
-window.SorubankModule = {
+const sorubankModule = {
   get shell() {
     return document.querySelector(".app-shell");
   },
@@ -738,3 +738,4 @@ window.SorubankModule = {
     return closeCoursePicker();
   }
 };
+window.AppModules.register("sorubank", sorubankModule);

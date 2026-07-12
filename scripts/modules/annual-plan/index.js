@@ -3179,7 +3179,7 @@ async function saveCustomTemplate() {
 bindAnnualEvents();
 renderAnnualModule();
 
-window.AnnualPlanModule = {
+const annualPlanModule = {
   callbacks: {},
   init(callbacks = {}) {
     this.callbacks = { ...this.callbacks, ...callbacks };
@@ -3201,3 +3201,4 @@ window.AnnualPlanModule = {
     return setAnnualView(view);
   }
 };
+window.AppModules.register("annual-plan", annualPlanModule);

@@ -2178,7 +2178,7 @@ function initCoordinatorBulkActions() {
   }
 }
 
-window.SkillTrainingModule = {
+const skillTrainingModule = {
   get shell() {
     return els.skillShell;
   },
@@ -2195,3 +2195,4 @@ window.SkillTrainingModule = {
     return renderSkillProfileButton();
   }
 };
+window.AppModules.register("skill-training", skillTrainingModule);
