@@ -2,7 +2,6 @@
    SORUBANK MODÜLÜ - EKRAN BAĞLARI VE EDİTÖR ETKİLEŞİMLERİ
    ========================================================================== */
 
-els.moduleSwitchBtn?.addEventListener("click", returnToModuleHub);
 
 document.querySelectorAll(".tab").forEach((tab) => {
   tab.addEventListener("click", () => setView(tab.dataset.view));

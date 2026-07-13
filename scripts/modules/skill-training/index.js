@@ -7,7 +7,6 @@ let importSchoolType = "existing";
 let importSchoolExistingId = "";
 let importSchoolNewName = "";
 
-els.skillModuleSwitchBtn?.addEventListener("click", returnToModuleHub);
 
 if (els.skillGlobalSearchInput) {
   els.skillGlobalSearchInput.addEventListener("input", renderSkillGlobalSearchResults);

@@ -1873,7 +1873,6 @@ function selectAnnualTemplate(templateId) {
 }
 
 function bindAnnualEvents() {
-  annualEls.moduleSwitch?.addEventListener("click", () => annualCallbacks.returnToModuleHub?.());
   annualEls.navButtons.forEach((button) => button.addEventListener("click", () => {
     if (button.dataset.annualView === "plan-template") {
       resetCustomTemplateForm();

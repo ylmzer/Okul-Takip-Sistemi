@@ -2537,10 +2537,6 @@ function initCourseEventBindings() {
   if (courseEls.courseActiveModuleCard) {
     courseEls.courseActiveModuleCard.addEventListener("click", openModuleSelectDialog);
   }
-  if (courseEls.courseModuleSwitchBtn) {
-    courseEls.courseModuleSwitchBtn.addEventListener("click", () => courseCallbacks.returnToModuleHub?.());
-  }
-  
   if (courseEls.courseDialogModuleList) {
     courseEls.courseDialogModuleList.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-select-module-id]");

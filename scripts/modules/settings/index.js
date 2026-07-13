@@ -96,7 +96,6 @@
   }
 
   function bindEvents() {
-    state.els.backBtn?.addEventListener("click", () => state.callbacks.returnToModuleHub?.());
     state.els.profileBtn?.addEventListener("click", () => state.callbacks.openProfileDialog?.());
     state.els.tabs.forEach((button) => {
       button.addEventListener("click", () => setPanel(button.dataset.globalSettingsTab));

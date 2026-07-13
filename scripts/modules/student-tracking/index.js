@@ -827,7 +827,6 @@ function bindStudentEvents() {
     const button = event.target.closest("[data-student-target]");
     if (button) setStudentView(button.dataset.studentTarget);
   });
-  studentEls.moduleSwitch?.addEventListener("click", () => studentCallbacks.returnToModuleHub?.());
   studentEls.classForm?.addEventListener("submit", saveClass);
   studentEls.lessonForm?.addEventListener("submit", saveLesson);
   studentEls.studentForm?.addEventListener("submit", saveStudent);

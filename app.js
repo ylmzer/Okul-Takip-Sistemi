@@ -696,6 +696,9 @@ const els = {
   moduleFloatPanel: document.querySelector("#moduleFloatPanel"),
   moduleFloatButtons: document.querySelectorAll("[data-floating-module]"),
   mobileModuleHubBtn: document.querySelector("#mobileModuleHubBtn"),
+  moduleSwitcherTriggers: document.querySelectorAll("[data-module-switcher-trigger]"),
+  moduleSwitcherBackdrop: document.querySelector("#moduleSwitcherBackdrop"),
+  moduleSwitcherCurrentLabel: document.querySelector("#moduleSwitcherCurrentLabel"),
   appNavMobileSelect: document.querySelector("#appNavMobileSelect"),
   activeCourseCard: document.querySelector("#activeCourseCard"),
   coursePicker: document.querySelector("#coursePicker"),
@@ -1062,6 +1065,17 @@ const els = {
   skillDeleteAllCoordinatorBtn: document.querySelector("#skillDeleteAllCoordinatorBtn"),
   skillCoordinatorTable: document.querySelector("#skillCoordinatorTable")
 };
+
+const MODULE_SWITCHER_LABELS = {
+  sorubank: "Soru Bankası",
+  "student-tracking": "Ders Takibi",
+  "skill-training": "Beceri Eğitimi",
+  "course-tracking": "Kurs Takibi",
+  "annual-plan": "Yıllık Plan",
+  settings: "Ayarlar"
+};
+
+let lastModuleSwitcherTrigger = null;
 
 function loadState() {
   try {
@@ -1451,24 +1465,43 @@ function renderUserCards() {
   (getAppModule("skill-training")?.renderProfileButton || renderSkillProfileButton)();
 }
 
-function closeFloatingModuleSwitcher() {
-  if (!els.moduleFloatPanel || !els.mobileModuleHubBtn) return;
+function closeFloatingModuleSwitcher({ restoreFocus = false } = {}) {
+  if (!els.moduleFloatPanel) return;
   els.moduleFloatPanel.hidden = true;
-  els.mobileModuleHubBtn.setAttribute("aria-expanded", "false");
+  els.moduleSwitcherBackdrop?.setAttribute("hidden", "");
+  els.moduleSwitcherTriggers?.forEach((trigger) => trigger.setAttribute("aria-expanded", "false"));
+  document.body.classList.remove("module-switcher-open");
+  if (restoreFocus && lastModuleSwitcherTrigger instanceof HTMLElement) {
+    lastModuleSwitcherTrigger.focus();
+  }
 }
 
-function toggleFloatingModuleSwitcher() {
-  if (!els.moduleFloatPanel || !els.mobileModuleHubBtn) return;
+function toggleFloatingModuleSwitcher(trigger = null) {
+  if (!els.moduleFloatPanel) return;
   const willOpen = els.moduleFloatPanel.hidden;
-  els.moduleFloatPanel.hidden = !willOpen;
-  els.mobileModuleHubBtn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+  if (!willOpen) {
+    closeFloatingModuleSwitcher({ restoreFocus: true });
+    return;
+  }
+  lastModuleSwitcherTrigger = trigger instanceof HTMLElement ? trigger : document.activeElement;
+  els.moduleFloatPanel.hidden = false;
+  els.moduleFloatPanel.setAttribute("aria-modal", window.matchMedia("(max-width: 900px)").matches ? "true" : "false");
+  els.moduleSwitcherBackdrop?.removeAttribute("hidden");
+  els.moduleSwitcherTriggers?.forEach((item) => item.setAttribute("aria-expanded", "true"));
+  document.body.classList.add("module-switcher-open");
+  requestAnimationFrame(() => {
+    const activeButton = els.moduleFloatPanel.querySelector("[data-floating-module].is-active");
+    (activeButton || els.moduleFloatPanel.querySelector("[data-floating-module]"))?.focus();
+  });
 }
 
 function updateFloatingModuleSwitcher() {
   const activeModule = localSession?.activeModule || "";
+  const activeLabel = MODULE_SWITCHER_LABELS[activeModule] || "Modül seç";
+  if (els.moduleSwitcherCurrentLabel) els.moduleSwitcherCurrentLabel.textContent = activeLabel;
   els.moduleFloatButtons?.forEach((button) => {
     const key = button.dataset.floatingModule || "";
-    const isActive = key === (activeModule || "hub");
+    const isActive = key === activeModule;
     button.classList.toggle("is-active", isActive);
     button.setAttribute("aria-current", isActive ? "page" : "false");
   });
@@ -1477,10 +1510,6 @@ function updateFloatingModuleSwitcher() {
 
 function handleFloatingModuleChoice(moduleKey) {
   closeFloatingModuleSwitcher();
-  if (moduleKey === "hub") {
-    returnToModuleHub();
-    return;
-  }
   openModule(moduleKey);
 }
 
@@ -12904,16 +12933,26 @@ els.quickStartBtn?.addEventListener("click", () => {
 els.moduleHub.querySelectorAll("[data-module]").forEach((button) => {
   button.addEventListener("click", () => openModule(button.dataset.module));
 });
-els.mobileModuleHubBtn?.addEventListener("click", (event) => {
-  event.stopPropagation();
-  toggleFloatingModuleSwitcher();
+els.moduleSwitcherTriggers?.forEach((trigger) => {
+  trigger.setAttribute("aria-haspopup", "dialog");
+  trigger.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    toggleFloatingModuleSwitcher(trigger);
+  });
 });
 els.moduleFloatButtons?.forEach((button) => {
   button.addEventListener("click", () => handleFloatingModuleChoice(button.dataset.floatingModule));
 });
+els.moduleSwitcherBackdrop?.addEventListener("click", () => closeFloatingModuleSwitcher({ restoreFocus: true }));
+document.querySelector("#mobileModulePanelCloseBtn")?.addEventListener("click", (event) => {
+  event.stopPropagation();
+  closeFloatingModuleSwitcher({ restoreFocus: true });
+});
 document.addEventListener("click", (event) => {
   // Sol modül menüsünü dışarı tıklayınca kapat
-  if (els.moduleFloatSwitcher && !els.moduleFloatSwitcher.contains(event.target)) {
+  const clickedSwitcherTrigger = event.target instanceof Element && event.target.closest("[data-module-switcher-trigger]");
+  if (els.moduleFloatSwitcher && !els.moduleFloatSwitcher.contains(event.target) && !clickedSwitcherTrigger) {
     closeFloatingModuleSwitcher();
   }
   // Sağ gezinme menüsünü dışarı tıklayınca kapat
@@ -12930,8 +12969,20 @@ document.addEventListener("click", (event) => {
   }
 });
 document.addEventListener("keydown", (event) => {
+  if (event.key === "Tab" && els.moduleFloatPanel && !els.moduleFloatPanel.hidden && window.matchMedia("(max-width: 900px)").matches) {
+    const focusableItems = [...els.moduleFloatPanel.querySelectorAll("button:not([disabled])")];
+    const firstItem = focusableItems[0];
+    const lastItem = focusableItems.at(-1);
+    if (event.shiftKey && document.activeElement === firstItem) {
+      event.preventDefault();
+      lastItem?.focus();
+    } else if (!event.shiftKey && document.activeElement === lastItem) {
+      event.preventDefault();
+      firstItem?.focus();
+    }
+  }
   if (event.key === "Escape") {
-    closeFloatingModuleSwitcher();
+    closeFloatingModuleSwitcher({ restoreFocus: true });
     const rightPanel = document.getElementById("mobileNavPanel");
     if (rightPanel) rightPanel.hidden = true;
     const sidebar = document.querySelector("aside.sidebar");
@@ -13114,16 +13165,6 @@ function initMobileNavigation() {
   }
   if (closeBtn) closeBtn.addEventListener("click", (e) => { e.stopPropagation(); if (panel) panel.hidden = true; });
 
-  // 3. Module Float Panel close button handler
-  const moduleCloseBtn = document.getElementById("mobileModulePanelCloseBtn");
-  if (moduleCloseBtn) {
-    moduleCloseBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const mPanel = document.getElementById("moduleFloatPanel");
-      if (mPanel) mPanel.hidden = true;
-    });
-  }
-  
   // Update visibility on resize and module changes
   window.addEventListener("resize", updateFabVisibility);
   
