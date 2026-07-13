@@ -5787,3 +5787,249 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     transition: none !important;
   }
 }
+
+/* Mobil modül çubuğu ve seçici: açık/koyu temada okunaklı, tek satırlı düzen. */
+@media (max-width: 900px) {
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.sidebar,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.skill-sidebar,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.student-sidebar,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.annual-sidebar,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.course-sidebar,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.global-settings-sidebar {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 54px !important;
+    min-height: 54px !important;
+    padding: 0 14px !important;
+    overflow: visible !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .workspace,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .skill-workspace,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .student-workspace,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .annual-workspace,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .course-workspace,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .global-settings-workspace {
+    padding-top: 54px !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 30px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 44px !important;
+    height: 44px !important;
+    gap: 10px !important;
+    align-items: center !important;
+    padding: 0 4px 0 8px !important;
+    margin: 0 !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand > div {
+    display: block !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand strong {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    overflow: hidden !important;
+    color: #0f172a !important;
+    font-size: 0.98rem !important;
+    font-weight: 850 !important;
+    line-height: 1.2 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand strong::before {
+    content: none !important;
+    display: none !important;
+  }
+
+  body.dark-mode:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand strong {
+    color: #f8fafc !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand > .module-switcher-chevron {
+    width: 28px !important;
+    height: 28px !important;
+    justify-self: end !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel {
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: none !important;
+    max-height: min(86dvh, 720px) !important;
+    gap: 8px !important;
+    padding: 14px max(14px, env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)) !important;
+    overflow-y: auto !important;
+    color: #0f172a !important;
+    background: #ffffff !important;
+    border-color: rgba(15, 23, 42, 0.12) !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  body.dark-mode:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel {
+    color: #f8fafc !important;
+    background: #0b1220 !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 38px !important;
+    width: 100% !important;
+    min-height: 54px !important;
+    gap: 12px !important;
+    align-items: center !important;
+    justify-content: stretch !important;
+    padding: 0 2px 12px !important;
+    box-sizing: border-box !important;
+    border-bottom-color: rgba(15, 23, 42, 0.1) !important;
+  }
+
+  body.dark-mode:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header > div {
+    display: grid !important;
+    min-width: 0 !important;
+    gap: 3px !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header small {
+    display: block !important;
+    color: #64748b !important;
+    font-size: 0.68rem !important;
+    line-height: 1.1 !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header strong {
+    display: block !important;
+    overflow: hidden !important;
+    color: #0f172a !important;
+    font-size: 1.08rem !important;
+    font-weight: 850 !important;
+    line-height: 1.2 !important;
+    text-align: left !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  body.dark-mode:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header strong {
+    color: #f8fafc !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header .mobile-nav-panel-close {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    justify-self: end !important;
+    color: #475569 !important;
+  }
+
+  body.dark-mode:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header .mobile-nav-panel-close {
+    color: #cbd5e1 !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-float-panel-links {
+    display: grid !important;
+    gap: 5px !important;
+    min-height: 0 !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] {
+    display: grid !important;
+    grid-template-columns: 42px minmax(0, 1fr) 22px !important;
+    width: 100% !important;
+    min-height: 58px !important;
+    gap: 11px !important;
+    align-items: center !important;
+    padding: 7px 9px !important;
+    color: #0f172a !important;
+    background: transparent !important;
+    border-color: transparent !important;
+    text-align: left !important;
+  }
+
+  body.dark-mode:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] {
+    color: #e2e8f0 !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > span:first-child {
+    display: grid !important;
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 11px !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > .module-switcher-copy {
+    display: grid !important;
+    min-width: 0 !important;
+    gap: 3px !important;
+    justify-items: start !important;
+    text-align: left !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > .module-switcher-copy strong {
+    width: 100% !important;
+    color: inherit !important;
+    font-size: 0.9rem !important;
+    text-align: left !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > .module-switcher-copy .module-desc {
+    width: 100% !important;
+    color: #64748b !important;
+    font-size: 0.72rem !important;
+    text-align: left !important;
+  }
+
+  body.dark-mode:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > .module-switcher-copy .module-desc {
+    color: #94a3b8 !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module]::after {
+    color: #64748b !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module].is-active {
+    color: #ffffff !important;
+    background: var(--accent-strong, #0f766e) !important;
+    border-color: var(--accent-strong, #0f766e) !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module].is-active > .module-switcher-copy strong {
+    color: #ffffff !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module].is-active > .module-switcher-copy .module-desc {
+    color: rgba(255, 255, 255, 0.78) !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module].is-active::after {
+    color: #d1fae5 !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module].module-switcher-home:not(.is-active) {
+    color: #0f172a !important;
+    background: rgba(15, 118, 110, 0.07) !important;
+    border-color: rgba(15, 118, 110, 0.16) !important;
+  }
+
+  body.dark-mode:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module].module-switcher-home:not(.is-active) {
+    color: #e2e8f0 !important;
+    background: rgba(45, 212, 191, 0.08) !important;
+    border-color: rgba(45, 212, 191, 0.16) !important;
+  }
+}
