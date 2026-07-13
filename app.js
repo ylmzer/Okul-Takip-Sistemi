@@ -1501,7 +1501,7 @@ function updateFloatingModuleSwitcher() {
   if (els.moduleSwitcherCurrentLabel) els.moduleSwitcherCurrentLabel.textContent = activeLabel;
   els.moduleFloatButtons?.forEach((button) => {
     const key = button.dataset.floatingModule || "";
-    const isActive = key === activeModule;
+    const isActive = key === (activeModule || "hub");
     button.classList.toggle("is-active", isActive);
     button.setAttribute("aria-current", isActive ? "page" : "false");
   });
@@ -1510,6 +1510,10 @@ function updateFloatingModuleSwitcher() {
 
 function handleFloatingModuleChoice(moduleKey) {
   closeFloatingModuleSwitcher();
+  if (moduleKey === "hub") {
+    returnToModuleHub();
+    return;
+  }
   openModule(moduleKey);
 }
 

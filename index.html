@@ -33,7 +33,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=81" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=91" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=92" />
   </head>
   <body class="auth-mode">
     <script>
@@ -3907,6 +3907,8 @@
           <button class="mobile-nav-panel-close" id="mobileModulePanelCloseBtn" type="button" aria-label="Modül değiştiriciyi kapat">×</button>
         </div>
         <div class="module-float-panel-links">
+          <button class="module-switcher-home" type="button" data-floating-module="hub"><span>AM</span><span class="module-switcher-copy"><strong>Ana Modül Ekranı</strong><small class="module-desc">Tüm modülleri görüntüle</small></span></button>
+          <div class="module-switcher-divider" role="separator" aria-hidden="true"></div>
           <button type="button" data-floating-module="sorubank"><span>SB</span><span class="module-switcher-copy"><strong>Soru Bankası</strong><small class="module-desc">Soru, sınav ve analiz</small></span></button>
           <button type="button" data-floating-module="student-tracking"><span>DT</span><span class="module-switcher-copy"><strong>Ders Takibi</strong><small class="module-desc">Sınıf ve öğrenci izleme</small></span></button>
           <button type="button" data-floating-module="skill-training"><span>BE</span><span class="module-switcher-copy"><strong>Beceri Eğitimi</strong><small class="module-desc">İşletme ve evrak takibi</small></span></button>
@@ -3964,7 +3966,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./scripts/core/module-registry.js?v=1"></script>
-    <script src="./app.js?v=97"></script>
+    <script src="./app.js?v=98"></script>
     <script src="./scripts/modules/settings/index.js?v=7"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=8"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=15"></script>

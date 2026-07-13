@@ -5583,9 +5583,9 @@ body.dark-mode .module-float-panel button[data-floating-module] > .module-switch
 
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header {
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) 34px !important;
+    grid-template-columns: minmax(0, 1fr) 32px !important;
     width: 100% !important;
-    min-height: 42px !important;
+    min-height: 38px !important;
     gap: 8px !important;
     align-items: center !important;
     justify-content: stretch !important;
@@ -5616,9 +5616,9 @@ body.dark-mode .module-float-panel button[data-floating-module] > .module-switch
 
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header .mobile-nav-panel-close {
     position: static !important;
-    width: 34px !important;
-    height: 34px !important;
-    min-width: 34px !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
     margin: 0 !important;
     justify-self: end !important;
     font-size: 1.1rem !important;
@@ -5629,23 +5629,23 @@ body.dark-mode .module-float-panel button[data-floating-module] > .module-switch
   }
 
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] {
-    grid-template-columns: 38px minmax(0, 1fr) 20px !important;
-    min-height: 52px !important;
-    gap: 9px !important;
-    padding: 6px 8px !important;
+    grid-template-columns: 34px minmax(0, 1fr) 18px !important;
+    min-height: 46px !important;
+    gap: 8px !important;
+    padding: 4px 7px !important;
     justify-content: stretch !important;
     text-align: left !important;
   }
 
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > span:first-child {
-    width: 38px !important;
-    height: 38px !important;
-    border-radius: 9px !important;
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 8px !important;
   }
 
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > span:first-child::before {
-    width: 19px !important;
-    height: 19px !important;
+    width: 18px !important;
+    height: 18px !important;
   }
 
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > .module-switcher-copy,
@@ -5655,11 +5655,11 @@ body.dark-mode .module-float-panel button[data-floating-module] > .module-switch
   }
 
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > .module-switcher-copy strong {
-    font-size: 0.84rem !important;
+    font-size: 0.8rem !important;
   }
 
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > .module-switcher-copy .module-desc {
-    font-size: 0.68rem !important;
+    font-size: 0.64rem !important;
   }
 }
 
@@ -5678,4 +5678,22 @@ body.dark-mode .module-float-panel button[data-floating-module] > .module-switch
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel {
     animation: none !important;
   }
+}
+
+.module-float-panel .module-switcher-divider {
+  width: 100% !important;
+  height: 1px !important;
+  margin: 2px 0 4px !important;
+  background: rgba(148, 163, 184, 0.22) !important;
+}
+
+body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module].module-switcher-home {
+  background: rgba(45, 212, 191, 0.08) !important;
+  border-color: rgba(45, 212, 191, 0.16) !important;
+}
+
+body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module].module-switcher-home:hover,
+body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module].module-switcher-home:focus-visible {
+  background: rgba(45, 212, 191, 0.15) !important;
+  border-color: rgba(45, 212, 191, 0.3) !important;
 }
