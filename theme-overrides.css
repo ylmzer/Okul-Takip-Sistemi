@@ -5708,6 +5708,198 @@ body.dark-mode .module-float-panel button[data-floating-module] > .module-switch
   }
 }
 
+/* Masaüstünde modül listesi, mevcut sol menünün içinde yer değiştirerek açılır. */
+@media (min-width: 901px) {
+  body.module-switcher-open:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.sidebar > :not(.module-sidebar-brand),
+  body.module-switcher-open:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.skill-sidebar > :not(.module-sidebar-brand),
+  body.module-switcher-open:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.student-sidebar > :not(.module-sidebar-brand),
+  body.module-switcher-open:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.annual-sidebar > :not(.module-sidebar-brand),
+  body.module-switcher-open:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.course-sidebar > :not(.module-sidebar-brand),
+  body.module-switcher-open:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.global-settings-sidebar > :not(.module-sidebar-brand) {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  body.module-switcher-open .module-switcher-backdrop {
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: var(--corp-sidebar-width) !important;
+    background: rgba(15, 23, 42, 0.08) !important;
+    backdrop-filter: blur(4px) saturate(0.9) !important;
+    -webkit-backdrop-filter: blur(4px) saturate(0.9) !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel {
+    top: 94px !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: 0 !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    width: 100% !important;
+    height: calc(100dvh - 130px) !important;
+    max-height: none !important;
+    gap: 8px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    color: #e2e8f0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 34px !important;
+    min-height: 44px !important;
+    gap: 8px !important;
+    align-items: center !important;
+    padding: 0 2px 10px !important;
+    color: #e2e8f0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header strong {
+    color: #f8fafc !important;
+    font-size: 0.9rem !important;
+    white-space: nowrap !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header .mobile-nav-panel-close {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    color: #94a3b8 !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 9px !important;
+    box-shadow: none !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header .mobile-nav-panel-close:hover,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header .mobile-nav-panel-close:focus-visible {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.18) !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-float-panel-links {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    align-content: start !important;
+    gap: 5px !important;
+    min-height: 0 !important;
+    padding: 0 2px 4px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: rgba(148, 163, 184, 0.35) transparent !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-divider {
+    display: block !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] {
+    display: grid !important;
+    grid-template-columns: 38px minmax(0, 1fr) 20px !important;
+    grid-template-rows: auto !important;
+    grid-template-areas: none !important;
+    width: 100% !important;
+    min-height: 50px !important;
+    gap: 9px !important;
+    align-items: center !important;
+    padding: 6px 8px !important;
+    color: #dbe4ee !important;
+    background: rgba(255, 255, 255, 0.035) !important;
+    border: 1px solid transparent !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+    text-align: left !important;
+    transform: none !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module]:hover,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module]:focus-visible {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    transform: none !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > span:first-child {
+    grid-area: auto !important;
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 10px !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > .module-switcher-copy {
+    grid-area: auto !important;
+    display: grid !important;
+    min-width: 0 !important;
+    gap: 2px !important;
+    justify-items: start !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > .module-switcher-copy strong {
+    overflow: hidden !important;
+    color: inherit !important;
+    font-size: 0.82rem !important;
+    line-height: 1.2 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > .module-switcher-copy .module-desc {
+    overflow: hidden !important;
+    color: #94a3b8 !important;
+    font-size: 0.66rem !important;
+    line-height: 1.25 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module]::after {
+    grid-area: auto !important;
+    align-self: center !important;
+    justify-self: center !important;
+    color: #94a3b8 !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module].is-active {
+    color: #ffffff !important;
+    background: rgba(15, 118, 110, 0.24) !important;
+    border-color: rgba(94, 234, 212, 0.28) !important;
+    box-shadow: inset 3px 0 0 #2dd4bf !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module].is-active > .module-switcher-copy .module-desc {
+    color: #b6d6d1 !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module].is-active::after {
+    color: #5eead4 !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module].module-switcher-home {
+    grid-column: auto !important;
+    grid-template-columns: 38px minmax(0, 1fr) 20px !important;
+    grid-template-areas: none !important;
+    min-height: 50px !important;
+    color: #dbe4ee !important;
+    background: rgba(45, 212, 191, 0.06) !important;
+    border-color: rgba(45, 212, 191, 0.12) !important;
+  }
+}
+
 .module-float-panel .module-switcher-divider {
   width: 100% !important;
   height: 1px !important;
