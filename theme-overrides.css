@@ -351,48 +351,55 @@ body.skill-mode .skill-section-title small {
 }
 
 body.app-mode .module-sidebar-brand[data-module-brand="sorubank"],
-.module-float-panel button[data-floating-module="sorubank"] {
+.module-float-panel button[data-floating-module="sorubank"],
+.desktop-module-dock button[data-dock-module="sorubank"] {
   --module-color: #10b981;
   --module-soft: #d1fae5;
   --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 4h8v3H8zM7 5H5v16h14V5h-2v4H7V5zm2 8h6v2H9v-2zm0 4h4v2H9v-2z'/%3E%3C/svg%3E");
 }
 
 body.student-mode .module-sidebar-brand[data-module-brand="student-tracking"],
-.module-float-panel button[data-floating-module="student-tracking"] {
+.module-float-panel button[data-floating-module="student-tracking"],
+.desktop-module-dock button[data-dock-module="student-tracking"] {
   --module-color: #2563eb;
   --module-soft: #dbeafe;
   --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm8-1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2 21c.7-4.2 3.2-7 7-7s6.3 2.8 7 7H2zm13.7-7.7c3.1.4 5.4 3 6.1 7.7H18c-.3-2.9-1.1-5.3-2.3-7.7z'/%3E%3C/svg%3E");
 }
 
 body.skill-mode .module-sidebar-brand[data-module-brand="skill-training"],
-.module-float-panel button[data-floating-module="skill-training"] {
+.module-float-panel button[data-floating-module="skill-training"],
+.desktop-module-dock button[data-dock-module="skill-training"] {
   --module-color: #f97316;
   --module-soft: #ffedd5;
   --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 4h6l1.5 3H21v13H3V7h4.5L9 4zm1.3 2-1 2h5.4l-1-2h-3.4zM5 10v8h14v-8h-4v2H9v-2H5z'/%3E%3C/svg%3E");
 }
 
 body.course-mode .module-sidebar-brand[data-module-brand="course-tracking"],
-.module-float-panel button[data-floating-module="course-tracking"] {
+.module-float-panel button[data-floating-module="course-tracking"],
+.desktop-module-dock button[data-dock-module="course-tracking"] {
   --module-color: #8b5cf6;
   --module-soft: #ede9fe;
   --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 3h12a3 3 0 0 1 3 3v15H6a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2zm1 3v11.2c.3-.1.6-.2 1-.2h11V6a1 1 0 0 0-1-1H6v1zm3 3h6v2H9V9zm0 4h5v2H9v-2z'/%3E%3C/svg%3E");
 }
 
 body.annual-mode .module-sidebar-brand[data-module-brand="annual-plan"],
-.module-float-panel button[data-floating-module="annual-plan"] {
+.module-float-panel button[data-floating-module="annual-plan"],
+.desktop-module-dock button[data-dock-module="annual-plan"] {
   --module-color: #65a30d;
   --module-soft: #ecfccb;
   --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 2h2v3h6V2h2v3h4v17H3V5h4V2zm12 9H5v9h14v-9zM5 7v2h14V7H5zm3 6h3v3H8v-3zm5 0h3v3h-3v-3z'/%3E%3C/svg%3E");
 }
 
-.module-float-panel button[data-floating-module="settings"] {
+.module-float-panel button[data-floating-module="settings"],
+.desktop-module-dock button[data-dock-module="settings"] {
   --module-color: #0f766e;
   --module-soft: #ccfbf1;
   --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10.7 2h2.6l.7 3c.5.2.9.4 1.3.7l2.9-.9 1.3 2.3-2.2 2c.1.5.2 1 .2 1.5s-.1 1-.2 1.5l2.2 2-1.3 2.3-2.9-.9c-.4.3-.8.5-1.3.7l-.7 3h-2.6l-.7-3c-.5-.2-.9-.4-1.3-.7l-2.9.9-1.3-2.3 2.2-2c-.1-.5-.2-1-.2-1.5s.1-1 .2-1.5l-2.2-2 1.3-2.3 2.9.9c.4-.3.8-.5 1.3-.7l.7-3zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z'/%3E%3C/svg%3E");
 }
 
 .mobile-module-hub-btn,
-.module-float-panel button[data-floating-module="hub"] {
+.module-float-panel button[data-floating-module="hub"],
+.desktop-module-dock button[data-dock-module="hub"] {
   --module-color: #0f766e;
   --module-soft: #ccfbf1;
   --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z'/%3E%3C/svg%3E");
@@ -6517,5 +6524,326 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
 @media (prefers-reduced-motion: reduce) {
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel {
     animation: none !important;
+  }
+}
+
+/* Desktop module rail and collapsible module sidebar. */
+.desktop-module-dock,
+.desktop-sidebar-collapse-btn {
+  display: none;
+}
+
+@media (min-width: 901px) {
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) {
+    --module-dock-width: 66px;
+  }
+
+  body.sidebar-collapsed:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) {
+    --corp-sidebar-width: var(--module-dock-width);
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .app-shell,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .skill-shell,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .student-shell,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .annual-shell,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .course-shell,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .global-settings-shell {
+    transition: grid-template-columns 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.sidebar,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.skill-sidebar,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.student-sidebar,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.annual-sidebar,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.course-sidebar,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.global-settings-sidebar {
+    box-sizing: border-box !important;
+    padding-left: calc(var(--module-dock-width) + 14px) !important;
+    transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.22s cubic-bezier(0.16, 1, 0.3, 1), max-width 0.22s cubic-bezier(0.16, 1, 0.3, 1), padding 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  body.sidebar-collapsed:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.sidebar,
+  body.sidebar-collapsed:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.skill-sidebar,
+  body.sidebar-collapsed:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.student-sidebar,
+  body.sidebar-collapsed:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.annual-sidebar,
+  body.sidebar-collapsed:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.course-sidebar,
+  body.sidebar-collapsed:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.global-settings-sidebar {
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body.sidebar-collapsed:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside > * {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) #moduleFloatSwitcher,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-switcher-backdrop {
+    display: none !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .desktop-module-dock {
+    position: fixed !important;
+    inset: 0 auto 0 0 !important;
+    z-index: 9998 !important;
+    display: flex !important;
+    width: var(--module-dock-width) !important;
+    height: 100dvh !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    color: #dbe4ee !important;
+    background: linear-gradient(180deg, #0b1323 0%, #080f1c 100%) !important;
+    border-right: 1px solid rgba(148, 163, 184, 0.14) !important;
+    box-shadow: 8px 0 24px rgba(2, 6, 23, 0.08) !important;
+    transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .desktop-module-dock:hover,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .desktop-module-dock:focus-within {
+    width: 252px !important;
+    box-shadow: 18px 0 42px rgba(2, 6, 23, 0.34) !important;
+  }
+
+  .desktop-module-dock-mark {
+    display: grid !important;
+    grid-template-columns: 42px minmax(0, 1fr) !important;
+    width: 236px !important;
+    min-height: 70px !important;
+    gap: 10px !important;
+    align-items: center !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12) !important;
+  }
+
+  .desktop-module-dock-mark > span {
+    position: relative !important;
+    display: grid !important;
+    width: 42px !important;
+    height: 42px !important;
+    place-items: center !important;
+    color: #5eead4 !important;
+    background: rgba(45, 212, 191, 0.12) !important;
+    border: 1px solid rgba(94, 234, 212, 0.18) !important;
+    border-radius: 13px !important;
+  }
+
+  .desktop-module-dock-mark > span::before {
+    content: "" !important;
+    width: 7px !important;
+    height: 7px !important;
+    background: currentColor !important;
+    border-radius: 2px !important;
+    box-shadow: 10px 0 currentColor, 0 10px currentColor, 10px 10px currentColor !important;
+    transform: translate(-5px, -5px) !important;
+  }
+
+  .desktop-module-dock-mark strong {
+    overflow: hidden !important;
+    color: #f8fafc !important;
+    font-size: 0.9rem !important;
+    font-weight: 850 !important;
+    letter-spacing: 0.01em !important;
+    opacity: 0 !important;
+    transform: translateX(-5px) !important;
+    transition: opacity 0.14s ease, transform 0.18s ease !important;
+    white-space: nowrap !important;
+  }
+
+  .desktop-module-dock:hover .desktop-module-dock-mark strong,
+  .desktop-module-dock:focus-within .desktop-module-dock-mark strong {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+  }
+
+  .desktop-module-dock-list {
+    display: flex !important;
+    min-height: 0 !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+    padding: 10px 8px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scrollbar-width: none !important;
+  }
+
+  .desktop-module-dock-list::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .desktop-module-dock button[data-dock-module],
+  .desktop-module-dock .desktop-sidebar-collapse-btn {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: 48px minmax(0, 1fr) !important;
+    width: 236px !important;
+    min-height: 54px !important;
+    flex: 0 0 auto !important;
+    gap: 10px !important;
+    align-items: center !important;
+    padding: 4px !important;
+    color: #dbe4ee !important;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    text-align: left !important;
+  }
+
+  .desktop-module-dock button[data-dock-module]:hover,
+  .desktop-module-dock button[data-dock-module]:focus-visible,
+  .desktop-module-dock .desktop-sidebar-collapse-btn:hover,
+  .desktop-module-dock .desktop-sidebar-collapse-btn:focus-visible {
+    color: #ffffff !important;
+    background: rgba(148, 163, 184, 0.1) !important;
+    border-color: rgba(148, 163, 184, 0.14) !important;
+    outline: none !important;
+  }
+
+  .desktop-module-dock button[data-dock-module].is-active {
+    color: #ffffff !important;
+    background: rgba(45, 212, 191, 0.12) !important;
+    border-color: rgba(94, 234, 212, 0.22) !important;
+  }
+
+  .desktop-module-dock button[data-dock-module].is-active::after {
+    content: "" !important;
+    position: absolute !important;
+    top: 12px !important;
+    bottom: 12px !important;
+    left: -5px !important;
+    width: 3px !important;
+    background: #2dd4bf !important;
+    border-radius: 0 999px 999px 0 !important;
+    box-shadow: 0 0 12px rgba(45, 212, 191, 0.55) !important;
+  }
+
+  .desktop-module-dock-icon {
+    position: relative !important;
+    display: grid !important;
+    width: 42px !important;
+    height: 42px !important;
+    place-items: center !important;
+    color: var(--module-color) !important;
+    background: color-mix(in srgb, var(--module-soft) 92%, transparent) !important;
+    border: 1px solid color-mix(in srgb, var(--module-color) 24%, transparent) !important;
+    border-radius: 12px !important;
+  }
+
+  .desktop-module-dock-icon::before {
+    content: "" !important;
+    width: 21px !important;
+    height: 21px !important;
+    background: currentColor !important;
+    -webkit-mask: var(--module-icon-mask) center / contain no-repeat !important;
+    mask: var(--module-icon-mask) center / contain no-repeat !important;
+  }
+
+  .desktop-module-dock-copy {
+    display: grid !important;
+    min-width: 0 !important;
+    gap: 2px !important;
+    opacity: 0 !important;
+    transform: translateX(-5px) !important;
+    transition: opacity 0.14s ease, transform 0.18s ease !important;
+  }
+
+  .desktop-module-dock:hover .desktop-module-dock-copy,
+  .desktop-module-dock:focus-within .desktop-module-dock-copy {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+  }
+
+  .desktop-module-dock-copy strong {
+    overflow: hidden !important;
+    color: inherit !important;
+    font-size: 0.82rem !important;
+    font-weight: 850 !important;
+    line-height: 1.15 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .desktop-module-dock-copy small {
+    overflow: hidden !important;
+    color: #94a3b8 !important;
+    font-size: 0.65rem !important;
+    font-weight: 650 !important;
+    line-height: 1.2 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .desktop-module-dock-divider {
+    width: 42px !important;
+    height: 1px !important;
+    flex: 0 0 1px !important;
+    margin: 2px 4px !important;
+    background: rgba(148, 163, 184, 0.14) !important;
+    transition: width 0.2s ease !important;
+  }
+
+  .desktop-module-dock:hover .desktop-module-dock-divider,
+  .desktop-module-dock:focus-within .desktop-module-dock-divider {
+    width: 220px !important;
+  }
+
+  .desktop-module-dock .desktop-sidebar-collapse-btn {
+    display: grid !important;
+    margin: 8px !important;
+    border-top-color: rgba(148, 163, 184, 0.12) !important;
+  }
+
+  .desktop-sidebar-collapse-icon {
+    position: relative !important;
+    display: grid !important;
+    width: 42px !important;
+    height: 42px !important;
+    place-items: center !important;
+    background: rgba(148, 163, 184, 0.08) !important;
+    border-radius: 12px !important;
+  }
+
+  .desktop-sidebar-collapse-icon::before {
+    content: "" !important;
+    width: 9px !important;
+    height: 9px !important;
+    border-right: 2px solid currentColor !important;
+    border-bottom: 2px solid currentColor !important;
+    transform: rotate(135deg) !important;
+    transition: transform 0.18s ease !important;
+  }
+
+  body.sidebar-collapsed .desktop-sidebar-collapse-icon::before {
+    transform: rotate(-45deg) !important;
+  }
+
+  .desktop-sidebar-collapse-label {
+    overflow: hidden !important;
+    color: #cbd5e1 !important;
+    font-size: 0.76rem !important;
+    font-weight: 800 !important;
+    opacity: 0 !important;
+    transform: translateX(-5px) !important;
+    transition: opacity 0.14s ease, transform 0.18s ease !important;
+    white-space: nowrap !important;
+  }
+
+  .desktop-module-dock:hover .desktop-sidebar-collapse-label,
+  .desktop-module-dock:focus-within .desktop-sidebar-collapse-label {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desktop-module-dock,
+  .desktop-module-dock *,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) > * {
+    transition: none !important;
   }
 }

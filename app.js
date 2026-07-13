@@ -695,6 +695,8 @@ const els = {
   moduleFloatSwitcher: document.querySelector("#moduleFloatSwitcher"),
   moduleFloatPanel: document.querySelector("#moduleFloatPanel"),
   moduleFloatButtons: document.querySelectorAll("[data-floating-module]"),
+  desktopModuleDockButtons: document.querySelectorAll("[data-dock-module]"),
+  desktopSidebarCollapseBtn: document.querySelector("#desktopSidebarCollapseBtn"),
   mobileModuleHubBtn: document.querySelector("#mobileModuleHubBtn"),
   moduleSwitcherTriggers: document.querySelectorAll("[data-module-switcher-trigger]"),
   moduleSwitcherBackdrop: document.querySelector("#moduleSwitcherBackdrop"),
@@ -1074,6 +1076,7 @@ const MODULE_SWITCHER_LABELS = {
   "annual-plan": "Yıllık Plan",
   settings: "Ayarlar"
 };
+const DESKTOP_SIDEBAR_COLLAPSED_KEY = "sorubank:desktop-sidebar-collapsed";
 
 let lastModuleSwitcherTrigger = null;
 
@@ -1465,6 +1468,39 @@ function renderUserCards() {
   (getAppModule("skill-training")?.renderProfileButton || renderSkillProfileButton)();
 }
 
+function setDesktopSidebarCollapsed(collapsed, { persist = true } = {}) {
+  const isCollapsed = Boolean(collapsed);
+  document.body.classList.toggle("sidebar-collapsed", isCollapsed);
+  if (els.desktopSidebarCollapseBtn) {
+    els.desktopSidebarCollapseBtn.setAttribute("aria-expanded", String(!isCollapsed));
+    els.desktopSidebarCollapseBtn.setAttribute("aria-label", isCollapsed ? "Sol paneli aç" : "Sol paneli daralt");
+    els.desktopSidebarCollapseBtn.title = isCollapsed ? "Sol paneli aç" : "Sol paneli daralt";
+    const label = els.desktopSidebarCollapseBtn.querySelector(".desktop-sidebar-collapse-label");
+    if (label) label.textContent = isCollapsed ? "Sol paneli aç" : "Sol paneli daralt";
+  }
+  if (persist) {
+    try {
+      localStorage.setItem(DESKTOP_SIDEBAR_COLLAPSED_KEY, isCollapsed ? "1" : "0");
+    } catch (error) {
+      console.warn("Sol panel tercihi kaydedilemedi:", error);
+    }
+  }
+}
+
+function toggleDesktopSidebar() {
+  setDesktopSidebarCollapsed(!document.body.classList.contains("sidebar-collapsed"));
+}
+
+function initializeDesktopSidebar() {
+  let isCollapsed = false;
+  try {
+    isCollapsed = localStorage.getItem(DESKTOP_SIDEBAR_COLLAPSED_KEY) === "1";
+  } catch (error) {
+    console.warn("Sol panel tercihi okunamadı:", error);
+  }
+  setDesktopSidebarCollapsed(isCollapsed, { persist: false });
+}
+
 function closeFloatingModuleSwitcher({ restoreFocus = false } = {}) {
   if (!els.moduleFloatPanel) return;
   els.moduleFloatPanel.hidden = true;
@@ -1501,6 +1537,12 @@ function updateFloatingModuleSwitcher() {
   if (els.moduleSwitcherCurrentLabel) els.moduleSwitcherCurrentLabel.textContent = activeLabel;
   els.moduleFloatButtons?.forEach((button) => {
     const key = button.dataset.floatingModule || "";
+    const isActive = key === (activeModule || "hub");
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute("aria-current", isActive ? "page" : "false");
+  });
+  els.desktopModuleDockButtons?.forEach((button) => {
+    const key = button.dataset.dockModule || "";
     const isActive = key === (activeModule || "hub");
     button.classList.toggle("is-active", isActive);
     button.setAttribute("aria-current", isActive ? "page" : "false");
@@ -12937,11 +12979,19 @@ els.quickStartBtn?.addEventListener("click", () => {
 els.moduleHub.querySelectorAll("[data-module]").forEach((button) => {
   button.addEventListener("click", () => openModule(button.dataset.module));
 });
+els.desktopSidebarCollapseBtn?.addEventListener("click", toggleDesktopSidebar);
+els.desktopModuleDockButtons?.forEach((button) => {
+  button.addEventListener("click", () => handleFloatingModuleChoice(button.dataset.dockModule));
+});
 els.moduleSwitcherTriggers?.forEach((trigger) => {
   trigger.setAttribute("aria-haspopup", "dialog");
   trigger.addEventListener("click", (event) => {
     event.preventDefault();
     event.stopPropagation();
+    if (trigger.classList.contains("module-sidebar-brand") && window.matchMedia("(min-width: 901px)").matches) {
+      toggleDesktopSidebar();
+      return;
+    }
     toggleFloatingModuleSwitcher(trigger);
   });
 });
@@ -13045,6 +13095,7 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  initializeDesktopSidebar();
   setView(state.currentView || "bank");
   setAuthMode("register");
   renderAccessShell();

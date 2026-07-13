@@ -33,7 +33,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=81" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=96" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=97" />
   </head>
   <body class="auth-mode">
     <script>
@@ -3898,6 +3898,21 @@
       <div class="mobile-nav-panel-links" id="mobileNavPanelLinks"></div>
     </div>
 
+    <nav class="desktop-module-dock" id="desktopModuleDock" aria-label="Modüller">
+      <div class="desktop-module-dock-mark" aria-hidden="true"><span></span><strong>Modüller</strong></div>
+      <div class="desktop-module-dock-list">
+        <button type="button" data-dock-module="hub" title="Ana Modül Ekranı"><span class="desktop-module-dock-icon" aria-hidden="true"></span><span class="desktop-module-dock-copy"><strong>Ana Modül Ekranı</strong><small>Tüm modülleri görüntüle</small></span></button>
+        <span class="desktop-module-dock-divider" aria-hidden="true"></span>
+        <button type="button" data-dock-module="sorubank" title="Soru Bankası"><span class="desktop-module-dock-icon" aria-hidden="true"></span><span class="desktop-module-dock-copy"><strong>Soru Bankası</strong><small>Soru, sınav ve analiz</small></span></button>
+        <button type="button" data-dock-module="student-tracking" title="Ders Takibi"><span class="desktop-module-dock-icon" aria-hidden="true"></span><span class="desktop-module-dock-copy"><strong>Ders Takibi</strong><small>Sınıf ve öğrenci izleme</small></span></button>
+        <button type="button" data-dock-module="skill-training" title="Beceri Eğitimi"><span class="desktop-module-dock-icon" aria-hidden="true"></span><span class="desktop-module-dock-copy"><strong>Beceri Eğitimi</strong><small>İşletme ve evrak takibi</small></span></button>
+        <button type="button" data-dock-module="course-tracking" title="Kurs Takibi"><span class="desktop-module-dock-icon" aria-hidden="true"></span><span class="desktop-module-dock-copy"><strong>Kurs Takibi</strong><small>Devam ve not yönetimi</small></span></button>
+        <button type="button" data-dock-module="annual-plan" title="Yıllık Plan"><span class="desktop-module-dock-icon" aria-hidden="true"></span><span class="desktop-module-dock-copy"><strong>Yıllık Plan</strong><small>Alan, ders ve plan üretimi</small></span></button>
+        <button type="button" data-dock-module="settings" title="Ayarlar"><span class="desktop-module-dock-icon" aria-hidden="true"></span><span class="desktop-module-dock-copy"><strong>Ayarlar</strong><small>Profil, yedek ve görünüm</small></span></button>
+      </div>
+      <button class="desktop-sidebar-collapse-btn" id="desktopSidebarCollapseBtn" type="button" aria-label="Sol paneli daralt" aria-expanded="true"><span class="desktop-sidebar-collapse-icon" aria-hidden="true"></span><span class="desktop-sidebar-collapse-label">Sol paneli daralt</span></button>
+    </nav>
+
     <div class="module-switcher-backdrop" id="moduleSwitcherBackdrop" hidden></div>
     <div class="module-float-switcher" id="moduleFloatSwitcher">
       <button class="mobile-module-hub-btn" id="mobileModuleHubBtn" data-module-switcher-trigger type="button" aria-label="Modül değiştiriciyi aç" aria-expanded="false" aria-controls="moduleFloatPanel">
@@ -3972,7 +3987,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./scripts/core/module-registry.js?v=1"></script>
-    <script src="./app.js?v=98"></script>
+    <script src="./app.js?v=99"></script>
     <script src="./scripts/modules/settings/index.js?v=7"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=8"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=15"></script>
