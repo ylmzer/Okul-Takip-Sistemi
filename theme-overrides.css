@@ -6910,3 +6910,314 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     transition: none !important;
   }
 }
+
+/* Mobile module center: compact, touch-friendly bottom sheet. */
+@media (max-width: 900px) {
+  body.module-switcher-open {
+    overflow: hidden !important;
+  }
+
+  #moduleSwitcherBackdrop[hidden],
+  #moduleFloatPanel[hidden] {
+    display: none !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) #moduleFloatSwitcher {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 10020 !important;
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    pointer-events: none !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) #mobileModuleHubBtn {
+    position: fixed !important;
+    right: auto !important;
+    bottom: max(16px, env(safe-area-inset-bottom)) !important;
+    left: 16px !important;
+    z-index: 10021 !important;
+    display: grid !important;
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    min-height: 52px !important;
+    place-items: center !important;
+    padding: 0 !important;
+    color: #ffffff !important;
+    background: #0f766e !important;
+    border: 1px solid rgba(255, 255, 255, 0.24) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.3) !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: opacity 0.16s ease, transform 0.16s ease !important;
+  }
+
+  body.module-switcher-open:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) #mobileModuleHubBtn {
+    pointer-events: none !important;
+    opacity: 0 !important;
+    transform: translateY(10px) scale(0.94) !important;
+  }
+
+  #mobileModuleHubBtn > span {
+    position: relative !important;
+    display: grid !important;
+    width: 24px !important;
+    height: 24px !important;
+    place-items: center !important;
+    color: transparent !important;
+    background: transparent !important;
+    font-size: 0 !important;
+  }
+
+  #mobileModuleHubBtn > span::before {
+    content: "" !important;
+    width: 22px !important;
+    height: 22px !important;
+    background: #ffffff !important;
+    -webkit-mask: var(--module-icon-mask) center / contain no-repeat !important;
+    mask: var(--module-icon-mask) center / contain no-repeat !important;
+  }
+
+  #mobileModuleHubBtn > strong {
+    display: none !important;
+  }
+
+  body.module-switcher-open #moduleSwitcherBackdrop:not([hidden]) {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 10018 !important;
+    display: block !important;
+    background: rgba(2, 6, 23, 0.54) !important;
+    backdrop-filter: blur(4px) saturate(0.86) !important;
+    -webkit-backdrop-filter: blur(4px) saturate(0.86) !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) #moduleFloatPanel:not([hidden]) {
+    position: fixed !important;
+    inset: auto 0 0 !important;
+    z-index: 10022 !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    width: 100% !important;
+    height: auto !important;
+    max-width: none !important;
+    max-height: min(78dvh, 620px) !important;
+    gap: 0 !important;
+    padding: 14px max(14px, env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)) !important;
+    overflow: hidden !important;
+    color: #0f172a !important;
+    background: #f8fafc !important;
+    border: 1px solid rgba(15, 23, 42, 0.12) !important;
+    border-width: 1px 0 0 !important;
+    border-radius: 24px 24px 0 0 !important;
+    box-shadow: 0 -22px 54px rgba(2, 6, 23, 0.28) !important;
+    pointer-events: auto !important;
+    animation: mobileModuleSheetIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  }
+
+  body.dark-mode:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) #moduleFloatPanel:not([hidden]) {
+    color: #f8fafc !important;
+    background: #0b1220 !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+  }
+
+  #moduleFloatPanel .module-switcher-header {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 40px !important;
+    min-height: 58px !important;
+    gap: 12px !important;
+    align-items: center !important;
+    padding: 0 2px 12px !important;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.1) !important;
+  }
+
+  body.dark-mode #moduleFloatPanel .module-switcher-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  #moduleFloatPanel .module-switcher-header small {
+    display: block !important;
+    color: #64748b !important;
+    font-size: 0.66rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+  }
+
+  #moduleFloatPanel .module-switcher-header strong {
+    color: inherit !important;
+    font-size: 1.16rem !important;
+    font-weight: 900 !important;
+  }
+
+  #moduleFloatPanel .module-switcher-header .mobile-nav-panel-close {
+    display: grid !important;
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    place-items: center !important;
+    padding: 0 !important;
+    color: #64748b !important;
+    background: rgba(148, 163, 184, 0.1) !important;
+    border: 1px solid rgba(148, 163, 184, 0.18) !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+  }
+
+  #moduleFloatPanel .module-float-panel-links {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-auto-rows: auto !important;
+    align-content: start !important;
+    gap: 7px !important;
+    min-height: 0 !important;
+    padding: 12px 0 2px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  #moduleFloatPanel .module-switcher-divider {
+    display: block !important;
+    width: 100% !important;
+    height: 1px !important;
+    margin: 1px 0 !important;
+    background: rgba(148, 163, 184, 0.18) !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module] {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: 44px minmax(0, 1fr) 22px !important;
+    grid-template-rows: auto !important;
+    grid-template-areas: none !important;
+    width: 100% !important;
+    min-height: 58px !important;
+    gap: 11px !important;
+    align-items: center !important;
+    padding: 6px 9px !important;
+    color: #1e293b !important;
+    background: #ffffff !important;
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.04) !important;
+    text-align: left !important;
+    transform: none !important;
+  }
+
+  body.dark-mode #moduleFloatPanel button[data-floating-module] {
+    color: #e2e8f0 !important;
+    background: #172033 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: none !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module].is-active {
+    color: #0f766e !important;
+    background: #ecfdf9 !important;
+    border-color: rgba(15, 118, 110, 0.36) !important;
+  }
+
+  body.dark-mode #moduleFloatPanel button[data-floating-module].is-active {
+    color: #5eead4 !important;
+    background: rgba(15, 118, 110, 0.2) !important;
+    border-color: rgba(94, 234, 212, 0.32) !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module] > span:first-child {
+    display: grid !important;
+    width: 40px !important;
+    height: 40px !important;
+    place-items: center !important;
+    color: #475569 !important;
+    background: rgba(148, 163, 184, 0.12) !important;
+    border: 1px solid rgba(148, 163, 184, 0.18) !important;
+    border-radius: 11px !important;
+  }
+
+  body.dark-mode #moduleFloatPanel button[data-floating-module] > span:first-child {
+    color: #cbd5e1 !important;
+    background: rgba(148, 163, 184, 0.1) !important;
+    border-color: rgba(148, 163, 184, 0.16) !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module] > span:first-child::before {
+    width: 20px !important;
+    height: 20px !important;
+    background: currentColor !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module] > .module-switcher-copy {
+    display: grid !important;
+    min-width: 0 !important;
+    gap: 3px !important;
+    text-align: left !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module] > .module-switcher-copy strong {
+    overflow: hidden !important;
+    color: inherit !important;
+    font-size: 0.86rem !important;
+    font-weight: 850 !important;
+    line-height: 1.18 !important;
+    text-align: left !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module] > .module-switcher-copy .module-desc {
+    overflow: hidden !important;
+    color: #64748b !important;
+    font-size: 0.68rem !important;
+    font-weight: 650 !important;
+    line-height: 1.2 !important;
+    text-align: left !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  body.dark-mode #moduleFloatPanel button[data-floating-module] > .module-switcher-copy .module-desc {
+    color: #94a3b8 !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module]::after {
+    content: "›" !important;
+    position: static !important;
+    justify-self: end !important;
+    color: #94a3b8 !important;
+    font-size: 1.4rem !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module].is-active::after {
+    content: "✓" !important;
+    color: currentColor !important;
+    font-size: 1rem !important;
+    font-weight: 900 !important;
+  }
+}
+
+@keyframes mobileModuleSheetIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #moduleFloatPanel,
+  #mobileModuleHubBtn {
+    animation: none !important;
+    transition: none !important;
+  }
+}
