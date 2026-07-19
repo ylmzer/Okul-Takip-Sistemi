@@ -695,6 +695,7 @@ const els = {
   moduleFloatSwitcher: document.querySelector("#moduleFloatSwitcher"),
   moduleFloatPanel: document.querySelector("#moduleFloatPanel"),
   moduleFloatButtons: document.querySelectorAll("[data-floating-module]"),
+  desktopModuleDock: document.querySelector("#desktopModuleDock"),
   desktopModuleDockButtons: document.querySelectorAll("[data-dock-module]"),
   desktopSidebarCollapseBtn: document.querySelector("#desktopSidebarCollapseBtn"),
   mobileModuleHubBtn: document.querySelector("#mobileModuleHubBtn"),
@@ -1487,6 +1488,12 @@ function setDesktopSidebarCollapsed(collapsed, { persist = true } = {}) {
 
 function toggleDesktopSidebar() {
   setDesktopSidebarCollapsed(!document.body.classList.contains("sidebar-collapsed"));
+}
+
+function closeDesktopModuleDockAfterSelection(button) {
+  if (!els.desktopModuleDock || !window.matchMedia("(min-width: 901px)").matches) return;
+  els.desktopModuleDock.classList.add("is-selection-closing");
+  if (button instanceof HTMLElement) button.blur();
 }
 
 function initializeDesktopSidebar() {
@@ -12979,7 +12986,16 @@ els.moduleHub.querySelectorAll("[data-module]").forEach((button) => {
 });
 els.desktopSidebarCollapseBtn?.addEventListener("click", toggleDesktopSidebar);
 els.desktopModuleDockButtons?.forEach((button) => {
-  button.addEventListener("click", () => handleFloatingModuleChoice(button.dataset.dockModule));
+  button.addEventListener("click", () => {
+    closeDesktopModuleDockAfterSelection(button);
+    handleFloatingModuleChoice(button.dataset.dockModule);
+  });
+});
+els.desktopModuleDock?.addEventListener("pointerleave", () => {
+  els.desktopModuleDock.classList.remove("is-selection-closing");
+});
+els.desktopModuleDock?.addEventListener("focusin", () => {
+  els.desktopModuleDock.classList.remove("is-selection-closing");
 });
 els.moduleSwitcherTriggers?.forEach((trigger) => {
   trigger.setAttribute("aria-haspopup", "dialog");

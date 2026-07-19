@@ -6636,13 +6636,17 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
   }
 
   .desktop-module-dock-mark > span::before {
-    content: "" !important;
-    width: 6px !important;
-    height: 6px !important;
-    background: currentColor !important;
-    border-radius: 2px !important;
-    box-shadow: 9px 0 currentColor, 0 9px currentColor, 9px 9px currentColor !important;
-    transform: translate(-4.5px, -4.5px) !important;
+    content: "OTS" !important;
+    width: auto !important;
+    height: auto !important;
+    color: currentColor !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    font-size: 0.62rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.03em !important;
+    transform: none !important;
   }
 
   .desktop-module-dock-mark strong {
@@ -6797,6 +6801,23 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
   .desktop-module-dock:hover .desktop-module-dock-divider,
   .desktop-module-dock:focus-within .desktop-module-dock-divider {
     width: 204px !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .desktop-module-dock.is-selection-closing,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .desktop-module-dock.is-selection-closing:hover,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .desktop-module-dock.is-selection-closing:focus-within {
+    width: var(--module-dock-width) !important;
+    box-shadow: 8px 0 24px rgba(2, 6, 23, 0.08) !important;
+  }
+
+  .desktop-module-dock.is-selection-closing .desktop-module-dock-mark strong,
+  .desktop-module-dock.is-selection-closing .desktop-module-dock-copy {
+    opacity: 0 !important;
+    transform: translateX(-5px) !important;
+  }
+
+  .desktop-module-dock.is-selection-closing .desktop-module-dock-divider {
+    width: 38px !important;
   }
 
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand {
