@@ -33,7 +33,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=81" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=97" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=98" />
   </head>
   <body class="auth-mode">
     <script>
@@ -194,13 +194,12 @@
 
     <div class="global-settings-shell" id="globalSettingsShell" hidden>
       <aside class="global-settings-sidebar" aria-label="Ayarlar Menüsü">
-        <button class="global-settings-brand module-sidebar-brand" data-module-brand="settings" data-module-switcher-trigger type="button" aria-label="Ayarlar modülünü değiştir" aria-expanded="false" aria-controls="moduleFloatPanel">
+        <div class="global-settings-brand module-sidebar-brand" data-module-brand="settings" data-module-switcher-trigger>
           <span class="module-icon module-icon-settings module-sidebar-icon" aria-hidden="true">AY</span>
           <div>
             <strong>Ayarlar</strong>
           </div>
-          <span class="module-switcher-chevron" aria-hidden="true"></span>
-        </button>
+        </div>
         <p class="global-settings-subtitle">Profil, yedekleme ve genel</p>
         <nav class="global-settings-nav" aria-label="Ayar bölümleri">
           <button class="is-active" type="button" data-global-settings-tab="profile"><span>👤</span> Profil</button>
@@ -395,14 +394,13 @@
 
     <div class="app-shell">
       <aside class="sidebar" aria-label="Dersler">
-        <button class="brand module-sidebar-brand" data-module-brand="sorubank" data-module-switcher-trigger type="button" aria-label="Soru Bankası modülünü değiştir" aria-expanded="false" aria-controls="moduleFloatPanel">
+        <div class="brand module-sidebar-brand" data-module-brand="sorubank" data-module-switcher-trigger>
           <span class="module-icon module-icon-bank module-sidebar-icon" aria-hidden="true">SB</span>
           <div>
             <strong>Soru Bankası</strong>
             <small>Soru, sınav ve analiz</small>
           </div>
-          <span class="module-switcher-chevron" aria-hidden="true"></span>
-        </button>
+        </div>
 
         <div class="app-nav-mobile-select-container">
           <select id="appNavMobileSelect" class="app-nav-mobile-select" aria-label="Gezinme Menüsü">
@@ -1051,15 +1049,14 @@
       </div>
 
       <aside class="skill-sidebar" aria-label="İşletmelerde beceri eğitimi menüsü">
-        <button class="skill-brand module-sidebar-brand" data-module-brand="skill-training" data-module-switcher-trigger type="button" aria-label="Beceri Eğitimi modülünü değiştir" aria-expanded="false" aria-controls="moduleFloatPanel">
+        <div class="skill-brand module-sidebar-brand" data-module-brand="skill-training" data-module-switcher-trigger>
           <span class="ime-logo" aria-hidden="true">
             <i></i><i></i><i></i><i></i>
           </span>
           <div>
             <strong>Beceri Eğitimi</strong>
           </div>
-          <span class="module-switcher-chevron" aria-hidden="true"></span>
-        </button>
+        </div>
         <p class="skill-subtitle">Koordinatörlük ve evrak yönetimi</p>
 
         <nav class="skill-nav" aria-label="İME modülü">
@@ -2412,13 +2409,12 @@
 
     <div class="annual-shell" id="annualPlanShell" hidden>
       <aside class="annual-sidebar" aria-label="Yıllık plan menüsü">
-        <button class="annual-brand module-sidebar-brand" data-module-brand="annual-plan" data-module-switcher-trigger type="button" aria-label="Yıllık Plan modülünü değiştir" aria-expanded="false" aria-controls="moduleFloatPanel">
+        <div class="annual-brand module-sidebar-brand" data-module-brand="annual-plan" data-module-switcher-trigger>
           <span class="module-icon module-icon-plan module-sidebar-icon" aria-hidden="true">YP</span>
           <div>
             <strong>Yıllık Plan</strong>
           </div>
-          <span class="module-switcher-chevron" aria-hidden="true"></span>
-        </button>
+        </div>
         <p class="annual-subtitle">Alan, ders ve plan üretimi</p>
         <nav class="annual-nav" aria-label="Yıllık plan bölümleri">
           <button class="is-active" data-annual-view="download" type="button">Veri İndir</button>
@@ -2834,13 +2830,12 @@
 
     <div class="student-shell" id="studentShell" hidden>
       <aside class="student-sidebar" aria-label="Ders ve öğrenci takibi menüsü">
-        <button class="student-brand module-sidebar-brand" data-module-brand="student-tracking" data-module-switcher-trigger type="button" aria-label="Ders Takibi modülünü değiştir" aria-expanded="false" aria-controls="moduleFloatPanel">
+        <div class="student-brand module-sidebar-brand" data-module-brand="student-tracking" data-module-switcher-trigger>
           <span class="module-icon module-icon-school module-sidebar-icon" aria-hidden="true">DT</span>
           <div>
             <strong>Ders Takibi</strong>
           </div>
-          <span class="module-switcher-chevron" aria-hidden="true"></span>
-        </button>
+        </div>
         <p class="student-subtitle">Sınıftan günlük değerlendirmeye</p>
 
         <nav class="student-nav" aria-label="Ders takibi bölümleri">
@@ -3045,13 +3040,12 @@
     <div class="course-shell" id="courseShell">
 
       <aside class="course-sidebar" aria-label="Kurs Takip Menüsü">
-        <button class="course-brand module-sidebar-brand" data-module-brand="course-tracking" data-module-switcher-trigger type="button" aria-label="Kurs Takibi modülünü değiştir" aria-expanded="false" aria-controls="moduleFloatPanel">
+        <div class="course-brand module-sidebar-brand" data-module-brand="course-tracking" data-module-switcher-trigger>
           <span class="module-icon module-icon-course module-sidebar-icon" aria-hidden="true">KT</span>
           <div>
             <strong>Kurs Takip</strong>
           </div>
-          <span class="module-switcher-chevron" aria-hidden="true"></span>
-        </button>
+        </div>
         <p class="course-subtitle">Öğrenci ve Ders Takibi</p>
 
         <nav class="course-nav" aria-label="Kurs Takip modülü">
@@ -3910,8 +3904,8 @@
         <button type="button" data-dock-module="annual-plan" title="Yıllık Plan"><span class="desktop-module-dock-icon" aria-hidden="true"></span><span class="desktop-module-dock-copy"><strong>Yıllık Plan</strong><small>Alan, ders ve plan üretimi</small></span></button>
         <button type="button" data-dock-module="settings" title="Ayarlar"><span class="desktop-module-dock-icon" aria-hidden="true"></span><span class="desktop-module-dock-copy"><strong>Ayarlar</strong><small>Profil, yedek ve görünüm</small></span></button>
       </div>
-      <button class="desktop-sidebar-collapse-btn" id="desktopSidebarCollapseBtn" type="button" aria-label="Sol paneli daralt" aria-expanded="true"><span class="desktop-sidebar-collapse-icon" aria-hidden="true"></span><span class="desktop-sidebar-collapse-label">Sol paneli daralt</span></button>
     </nav>
+    <button class="desktop-sidebar-collapse-btn" id="desktopSidebarCollapseBtn" type="button" aria-label="Sol paneli daralt" aria-expanded="true"><span class="desktop-sidebar-collapse-icon" aria-hidden="true"></span></button>
 
     <div class="module-switcher-backdrop" id="moduleSwitcherBackdrop" hidden></div>
     <div class="module-float-switcher" id="moduleFloatSwitcher">
@@ -3987,7 +3981,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./scripts/core/module-registry.js?v=1"></script>
-    <script src="./app.js?v=99"></script>
+    <script src="./app.js?v=100"></script>
     <script src="./scripts/modules/settings/index.js?v=7"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=8"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=15"></script>

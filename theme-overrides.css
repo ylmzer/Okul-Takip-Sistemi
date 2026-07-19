@@ -6674,8 +6674,7 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     display: none !important;
   }
 
-  .desktop-module-dock button[data-dock-module],
-  .desktop-module-dock .desktop-sidebar-collapse-btn {
+  .desktop-module-dock button[data-dock-module] {
     position: relative !important;
     display: grid !important;
     grid-template-columns: 48px minmax(0, 1fr) !important;
@@ -6694,9 +6693,7 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
   }
 
   .desktop-module-dock button[data-dock-module]:hover,
-  .desktop-module-dock button[data-dock-module]:focus-visible,
-  .desktop-module-dock .desktop-sidebar-collapse-btn:hover,
-  .desktop-module-dock .desktop-sidebar-collapse-btn:focus-visible {
+  .desktop-module-dock button[data-dock-module]:focus-visible {
     color: #ffffff !important;
     background: rgba(148, 163, 184, 0.1) !important;
     border-color: rgba(148, 163, 184, 0.14) !important;
@@ -6791,24 +6788,48 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     width: 220px !important;
   }
 
-  .desktop-module-dock .desktop-sidebar-collapse-btn {
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand {
+    grid-template-columns: 52px minmax(0, 1fr) !important;
+    cursor: default !important;
+    transition: none !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand:hover {
+    background: rgba(255, 255, 255, 0.055) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    transform: none !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .desktop-sidebar-collapse-btn {
+    position: fixed !important;
+    top: 74px !important;
+    left: calc(var(--corp-sidebar-width) - 15px) !important;
+    z-index: 10002 !important;
     display: grid !important;
-    margin: 8px !important;
-    border-top-color: rgba(148, 163, 184, 0.12) !important;
+    width: 30px !important;
+    height: 44px !important;
+    min-width: 30px !important;
+    min-height: 44px !important;
+    place-items: center !important;
+    padding: 0 !important;
+    color: #cbd5e1 !important;
+    background: #172033 !important;
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 8px 20px rgba(2, 6, 23, 0.24) !important;
+    transition: left 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.16s ease, background 0.16s ease, border-color 0.16s ease !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .desktop-sidebar-collapse-btn:hover,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .desktop-sidebar-collapse-btn:focus-visible {
+    color: #5eead4 !important;
+    background: #1f2a3f !important;
+    border-color: rgba(94, 234, 212, 0.42) !important;
+    outline: none !important;
   }
 
   .desktop-sidebar-collapse-icon {
-    position: relative !important;
-    display: grid !important;
-    width: 42px !important;
-    height: 42px !important;
-    place-items: center !important;
-    background: rgba(148, 163, 184, 0.08) !important;
-    border-radius: 12px !important;
-  }
-
-  .desktop-sidebar-collapse-icon::before {
-    content: "" !important;
+    display: block !important;
     width: 9px !important;
     height: 9px !important;
     border-right: 2px solid currentColor !important;
@@ -6817,25 +6838,20 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     transition: transform 0.18s ease !important;
   }
 
-  body.sidebar-collapsed .desktop-sidebar-collapse-icon::before {
+  body.sidebar-collapsed .desktop-sidebar-collapse-icon {
     transform: rotate(-45deg) !important;
   }
+}
 
-  .desktop-sidebar-collapse-label {
-    overflow: hidden !important;
-    color: #cbd5e1 !important;
-    font-size: 0.76rem !important;
-    font-weight: 800 !important;
-    opacity: 0 !important;
-    transform: translateX(-5px) !important;
-    transition: opacity 0.14s ease, transform 0.18s ease !important;
-    white-space: nowrap !important;
+@media (max-width: 900px) {
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand {
+    grid-template-columns: minmax(0, 1fr) !important;
+    cursor: default !important;
   }
 
-  .desktop-module-dock:hover .desktop-sidebar-collapse-label,
-  .desktop-module-dock:focus-within .desktop-sidebar-collapse-label {
-    opacity: 1 !important;
-    transform: translateX(0) !important;
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand:hover {
+    background: transparent !important;
+    border-color: transparent !important;
   }
 }
 

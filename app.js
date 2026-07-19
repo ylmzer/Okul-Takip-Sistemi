@@ -698,7 +698,7 @@ const els = {
   desktopModuleDockButtons: document.querySelectorAll("[data-dock-module]"),
   desktopSidebarCollapseBtn: document.querySelector("#desktopSidebarCollapseBtn"),
   mobileModuleHubBtn: document.querySelector("#mobileModuleHubBtn"),
-  moduleSwitcherTriggers: document.querySelectorAll("[data-module-switcher-trigger]"),
+  moduleSwitcherTriggers: document.querySelectorAll("button[data-module-switcher-trigger]"),
   moduleSwitcherBackdrop: document.querySelector("#moduleSwitcherBackdrop"),
   moduleSwitcherCurrentLabel: document.querySelector("#moduleSwitcherCurrentLabel"),
   appNavMobileSelect: document.querySelector("#appNavMobileSelect"),
@@ -1475,8 +1475,6 @@ function setDesktopSidebarCollapsed(collapsed, { persist = true } = {}) {
     els.desktopSidebarCollapseBtn.setAttribute("aria-expanded", String(!isCollapsed));
     els.desktopSidebarCollapseBtn.setAttribute("aria-label", isCollapsed ? "Sol paneli aç" : "Sol paneli daralt");
     els.desktopSidebarCollapseBtn.title = isCollapsed ? "Sol paneli aç" : "Sol paneli daralt";
-    const label = els.desktopSidebarCollapseBtn.querySelector(".desktop-sidebar-collapse-label");
-    if (label) label.textContent = isCollapsed ? "Sol paneli aç" : "Sol paneli daralt";
   }
   if (persist) {
     try {
@@ -12988,10 +12986,6 @@ els.moduleSwitcherTriggers?.forEach((trigger) => {
   trigger.addEventListener("click", (event) => {
     event.preventDefault();
     event.stopPropagation();
-    if (trigger.classList.contains("module-sidebar-brand") && window.matchMedia("(min-width: 901px)").matches) {
-      toggleDesktopSidebar();
-      return;
-    }
     toggleFloatingModuleSwitcher(trigger);
   });
 });
