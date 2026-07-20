@@ -7545,3 +7545,171 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     transition: none !important;
   }
 }
+
+/* Mobile icon alignment and Soru Bankası light drawer contrast. */
+@media (max-width: 900px) {
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) #mobileModuleHubBtn > span {
+    position: relative !important;
+    display: block !important;
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) #mobileModuleHubBtn > span::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    display: block !important;
+    width: 18px !important;
+    height: 18px !important;
+    background:
+      linear-gradient(#ffffff 0 0) 0 0 / 7px 7px no-repeat,
+      linear-gradient(#ffffff 0 0) 100% 0 / 7px 7px no-repeat,
+      linear-gradient(#ffffff 0 0) 0 100% / 7px 7px no-repeat,
+      linear-gradient(#ffffff 0 0) 100% 100% / 7px 7px no-repeat !important;
+    box-shadow: none !important;
+    -webkit-mask: none !important;
+    mask: none !important;
+    transform: translate(-50%, -50%) !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module] > span:first-child {
+    position: relative !important;
+    place-items: center !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module] > span:first-child::before {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    display: block !important;
+    margin: 0 !important;
+    transform: translate(-50%, -50%) !important;
+  }
+
+  #moduleFloatPanel .module-switcher-header .mobile-nav-panel-close,
+  #mobileNavPanel .mobile-nav-panel-close {
+    position: relative !important;
+    display: block !important;
+    padding: 0 !important;
+    font-size: 0 !important;
+    line-height: 0 !important;
+  }
+
+  #moduleFloatPanel .module-switcher-header .mobile-nav-panel-close::before,
+  #moduleFloatPanel .module-switcher-header .mobile-nav-panel-close::after,
+  #mobileNavPanel .mobile-nav-panel-close::before,
+  #mobileNavPanel .mobile-nav-panel-close::after {
+    content: "" !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    display: block !important;
+    width: 16px !important;
+    height: 2px !important;
+    margin: 0 !important;
+    background: currentColor !important;
+    border-radius: 999px !important;
+    transform-origin: center !important;
+  }
+
+  #moduleFloatPanel .module-switcher-header .mobile-nav-panel-close::before,
+  #mobileNavPanel .mobile-nav-panel-close::before {
+    transform: translate(-50%, -50%) rotate(45deg) !important;
+  }
+
+  #moduleFloatPanel .module-switcher-header .mobile-nav-panel-close::after,
+  #mobileNavPanel .mobile-nav-panel-close::after {
+    transform: translate(-50%, -50%) rotate(-45deg) !important;
+  }
+
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content {
+    background: #f8fafc !important;
+    border-color: #b8c4d3 !important;
+  }
+
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .mobile-nav-divider {
+    background: #cbd5e1 !important;
+  }
+
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .system-section {
+    background: transparent !important;
+    border-top-color: #cbd5e1 !important;
+  }
+
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .mobile-nav-tab-btn,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content #newQuestionBtn,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .course-picker-button,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .sidebar-nav-action,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .icon-button {
+    border-color: #b8c4d3 !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.09) !important;
+  }
+
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .course-picker-button small,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-stats small,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-meta small,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-types > small {
+    color: #64748b !important;
+  }
+
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .course-picker-button strong,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .course-picker-arrow,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-head strong,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-stats strong,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-meta strong {
+    color: #0f172a !important;
+  }
+
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-summary {
+    color: #1e293b !important;
+    background: #ffffff !important;
+    border: 1px solid #b8c4d3 !important;
+    box-shadow: 0 5px 16px rgba(15, 23, 42, 0.08) !important;
+  }
+
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-head {
+    color: #0f172a !important;
+    background: #f8fafc !important;
+    border: 1px solid #d7e0e8 !important;
+  }
+
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-stats span,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-meta span,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-meta button,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-types span {
+    color: #334155 !important;
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-types em {
+    color: #64748b !important;
+  }
+
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-types span strong {
+    color: #ffffff !important;
+    background: #0f766e !important;
+  }
+
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .course-actions button {
+    color: #334155 !important;
+    background: #ffffff !important;
+    border: 1px solid #b8c4d3 !important;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06) !important;
+  }
+
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-course-summary .course-actions button:last-child {
+    color: #b42318 !important;
+    background: #fff7f7 !important;
+    border-color: #f1b7b3 !important;
+  }
+
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-cart-button.has-items,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-cart-button.has-items strong,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-cart-button.has-items small,
+  body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content .active-cart-button.has-items em {
+    color: #ffffff !important;
+  }
+}
