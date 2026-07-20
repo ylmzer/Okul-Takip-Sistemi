@@ -1506,6 +1506,17 @@ function initializeDesktopSidebar() {
   setDesktopSidebarCollapsed(isCollapsed, { persist: false });
 }
 
+function closeMobileNavigationPanels() {
+  const panel = document.getElementById("mobileNavPanel");
+  const sidebar = document.querySelector("aside.sidebar");
+  const navigationFab = document.getElementById("mobileNavFab");
+  const sidebarToggle = document.getElementById("sidebarToggleBtn");
+  if (panel) panel.hidden = true;
+  sidebar?.classList.remove("is-expanded");
+  navigationFab?.setAttribute("aria-expanded", "false");
+  sidebarToggle?.setAttribute("aria-expanded", "false");
+}
+
 function closeFloatingModuleSwitcher({ restoreFocus = false } = {}) {
   if (!els.moduleFloatPanel) return;
   els.moduleFloatPanel.hidden = true;
@@ -1524,6 +1535,7 @@ function toggleFloatingModuleSwitcher(trigger = null) {
     closeFloatingModuleSwitcher({ restoreFocus: true });
     return;
   }
+  if (window.matchMedia("(max-width: 900px)").matches) closeMobileNavigationPanels();
   lastModuleSwitcherTrigger = trigger instanceof HTMLElement ? trigger : document.activeElement;
   els.moduleFloatPanel.hidden = false;
   els.moduleFloatPanel.setAttribute("aria-modal", window.matchMedia("(max-width: 900px)").matches ? "true" : "false");
@@ -1557,6 +1569,7 @@ function updateFloatingModuleSwitcher() {
 
 function handleFloatingModuleChoice(moduleKey) {
   closeFloatingModuleSwitcher();
+  closeMobileNavigationPanels();
   if (moduleKey === "hub") {
     returnToModuleHub();
     return;
@@ -13024,12 +13037,14 @@ document.addEventListener("click", (event) => {
   const rightPanel = document.getElementById("mobileNavPanel");
   if (rightPanel && !rightPanel.hidden && rightFab && !rightFab.contains(event.target) && !rightPanel.contains(event.target)) {
     rightPanel.hidden = true;
+    rightFab.setAttribute("aria-expanded", "false");
   }
   // Soru Bankası sağ menüsünü dışarı tıklayınca kapat
   const sidebar = document.querySelector("aside.sidebar");
   const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
   if (sidebar && sidebar.classList.contains("is-expanded") && sidebarToggleBtn && !sidebarToggleBtn.contains(event.target) && !sidebar.contains(event.target)) {
     sidebar.classList.remove("is-expanded");
+    sidebarToggleBtn.setAttribute("aria-expanded", "false");
   }
 });
 document.addEventListener("keydown", (event) => {
@@ -13047,10 +13062,7 @@ document.addEventListener("keydown", (event) => {
   }
   if (event.key === "Escape") {
     closeFloatingModuleSwitcher({ restoreFocus: true });
-    const rightPanel = document.getElementById("mobileNavPanel");
-    if (rightPanel) rightPanel.hidden = true;
-    const sidebar = document.querySelector("aside.sidebar");
-    if (sidebar) sidebar.classList.remove("is-expanded");
+    closeMobileNavigationPanels();
   }
 });
 els.moduleProfileBtn?.addEventListener("click", (event) => {
@@ -13101,7 +13113,14 @@ window.addEventListener("DOMContentLoaded", () => {
   const sidebar = document.querySelector("aside.sidebar");
   if (sidebarToggleBtn && sidebar) {
     sidebarToggleBtn.addEventListener("click", () => {
+      const willExpand = !sidebar.classList.contains("is-expanded");
+      if (willExpand) {
+        closeFloatingModuleSwitcher();
+        const panel = document.getElementById("mobileNavPanel");
+        if (panel) panel.hidden = true;
+      }
       sidebar.classList.toggle("is-expanded");
+      sidebarToggleBtn.setAttribute("aria-expanded", String(willExpand));
     });
   }
 
@@ -13139,10 +13158,7 @@ function initMobileNavigation() {
         const view = btn.dataset.navTab;
         sbSelect.value = view;
         sbSelect.dispatchEvent(new Event("change"));
-        
-        // Hide Soru Bankası float panel
-        const sidebar = document.querySelector("aside.sidebar");
-        if (sidebar) sidebar.classList.remove("is-expanded");
+        closeMobileNavigationPanels();
       });
     });
 
@@ -13187,6 +13203,7 @@ function initMobileNavigation() {
     } else {
       if (fab) fab.hidden = true;
       if (panel) panel.hidden = true;
+      fab?.setAttribute("aria-expanded", "false");
     }
   }
 
@@ -13194,6 +13211,8 @@ function initMobileNavigation() {
   function openPanel() {
     const select = getActiveSelect();
     if (!select || !linksContainer) return;
+    closeFloatingModuleSwitcher();
+    document.querySelector("aside.sidebar")?.classList.remove("is-expanded");
     
     linksContainer.innerHTML = "";
     Array.from(select.options).forEach(opt => {
@@ -13209,11 +13228,13 @@ function initMobileNavigation() {
         select.value = opt.value;
         select.dispatchEvent(new Event("change"));
         if (panel) panel.hidden = true;
+        fab?.setAttribute("aria-expanded", "false");
       });
       linksContainer.appendChild(btn);
     });
     
     if (panel) panel.hidden = false;
+    fab?.setAttribute("aria-expanded", "true");
   }
 
   if (fab) {
@@ -13222,13 +13243,18 @@ function initMobileNavigation() {
       if (panel) {
         if (!panel.hidden) {
           panel.hidden = true;
+          fab.setAttribute("aria-expanded", "false");
         } else {
           openPanel();
         }
       }
     });
   }
-  if (closeBtn) closeBtn.addEventListener("click", (e) => { e.stopPropagation(); if (panel) panel.hidden = true; });
+  if (closeBtn) closeBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (panel) panel.hidden = true;
+    fab?.setAttribute("aria-expanded", "false");
+  });
 
   // Update visibility on resize and module changes
   window.addEventListener("resize", updateFabVisibility);

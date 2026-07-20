@@ -33,7 +33,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=81" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=102" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=103" />
   </head>
   <body class="auth-mode">
     <script>
@@ -411,7 +411,7 @@
           </select>
         </div>
 
-        <button id="sidebarToggleBtn" class="sidebar-toggle-btn" type="button" aria-label="Gezinme Menüsü">
+        <button id="sidebarToggleBtn" class="sidebar-toggle-btn" type="button" aria-label="Gezinme Menüsü" aria-expanded="false" aria-controls="sidebarFloatContent">
           <span>☰</span>
         </button>
 
@@ -3881,7 +3881,7 @@
     <section class="print-area" id="printExamArea" aria-hidden="true"></section>
 
     <!-- Diğer modüller için Evrensel Mobil Gezinme FAB ve Paneli -->
-    <button id="mobileNavFab" class="mobile-nav-fab" type="button" aria-label="Gezinme Menüsü" hidden>
+    <button id="mobileNavFab" class="mobile-nav-fab" type="button" aria-label="Gezinme Menüsü" aria-expanded="false" aria-controls="mobileNavPanel" hidden>
       <span>☰</span>
     </button>
     <div id="mobileNavPanel" class="mobile-nav-panel" hidden>
@@ -3981,7 +3981,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./scripts/core/module-registry.js?v=1"></script>
-    <script src="./app.js?v=101"></script>
+    <script src="./app.js?v=102"></script>
     <script src="./scripts/modules/settings/index.js?v=7"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=8"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=15"></script>
