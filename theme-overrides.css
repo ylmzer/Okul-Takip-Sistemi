@@ -7713,3 +7713,46 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     color: #ffffff !important;
   }
 }
+
+/* Mobile module heading stays in document flow instead of covering page titles. */
+@media (max-width: 900px) {
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.sidebar,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.skill-sidebar,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.student-sidebar,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.annual-sidebar,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.course-sidebar,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside.global-settings-sidebar {
+    position: relative !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    grid-row: 1 !important;
+    grid-column: 1 !important;
+    z-index: 20 !important;
+  }
+
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .workspace,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .skill-workspace,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .student-workspace,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .annual-workspace,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .course-workspace,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .global-settings-workspace {
+    grid-row: 2 !important;
+    grid-column: 1 !important;
+    padding-top: 14px !important;
+  }
+
+  body.app-mode .topbar,
+  body.skill-mode .skill-topbar,
+  body.student-mode .student-topbar,
+  body.annual-mode .annual-topbar,
+  body.course-mode .course-topbar,
+  body.global-settings-mode .global-settings-topbar {
+    position: relative !important;
+    top: auto !important;
+    margin-top: 0 !important;
+    overflow: visible !important;
+  }
+}
