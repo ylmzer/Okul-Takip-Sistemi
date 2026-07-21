@@ -18,10 +18,10 @@
         landingModule: "",
         autoBackupEnabled: true,
         autoBackupLimit: 20,
-        theme: "light"
+        theme: "system"
       };
     } catch {
-      return { landingModule: "", autoBackupEnabled: true, autoBackupLimit: 20, theme: "light" };
+      return { landingModule: "", autoBackupEnabled: true, autoBackupLimit: 20, theme: "system" };
     }
   }
 
@@ -164,7 +164,7 @@
     if (state.els.landingModule) state.els.landingModule.value = settings.landingModule || "";
     if (state.els.autoBackupToggle) state.els.autoBackupToggle.checked = settings.autoBackupEnabled !== false;
     if (state.els.autoBackupLimit) state.els.autoBackupLimit.value = settings.autoBackupLimit || "20";
-    if (state.els.appThemeSelect) state.els.appThemeSelect.value = settings.theme || "light";
+    if (state.els.appThemeSelect) state.els.appThemeSelect.value = settings.theme || "system";
 
     callbacks.renderCloudStatus?.();
     callbacks.updateBackupSnapshotStatus?.();

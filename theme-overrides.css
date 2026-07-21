@@ -7050,9 +7050,9 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
   }
 
   body.module-switcher-open:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) #mobileModuleHubBtn {
-    pointer-events: none !important;
-    opacity: 0 !important;
-    transform: translateY(10px) scale(0.94) !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 
   #mobileModuleHubBtn > span {

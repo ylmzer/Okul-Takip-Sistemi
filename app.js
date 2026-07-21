@@ -1,8 +1,34 @@
 // Theme Manager
-function applyTheme(theme) {
-  document.body.classList.toggle("dark-mode", theme === "dark");
+const systemThemeQuery = typeof window.matchMedia === "function"
+  ? window.matchMedia("(prefers-color-scheme: dark)")
+  : null;
+let activeThemePreference = "system";
+
+function normalizeThemePreference(theme) {
+  return theme === "light" || theme === "dark" ? theme : "system";
+}
+
+function applyTheme(theme = "system") {
+  activeThemePreference = normalizeThemePreference(theme);
+  const useDarkTheme = activeThemePreference === "dark"
+    || (activeThemePreference === "system" && Boolean(systemThemeQuery?.matches));
+  document.body.classList.toggle("dark-mode", useDarkTheme);
+  document.documentElement.style.colorScheme = useDarkTheme ? "dark" : "light";
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", useDarkTheme ? "#0b1220" : "#153f46");
 }
 window.applyTheme = applyTheme;
+
+function handleSystemThemeChange() {
+  if (activeThemePreference === "system") applyTheme("system");
+}
+
+if (systemThemeQuery) {
+  if (typeof systemThemeQuery.addEventListener === "function") {
+    systemThemeQuery.addEventListener("change", handleSystemThemeChange);
+  } else if (typeof systemThemeQuery.addListener === "function") {
+    systemThemeQuery.addListener(handleSystemThemeChange);
+  }
+}
 
 function getAppModule(name) {
   return window.AppModules?.get(name) || null;
@@ -10,7 +36,7 @@ function getAppModule(name) {
 
 try {
   const settings = JSON.parse(localStorage.getItem("sorubank:global-settings:v1") || "{}");
-  applyTheme(settings.theme || "light");
+  applyTheme(settings.theme || "system");
 } catch (e) {}
 
 const STORAGE_KEY = "sorubank:v1";
@@ -13083,7 +13109,7 @@ window.addEventListener("DOMContentLoaded", () => {
   if (themeBtn) {
     themeBtn.addEventListener("click", () => {
       const globalSettings = JSON.parse(localStorage.getItem("sorubank:global-settings:v1") || "{}");
-      const nextTheme = globalSettings.theme === "dark" ? "light" : "dark";
+      const nextTheme = document.body.classList.contains("dark-mode") ? "light" : "dark";
       globalSettings.theme = nextTheme;
       localStorage.setItem("sorubank:global-settings:v1", JSON.stringify(globalSettings));
       applyTheme(nextTheme);

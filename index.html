@@ -33,16 +33,21 @@
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=81" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=106" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=107" />
   </head>
   <body class="auth-mode">
     <script>
       (function() {
         try {
           const settings = JSON.parse(localStorage.getItem("sorubank:global-settings:v1") || "{}");
-          if (settings.theme === "dark") {
+          const themePreference = settings.theme || "system";
+          const useDarkTheme = themePreference === "dark"
+            || (themePreference === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+          if (useDarkTheme) {
             document.body.classList.add("dark-mode");
           }
+          document.documentElement.style.colorScheme = useDarkTheme ? "dark" : "light";
+          document.querySelector('meta[name="theme-color"]')?.setAttribute("content", useDarkTheme ? "#0b1220" : "#153f46");
           const session = JSON.parse(localStorage.getItem("sorubank:local-session"));
           if (session && session.name) {
             document.body.classList.remove("auth-mode");
@@ -365,7 +370,8 @@
               <div class="settings-form-field">
                 <label for="appThemeSelect">Arayüz Teması</label>
                 <select id="appThemeSelect">
-                  <option value="light">Açık Tema (Varsayılan)</option>
+                  <option value="system">Otomatik (Sistem / cihaz)</option>
+                  <option value="light">Açık Tema</option>
                   <option value="dark">Koyu Tema</option>
                 </select>
               </div>
@@ -3981,8 +3987,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./scripts/core/module-registry.js?v=1"></script>
-    <script src="./app.js?v=102"></script>
-    <script src="./scripts/modules/settings/index.js?v=7"></script>
+    <script src="./app.js?v=103"></script>
+    <script src="./scripts/modules/settings/index.js?v=8"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=8"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=15"></script>
     <script src="./scripts/modules/sorubank/index.js?v=8"></script>
