@@ -4348,8 +4348,8 @@ function buildMonthlyGuidanceReportHtml() {
             color: #000000 !important;
           }
           .business-address {
-            font-weight: normal !important;
-            color: #333333 !important;
+            font-weight: 700 !important;
+            color: #000000 !important;
           }
           .monthly-people {
             display: grid;
