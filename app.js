@@ -1561,13 +1561,16 @@ function toggleFloatingModuleSwitcher(trigger = null) {
     closeFloatingModuleSwitcher({ restoreFocus: true });
     return;
   }
-  if (window.matchMedia("(max-width: 900px)").matches) closeMobileNavigationPanels();
+  const isMobile = window.matchMedia("(max-width: 900px)").matches;
+  if (isMobile) closeMobileNavigationPanels();
   lastModuleSwitcherTrigger = trigger instanceof HTMLElement ? trigger : document.activeElement;
   els.moduleFloatPanel.hidden = false;
-  els.moduleFloatPanel.setAttribute("aria-modal", window.matchMedia("(max-width: 900px)").matches ? "true" : "false");
-  els.moduleSwitcherBackdrop?.removeAttribute("hidden");
+  els.moduleFloatPanel.setAttribute("aria-modal", isMobile ? "true" : "false");
+  if (isMobile) {
+    els.moduleSwitcherBackdrop?.removeAttribute("hidden");
+    document.body.classList.add("module-switcher-open");
+  }
   els.moduleSwitcherTriggers?.forEach((item) => item.setAttribute("aria-expanded", "true"));
-  document.body.classList.add("module-switcher-open");
   requestAnimationFrame(() => {
     const activeButton = els.moduleFloatPanel.querySelector("[data-floating-module].is-active");
     (activeButton || els.moduleFloatPanel.querySelector("[data-floating-module]"))?.focus();
