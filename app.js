@@ -13036,6 +13036,7 @@ els.desktopModuleDock?.addEventListener("pointerleave", () => {
 els.desktopModuleDock?.addEventListener("focusin", () => {
   els.desktopModuleDock.classList.remove("is-selection-closing");
 });
+let moduleSwitcherHoverTimer = null;
 els.moduleSwitcherTriggers?.forEach((trigger) => {
   trigger.setAttribute("aria-haspopup", "dialog");
   trigger.addEventListener("click", (event) => {
@@ -13043,6 +13044,35 @@ els.moduleSwitcherTriggers?.forEach((trigger) => {
     event.stopPropagation();
     toggleFloatingModuleSwitcher(trigger);
   });
+  trigger.addEventListener("mouseenter", () => {
+    if (window.matchMedia("(min-width: 901px)").matches) {
+      clearTimeout(moduleSwitcherHoverTimer);
+      if (els.moduleFloatPanel?.hidden) {
+        toggleFloatingModuleSwitcher(trigger);
+      }
+    }
+  });
+  trigger.addEventListener("mouseleave", () => {
+    if (window.matchMedia("(min-width: 901px)").matches) {
+      clearTimeout(moduleSwitcherHoverTimer);
+      moduleSwitcherHoverTimer = setTimeout(() => {
+        closeFloatingModuleSwitcher();
+      }, 260);
+    }
+  });
+});
+els.moduleFloatPanel?.addEventListener("mouseenter", () => {
+  if (window.matchMedia("(min-width: 901px)").matches) {
+    clearTimeout(moduleSwitcherHoverTimer);
+  }
+});
+els.moduleFloatPanel?.addEventListener("mouseleave", () => {
+  if (window.matchMedia("(min-width: 901px)").matches) {
+    clearTimeout(moduleSwitcherHoverTimer);
+    moduleSwitcherHoverTimer = setTimeout(() => {
+      closeFloatingModuleSwitcher();
+    }, 260);
+  }
 });
 els.moduleFloatButtons?.forEach((button) => {
   button.addEventListener("click", () => handleFloatingModuleChoice(button.dataset.floatingModule));
