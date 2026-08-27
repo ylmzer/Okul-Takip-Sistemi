@@ -6009,105 +6009,7 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     -webkit-overflow-scrolling: touch !important;
   }
 
-  .module-float-panel .module-switcher-divider {
-    display: none !important;
-  }
 
-  .module-float-panel .module-float-panel-links {
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: 6px !important;
-    width: 100% !important;
-  }
-
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] {
-    position: relative !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    min-height: 72px !important;
-    height: 72px !important;
-    gap: 5px !important;
-    padding: 6px 4px !important;
-    color: #e2e8f0 !important;
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.07) !important;
-    border-radius: 12px !important;
-    box-shadow: none !important;
-    cursor: pointer !important;
-    transform: none !important;
-    transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  }
-
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module]:hover,
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module]:focus-visible {
-    color: #ffffff !important;
-    background: rgba(255, 255, 255, 0.12) !important;
-    border-color: rgba(255, 255, 255, 0.24) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
-    outline: none !important;
-  }
-
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module].is-active {
-    color: #5eead4 !important;
-    background: rgba(45, 212, 191, 0.14) !important;
-    border-color: rgba(94, 234, 212, 0.38) !important;
-    box-shadow: 0 0 12px rgba(45, 212, 191, 0.2) !important;
-  }
-
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > span:first-child {
-    display: grid !important;
-    place-items: center !important;
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    min-height: 32px !important;
-    border-radius: 9px !important;
-    color: var(--module-color, #2dd4bf) !important;
-    background: rgba(255, 255, 255, 0.08) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    font-size: 0.76rem !important;
-    font-weight: 850 !important;
-  }
-
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > span:first-child::before {
-    content: "" !important;
-    width: 17px !important;
-    height: 17px !important;
-    background: currentColor !important;
-    -webkit-mask: var(--module-icon-mask) center / contain no-repeat !important;
-    mask: var(--module-icon-mask) center / contain no-repeat !important;
-  }
-
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > .module-switcher-copy {
-    display: flex !important;
-    justify-content: center !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    text-align: center !important;
-  }
-
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > .module-switcher-copy strong {
-    width: 100% !important;
-    overflow: hidden !important;
-    color: inherit !important;
-    font-size: 0.70rem !important;
-    font-weight: 750 !important;
-    line-height: 1.15 !important;
-    text-align: center !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-  }
-
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > .module-switcher-copy .module-desc,
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module]::after {
-    display: none !important;
-  }
 }
 
 @keyframes moduleSwitcherScreenIn {
@@ -6243,7 +6145,31 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     transform: rotate(180deg) !important;
   }
 
+  /* Skill Training (Beceri Eğitimi) Topbar & Centered Search */
+  body.skill-mode .skill-topbar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding-right: 120px !important; /* Space so it never touches top-right OTS button */
+    gap: 16px !important;
+  }
+
+  body.skill-mode .skill-header-actions {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 1 !important;
+    max-width: 520px !important;
+    margin: 0 auto !important; /* Centers the search bar */
+  }
+
+  body.skill-mode .skill-search {
+    width: 100% !important;
+    max-width: 480px !important;
+  }
+
   /* Fixed Top-Right Floating OTS Button (Always Visible on all pages) */
+  #otsFloatingLauncherBtn,
   .ots-floating-launcher-btn {
     position: fixed !important;
     top: 14px !important;
@@ -6270,6 +6196,7 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
 
+  #otsFloatingLauncherBtn .ots-launcher-dot,
   .ots-floating-launcher-btn .ots-launcher-dot {
     width: 7px !important;
     height: 7px !important;
@@ -6279,6 +6206,9 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     transition: transform 0.2s ease !important;
   }
 
+  #otsFloatingLauncherBtn:hover,
+  #otsFloatingLauncherBtn:focus-visible,
+  #otsFloatingLauncherBtn[aria-expanded="true"],
   .ots-floating-launcher-btn:hover,
   .ots-floating-launcher-btn:focus-visible,
   .ots-floating-launcher-btn[aria-expanded="true"] {
@@ -6289,18 +6219,22 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     outline: none !important;
   }
 
+  #otsFloatingLauncherBtn:hover .ots-launcher-dot,
+  #otsFloatingLauncherBtn[aria-expanded="true"] .ots-launcher-dot,
   .ots-floating-launcher-btn:hover .ots-launcher-dot,
   .ots-floating-launcher-btn[aria-expanded="true"] .ots-launcher-dot {
     transform: scale(1.3) !important;
   }
 
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-switcher {
+  #moduleFloatSwitcher,
+  .module-float-switcher {
     position: static !important;
     display: contents !important;
   }
 
-  /* Floating Popover Panel under top-right OTS button */
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel {
+  /* Desktop 3x3 Floating Popover Panel */
+  #moduleFloatPanel,
+  .module-float-panel {
     position: fixed !important;
     top: 56px !important;
     right: 20px !important;
@@ -6308,7 +6242,7 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     bottom: auto !important;
     display: flex !important;
     flex-direction: column !important;
-    width: 285px !important;
+    width: 290px !important;
     max-width: calc(100vw - 32px) !important;
     max-height: calc(100vh - 72px) !important;
     padding: 10px !important;
@@ -6326,19 +6260,158 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     animation: floatPanelFadeInTopRight 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
 
-  @keyframes floatPanelFadeInTopRight {
-    from {
-      opacity: 0;
-      transform: translateY(-8px) scale(0.97);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
+  #moduleFloatPanel .module-switcher-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 2px 4px 8px !important;
+    margin-bottom: 2px !important;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14) !important;
+  }
+
+  #moduleFloatPanel .module-switcher-header strong {
+    font-size: 0.76rem !important;
+    font-weight: 800 !important;
+    color: #94a3b8 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+  }
+
+  #moduleFloatPanel .module-switcher-header .mobile-nav-panel-close {
+    display: none !important;
+  }
+
+  #moduleFloatPanel .module-float-panel-links,
+  .module-float-panel .module-float-panel-links {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    grid-auto-rows: auto !important;
+    gap: 6px !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module],
+  .module-float-panel button[data-floating-module] {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 72px !important;
+    min-height: 72px !important;
+    max-height: 72px !important;
+    padding: 6px 4px !important;
+    gap: 5px !important;
+    color: #e2e8f0 !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    transform: none !important;
+    transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module]:hover,
+  #moduleFloatPanel button[data-floating-module]:focus-visible,
+  .module-float-panel button[data-floating-module]:hover,
+  .module-float-panel button[data-floating-module]:focus-visible {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.24) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+    outline: none !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module].is-active,
+  .module-float-panel button[data-floating-module].is-active {
+    color: #5eead4 !important;
+    background: rgba(45, 212, 191, 0.14) !important;
+    border-color: rgba(94, 234, 212, 0.38) !important;
+    box-shadow: 0 0 12px rgba(45, 212, 191, 0.2) !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module]::after,
+  .module-float-panel button[data-floating-module]::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module] > span:first-child,
+  .module-float-panel button[data-floating-module] > span:first-child {
+    position: static !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    border-radius: 9px !important;
+    color: var(--module-color, #2dd4bf) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    font-size: 0.76rem !important;
+    font-weight: 850 !important;
+    transform: none !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module] > span:first-child::before,
+  .module-float-panel button[data-floating-module] > span:first-child::before {
+    position: static !important;
+    content: "" !important;
+    display: block !important;
+    width: 17px !important;
+    height: 17px !important;
+    margin: 0 !important;
+    background: currentColor !important;
+    -webkit-mask: var(--module-icon-mask) center / contain no-repeat !important;
+    mask: var(--module-icon-mask) center / contain no-repeat !important;
+    transform: none !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module] > .module-switcher-copy,
+  .module-float-panel button[data-floating-module] > .module-switcher-copy {
+    position: static !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module] > .module-switcher-copy strong,
+  .module-float-panel button[data-floating-module] > .module-switcher-copy strong {
+    display: block !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    color: inherit !important;
+    font-size: 0.70rem !important;
+    font-weight: 750 !important;
+    line-height: 1.15 !important;
+    text-align: center !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  #moduleFloatPanel button[data-floating-module] > .module-switcher-copy .module-desc,
+  #moduleFloatPanel .module-switcher-divider,
+  .module-float-panel .module-switcher-divider {
+    display: none !important;
   }
 
   /* Desktop: No backdrop overlay or blur */
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-switcher-backdrop,
+  #moduleSwitcherBackdrop,
   .module-switcher-backdrop {
     display: none !important;
     background: transparent !important;
