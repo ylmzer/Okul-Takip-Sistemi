@@ -3915,8 +3915,9 @@
 
     <div class="module-switcher-backdrop" id="moduleSwitcherBackdrop" hidden></div>
     <div class="module-float-switcher" id="moduleFloatSwitcher">
-      <button class="collapsed-module-launcher-btn" id="collapsedModuleLauncherBtn" data-module-switcher-trigger type="button" aria-label="Modülleri Aç" title="Modül Değiştirici">
-        <span>OTS</span>
+      <button class="ots-floating-launcher-btn" id="otsFloatingLauncherBtn" data-module-switcher-trigger type="button" aria-label="Modülleri Aç" title="Modül Değiştirici">
+        <span class="ots-launcher-dot" aria-hidden="true"></span>
+        <span class="ots-launcher-text">OTS</span>
       </button>
       <button class="mobile-module-hub-btn" id="mobileModuleHubBtn" data-module-switcher-trigger type="button" aria-label="Modül değiştiriciyi aç" aria-expanded="false" aria-controls="moduleFloatPanel">
         <span aria-hidden="true">↔</span>
@@ -3925,20 +3926,18 @@
       <div class="module-float-panel" id="moduleFloatPanel" role="dialog" aria-modal="false" aria-labelledby="moduleSwitcherTitle" hidden>
         <div class="mobile-nav-panel-header module-switcher-header">
           <div>
-            <small>Uygulamalar</small>
-            <strong id="moduleSwitcherTitle"><span class="module-switcher-title-desktop">Modül değiştir</span><span class="module-switcher-title-mobile">Modüller</span></strong>
+            <strong id="moduleSwitcherTitle">Modüller</strong>
           </div>
           <button class="mobile-nav-panel-close" id="mobileModulePanelCloseBtn" type="button" aria-label="Modül değiştiriciyi kapat">×</button>
         </div>
         <div class="module-float-panel-links">
-          <button class="module-switcher-home" type="button" data-floating-module="hub"><span>AM</span><span class="module-switcher-copy"><strong>Ana Modül Ekranı</strong><small class="module-desc">Tüm modülleri görüntüle</small></span></button>
-          <div class="module-switcher-divider" role="separator" aria-hidden="true"></div>
-          <button type="button" data-floating-module="sorubank"><span>SB</span><span class="module-switcher-copy"><strong>Soru Bankası</strong><small class="module-desc">Soru, sınav ve analiz</small></span></button>
-          <button type="button" data-floating-module="student-tracking"><span>DT</span><span class="module-switcher-copy"><strong>Ders Takibi</strong><small class="module-desc">Sınıf ve öğrenci izleme</small></span></button>
-          <button type="button" data-floating-module="skill-training"><span>BE</span><span class="module-switcher-copy"><strong>Beceri Eğitimi</strong><small class="module-desc">İşletme ve evrak takibi</small></span></button>
-          <button type="button" data-floating-module="course-tracking"><span>KT</span><span class="module-switcher-copy"><strong>Kurs Takibi</strong><small class="module-desc">Devam ve not yönetimi</small></span></button>
-          <button type="button" data-floating-module="annual-plan"><span>YP</span><span class="module-switcher-copy"><strong>Yıllık Plan</strong><small class="module-desc">Alan, ders ve plan üretimi</small></span></button>
-          <button type="button" data-floating-module="settings"><span>AY</span><span class="module-switcher-copy"><strong>Ayarlar</strong><small class="module-desc">Profil, yedek ve görünüm</small></span></button>
+          <button type="button" data-floating-module="hub"><span>AM</span><span class="module-switcher-copy"><strong>Ana Ekran</strong></span></button>
+          <button type="button" data-floating-module="sorubank"><span>SB</span><span class="module-switcher-copy"><strong>Soru Bankası</strong></span></button>
+          <button type="button" data-floating-module="student-tracking"><span>DT</span><span class="module-switcher-copy"><strong>Ders Takibi</strong></span></button>
+          <button type="button" data-floating-module="skill-training"><span>BE</span><span class="module-switcher-copy"><strong>Beceri Eğitimi</strong></span></button>
+          <button type="button" data-floating-module="course-tracking"><span>KT</span><span class="module-switcher-copy"><strong>Kurs Takibi</strong></span></button>
+          <button type="button" data-floating-module="annual-plan"><span>YP</span><span class="module-switcher-copy"><strong>Yıllık Plan</strong></span></button>
+          <button type="button" data-floating-module="settings"><span>AY</span><span class="module-switcher-copy"><strong>Ayarlar</strong></span></button>
         </div>
       </div>
     </div>
