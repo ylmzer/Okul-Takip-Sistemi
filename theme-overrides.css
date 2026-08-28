@@ -4875,8 +4875,7 @@ body.global-settings-mode .module-sidebar-brand[data-module-brand="settings"] > 
     padding: 0 12px !important;
     white-space: nowrap !important;
   }
-
-
+}
 
 @media (prefers-reduced-motion: reduce) {
   [data-module-switcher-trigger].module-sidebar-brand,
@@ -5467,8 +5466,7 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     box-shadow: 7px 0 currentColor, 0 7px currentColor, 7px 7px currentColor !important;
     transform: translate(-3.5px, -3.5px) !important;
   }
-
-
+}
 
 /* Desktop module rail and collapsible module sidebar. */
 .desktop-module-dock {

@@ -16679,12 +16679,6 @@ body.annual-mode .annual-template-picker button.is-active {
   border-color: var(--accent) !important;
 }
 
-body.app-mode .module-float-panel,
-body.skill-mode .module-float-panel,
-body.student-mode .module-float-panel,
-body.annual-mode .module-float-panel,
-body.course-mode .module-float-panel,
-body.global-settings-mode .module-float-panel,
 body.app-mode .user-menu-popover,
 body.skill-mode .user-menu-popover,
 body.student-mode .user-menu-popover,
@@ -16698,12 +16692,6 @@ body.app-mode .course-list {
   box-shadow: 0 18px 38px rgba(15, 23, 42, 0.16) !important;
 }
 
-body.app-mode .module-float-panel button,
-body.skill-mode .module-float-panel button,
-body.student-mode .module-float-panel button,
-body.annual-mode .module-float-panel button,
-body.course-mode .module-float-panel button,
-body.global-settings-mode .module-float-panel button,
 body.app-mode .user-menu-popover button,
 body.skill-mode .user-menu-popover button,
 body.student-mode .user-menu-popover button,
@@ -16717,18 +16705,6 @@ body.app-mode .course-option {
   border-radius: var(--corp-radius-sm) !important;
 }
 
-body.app-mode .module-float-panel button:hover,
-body.skill-mode .module-float-panel button:hover,
-body.student-mode .module-float-panel button:hover,
-body.annual-mode .module-float-panel button:hover,
-body.course-mode .module-float-panel button:hover,
-body.global-settings-mode .module-float-panel button:hover,
-body.app-mode .module-float-panel button.is-active,
-body.skill-mode .module-float-panel button.is-active,
-body.student-mode .module-float-panel button.is-active,
-body.annual-mode .module-float-panel button.is-active,
-body.course-mode .module-float-panel button.is-active,
-body.global-settings-mode .module-float-panel button.is-active,
 body.app-mode .user-menu-popover button:hover,
 body.skill-mode .user-menu-popover button:hover,
 body.student-mode .user-menu-popover button:hover,
