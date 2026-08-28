@@ -6636,214 +6636,188 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     bottom: 78px !important;
     left: 14px !important;
     z-index: 10022 !important;
-    display: grid !important;
-    grid-template-rows: auto minmax(0, 1fr) !important;
+    display: flex !important;
+    flex-direction: column !important;
     width: min(320px, calc(100vw - 28px)) !important;
     height: auto !important;
     max-width: none !important;
     max-height: calc(100dvh - 106px) !important;
-    gap: 0 !important;
-    padding: 12px !important;
-    overflow: hidden !important;
-    color: #0f172a !important;
-    background: #f8fafc !important;
-    border: 1px solid rgba(15, 23, 42, 0.12) !important;
+    gap: 8px !important;
+    padding: 10px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    color: #dbe4ee !important;
+    background: rgba(15, 23, 42, 0.96) !important;
+    backdrop-filter: blur(24px) saturate(1.4) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(1.4) !important;
+    border: 1px solid rgba(148, 163, 184, 0.24) !important;
     border-radius: 18px !important;
-    box-shadow: 0 18px 46px rgba(2, 6, 23, 0.28) !important;
+    box-shadow: 0 24px 54px -6px rgba(2, 6, 23, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.06) !important;
     pointer-events: auto !important;
     animation: mobileModulePanelIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) both !important;
   }
 
   body.dark-mode:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) #moduleFloatPanel:not([hidden]) {
-    color: #f8fafc !important;
-    background: #0b1220 !important;
-    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #dbe4ee !important;
+    background: rgba(15, 23, 42, 0.96) !important;
+    border-color: rgba(148, 163, 184, 0.24) !important;
   }
 
   #moduleFloatPanel .module-switcher-header {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) 40px !important;
-    min-height: 52px !important;
-    gap: 12px !important;
+    display: flex !important;
     align-items: center !important;
-    padding: 0 2px 10px !important;
-    border-bottom: 1px solid rgba(15, 23, 42, 0.1) !important;
-  }
-
-  body.dark-mode #moduleFloatPanel .module-switcher-header {
-    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
-  }
-
-  #moduleFloatPanel .module-switcher-header small {
-    display: block !important;
-    color: #64748b !important;
-    font-size: 0.66rem !important;
-    font-weight: 800 !important;
-    letter-spacing: 0.1em !important;
-    text-transform: uppercase !important;
+    justify-content: space-between !important;
+    padding: 2px 4px 8px !important;
+    margin-bottom: 2px !important;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14) !important;
   }
 
   #moduleFloatPanel .module-switcher-header strong {
-    color: inherit !important;
-    font-size: 1.16rem !important;
-    font-weight: 900 !important;
+    font-size: 0.76rem !important;
+    font-weight: 800 !important;
+    color: #94a3b8 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
   }
 
   #moduleFloatPanel .module-switcher-header .mobile-nav-panel-close {
     display: grid !important;
-    width: 40px !important;
-    height: 40px !important;
-    min-width: 40px !important;
     place-items: center !important;
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
     padding: 0 !important;
-    color: #64748b !important;
-    background: rgba(148, 163, 184, 0.1) !important;
-    border: 1px solid rgba(148, 163, 184, 0.18) !important;
-    border-radius: 12px !important;
-    box-shadow: none !important;
+    color: #94a3b8 !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 6px !important;
+    font-size: 1rem !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+  }
+
+  #moduleFloatPanel .module-switcher-header .mobile-nav-panel-close::before,
+  #moduleFloatPanel .module-switcher-header .mobile-nav-panel-close::after {
+    display: none !important;
+    content: none !important;
   }
 
   #moduleFloatPanel .module-float-panel-links {
     display: grid !important;
-    grid-template-columns: 1fr !important;
+    grid-template-columns: repeat(3, 1fr) !important;
     grid-auto-rows: auto !important;
-    align-content: start !important;
     gap: 6px !important;
-    min-height: 0 !important;
-    padding: 10px 0 2px !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-    overscroll-behavior: contain !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-
-  #moduleFloatPanel .module-switcher-divider {
-    display: block !important;
     width: 100% !important;
-    height: 1px !important;
-    margin: 1px 0 !important;
-    background: rgba(148, 163, 184, 0.18) !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
-  #moduleFloatPanel button[data-floating-module] {
+  #moduleFloatPanel .module-float-panel-links button {
     position: relative !important;
-    display: grid !important;
-    grid-template-columns: 40px minmax(0, 1fr) 20px !important;
-    grid-template-rows: auto !important;
-    grid-template-areas: none !important;
-    width: 100% !important;
-    min-height: 54px !important;
-    gap: 10px !important;
+    display: flex !important;
+    flex-direction: column !important;
     align-items: center !important;
-    padding: 6px 8px !important;
-    color: #1e293b !important;
-    background: #ffffff !important;
-    border: 1px solid rgba(148, 163, 184, 0.22) !important;
-    border-radius: 14px !important;
-    box-shadow: 0 3px 10px rgba(15, 23, 42, 0.04) !important;
-    text-align: left !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 72px !important;
+    min-height: 72px !important;
+    max-height: 72px !important;
+    padding: 6px 4px !important;
+    gap: 5px !important;
+    color: #e2e8f0 !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    transform: none !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+
+  #moduleFloatPanel .module-float-panel-links button:hover,
+  #moduleFloatPanel .module-float-panel-links button:focus-visible {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.24) !important;
+  }
+
+  #moduleFloatPanel .module-float-panel-links button.is-active {
+    color: #5eead4 !important;
+    background: rgba(45, 212, 191, 0.14) !important;
+    border-color: rgba(94, 234, 212, 0.38) !important;
+    box-shadow: 0 0 12px rgba(45, 212, 191, 0.2) !important;
+  }
+
+  #moduleFloatPanel .module-float-panel-links button::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  #moduleFloatPanel .module-float-panel-links button > span:first-child {
+    position: static !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    border-radius: 9px !important;
+    color: var(--module-color, #2dd4bf) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    font-size: 0 !important;
+    color: transparent !important;
     transform: none !important;
   }
 
-  body.dark-mode #moduleFloatPanel button[data-floating-module] {
-    color: #e2e8f0 !important;
-    background: #172033 !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-    box-shadow: none !important;
-  }
-
-  #moduleFloatPanel button[data-floating-module].is-active {
-    color: #0f766e !important;
-    background: #ecfdf9 !important;
-    border-color: rgba(15, 118, 110, 0.36) !important;
-  }
-
-  body.dark-mode #moduleFloatPanel button[data-floating-module].is-active {
-    color: #5eead4 !important;
-    background: rgba(15, 118, 110, 0.2) !important;
-    border-color: rgba(94, 234, 212, 0.32) !important;
-  }
-
-  #moduleFloatPanel button[data-floating-module] > span:first-child {
-    grid-area: auto !important;
-    grid-column: 1 !important;
-    grid-row: 1 !important;
-    display: grid !important;
-    width: 38px !important;
-    height: 38px !important;
-    place-items: center !important;
-    color: #475569 !important;
-    background: rgba(148, 163, 184, 0.12) !important;
-    border: 1px solid rgba(148, 163, 184, 0.18) !important;
-    border-radius: 11px !important;
-  }
-
-  body.dark-mode #moduleFloatPanel button[data-floating-module] > span:first-child {
-    color: #cbd5e1 !important;
-    background: rgba(148, 163, 184, 0.1) !important;
-    border-color: rgba(148, 163, 184, 0.16) !important;
-  }
-
-  #moduleFloatPanel button[data-floating-module] > span:first-child::before {
+  #moduleFloatPanel .module-float-panel-links button > span:first-child::before {
+    position: static !important;
+    content: "" !important;
+    display: block !important;
     width: 20px !important;
     height: 20px !important;
-    background: currentColor !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+    margin: 0 auto !important;
+    background: var(--module-color, #2dd4bf) !important;
+    -webkit-mask-image: var(--module-icon-mask) !important;
+    mask-image: var(--module-icon-mask) !important;
+    -webkit-mask-size: 20px 20px !important;
+    mask-size: 20px 20px !important;
+    -webkit-mask-repeat: no-repeat !important;
+    mask-repeat: no-repeat !important;
+    -webkit-mask-position: center !important;
+    mask-position: center !important;
+    transform: none !important;
   }
 
-  #moduleFloatPanel button[data-floating-module] > .module-switcher-copy {
-    grid-area: auto !important;
-    grid-column: 2 !important;
-    grid-row: 1 !important;
-    display: grid !important;
-    min-width: 0 !important;
-    gap: 3px !important;
-    text-align: left !important;
-  }
-
-  #moduleFloatPanel button[data-floating-module] > .module-switcher-copy strong {
-    overflow: hidden !important;
-    color: inherit !important;
-    font-size: 0.86rem !important;
-    font-weight: 850 !important;
-    line-height: 1.18 !important;
-    text-align: left !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-  }
-
-  #moduleFloatPanel button[data-floating-module] > .module-switcher-copy .module-desc {
-    overflow: hidden !important;
-    color: #64748b !important;
-    font-size: 0.68rem !important;
-    font-weight: 650 !important;
-    line-height: 1.2 !important;
-    text-align: left !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-  }
-
-  body.dark-mode #moduleFloatPanel button[data-floating-module] > .module-switcher-copy .module-desc {
-    color: #94a3b8 !important;
-  }
-
-  #moduleFloatPanel button[data-floating-module]::after {
-    content: "›" !important;
+  #moduleFloatPanel .module-float-panel-links button > .module-switcher-copy {
     position: static !important;
-    grid-area: auto !important;
-    grid-column: 3 !important;
-    grid-row: 1 !important;
-    justify-self: end !important;
-    color: #94a3b8 !important;
-    font-size: 1.4rem !important;
-    font-weight: 600 !important;
-    line-height: 1 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    text-align: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  #moduleFloatPanel button[data-floating-module].is-active::after {
-    content: "✓" !important;
-    color: currentColor !important;
-    font-size: 1rem !important;
-    font-weight: 900 !important;
+  #moduleFloatPanel .module-float-panel-links button > .module-switcher-copy strong {
+    display: block !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    color: #e2e8f0 !important;
+    font-size: 0.70rem !important;
+    font-weight: 750 !important;
+    line-height: 1.15 !important;
+    text-align: center !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
   }
 
   /* Sağ modül içi gezinme: sol modül seçiciyle aynı kompakt panel dili. */
@@ -7112,19 +7086,6 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     transform: translate(-50%, -50%) !important;
   }
 
-  #moduleFloatPanel button[data-floating-module] > span:first-child {
-    position: relative !important;
-    place-items: center !important;
-  }
-
-  #moduleFloatPanel button[data-floating-module] > span:first-child::before {
-    position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    display: block !important;
-    margin: 0 !important;
-    transform: translate(-50%, -50%) !important;
-  }
 
   #moduleFloatPanel .module-switcher-header .mobile-nav-panel-close,
   #mobileNavPanel .mobile-nav-panel-close {
