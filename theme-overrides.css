@@ -575,138 +575,7 @@ body.app-mode .module-float-switcher {
   }
 }
 
-body.app-mode .module-float-panel,
-body.skill-mode .module-float-panel,
-body.student-mode .module-float-panel,
-body.annual-mode .module-float-panel,
-body.course-mode .module-float-panel,
-body.global-settings-mode .module-float-panel {
-  display: none;
-  max-height: min(472px, calc(100vh - 112px)) !important;
-  overflow-y: auto !important;
-  gap: 6px !important;
-  padding: 10px !important;
-  border-radius: 14px !important;
-  box-sizing: border-box !important;
-  z-index: 10000 !important;
-}
 
-body.app-mode .module-float-panel:not([hidden]),
-body.skill-mode .module-float-panel:not([hidden]),
-body.student-mode .module-float-panel:not([hidden]),
-body.annual-mode .module-float-panel:not([hidden]),
-body.course-mode .module-float-panel:not([hidden]),
-body.global-settings-mode .module-float-panel:not([hidden]) {
-  display: grid !important;
-  animation: floatPanelSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-}
-
-/* Desktop: Float next to the sidebar */
-@media (min-width: 992px) {
-  body.app-mode .module-float-panel,
-  body.skill-mode .module-float-panel,
-  body.student-mode .module-float-panel,
-  body.annual-mode .module-float-panel,
-  body.course-mode .module-float-panel,
-  body.global-settings-mode .module-float-panel {
-    top: auto !important;
-    right: auto !important;
-    bottom: 12px !important;
-    left: calc(100% + 12px) !important;
-    width: 270px !important;
-    background: rgba(255, 255, 255, 0.85) !important;
-    border: 1px solid rgba(15, 23, 42, 0.08) !important;
-    box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-  }
-
-  body.dark-mode.app-mode .module-float-panel,
-  body.dark-mode.skill-mode .module-float-panel,
-  body.dark-mode.student-mode .module-float-panel,
-  body.dark-mode.annual-mode .module-float-panel,
-  body.dark-mode.course-mode .module-float-panel,
-  body.dark-mode.global-settings-mode .module-float-panel {
-    background: rgba(11, 18, 32, 0.85) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45) !important;
-  }
-}
-
-/* Mobile & Tablet: Standard positioning */
-@media (max-width: 991px) {
-  body.app-mode .module-float-panel,
-  body.skill-mode .module-float-panel,
-  body.student-mode .module-float-panel,
-  body.annual-mode .module-float-panel,
-  body.course-mode .module-float-panel,
-  body.global-settings-mode .module-float-panel {
-    top: auto !important;
-    right: 0 !important;
-    bottom: calc(100% + 8px) !important;
-    left: 0 !important;
-    width: 100% !important;
-    background: #ffffff !important;
-    border: 1px solid var(--corp-line-soft) !important;
-    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.2) !important;
-  }
-
-  body.dark-mode.app-mode .module-float-panel,
-  body.dark-mode.skill-mode .module-float-panel,
-  body.dark-mode.student-mode .module-float-panel,
-  body.dark-mode.annual-mode .module-float-panel,
-  body.dark-mode.course-mode .module-float-panel,
-  body.dark-mode.global-settings-mode .module-float-panel {
-    background: #0b1220 !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4) !important;
-  }
-}
-
-body.app-mode .module-float-panel-links,
-body.skill-mode .module-float-panel-links,
-body.student-mode .module-float-panel-links,
-body.annual-mode .module-float-panel-links,
-body.course-mode .module-float-panel-links,
-body.global-settings-mode .module-float-panel-links {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 6px !important;
-  width: 100% !important;
-}
-
-body.app-mode .module-float-panel button,
-body.skill-mode .module-float-panel button,
-body.student-mode .module-float-panel button,
-body.annual-mode .module-float-panel button,
-body.course-mode .module-float-panel button,
-body.global-settings-mode .module-float-panel button {
-  display: grid !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  grid-template-columns: 34px minmax(0, 1fr) !important;
-  min-height: 44px !important;
-  padding: 8px 12px !important;
-  color: #334155 !important;
-  background: transparent !important;
-  border: 1px solid transparent !important;
-  border-radius: 9px !important;
-  font-size: 0.88rem !important;
-  font-weight: 800 !important;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-
-body.app-mode .module-float-panel button:hover,
-body.skill-mode .module-float-panel button:hover,
-body.student-mode .module-float-panel button:hover,
-body.annual-mode .module-float-panel button:hover,
-body.course-mode .module-float-panel button:hover,
-body.global-settings-mode .module-float-panel button:hover {
-  color: var(--accent-strong) !important;
-  background: rgba(45, 212, 191, 0.1) !important;
-  border-color: rgba(45, 212, 191, 0.15) !important;
-  transform: translateX(4px) !important;
-}
 
 
 
@@ -2381,7 +2250,6 @@ body.dark-mode .question-preview {
 }
 
 /* --- Modüller Switcher Paneli (Floating Switcher) Koyu Tema --- */
-body.dark-mode .module-float-panel,
 body.dark-mode .user-menu-popover,
 body.dark-mode .course-list {
   background: #0b1220 !important;
@@ -2389,7 +2257,6 @@ body.dark-mode .course-list {
   box-shadow: 0 18px 38px rgba(0, 0, 0, 0.45) !important;
 }
 
-body.dark-mode .module-float-panel button,
 body.dark-mode .user-menu-popover button,
 body.dark-mode .course-option {
   color: #cbd5e1 !important;
@@ -2397,14 +2264,6 @@ body.dark-mode .course-option {
   border: 1px solid transparent !important;
 }
 
-body.dark-mode .module-float-panel button span {
-  color: #ffffff !important;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02)) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-}
-
-body.dark-mode .module-float-panel button:hover,
-body.dark-mode .module-float-panel button.is-active,
 body.dark-mode .user-menu-popover button:hover,
 body.dark-mode .course-option:hover,
 body.dark-mode .course-option.is-active {
@@ -4468,100 +4327,7 @@ body.dark-mode .skill-alert > span {
     gap: 8px !important;
   }
 
-  /* Modül Seçim Butonlarının Görünümü */
-  body.app-mode .module-float-panel button,
-  body.skill-mode .module-float-panel button,
-  body.student-mode .module-float-panel button,
-  body.annual-mode .module-float-panel button,
-  body.course-mode .module-float-panel button,
-  body.global-settings-mode .module-float-panel button {
-    display: flex !important;
-    align-items: center !important;
-    width: 100% !important;
-    min-height: 36px !important;
-    padding: 6px 12px !important;
-    border-radius: 8px !important;
-    border: 1px solid transparent !important;
-    background: rgba(255, 255, 255, 0.04) !important;
-    color: #cbd5e1 !important;
-    font-size: 0.84rem !important;
-    font-weight: 700 !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    text-align: left !important;
-    gap: 6px !important;
-    box-shadow: none !important;
-    text-transform: none !important;
-    grid-template-columns: none !important;
-  }
 
-  /* Modül simgelerini gizleme */
-  body.app-mode .module-float-panel button span,
-  body.skill-mode .module-float-panel button span,
-  body.student-mode .module-float-panel button span,
-  body.annual-mode .module-float-panel button span,
-  body.course-mode .module-float-panel button span,
-  body.global-settings-mode .module-float-panel button span {
-    display: none !important;
-  }
-
-  /* Modül kısa açıklaması */
-  .module-desc {
-    display: inline-block !important;
-    font-size: 0.72rem !important;
-    color: #94a3b8 !important;
-    font-weight: 500 !important;
-    margin-left: 2px !important;
-    white-space: nowrap !important;
-  }
-
-  .module-desc::before {
-    content: "• " !important;
-    color: rgba(255, 255, 255, 0.15) !important;
-    margin-right: 4px !important;
-  }
-
-  /* Modüllerin hover / active durumları */
-  body.app-mode .module-float-panel button.is-active,
-  body.skill-mode .module-float-panel button.is-active,
-  body.student-mode .module-float-panel button.is-active,
-  body.annual-mode .module-float-panel button.is-active,
-  body.course-mode .module-float-panel button.is-active,
-  body.global-settings-mode .module-float-panel button.is-active {
-    background: var(--accent) !important;
-    color: #ffffff !important;
-    border-color: var(--accent) !important;
-  }
-
-  body.app-mode .module-float-panel button.is-active span,
-  body.skill-mode .module-float-panel button.is-active span,
-  body.student-mode .module-float-panel button.is-active span,
-  body.annual-mode .module-float-panel button.is-active span,
-  body.course-mode .module-float-panel button.is-active span,
-  body.global-settings-mode .module-float-panel button.is-active span {
-    background: #ffffff !important;
-    color: var(--accent) !important;
-  }
-
-  body.app-mode .module-float-panel button:hover,
-  body.skill-mode .module-float-panel button:hover,
-  body.student-mode .module-float-panel button:hover,
-  body.annual-mode .module-float-panel button:hover,
-  body.course-mode .module-float-panel button:hover,
-  body.global-settings-mode .module-float-panel button:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    color: #ffffff !important;
-  }
-
-  body.app-mode .module-float-panel button strong,
-  body.skill-mode .module-float-panel button strong,
-  body.student-mode .module-float-panel button strong,
-  body.annual-mode .module-float-panel button strong,
-  body.course-mode .module-float-panel button strong,
-  body.global-settings-mode .module-float-panel button strong {
-    font-weight: 700 !important;
-    font-size: 0.88rem !important;
-  }
 
   /* Mobil üst barı (topbar) yapışkanlıktan çıkar */
   body.app-mode .topbar,
@@ -5892,124 +5658,7 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     transform: translate(-3.5px, -3.5px) !important;
   }
 
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel {
-    position: fixed !important;
-    inset: 0 !important;
-    width: 100vw !important;
-    height: 100dvh !important;
-    max-width: none !important;
-    max-height: none !important;
-    grid-template-rows: auto minmax(0, 1fr) !important;
-    gap: 0 !important;
-    padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)) !important;
-    overflow: hidden !important;
-    background: #f4f7f9 !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    animation: moduleSwitcherScreenIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) both !important;
-  }
 
-  body.dark-mode:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel {
-    background: #0b1220 !important;
-  }
-
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header {
-    position: relative !important;
-    z-index: 2 !important;
-    grid-template-columns: minmax(0, 1fr) 42px !important;
-    min-height: 72px !important;
-    padding: 2px 2px 14px !important;
-    background: transparent !important;
-    border-bottom-color: rgba(15, 23, 42, 0.1) !important;
-  }
-
-  body.dark-mode:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header {
-    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
-  }
-
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header small {
-    color: #64748b !important;
-    font-size: 0.7rem !important;
-    letter-spacing: 0.1em !important;
-  }
-
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header strong {
-    color: #0f172a !important;
-    font-size: 1.35rem !important;
-    letter-spacing: -0.02em !important;
-  }
-
-  body.dark-mode:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header strong {
-    color: #f8fafc !important;
-  }
-
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header .mobile-nav-panel-close {
-    width: 42px !important;
-    height: 42px !important;
-    min-width: 42px !important;
-    color: #475569 !important;
-    background: #ffffff !important;
-    border-color: rgba(15, 23, 42, 0.1) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07) !important;
-  }
-
-  body.dark-mode:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-switcher-header .mobile-nav-panel-close {
-    color: #cbd5e1 !important;
-    background: #172033 !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-    box-shadow: none !important;
-  }
-
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-float-panel-links {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    grid-auto-rows: minmax(112px, auto) !important;
-    gap: 10px !important;
-    min-height: 0 !important;
-    padding: 14px 0 4px !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-    align-content: start !important;
-    overscroll-behavior: contain !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-
-
-}
-
-@keyframes moduleSwitcherScreenIn {
-  from {
-    opacity: 0;
-    transform: scale(0.985);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@media (max-width: 380px) {
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel .module-float-panel-links {
-    gap: 8px !important;
-  }
-
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] {
-    min-height: 106px !important;
-    padding: 10px !important;
-  }
-
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel button[data-floating-module] > .module-switcher-copy strong {
-    font-size: 0.84rem !important;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) .module-float-panel {
-    animation: none !important;
-  }
-}
 
 /* Desktop module rail and collapsible module sidebar. */
 .desktop-module-dock {
@@ -6427,6 +6076,11 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     text-align: center !important;
     margin: 0 !important;
     padding: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   #moduleFloatPanel .module-float-panel-links button > .module-switcher-copy strong,
@@ -6435,12 +6089,25 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     width: 100% !important;
     overflow: hidden !important;
     color: #e2e8f0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    box-shadow: none !important;
     font-size: 0.70rem !important;
     font-weight: 750 !important;
     line-height: 1.15 !important;
     text-align: center !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
+  }
+
+  #moduleFloatPanel .module-float-panel-links button.is-active > .module-switcher-copy strong,
+  .module-float-panel .module-float-panel-links button.is-active > .module-switcher-copy strong {
+    color: #5eead4 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
   }
 
   #moduleFloatPanel button > .module-switcher-copy .module-desc,
@@ -6805,6 +6472,11 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     text-align: center !important;
     margin: 0 !important;
     padding: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   #moduleFloatPanel .module-float-panel-links button > .module-switcher-copy strong {
@@ -6812,12 +6484,24 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     width: 100% !important;
     overflow: hidden !important;
     color: #e2e8f0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    box-shadow: none !important;
     font-size: 0.70rem !important;
     font-weight: 750 !important;
     line-height: 1.15 !important;
     text-align: center !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
+  }
+
+  #moduleFloatPanel .module-float-panel-links button.is-active > .module-switcher-copy strong {
+    color: #5eead4 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
   }
 
   /* Sağ modül içi gezinme: sol modül seçiciyle aynı kompakt panel dili. */

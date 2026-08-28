@@ -126,7 +126,7 @@ button {
   border-color: #a7ddd6;
 }
 
-.module-float-panel button span {
+.module-float-panel button > span:first-child {
   display: grid;
   width: 30px;
   height: 30px;
