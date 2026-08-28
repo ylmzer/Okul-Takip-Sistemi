@@ -13073,6 +13073,18 @@ els.moduleFloatButtons?.forEach((button) => {
   button.addEventListener("click", () => handleFloatingModuleChoice(button.dataset.floatingModule));
 });
 
+els.moduleFloatPanel?.querySelectorAll("[data-floating-action]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const action = button.dataset.floatingAction;
+    closeFloatingModuleSwitcher();
+    if (action === "profile") {
+      openProfileDialog();
+    } else if (action === "logout") {
+      logoutLocalSession();
+    }
+  });
+});
+
 els.moduleSwitcherBackdrop?.addEventListener("click", () => closeFloatingModuleSwitcher({ restoreFocus: true }));
 
 document.querySelector("#mobileModulePanelCloseBtn")?.addEventListener("click", (event) => {
