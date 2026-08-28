@@ -13040,6 +13040,26 @@ els.desktopModuleDock?.addEventListener("focusin", () => {
   els.desktopModuleDock.classList.remove("is-selection-closing");
 });
 let moduleSwitcherHoverTimer = null;
+
+if (els.moduleFloatSwitcher) {
+  els.moduleFloatSwitcher.addEventListener("pointerenter", () => {
+    if (window.matchMedia("(min-width: 901px)").matches) {
+      clearTimeout(moduleSwitcherHoverTimer);
+      if (els.moduleFloatPanel?.hidden) {
+        toggleFloatingModuleSwitcher(document.querySelector("#otsFloatingLauncherBtn"));
+      }
+    }
+  });
+  els.moduleFloatSwitcher.addEventListener("pointerleave", () => {
+    if (window.matchMedia("(min-width: 901px)").matches) {
+      clearTimeout(moduleSwitcherHoverTimer);
+      moduleSwitcherHoverTimer = setTimeout(() => {
+        closeFloatingModuleSwitcher();
+      }, 220);
+    }
+  });
+}
+
 els.moduleSwitcherTriggers?.forEach((trigger) => {
   trigger.setAttribute("aria-haspopup", "dialog");
   trigger.addEventListener("click", (event) => {
@@ -13047,48 +13067,32 @@ els.moduleSwitcherTriggers?.forEach((trigger) => {
     event.stopPropagation();
     toggleFloatingModuleSwitcher(trigger);
   });
-  trigger.addEventListener("mouseenter", () => {
-    if (window.matchMedia("(min-width: 901px)").matches) {
-      clearTimeout(moduleSwitcherHoverTimer);
-      if (els.moduleFloatPanel?.hidden) {
-        toggleFloatingModuleSwitcher(trigger);
-      }
-    }
-  });
-  trigger.addEventListener("mouseleave", () => {
-    if (window.matchMedia("(min-width: 901px)").matches) {
-      clearTimeout(moduleSwitcherHoverTimer);
-      moduleSwitcherHoverTimer = setTimeout(() => {
-        closeFloatingModuleSwitcher();
-      }, 260);
-    }
-  });
 });
-els.moduleFloatPanel?.addEventListener("mouseenter", () => {
-  if (window.matchMedia("(min-width: 901px)").matches) {
-    clearTimeout(moduleSwitcherHoverTimer);
-  }
-});
-els.moduleFloatPanel?.addEventListener("mouseleave", () => {
-  if (window.matchMedia("(min-width: 901px)").matches) {
-    clearTimeout(moduleSwitcherHoverTimer);
-    moduleSwitcherHoverTimer = setTimeout(() => {
-      closeFloatingModuleSwitcher();
-    }, 260);
-  }
-});
+
 els.moduleFloatButtons?.forEach((button) => {
   button.addEventListener("click", () => handleFloatingModuleChoice(button.dataset.floatingModule));
 });
+
 els.moduleSwitcherBackdrop?.addEventListener("click", () => closeFloatingModuleSwitcher({ restoreFocus: true }));
+
 document.querySelector("#mobileModulePanelCloseBtn")?.addEventListener("click", (event) => {
   event.stopPropagation();
   closeFloatingModuleSwitcher({ restoreFocus: true });
 });
+
+document.addEventListener("pointerdown", (event) => {
+  const clickedSwitcher = event.target instanceof Element && (event.target.closest("#moduleFloatSwitcher") || event.target.closest("[data-module-switcher-trigger]"));
+  if (!clickedSwitcher && els.moduleFloatPanel && !els.moduleFloatPanel.hidden) {
+    clearTimeout(moduleSwitcherHoverTimer);
+    closeFloatingModuleSwitcher();
+  }
+});
+
 document.addEventListener("click", (event) => {
-  // Sol modül menüsünü dışarı tıklayınca kapat
-  const clickedSwitcherTrigger = event.target instanceof Element && event.target.closest("[data-module-switcher-trigger]");
-  if (els.moduleFloatSwitcher && !els.moduleFloatSwitcher.contains(event.target) && !clickedSwitcherTrigger) {
+  // OTS menüsünü dışarı tıklayınca kapat
+  const clickedSwitcher = event.target instanceof Element && (event.target.closest("#moduleFloatSwitcher") || event.target.closest("[data-module-switcher-trigger]"));
+  if (!clickedSwitcher && els.moduleFloatPanel && !els.moduleFloatPanel.hidden) {
+    clearTimeout(moduleSwitcherHoverTimer);
     closeFloatingModuleSwitcher();
   }
   // Sağ gezinme menüsünü dışarı tıklayınca kapat
