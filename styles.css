@@ -16230,7 +16230,8 @@ body.app-mode .section-heading {
 body.skill-mode .skill-nav,
 body.student-mode .student-nav,
 body.annual-mode .annual-nav,
-body.course-mode .course-nav {
+body.course-mode .course-nav,
+body.global-settings-mode .global-settings-nav {
   gap: 7px !important;
   color: var(--corp-sidebar-muted) !important;
   overflow-y: auto !important;
@@ -16252,7 +16253,8 @@ body.skill-mode .skill-nav button,
 body.skill-mode .skill-subnav button,
 body.student-mode .student-nav button,
 body.annual-mode .annual-nav button,
-body.course-mode .course-nav button {
+body.course-mode .course-nav button,
+body.global-settings-mode .global-settings-nav button {
   min-height: 38px !important;
   padding: 0 11px !important;
   gap: 10px !important;
@@ -16277,7 +16279,8 @@ body.skill-mode .skill-nav button:hover,
 body.skill-mode .skill-subnav button:hover,
 body.student-mode .student-nav button:hover,
 body.annual-mode .annual-nav button:hover,
-body.course-mode .course-nav button:hover {
+body.course-mode .course-nav button:hover,
+body.global-settings-mode .global-settings-nav button:hover {
   color: #ffffff !important;
   background: rgba(255, 255, 255, 0.09) !important;
   border-color: rgba(255, 255, 255, 0.17) !important;
@@ -16289,7 +16292,8 @@ body.skill-mode .skill-nav button.is-active,
 body.skill-mode .skill-subnav button.is-active,
 body.student-mode .student-nav button.is-active,
 body.annual-mode .annual-nav button.is-active,
-body.course-mode .course-nav button.is-active {
+body.course-mode .course-nav button.is-active,
+body.global-settings-mode .global-settings-nav button.is-active {
   color: #ffffff !important;
   background: var(--accent) !important;
   border-color: rgba(255, 255, 255, 0.16) !important;
@@ -16827,7 +16831,8 @@ body.skill-mode .skill-nav button::before,
 body.skill-mode .skill-subnav button::before,
 body.student-mode .student-nav button::before,
 body.annual-mode .annual-nav button::before,
-body.course-mode .course-nav button::before {
+body.course-mode .course-nav button::before,
+body.global-settings-mode .global-settings-nav button::before {
   width: 8px !important;
   height: 8px !important;
   flex: 0 0 8px !important;
@@ -16842,13 +16847,15 @@ body.skill-mode .skill-nav button.is-active::before,
 body.skill-mode .skill-subnav button.is-active::before,
 body.student-mode .student-nav button.is-active::before,
 body.annual-mode .annual-nav button.is-active::before,
-body.course-mode .course-nav button.is-active::before {
+body.course-mode .course-nav button.is-active::before,
+body.global-settings-mode .global-settings-nav button.is-active::before {
   background: #ffffff !important;
   box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15) !important;
 }
 
 body.skill-mode .skill-nav button span,
-body.skill-mode .skill-subnav button span {
+body.skill-mode .skill-subnav button span,
+body.global-settings-mode .global-settings-nav button span {
   display: none !important;
 }
 

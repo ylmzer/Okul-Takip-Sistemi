@@ -1425,9 +1425,9 @@ body.dark-mode .skill-nav-mobile-select {
 
 /* --- Global Settings Enhancements --- */
 body.global-settings-mode .global-settings-brand {
-  --module-color: #64748b !important;
-  --module-soft: #f1f5f9 !important;
-  --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46.21 14.25 0 14 0h-4c-.25 0-.46.21-.49.46L9.13 3.11c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.25.24.46.49.46h4c.25 0 .46-.21.49-.46l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z'/%3E%3C/svg%3E") !important;
+  --module-color: #0f766e !important;
+  --module-soft: #ccfbf1 !important;
+  --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54A.484.484 0 0 0 13.91 2h-3.82c-.24 0-.44.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.47c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.82c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z'/%3E%3C/svg%3E") !important;
 }
 
 body.global-settings-mode .module-sidebar-brand[data-module-brand="settings"] strong::before {
@@ -1448,8 +1448,9 @@ body.global-settings-mode .module-sidebar-brand[data-module-brand="settings"] > 
 
   body.global-settings-mode .global-settings-nav {
     position: static !important;
-    display: grid !important;
-    gap: 8px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 7px !important;
     padding: 0 !important;
     background: transparent !important;
     border: 0 !important;
@@ -1458,32 +1459,39 @@ body.global-settings-mode .module-sidebar-brand[data-module-brand="settings"] > 
   }
 
   body.global-settings-mode .global-settings-nav button {
+    position: relative !important;
     display: flex !important;
     align-items: center !important;
-    min-height: 44px !important;
-    padding: 0 13px !important;
-    color: #94a3b8 !important;
+    width: 100% !important;
+    min-height: 38px !important;
+    padding: 0 11px !important;
+    gap: 10px !important;
+    color: var(--corp-sidebar-text, #cbd5e1) !important;
+    background: rgba(255, 255, 255, 0.045) !important;
+    border: 1px solid rgba(255, 255, 255, 0.085) !important;
+    border-radius: var(--corp-radius, 10px) !important;
+    box-shadow: none !important;
+    font-size: 0.86rem !important;
+    font-weight: 780 !important;
+    line-height: 1.1 !important;
+    letter-spacing: 0 !important;
     text-align: left !important;
-    background: transparent !important;
-    border: 1px solid transparent !important;
-    border-radius: 8px !important;
-    font-size: 0.94rem !important;
-    font-weight: 850 !important;
-    transition: all 0.15s ease !important;
-    gap: 12px !important;
+    cursor: pointer !important;
+    transition: all 0.16s ease !important;
   }
 
   body.global-settings-mode .global-settings-nav button:hover {
     color: #ffffff !important;
-    background: rgba(255, 255, 255, 0.06) !important;
-    border-color: transparent !important;
+    background: rgba(255, 255, 255, 0.09) !important;
+    border-color: rgba(255, 255, 255, 0.17) !important;
+    transform: none !important;
   }
 
   body.global-settings-mode .global-settings-nav button.is-active {
     color: #ffffff !important;
-    background: var(--accent) !important;
-    border-color: var(--accent) !important;
-    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.25) !important;
+    background: var(--accent, #0f766e) !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+    box-shadow: inset 3px 0 0 rgba(255, 255, 255, 0.38) !important;
   }
 
   body.global-settings-mode .global-settings-nav button span {
@@ -1499,22 +1507,7 @@ body.global-settings-mode .module-sidebar-brand[data-module-brand="settings"] > 
     border-radius: 999px !important;
     background: #5eead4 !important;
     box-shadow: 0 0 0 4px rgba(45, 212, 191, 0.12) !important;
-    transition: all 0.2s ease !important;
-  }
-
-  body.global-settings-mode .global-settings-nav button:nth-child(2)::before {
-    background: #f8c471 !important;
-    box-shadow: 0 0 0 4px rgba(248, 196, 113, 0.14) !important;
-  }
-
-  body.global-settings-mode .global-settings-nav button:nth-child(3)::before {
-    background: #8fb8ff !important;
-    box-shadow: 0 0 0 4px rgba(143, 184, 255, 0.14) !important;
-  }
-
-  body.global-settings-mode .global-settings-nav button:nth-child(4)::before {
-    background: #b7e889 !important;
-    box-shadow: 0 0 0 4px rgba(183, 232, 137, 0.14) !important;
+    transition: all 0.16s ease !important;
   }
 
   body.global-settings-mode .global-settings-nav button.is-active::before {
