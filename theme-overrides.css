@@ -3048,33 +3048,80 @@ body.dark-mode .course-dialog-header .ghost-action:hover {
 
 /* Red box close button style for dark mode (Sorubank & IME unified) */
 body.dark-mode .skill-close-x,
-body.dark-mode .course-dialog-close-btn {
+body.dark-mode .course-dialog-close-btn,
+body.dark-mode .mobile-nav-panel-close,
+body.dark-mode .choice-remove,
+body.dark-mode .annual-zumre-remove,
+body.dark-mode .remove-teacher,
+body.dark-mode .delete-field-btn,
+body.dark-mode #importClearFileBtn,
+body.dark-mode #bankImportClearFileBtn,
+body.dark-mode #skillGlobalSearchClear,
+body.dark-mode .journal-remove-row {
   color: #f87171 !important;
-  border: 1px solid rgba(248, 113, 113, 0.2) !important;
-  background: rgba(248, 113, 113, 0.05) !important;
-  font-weight: bold !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 1px solid rgba(248, 113, 113, 0.28) !important;
+  background: rgba(248, 113, 113, 0.08) !important;
+  font-weight: 800 !important;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
   border-radius: 8px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+  text-align: center !important;
   cursor: pointer !important;
   width: 32px !important;
   height: 32px !important;
   min-width: 32px !important;
   min-height: 32px !important;
   flex-shrink: 0 !important;
-  font-size: 1.2rem !important;
-  padding: 0 0 3px 0 !important;
+  font-size: 1.25rem !important;
+  padding: 0 0 2px 0 !important;
   line-height: 1 !important;
+  box-sizing: border-box !important;
 }
 
 body.dark-mode .skill-close-x:hover,
-body.dark-mode .course-dialog-close-btn:hover {
+body.dark-mode .course-dialog-close-btn:hover,
+body.dark-mode .mobile-nav-panel-close:hover,
+body.dark-mode .choice-remove:hover,
+body.dark-mode .annual-zumre-remove:hover,
+body.dark-mode .remove-teacher:hover,
+body.dark-mode .delete-field-btn:hover,
+body.dark-mode #importClearFileBtn:hover,
+body.dark-mode #bankImportClearFileBtn:hover,
+body.dark-mode #skillGlobalSearchClear:hover,
+body.dark-mode .journal-remove-row:hover,
+body.dark-mode .skill-close-x:focus-visible,
+body.dark-mode .course-dialog-close-btn:focus-visible,
+body.dark-mode .mobile-nav-panel-close:focus-visible,
+body.dark-mode .choice-remove:focus-visible,
+body.dark-mode .annual-zumre-remove:focus-visible,
+body.dark-mode .remove-teacher:focus-visible,
+body.dark-mode .delete-field-btn:focus-visible,
+body.dark-mode #importClearFileBtn:focus-visible,
+body.dark-mode #bankImportClearFileBtn:focus-visible,
+body.dark-mode #skillGlobalSearchClear:focus-visible,
+body.dark-mode .journal-remove-row:focus-visible {
   color: #ffffff !important;
   background: #ef4444 !important;
   border-color: #ef4444 !important;
   transform: rotate(90deg) scale(1.1) !important;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.55) !important;
+  outline: none !important;
+}
+
+body.dark-mode .skill-close-x:active,
+body.dark-mode .course-dialog-close-btn:active,
+body.dark-mode .mobile-nav-panel-close:active,
+body.dark-mode .choice-remove:active,
+body.dark-mode .annual-zumre-remove:active,
+body.dark-mode .remove-teacher:active,
+body.dark-mode .delete-field-btn:active,
+body.dark-mode #importClearFileBtn:active,
+body.dark-mode #bankImportClearFileBtn:active,
+body.dark-mode #skillGlobalSearchClear:active,
+body.dark-mode .journal-remove-row:active {
+  transform: rotate(90deg) scale(0.95) !important;
 }
 
 body.dark-mode #courseStudentCardDialog .summary-box:first-child {
@@ -3970,15 +4017,7 @@ body.dark-mode .skill-alert > span {
     font-size: 0.9rem !important;
   }
 
-  .mobile-nav-panel-close {
-    background: transparent !important;
-    border: 0 !important;
-    color: #94a3b8 !important;
-    font-size: 1.4rem !important;
-    cursor: pointer !important;
-    padding: 0 4px !important;
-    line-height: 1 !important;
-  }
+
 
   .mobile-nav-panel-links {
     display: flex !important;
@@ -4272,20 +4311,22 @@ dialog,
   top: 14px !important;
   right: 14px !important;
   z-index: 1010 !important;
-  display: flex !important;
+  display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 30px !important;
-  height: 30px !important;
-  min-width: 30px !important;
-  max-width: 30px !important;
-  min-height: 30px !important;
-  max-height: 30px !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
+  text-align: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  min-height: 32px !important;
+  max-height: 32px !important;
+  border-radius: 8px !important;
+  padding: 0 0 2px 0 !important;
   font-size: 1.25rem !important;
   line-height: 1 !important;
   margin: 0 !important;
+  box-sizing: border-box !important;
 }
 
 /* Kapatma butonlarının mobilde başlık alanından dışarı taşmasını önlemek için dialog başlıklarına sağ iç boşluk ekle */
@@ -6388,6 +6429,38 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     border-bottom-color: rgba(255, 255, 255, 0.1) !important;
   }
 
+  #mobileNavPanel .mobile-nav-panel-close {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    padding: 0 0 2px 0 !important;
+    color: #f87171 !important;
+    background: rgba(248, 113, 113, 0.08) !important;
+    border: 1px solid rgba(248, 113, 113, 0.25) !important;
+    border-radius: 8px !important;
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-sizing: border-box !important;
+  }
+
+  #mobileNavPanel .mobile-nav-panel-close:hover,
+  #mobileNavPanel .mobile-nav-panel-close:focus-visible {
+    color: #ffffff !important;
+    background: #ef4444 !important;
+    border-color: #ef4444 !important;
+    transform: rotate(90deg) scale(1.1) !important;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.45) !important;
+    outline: none !important;
+  }
+
   #mobileNavPanel .mobile-nav-panel-header strong {
     color: inherit !important;
     font-size: 0.94rem !important;
@@ -6605,41 +6678,7 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
   }
 
 
-  #moduleFloatPanel .module-switcher-header .mobile-nav-panel-close,
-  #mobileNavPanel .mobile-nav-panel-close {
-    position: relative !important;
-    display: block !important;
-    padding: 0 !important;
-    font-size: 0 !important;
-    line-height: 0 !important;
-  }
 
-  #moduleFloatPanel .module-switcher-header .mobile-nav-panel-close::before,
-  #moduleFloatPanel .module-switcher-header .mobile-nav-panel-close::after,
-  #mobileNavPanel .mobile-nav-panel-close::before,
-  #mobileNavPanel .mobile-nav-panel-close::after {
-    content: "" !important;
-    position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    display: block !important;
-    width: 16px !important;
-    height: 2px !important;
-    margin: 0 !important;
-    background: currentColor !important;
-    border-radius: 999px !important;
-    transform-origin: center !important;
-  }
-
-  #moduleFloatPanel .module-switcher-header .mobile-nav-panel-close::before,
-  #mobileNavPanel .mobile-nav-panel-close::before {
-    transform: translate(-50%, -50%) rotate(45deg) !important;
-  }
-
-  #moduleFloatPanel .module-switcher-header .mobile-nav-panel-close::after,
-  #mobileNavPanel .mobile-nav-panel-close::after {
-    transform: translate(-50%, -50%) rotate(-45deg) !important;
-  }
 
   body:not(.dark-mode).app-mode aside.sidebar.is-expanded .sidebar-float-content {
     background: #f8fafc !important;

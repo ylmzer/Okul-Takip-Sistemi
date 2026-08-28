@@ -11576,13 +11576,15 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row sm
   font-weight: bold;
   line-height: 1;
   margin-left: 4px;
-  transition: color 0.15s ease, transform 0.15s ease;
-  display: inline-block;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .course-teacher-badge b:hover {
-  color: #b91c1c;
-  transform: scale(1.2);
+  color: #ef4444;
+  transform: rotate(90deg) scale(1.25);
 }
 
 #courseAddTeacherBtn {
@@ -12262,33 +12264,80 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row sm
 
 /* Red close button style for all "X" close buttons in the app */
 .skill-close-x,
-.course-dialog-close-btn {
+.course-dialog-close-btn,
+.mobile-nav-panel-close,
+.choice-remove,
+.annual-zumre-remove,
+.remove-teacher,
+.delete-field-btn,
+#importClearFileBtn,
+#bankImportClearFileBtn,
+#skillGlobalSearchClear,
+.journal-remove-row {
   color: #ef4444 !important;
-  border: 1px solid rgba(239, 68, 68, 0.2) !important;
-  background: rgba(239, 68, 68, 0.05) !important;
-  font-weight: bold !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 1px solid rgba(239, 68, 68, 0.25) !important;
+  background: rgba(239, 68, 68, 0.08) !important;
+  font-weight: 800 !important;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
   border-radius: 8px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+  text-align: center !important;
   cursor: pointer !important;
   width: 32px !important;
   height: 32px !important;
   min-width: 32px !important;
   min-height: 32px !important;
   flex-shrink: 0 !important;
-  font-size: 1.2rem !important;
-  padding: 0 0 3px 0 !important;
+  font-size: 1.25rem !important;
+  padding: 0 0 2px 0 !important;
   line-height: 1 !important;
+  box-sizing: border-box !important;
 }
 
 .skill-close-x:hover,
-.course-dialog-close-btn:hover {
+.course-dialog-close-btn:hover,
+.mobile-nav-panel-close:hover,
+.choice-remove:hover,
+.annual-zumre-remove:hover,
+.remove-teacher:hover,
+.delete-field-btn:hover,
+#importClearFileBtn:hover,
+#bankImportClearFileBtn:hover,
+#skillGlobalSearchClear:hover,
+.journal-remove-row:hover,
+.skill-close-x:focus-visible,
+.course-dialog-close-btn:focus-visible,
+.mobile-nav-panel-close:focus-visible,
+.choice-remove:focus-visible,
+.annual-zumre-remove:focus-visible,
+.remove-teacher:focus-visible,
+.delete-field-btn:focus-visible,
+#importClearFileBtn:focus-visible,
+#bankImportClearFileBtn:focus-visible,
+#skillGlobalSearchClear:focus-visible,
+.journal-remove-row:focus-visible {
   color: #ffffff !important;
   background: #ef4444 !important;
   border-color: #ef4444 !important;
   transform: rotate(90deg) scale(1.1) !important;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.5) !important;
+  outline: none !important;
+}
+
+.skill-close-x:active,
+.course-dialog-close-btn:active,
+.mobile-nav-panel-close:active,
+.choice-remove:active,
+.annual-zumre-remove:active,
+.remove-teacher:active,
+.delete-field-btn:active,
+#importClearFileBtn:active,
+#bankImportClearFileBtn:active,
+#skillGlobalSearchClear:active,
+.journal-remove-row:active {
+  transform: rotate(90deg) scale(0.95) !important;
 }
 
 .question-editor-actions .primary-action,
