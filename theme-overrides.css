@@ -390,6 +390,7 @@ body.annual-mode .module-sidebar-brand[data-module-brand="annual-plan"],
   --module-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 2h2v3h6V2h2v3h4v17H3V5h4V2zm12 9H5v9h14v-9zM5 7v2h14V7H5zm3 6h3v3H8v-3zm5 0h3v3h-3v-3z'/%3E%3C/svg%3E");
 }
 
+body.global-settings-mode .module-sidebar-brand[data-module-brand="settings"],
 .module-float-panel button[data-floating-module="settings"],
 .desktop-module-dock button[data-dock-module="settings"] {
   --module-color: #0f766e;
@@ -434,8 +435,14 @@ body.skill-mode .module-sidebar-brand .ime-logo::before {
   height: 29px !important;
   background: var(--module-color, var(--accent-strong)) !important;
   transform: translate(-50%, -50%) !important;
-  -webkit-mask: var(--module-icon-mask) center / contain no-repeat !important;
-  mask: var(--module-icon-mask) center / contain no-repeat !important;
+  -webkit-mask-image: var(--module-icon-mask) !important;
+  mask-image: var(--module-icon-mask) !important;
+  -webkit-mask-size: 29px 29px !important;
+  mask-size: 29px 29px !important;
+  -webkit-mask-repeat: no-repeat !important;
+  mask-repeat: no-repeat !important;
+  -webkit-mask-position: center !important;
+  mask-position: center !important;
 }
 
 body.module-mode .module-card .module-icon {
@@ -689,54 +696,7 @@ body.global-settings-mode .module-float-panel button:hover {
   transform: translateX(4px) !important;
 }
 
-body.app-mode .module-float-panel button.is-active,
-body.skill-mode .module-float-panel button.is-active,
-body.student-mode .module-float-panel button.is-active,
-body.annual-mode .module-float-panel button.is-active,
-body.course-mode .module-float-panel button.is-active,
-body.global-settings-mode .module-float-panel button.is-active {
-  color: var(--accent-strong) !important;
-  background: rgba(45, 212, 191, 0.14) !important;
-  border-color: rgba(45, 212, 191, 0.22) !important;
-  border-left: 3px solid var(--accent) !important;
-  padding-left: 10px !important;
-}
 
-body.app-mode .module-float-panel button span,
-body.skill-mode .module-float-panel button span,
-body.student-mode .module-float-panel button span,
-body.annual-mode .module-float-panel button span,
-body.course-mode .module-float-panel button span,
-body.global-settings-mode .module-float-panel button span {
-  display: grid !important;
-  position: relative !important;
-  width: 30px !important;
-  height: 30px !important;
-  place-items: center !important;
-  color: transparent !important;
-  background: var(--module-soft, #e0f2f1) !important;
-  border: 1px solid color-mix(in srgb, var(--module-color, #0f766e) 20%, transparent) !important;
-  border-radius: 8px !important;
-  font-size: 0 !important;
-}
-
-body.app-mode .module-float-panel button span::before,
-body.skill-mode .module-float-panel button span::before,
-body.student-mode .module-float-panel button span::before,
-body.annual-mode .module-float-panel button span::before,
-body.course-mode .module-float-panel button span::before,
-body.global-settings-mode .module-float-panel button span::before {
-  content: "" !important;
-  position: absolute !important;
-  top: 50% !important;
-  left: 50% !important;
-  width: 17px !important;
-  height: 17px !important;
-  background: var(--module-color, #0f766e) !important;
-  transform: translate(-50%, -50%) !important;
-  -webkit-mask: var(--module-icon-mask) center / contain no-repeat !important;
-  mask: var(--module-icon-mask) center / contain no-repeat !important;
-}
 
 body.app-mode .sidebar .system-section {
   display: none !important;
