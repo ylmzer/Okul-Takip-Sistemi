@@ -1046,6 +1046,7 @@ const els = {
   skillReportPreviewDialog: document.querySelector("#skillReportPreviewDialog"),
   skillReportPreviewFrame: document.querySelector("#skillReportPreviewFrame"),
   skillReportPreviewCloseBtn: document.querySelector("#skillReportPreviewCloseBtn"),
+  skillReportPdfBtn: document.querySelector("#skillReportPdfBtn"),
   skillReportPrintBtn: document.querySelector("#skillReportPrintBtn"),
   skillReportShareBtn: document.querySelector("#skillReportShareBtn"),
   skillReportZoomInBtn: document.querySelector("#skillReportZoomInBtn"),
@@ -6023,6 +6024,39 @@ function printSkillAbsenceReport() {
 
   frameWindow.focus();
   frameWindow.print();
+}
+
+async function downloadSkillReportPdf() {
+  const frameWindow = els.skillReportPreviewFrame?.contentWindow;
+  const frameDoc = els.skillReportPreviewFrame?.contentDocument;
+  if (!frameDoc || !frameDoc.body) return;
+
+  const reportDocTitle = getActiveSkillReportDocTitle();
+  const isLandscape = ["monthly", "wage"].includes(activeSkillReportType) ||
+    (activeSkillReportType === "grades" && els.skillGradeType?.value !== "lise" && els.skillGradeLayout?.value !== "portrait_two");
+
+  if (typeof html2pdf !== "undefined") {
+    showToast("PDF hazırlanıyor, lütfen bekleyin...", "info");
+    try {
+      const element = frameDoc.body;
+      const opt = {
+        margin: [4, 4, 4, 4],
+        filename: `${reportDocTitle}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true, logging: false },
+        jsPDF: { unit: "mm", format: "a4", orientation: isLandscape ? "landscape" : "portrait" },
+        pagebreak: { mode: ["avoid-all", "css", "legacy"] }
+      };
+      await html2pdf().set(opt).from(element).save();
+      showToast(`"${reportDocTitle}.pdf" başarıyla indirildi.`);
+      return;
+    } catch (err) {
+      console.warn("html2pdf dönüştürmesi başarısız, yazdırma ekranına aktarılıyor:", err);
+    }
+  }
+
+  // Fallback to print with proper title
+  printSkillAbsenceReport();
 }
 let currentSkillReportZoom = 1.0;
 

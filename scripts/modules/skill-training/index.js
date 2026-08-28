@@ -1600,6 +1600,7 @@ if (els.skillWageManualTable) els.skillWageManualTable.addEventListener("input",
 if (els.skillReportPrecheckBtn) els.skillReportPrecheckBtn.addEventListener("click", runSkillReportPrecheck);
 if (els.skillReportPreviewBtn) els.skillReportPreviewBtn.addEventListener("click", previewSkillAbsenceReport);
 if (els.skillReportPreviewCloseBtn) els.skillReportPreviewCloseBtn.addEventListener("click", closeSkillReportPreview);
+if (els.skillReportPdfBtn) els.skillReportPdfBtn.addEventListener("click", downloadSkillReportPdf);
 if (els.skillReportPrintBtn) els.skillReportPrintBtn.addEventListener("click", printSkillAbsenceReport);
 if (els.skillReportShareBtn) els.skillReportShareBtn.addEventListener("click", shareSkillReport);
 if (els.skillReportZoomInBtn) els.skillReportZoomInBtn.addEventListener("click", () => zoomSkillReport(0.1));

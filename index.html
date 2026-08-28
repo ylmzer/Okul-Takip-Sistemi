@@ -31,7 +31,7 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg" />
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
-    <link rel="stylesheet" href="./styles.css?v=93" />
+    <link rel="stylesheet" href="./styles.css?v=94" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
     <link rel="stylesheet" href="./theme-overrides.css?v=124" />
   </head>
@@ -2013,6 +2013,10 @@
             </button>
           </div>
           <div class="skill-report-preview-right">
+            <button class="primary-action btn-sm" id="skillReportPdfBtn" title="PDF İndir" type="button">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 6px;"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/></svg>
+              <span class="btn-text">PDF İndir</span>
+            </button>
             <button class="secondary-action btn-sm" id="skillReportPrintBtn" title="Yazdır" type="button">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 6px;"><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 3v2H4zm1 5a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/></svg>
               <span class="btn-text">Yazdır</span>
@@ -3988,15 +3992,16 @@
       </div>
     </dialog>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./scripts/core/module-registry.js?v=1"></script>
-    <script src="./app.js?v=122"></script>
+    <script src="./app.js?v=123"></script>
     <script src="./scripts/modules/settings/index.js?v=8"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=9"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=16"></script>
     <script src="./scripts/modules/sorubank/index.js?v=8"></script>
-    <script src="./scripts/modules/skill-training/index.js?v=12"></script>
+    <script src="./scripts/modules/skill-training/index.js?v=13"></script>
     <script src="./scripts/modules/student-tracking/index.js?v=14"></script>
   </body>
 </html>

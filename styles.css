@@ -8800,13 +8800,13 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row sm
   border-radius: 8px !important;
 }
 
-.skill-report-preview-head #skillReportPrintBtn {
+.skill-report-preview-head #skillReportPdfBtn {
   background: var(--accent) !important;
   color: #ffffff !important;
   border: none !important;
   font-weight: 750 !important;
   border-radius: 10px !important;
-  padding: 0 20px !important;
+  padding: 0 16px !important;
   min-height: 38px !important;
   font-size: 0.9rem !important;
   transition: all 0.2s ease !important;
@@ -8814,12 +8814,34 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row sm
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+  cursor: pointer !important;
 }
 
-.skill-report-preview-head #skillReportPrintBtn:hover {
+.skill-report-preview-head #skillReportPdfBtn:hover {
   background: var(--accent-strong) !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 6px 14px rgba(20, 184, 166, 0.3) !important;
+}
+
+.skill-report-preview-head #skillReportPrintBtn {
+  background: rgba(148, 163, 184, 0.15) !important;
+  color: inherit !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  font-weight: 650 !important;
+  border-radius: 10px !important;
+  padding: 0 16px !important;
+  min-height: 38px !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+}
+
+.skill-report-preview-head #skillReportPrintBtn:hover {
+  background: rgba(148, 163, 184, 0.25) !important;
+  transform: translateY(-1px) !important;
 }
 
 
