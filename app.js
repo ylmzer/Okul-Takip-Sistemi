@@ -5980,9 +5980,47 @@ function closeSkillReportPreview() {
   if (els.skillReportPreviewDialog?.open) els.skillReportPreviewDialog.close();
 }
 
+function getActiveSkillReportDocTitle() {
+  const todayStr = getFormattedReportDate();
+  switch (activeSkillReportType) {
+    case "daily":
+      return `Gunluk_Rehberlik_Raporu_${todayStr}`;
+    case "monthly":
+      return `Aylik_Rehberlik_Raporu_${todayStr}`;
+    case "grades":
+      return `Not_Cizelgesi_${todayStr}`;
+    case "wage":
+      return `Ucret_Raporu_${todayStr}`;
+    case "termination":
+      return els.skillTerminationTemplate?.value === "notice"
+        ? `Sozlesme_Fesih_Bildirimi_${todayStr}`
+        : `Sozlesme_Iptal_Tutanagi_${todayStr}`;
+    case "absence":
+    default:
+      return `Devamsizlik_Raporu_${todayStr}`;
+  }
+}
+
 function printSkillAbsenceReport() {
   const frameWindow = els.skillReportPreviewFrame?.contentWindow;
+  const frameDoc = els.skillReportPreviewFrame?.contentDocument;
   if (!frameWindow) return;
+
+  const reportDocTitle = getActiveSkillReportDocTitle();
+  const previousTitle = document.title;
+
+  document.title = reportDocTitle;
+  if (frameDoc) {
+    frameDoc.title = reportDocTitle;
+  }
+
+  const restoreTitle = () => {
+    document.title = previousTitle;
+    window.removeEventListener("afterprint", restoreTitle);
+  };
+  window.addEventListener("afterprint", restoreTitle, { once: true });
+  setTimeout(restoreTitle, 4000);
+
   frameWindow.focus();
   frameWindow.print();
 }
