@@ -4819,59 +4819,7 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
   display: none !important;
 }
 
-body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand > .module-switcher-chevron {
-  display: grid !important;
-  position: relative !important;
-  width: 26px !important;
-  height: 26px !important;
-  place-items: center !important;
-  color: #94a3b8 !important;
-  background: rgba(148, 163, 184, 0.12) !important;
-  border: 1px solid rgba(148, 163, 184, 0.16) !important;
-  border-radius: 8px !important;
-  transform: none !important;
-  transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease, transform 0.18s ease !important;
-}
 
-body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand > .module-switcher-chevron::before {
-  content: "" !important;
-  display: block !important;
-  width: 7px !important;
-  height: 7px !important;
-  margin-top: -4px !important;
-  border-right: 2px solid currentColor !important;
-  border-bottom: 2px solid currentColor !important;
-  transform: rotate(45deg) !important;
-}
-
-body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand:hover,
-body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand:focus-visible,
-body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand[aria-expanded="true"] {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border-color: rgba(94, 234, 212, 0.42) !important;
-  outline: none !important;
-}
-
-body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand:focus-visible {
-  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.22) !important;
-}
-
-body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand[aria-expanded="true"]::after {
-  content: none !important;
-  display: none !important;
-}
-
-body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand:hover > .module-switcher-chevron,
-body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand:focus-visible > .module-switcher-chevron,
-body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand[aria-expanded="true"] > .module-switcher-chevron {
-  color: #5eead4 !important;
-  background: rgba(45, 212, 191, 0.14) !important;
-  border-color: rgba(94, 234, 212, 0.28) !important;
-}
-
-body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand[aria-expanded="true"] > .module-switcher-chevron {
-  transform: rotate(180deg) !important;
-}
 
 body.global-settings-mode .module-sidebar-brand[data-module-brand="settings"] {
   --module-color: #0f766e;
@@ -5482,31 +5430,7 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     display: inline !important;
   }
 
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand > .module-switcher-chevron,
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand[aria-expanded="true"] > .module-switcher-chevron {
-    color: #0f766e !important;
-    background: rgba(15, 118, 110, 0.1) !important;
-    border-color: rgba(15, 118, 110, 0.16) !important;
-    transform: none !important;
-  }
 
-  body.dark-mode:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand > .module-switcher-chevron,
-  body.dark-mode:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand[aria-expanded="true"] > .module-switcher-chevron {
-    color: #5eead4 !important;
-    background: rgba(45, 212, 191, 0.12) !important;
-    border-color: rgba(94, 234, 212, 0.2) !important;
-  }
-
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand > .module-switcher-chevron::before {
-    width: 4px !important;
-    height: 4px !important;
-    margin: 0 !important;
-    background: currentColor !important;
-    border: 0 !important;
-    border-radius: 1px !important;
-    box-shadow: 7px 0 currentColor, 0 7px currentColor, 7px 7px currentColor !important;
-    transform: translate(-3.5px, -3.5px) !important;
-  }
 }
 
 /* Desktop module rail and collapsible module sidebar. */
@@ -5572,7 +5496,7 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand {
     position: relative !important;
     display: grid !important;
-    grid-template-columns: 46px minmax(0, 1fr) 24px !important;
+    grid-template-columns: 46px minmax(0, 1fr) !important;
     align-items: center !important;
     gap: 10px !important;
     padding: 8px 12px !important;
@@ -5582,32 +5506,25 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     border-radius: 14px !important;
     box-shadow: 0 4px 14px rgba(2, 6, 23, 0.16) !important;
     cursor: pointer !important;
-    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
 
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand:hover,
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand:focus-visible {
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand:focus-visible,
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand[aria-expanded="true"] {
     color: #ffffff !important;
-    background: rgba(255, 255, 255, 0.085) !important;
-    border-color: rgba(255, 255, 255, 0.22) !important;
-    box-shadow: 0 8px 24px rgba(2, 6, 23, 0.28) !important;
-    transform: translateY(-1px) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(45, 212, 191, 0.35) !important;
+    box-shadow: 0 0 16px rgba(45, 212, 191, 0.18), 0 4px 14px rgba(2, 6, 23, 0.22) !important;
+    transform: none !important;
     outline: none !important;
   }
 
-  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand::after {
-    content: "▾" !important;
-    display: grid !important;
-    place-items: center !important;
-    font-size: 1.15rem !important;
-    color: #94a3b8 !important;
-    transition: transform 0.2s ease, color 0.2s ease !important;
-  }
-
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand::after,
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand:hover::after,
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside [data-module-switcher-trigger].module-sidebar-brand[aria-expanded="true"]::after {
-    color: #2dd4bf !important;
-    transform: rotate(180deg) !important;
+    content: none !important;
+    display: none !important;
   }
 
   /* Skill Training (Beceri Eğitimi) Topbar & Centered Search */
