@@ -1758,7 +1758,9 @@ async function handleAnnualPlanXlsx(request, response) {
       maxBuffer: 1024 * 1024 * 5
     });
     const file = await readFile(xlsxPath);
-    const filename = `${safeDownloadName(body.plan.lessonName)}-${safeDownloadName(body.plan.year)}-yillik-plan.xlsx`;
+    const d = new Date();
+    const today = `${String(d.getDate()).padStart(2, "0")}_${String(d.getMonth() + 1).padStart(2, "0")}_${d.getFullYear()}`;
+    const filename = `${safeDownloadName(body.plan.lessonName)}_${safeDownloadName(body.plan.year)}_Yillik_Plan_${today}.xlsx`;
     response.writeHead(200, {
       "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "Content-Disposition": `attachment; filename="${filename}"`,

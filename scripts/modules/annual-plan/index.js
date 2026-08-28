@@ -1678,12 +1678,16 @@ function printAnnualPlan() {
   if (!plan) return annualToast("Yazdırılacak plan yok.", "warning");
   const printWindow = window.open("", "_blank");
   if (!printWindow) return annualToast("Tarayıcı açılır pencereyi engelledi.", "warning");
+  const annualReportDate = (function() {
+    const d = new Date();
+    return `${String(d.getDate()).padStart(2, "0")}_${String(d.getMonth() + 1).padStart(2, "0")}_${d.getFullYear()}`;
+  })();
   printWindow.document.write(`
     <!doctype html>
     <html lang="tr">
       <head>
         <meta charset="utf-8" />
-        <title>${annualHtml(plan.lessonName)} Yıllık Plan</title>
+        <title>${annualSlug(plan.lessonName)}_Yillik_Plan_${annualReportDate}</title>
         <style>
           body { font-family: Arial, sans-serif; color: #111827; margin: 20px; }
           table { width: 100%; border-collapse: collapse; font-size: 10pt; }
@@ -1717,8 +1721,12 @@ async function exportAnnualPlanExcel() {
       throw new Error(error.error || "Excel dosyası üretilemedi.");
     }
     const blob = await response.blob();
+    const annualReportDate = (function() {
+      const d = new Date();
+      return `${String(d.getDate()).padStart(2, "0")}_${String(d.getMonth() + 1).padStart(2, "0")}_${d.getFullYear()}`;
+    })();
     const disposition = response.headers.get("Content-Disposition") || "";
-    const filename = disposition.match(/filename="([^"]+)"/)?.[1] || `${annualSlug(plan.lessonName)}-yillik-plan.xlsx`;
+    const filename = disposition.match(/filename="([^"]+)"/)?.[1] || `${annualSlug(plan.lessonName)}_Yillik_Plan_${annualReportDate}.xlsx`;
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;

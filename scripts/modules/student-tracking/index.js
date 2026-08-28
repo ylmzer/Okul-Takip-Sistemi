@@ -548,7 +548,20 @@ function buildPrintableStudentReport() {
   const homeworkSection = (type === "all" || type === "homework") ? taskPrintSection("homework", homework, "Ödev Değerlendirmesi") : "";
   const projectSection = (type === "all" || type === "projects") ? taskPrintSection("projects", projects, "Proje Değerlendirmesi") : "";
   const now = new Date().toLocaleString("tr-TR", { dateStyle: "long", timeStyle: "short" });
-  return `<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>${html(typeLabels[type])} Raporu</title><style>
+  const todayStr = (function() {
+    const d = new Date();
+    return `${String(d.getDate()).padStart(2, "0")}_${String(d.getMonth() + 1).padStart(2, "0")}_${d.getFullYear()}`;
+  })();
+  const cleanTypeSlug = (function(text) {
+    const map = { "ç": "c", "Ç": "C", "ğ": "g", "Ğ": "G", "ı": "i", "I": "I", "İ": "I", "ö": "o", "Ö": "O", "ş": "s", "Ş": "S", "ü": "u", "Ü": "U" };
+    return String(text || "")
+      .replace(/[çÇğĞıIİöÖşŞüÜ]/g, (m) => map[m] || m)
+      .replace(/[^a-zA-Z0-9_-]+/g, "_")
+      .replace(/_+/g, "_")
+      .replace(/^_+|_+$/g, "");
+  })(typeLabels[type] || "Ogrenci_Degerlendirme");
+  const docTitle = `${cleanTypeSlug}_Raporu_${todayStr}`;
+  return `<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>${docTitle}</title><style>
     @page { size: A4 landscape; margin: 11mm; }
     * { box-sizing: border-box; }
     body { margin: 0; color: #172b29; background: #eef2f1; font: 11px/1.35 "Segoe UI", Arial, sans-serif; }

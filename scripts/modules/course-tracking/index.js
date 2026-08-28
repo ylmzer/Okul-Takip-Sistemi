@@ -2106,7 +2106,11 @@ function generateWrittenExamDoc() {
   `;
   
   const previousTitle = document.title;
-  document.title = `${currentModule.name.replace(/\s+/g, '_')}_Sinav_Sorulari`;
+  const courseReportDate = (function() {
+    const d = new Date();
+    return `${String(d.getDate()).padStart(2, "0")}_${String(d.getMonth() + 1).padStart(2, "0")}_${d.getFullYear()}`;
+  })();
+  document.title = `${currentModule.name.replace(/\s+/g, '_')}_Sinav_${courseReportDate}`;
   window.addEventListener("afterprint", () => {
     document.title = previousTitle;
     courseEls.printExamArea.innerHTML = "";
@@ -2277,7 +2281,11 @@ function generateGradeReport() {
   `;
   
   const previousTitle = document.title;
-  document.title = `Genel_Not_Cizelgesi`;
+  const gradeReportDate = (function() {
+    const d = new Date();
+    return `${String(d.getDate()).padStart(2, "0")}_${String(d.getMonth() + 1).padStart(2, "0")}_${d.getFullYear()}`;
+  })();
+  document.title = `Genel_Not_Cizelgesi_${gradeReportDate}`;
   window.addEventListener("afterprint", () => {
     document.title = previousTitle;
     courseEls.printExamArea.innerHTML = "";
@@ -2384,7 +2392,11 @@ function generateAttendanceReport() {
   `;
   
   const previousTitle = document.title;
-  document.title = `Devamsizlik_Cizelgesi`;
+  const attendanceReportDate = (function() {
+    const d = new Date();
+    return `${String(d.getDate()).padStart(2, "0")}_${String(d.getMonth() + 1).padStart(2, "0")}_${d.getFullYear()}`;
+  })();
+  document.title = `Devamsizlik_Cizelgesi_${attendanceReportDate}`;
   window.addEventListener("afterprint", () => {
     document.title = previousTitle;
     courseEls.printExamArea.innerHTML = "";

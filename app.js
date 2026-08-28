@@ -4021,7 +4021,7 @@ function buildDailyGuidanceReportHtml() {
     <html lang="tr">
       <head>
         <meta charset="utf-8" />
-        <title>Günlük Rehberlik Önizleme</title>
+        <title>Gunluk_Rehberlik_Raporu_${getFormattedReportDate()}</title>
         <style>
           @page { size: A4 portrait; margin: 9mm 8mm; }
           * { box-sizing: border-box; }
@@ -4294,7 +4294,7 @@ function buildMonthlyGuidanceReportHtml() {
     <html lang="tr">
       <head>
         <meta charset="utf-8" />
-        <title>Aylık Rehberlik Önizleme</title>
+        <title>Aylik_Rehberlik_Raporu_${getFormattedReportDate()}</title>
         <style>
           @page { size: ${perPage === 2 ? "A4 landscape" : "A4 portrait"}; margin: 0; }
           * { box-sizing: border-box; }
@@ -4638,7 +4638,7 @@ function buildVocationalGradeReportHtml(ids) {
     <html lang="tr">
       <head>
         <meta charset="utf-8" />
-        <title>Not Çizelgesi Önizleme</title>
+        <title>Not_Cizelgesi_${getFormattedReportDate()}</title>
         <style>
           @page { size: ${isTwoPortrait ? "A4 portrait" : "A4 landscape"}; margin: ${isTwoPortrait ? "9mm 8mm" : "8mm"}; }
           * { box-sizing: border-box; }
@@ -4814,7 +4814,7 @@ function buildHighSchoolGradeReportHtml(ids) {
     <html lang="tr">
       <head>
         <meta charset="utf-8" />
-        <title>Not Çizelgesi Önizleme</title>
+        <title>Not_Cizelgesi_${getFormattedReportDate()}</title>
         <style>
           @page { size: A4 portrait; margin: 8mm; }
           * { box-sizing: border-box; }
@@ -4999,7 +4999,7 @@ function buildWageReportHtml() {
     <html lang="tr">
       <head>
         <meta charset="utf-8" />
-        <title>Ücret Raporu</title>
+        <title>Ucret_Raporu_${getFormattedReportDate()}</title>
         <style>
           @page { size: A4 landscape; margin: 6mm; }
           * { box-sizing: border-box; }
@@ -5151,7 +5151,7 @@ function buildNoticeTerminationReportHtml() {
     <html lang="tr">
       <head>
         <meta charset="utf-8" />
-        <title>Sözleşme Fesih Bildirimi Önizleme</title>
+        <title>Sozlesme_Fesih_Bildirimi_${getFormattedReportDate()}</title>
         <style>
           @page { size: A4 portrait; margin: 6mm; }
           * { box-sizing: border-box; }
@@ -5359,7 +5359,7 @@ function buildTerminationReportHtml() {
     <html lang="tr">
       <head>
         <meta charset="utf-8" />
-        <title>Sözleşme İptal Önizleme</title>
+        <title>Sozlesme_Iptal_Tutanagi_${getFormattedReportDate()}</title>
         <style>
           @page { size: A4 portrait; margin: 8mm; }
           * { box-sizing: border-box; }
@@ -5661,7 +5661,7 @@ function buildAbsenceReportHtml() {
     <html lang="tr">
       <head>
         <meta charset="utf-8" />
-        <title>Devamsızlık Önizleme</title>
+        <title>Devamsizlik_Raporu_${getFormattedReportDate()}</title>
         <style>
           @page { size: A4 portrait; margin: 9mm 8mm; }
           * { box-sizing: border-box; }
@@ -11453,10 +11453,27 @@ function documentModeLabel(mode) {
 function safeFileName(value) {
   return String(value || "belge")
     .replace(/[\\/:*?"<>|]+/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
+    .replace(/\s+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "")
     .slice(0, 120) || "belge";
+}
+
+function getFormattedReportDate(dateObj = new Date()) {
+  const d = dateObj instanceof Date && !isNaN(dateObj) ? dateObj : new Date();
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}_${month}_${year}`;
+}
+
+function formatReportSlug(text) {
+  const map = { "ç": "c", "Ç": "C", "ğ": "g", "Ğ": "G", "ı": "i", "I": "I", "İ": "I", "ö": "o", "Ö": "O", "ş": "s", "Ş": "S", "ü": "u", "Ü": "U" };
+  return String(text || "")
+    .replace(/[çÇğĞıIİöÖşŞüÜ]/g, (m) => map[m] || m)
+    .replace(/[^a-zA-Z0-9_-]+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "");
 }
 
 function downloadBlob(blob, fileName) {
@@ -12579,7 +12596,24 @@ function exportWordDocument(mode) {
 </body>
 </html>`;
 
-  const fileName = safeFileName(`${courseName}-${label}-${new Date().toISOString().slice(0, 10)}`);
+  const todayStr = getFormattedReportDate();
+  const cleanCourse = formatReportSlug(courseName) || "Ders";
+  let fileName = "";
+
+  if (mode === "exam") {
+    const term = state.examMeta?.term || "1";
+    const examNum = state.examMeta?.examNumber || "1";
+    fileName = `${cleanCourse}_${term}_Donem_${examNum}_Yazili_${todayStr}`;
+  } else if (mode === "answerKey") {
+    const term = state.examMeta?.term || "1";
+    const examNum = state.examMeta?.examNumber || "1";
+    fileName = `${cleanCourse}_${term}_Donem_${examNum}_Yazili_Cevap_Anahtari_${todayStr}`;
+  } else if (mode === "analysis") {
+    fileName = `${cleanCourse}_Soru_Analiz_Raporu_${todayStr}`;
+  } else {
+    fileName = `${cleanCourse}_${formatReportSlug(label)}_${todayStr}`;
+  }
+
   const blob = new Blob(["\ufeff", html], { type: "application/msword;charset=utf-8" });
   downloadBlob(blob, `${fileName}.doc`);
   showToast(`${label} Word dosyası indirildi.`);
