@@ -3463,6 +3463,17 @@ body.dark-mode .annual-resource-meta-separator {
   color: rgba(255, 255, 255, 0.1) !important;
 }
 
+body.dark-mode .annual-resource-transfer-btn {
+  background: linear-gradient(135deg, #0f766e 0%, #134e4a 100%) !important;
+  color: #5eead4 !important;
+  border-color: rgba(94, 234, 212, 0.3) !important;
+}
+
+body.dark-mode .annual-resource-transfer-btn:hover {
+  background: linear-gradient(135deg, #115e59 0%, #042f2e 100%) !important;
+  color: #ffffff !important;
+}
+
 /* 3. Özel Şablon Düzenleyici & Ünite Kartları */
 body.dark-mode .annual-custom-unit-card {
   background: rgba(255, 255, 255, 0.03) !important;

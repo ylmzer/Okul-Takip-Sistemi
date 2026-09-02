@@ -13829,6 +13829,48 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row sm
   fill: none;
 }
 
+.annual-resource-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.annual-resource-transfer-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 34px;
+  padding: 0 13px;
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  color: #ffffff !important;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 4px rgba(13, 148, 136, 0.2);
+}
+
+.annual-resource-transfer-btn:hover {
+  background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+  box-shadow: 0 4px 8px rgba(13, 148, 136, 0.3);
+  transform: translateY(-0.5px);
+}
+
+.annual-resource-transfer-btn:active {
+  transform: translateY(0.5px);
+}
+
+.annual-resource-transfer-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* Custom Unit Card Hover styles */
 .annual-custom-unit-card {
   transition: border-color 0.25s ease, box-shadow 0.25s ease !important;

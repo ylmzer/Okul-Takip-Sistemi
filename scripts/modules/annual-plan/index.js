@@ -2019,6 +2019,38 @@ function bindAnnualEvents() {
   
   // Custom bindings for download and plan-template views
   document.getElementById("annualDownloadListBtn")?.addEventListener("click", fetchDownloadResources);
+  
+  const onDownloadFilterChanged = async () => {
+    const select = document.getElementById("annualDownloadAreaCode");
+    const schoolType = document.getElementById("annualDownloadSchoolType")?.value || "mtal";
+    const grade = document.getElementById("annualDownloadGrade")?.value || "11";
+    if (select) {
+      delete select.dataset.loadedKey;
+      await loadAnnualMebAreaOptions(select, "-- Alan seçin --", schoolType, grade);
+    }
+    const dbfList = document.getElementById("annualDownloadDbfList");
+    const matList = document.getElementById("annualDownloadMatList");
+    if (dbfList) dbfList.innerHTML = "";
+    if (matList) matList.innerHTML = "";
+    const dbfStatus = document.getElementById("annualDownloadDbfStatus");
+    const matStatus = document.getElementById("annualDownloadMatStatus");
+    const dbfBadge = document.getElementById("annualDownloadDbfCountBadge");
+    const matBadge = document.getElementById("annualDownloadMatCountBadge");
+    if (dbfStatus) {
+      dbfStatus.style.display = "block";
+      dbfStatus.textContent = "Filtre değişti. Alan seçip Listele butonuna basın.";
+    }
+    if (matStatus) {
+      matStatus.style.display = "block";
+      matStatus.textContent = "Filtre değişti. Alan seçip Listele butonuna basın.";
+    }
+    if (dbfBadge) dbfBadge.style.display = "none";
+    if (matBadge) matBadge.style.display = "none";
+  };
+
+  document.getElementById("annualDownloadSchoolType")?.addEventListener("change", onDownloadFilterChanged);
+  document.getElementById("annualDownloadGrade")?.addEventListener("change", onDownloadFilterChanged);
+
   document.getElementById("annualDownloadAreaCode")?.addEventListener("change", () => {
     const dbfList = document.getElementById("annualDownloadDbfList");
     const matList = document.getElementById("annualDownloadMatList");
@@ -2039,19 +2071,33 @@ function bindAnnualEvents() {
     if (dbfBadge) dbfBadge.style.display = "none";
     if (matBadge) matBadge.style.display = "none";
   });
+
+  // Global click delegate for "Plan Şablonuna Aktar" buttons in Download view
+  document.addEventListener("click", (e) => {
+    const transferBtn = e.target.closest(".annual-resource-transfer-btn");
+    if (transferBtn) {
+      e.preventDefault();
+      handleQuickTransferToPlanTemplate(transferBtn);
+    }
+  });
 }
 
 // VERİ İNDİR (DOWNLOAD VIEW) İŞLEMLERİ
 
-async function loadAnnualMebAreaOptions(select, placeholder = "-- Alan seçin --") {
+async function loadAnnualMebAreaOptions(select, placeholder = "-- Alan seçin --", schoolType = "", grade = "") {
   if (!select) return false;
-  if (select.dataset.areasLoaded === "true" && select.options.length > 1) return true;
+
+  const currentSchoolType = schoolType || document.getElementById("annualDownloadSchoolType")?.value || "mtal";
+  const currentGrade = grade || document.getElementById("annualDownloadGrade")?.value || "11";
+  const requestedKey = `${currentSchoolType}-${currentGrade}`;
+
+  if (select.dataset.loadedKey === requestedKey && select.options.length > 1) return true;
 
   const currentValue = select.value || "00";
   try {
     select.disabled = true;
     select.innerHTML = `<option value="00">Alanlar yükleniyor...</option>`;
-    const response = await fetch("/api/meb-areas");
+    const response = await fetch(`/api/meb-areas?schoolType=${encodeURIComponent(currentSchoolType)}&grade=${encodeURIComponent(currentGrade)}`);
     if (!response.ok) throw new Error("Alan listesi alınamadı.");
     const data = await response.json();
     const areas = Array.isArray(data.areas) ? data.areas : [];
@@ -2060,6 +2106,7 @@ async function loadAnnualMebAreaOptions(select, placeholder = "-- Alan seçin --
     if ([...select.options].some((option) => option.value === currentValue)) {
       select.value = currentValue;
     }
+    select.dataset.loadedKey = requestedKey;
     select.dataset.areasLoaded = select.options.length > 1 ? "true" : "false";
     return select.dataset.areasLoaded === "true";
   } catch (error) {
@@ -2073,12 +2120,92 @@ async function loadAnnualMebAreaOptions(select, placeholder = "-- Alan seçin --
 
 async function initDownloadView() {
   const select = document.getElementById("annualDownloadAreaCode");
+  const schoolTypeSelect = document.getElementById("annualDownloadSchoolType");
+  const gradeSelect = document.getElementById("annualDownloadGrade");
   if (!select) return;
 
   try {
-    await loadAnnualMebAreaOptions(select, "-- Alan seçin --");
+    await loadAnnualMebAreaOptions(select, "-- Alan seçin --", schoolTypeSelect?.value, gradeSelect?.value);
   } catch (error) {
     annualToast(`Alan listesi yüklenemedi: ${error.message}`, "error");
+  }
+}
+
+async function handleQuickTransferToPlanTemplate(btn) {
+  if (!btn) return;
+  const url = btn.dataset.url;
+  const title = btn.dataset.title || "";
+  const grade = btn.dataset.grade || "";
+  const area = btn.dataset.area || "";
+  const schoolType = document.getElementById("annualDownloadSchoolType")?.value || "mtal";
+
+  const originalContent = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span>⏳ Aktarılıyor...</span>`;
+
+  try {
+    const res = await fetch("/api/annual-import-meb-dbf", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        url,
+        meta: {
+          title,
+          lessonName: title,
+          grade,
+          schoolType,
+          areaName: area
+        }
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok || data.error) {
+      throw new Error(data.error || "DBF içeriği alınamadı.");
+    }
+
+    if (!data.units || data.units.length === 0) {
+      throw new Error("Bu belgede öğrenme birimi bulunamadı.");
+    }
+
+    // Switch to Plan Template view
+    setAnnualView("plan-template");
+
+    // Populate metadata inputs
+    const lessonInput = document.getElementById("annualCustomLessonName");
+    if (lessonInput && (data.lessonName || title)) {
+      lessonInput.value = data.lessonName || title;
+      lessonInput.style.display = "block";
+    }
+    const customLessonSelect = document.getElementById("annualCustomLessonSelect");
+    if (customLessonSelect) {
+      customLessonSelect.style.display = "none";
+    }
+    const customTypeSelect = document.getElementById("annualCustomType");
+    if (customTypeSelect && schoolType) {
+      customTypeSelect.value = schoolType;
+    }
+    const customGradeSelect = document.getElementById("annualCustomGrade");
+    if (customGradeSelect) {
+      const gClean = (data.grade || grade).replace(/[^0-9]/g, "");
+      if (gClean && [...customGradeSelect.options].some(o => o.value.includes(gClean))) {
+        const matchingOpt = [...customGradeSelect.options].find(o => o.value.includes(gClean));
+        if (matchingOpt) customGradeSelect.value = matchingOpt.value;
+      }
+    }
+    const weeklyHoursInput = document.getElementById("annualCustomWeeklyHours");
+    if (weeklyHoursInput && data.weeklyHours) {
+      weeklyHoursInput.value = data.weeklyHours;
+    }
+
+    // Load curriculum units into editor
+    populateImportedCurriculum(data.units, false);
+    annualToast(`"${title}" başarıyla Plan Şablonu alanına aktarıldı! (${data.units.length} ünite)`, "success");
+  } catch (err) {
+    annualToast(`Plan şablonuna aktarılamadı: ${err.message}`, "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalContent;
   }
 }
 
@@ -2189,6 +2316,7 @@ function renderDownloadList(container, entries, kind) {
     const title = entry.title || "";
     const grade = entry.grade || "";
     const date = entry.date || "";
+    const isTransferable = kind === "dbf" || (entry.kind && (entry.kind.includes("Ders Bilgi") || entry.kind.includes("Çerçeve"))) || /\.(docx?|pdf)$/i.test(entry.fileName || entry.url);
     
     return `
       <div class="annual-resource-card">
@@ -2199,17 +2327,30 @@ function renderDownloadList(container, entries, kind) {
           <strong class="annual-resource-title" title="${annualHtml(title)}">${annualHtml(title)}</strong>
           <span class="annual-resource-meta">
             <span>${annualHtml(grade)}</span>
+            ${entry.kind ? `<span class="annual-resource-meta-separator">·</span><span>${annualHtml(entry.kind)}</span>` : ""}
             ${date ? `<span class="annual-resource-meta-separator">·</span><span>${annualHtml(date)}</span>` : ""}
           </span>
         </div>
-        <a href="${annualHtml(entry.url)}" target="_blank" class="annual-resource-download-btn" download>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
-          İndir
-        </a>
+        <div class="annual-resource-actions">
+          ${isTransferable ? `
+            <button type="button" class="annual-resource-transfer-btn" 
+              data-url="${annualHtml(entry.url)}" 
+              data-title="${annualHtml(title)}" 
+              data-grade="${annualHtml(grade)}" 
+              data-area="${annualHtml(entry.area || "")}"
+              title="Bu dersi doğrudan Plan Şablonu alanına aktarır">
+              ✨ Plan Şablonuna Aktar
+            </button>
+          ` : ""}
+          <a href="${annualHtml(entry.url)}" target="_blank" class="annual-resource-download-btn" download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            İndir
+          </a>
+        </div>
       </div>
     `;
   }).join("");
@@ -2279,8 +2420,12 @@ function renderCustomTemplateQuickPicker() {
 async function loadCustomTemplateAreas() {
   const select = document.getElementById("annualCustomAreaCode");
   if (!select) return;
+  const schoolType = document.getElementById("annualCustomType")?.value || "mtal";
+  const gradeVal = document.getElementById("annualCustomGrade")?.value || "11. sınıf";
+  const gradeNum = gradeVal.match(/\d+/)?.[0] || "11";
   try {
-    await loadAnnualMebAreaOptions(select, "-- Alan seçin --");
+    delete select.dataset.loadedKey;
+    await loadAnnualMebAreaOptions(select, "-- Alan seçin --", schoolType, gradeNum);
   } catch (error) {
     console.error("Custom template alan listesi yüklenemedi:", error);
   }
@@ -2607,20 +2752,28 @@ function populateImportedCurriculum(parsedUnits, skipTopics = false) {
 }
 
 let importDialogAreasLoaded = false;
-async function loadImportDialogMebAreas() {
+async function loadImportDialogMebAreas(force = false) {
   const select = document.getElementById("annualImportMebAreaCode");
   if (!select) return;
-  if (importDialogAreasLoaded || select.options.length > 1) return;
+  const schoolType = document.getElementById("annualImportMebSchoolType")?.value || "mtal";
+  const grade = document.getElementById("annualImportMebGrade")?.value || "11";
+  const key = `${schoolType}-${grade}`;
+  if (!force && select.dataset.loadedKey === key && select.options.length > 1) return;
   try {
-    const response = await fetch("/api/meb-areas");
+    select.disabled = true;
+    select.innerHTML = `<option value="00">Alanlar yükleniyor...</option>`;
+    const response = await fetch(`/api/meb-areas?schoolType=${encodeURIComponent(schoolType)}&grade=${encodeURIComponent(grade)}`);
     if (!response.ok) throw new Error("Alan listesi alınamadı.");
     const data = await response.json();
     const areas = Array.isArray(data.areas) ? data.areas : [];
     select.innerHTML = `<option value="00">-- Alan seçin --</option>` +
       areas.map((area) => `<option value="${annualHtml(area.code)}">${annualHtml(area.name)}</option>`).join("");
+    select.dataset.loadedKey = key;
     importDialogAreasLoaded = true;
   } catch (error) {
     console.error("Import dialog alan listesi yüklenemedi:", error);
+  } finally {
+    select.disabled = false;
   }
 }
 
@@ -2691,9 +2844,15 @@ function initPlanTemplateView() {
     customTemplateBound = true;
     
     // Bind reload events for lesson selection
-    document.getElementById("annualCustomType")?.addEventListener("change", loadCustomTemplateLessons);
+    document.getElementById("annualCustomType")?.addEventListener("change", async () => {
+      await loadCustomTemplateAreas();
+      await loadCustomTemplateLessons();
+    });
     document.getElementById("annualCustomAreaCode")?.addEventListener("change", loadCustomTemplateLessons);
-    document.getElementById("annualCustomGrade")?.addEventListener("change", loadCustomTemplateLessons);
+    document.getElementById("annualCustomGrade")?.addEventListener("change", async () => {
+      await loadCustomTemplateAreas();
+      await loadCustomTemplateLessons();
+    });
     
     // Lesson selection change events
     const selectLesson = document.getElementById("annualCustomLessonSelect");
@@ -2860,9 +3019,13 @@ function initPlanTemplateView() {
     });
 
     // Dynamic catalog lists in dialog
-    document.getElementById("annualImportMebSchoolType")?.addEventListener("change", () => loadImportDialogMebLessons());
+    const onImportFilterChanged = async () => {
+      await loadImportDialogMebAreas(true);
+      await loadImportDialogMebLessons();
+    };
+    document.getElementById("annualImportMebSchoolType")?.addEventListener("change", onImportFilterChanged);
     document.getElementById("annualImportMebAreaCode")?.addEventListener("change", () => loadImportDialogMebLessons());
-    document.getElementById("annualImportMebGrade")?.addEventListener("change", () => loadImportDialogMebLessons());
+    document.getElementById("annualImportMebGrade")?.addEventListener("change", onImportFilterChanged);
 
     // Local file selectors
     const localFileInput = document.getElementById("annualImportWordFileInput");

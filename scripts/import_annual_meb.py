@@ -9,7 +9,13 @@ import tempfile
 import unicodedata
 from pathlib import Path
 
-from pypdf import PdfReader
+try:
+    from pypdf import PdfReader
+except Exception:
+    try:
+        from PyPDF2 import PdfReader
+    except Exception:
+        PdfReader = None
 
 try:
     import pdfplumber

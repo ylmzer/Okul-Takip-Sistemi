@@ -106,6 +106,32 @@ def extract_blocks(path):
 def normalize_text(value):
     return clean_text(value).lower().replace("ı", "i").replace("ş", "s").replace("ğ", "g").replace("ç", "c").replace("ö", "o").replace("ü", "u")
 
+def tr_lower(text):
+    return (
+        str(text or "")
+        .replace("İ", "i")
+        .replace("I", "ı")
+        .replace("Ğ", "ğ")
+        .replace("Ü", "ü")
+        .replace("Ş", "ş")
+        .replace("Ö", "ö")
+        .replace("Ç", "ç")
+        .lower()
+        .strip()
+    )
+
+def is_metadata_text(text):
+    t = tr_lower(text)
+    if "ders" in t and any(w in t for w in ["ad", "sınıf", "sinif", "süre", "sure", "amaç", "amac", "öğrenme", "ogrenme"]):
+        return True
+    if any(k in t for k in [
+        "eğitim-öğretim ortam", "egitim-ogretim ortam", "ölçme ve değerlendirme", "olcme ve degerlendirme",
+        "toplam", "kazanım sayısı", "kazanim sayisi", "uygulama faaliyetleri", "temrinler",
+        "dersin uygulanması", "dersin uygulanmasi", "açıklamalar", "aciklamalar"
+    ]):
+        return True
+    return False
+
 def parse_docx(path):
     blocks = extract_blocks(path)
     units_list = []
@@ -145,8 +171,25 @@ def parse_docx(path):
         rows = block["rows"]
         if not rows or len(rows) < 2:
             continue
+
+        # Check if this is a cover / metadata table (e.g. 2 columns with DERSİN ADI, SÜRESİ, etc.)
+        first_cell = rows[0][0].strip() if rows[0] else ""
+        if len(rows[0]) <= 2 and is_metadata_text(first_cell):
+            for r in rows:
+                if len(r) >= 2:
+                    k = tr_lower(r[0])
+                    v = r[1].strip()
+                    if "ders" in k and "ad" in k and not meta["lessonName"]:
+                        meta["lessonName"] = v
+                    elif ("sınıf" in k or "sinif" in k) and not meta["grade"]:
+                        meta["grade"] = v
+                    elif ("süre" in k or "sure" in k) and not meta["weeklyHours"]:
+                        digits = re.findall(r"\d+", v)
+                        if digits:
+                            meta["weeklyHours"] = int(digits[0])
+            continue # Skip cover table from becoming units!
             
-        # Determine column indexes
+        # Determine column indexes with robust keyword order
         unit_idx = -1
         topic_idx = -1
         outcome_idx = -1
@@ -155,17 +198,18 @@ def parse_docx(path):
         
         # Check first 3 rows for header keywords
         for r_idx in range(min(3, len(rows))):
-            row = [cell.lower() for cell in rows[r_idx]]
+            row = [tr_lower(cell) for cell in rows[r_idx]]
             for c_idx, cell in enumerate(row):
-                if any(k in cell for k in ["ünite", "öğrenme birimi", "tema", "bölüm"]):
-                    unit_idx = c_idx
-                elif any(k in cell for k in ["kazanım", "hedef"]):
+                # Check kazanım FIRST because "ÖĞRENME BİRİMİ KAZANIMLARI" contains both
+                if any(k in cell for k in ["kazanım", "kazanim", "hedef"]):
                     outcome_idx = c_idx
-                elif any(k in cell for k in ["konu", "içerik"]):
+                elif any(k in cell for k in ["ünite", "unite", "öğrenme birimi", "ogrenme birimi", "tema", "bölüm", "bolum"]):
+                    unit_idx = c_idx
+                elif any(k in cell for k in ["konu", "içerik", "icerik"]):
                     topic_idx = c_idx
-                elif any(k in cell for k in ["saat", "süre"]):
+                elif any(k in cell for k in ["saat", "süre", "sure"]):
                     hours_idx = c_idx
-                elif any(k in cell for k in ["oran", "ağırlık"]):
+                elif any(k in cell for k in ["oran", "ağırlık", "agirlik"]):
                     ratio_idx = c_idx
                     
         # Apply fallbacks if headers not detected
@@ -178,9 +222,8 @@ def parse_docx(path):
                 hours_idx = 3
             elif col_count == 3:
                 unit_idx = 0
-                topic_idx = 0
-                outcome_idx = 1
-                hours_idx = 2
+                topic_idx = 1
+                outcome_idx = 2
             elif col_count == 2:
                 unit_idx = 0
                 outcome_idx = 1
@@ -193,20 +236,26 @@ def parse_docx(path):
             
         active_unit = None
         
-        # Filter headers
-        data_rows = []
         for row in rows:
-            row_lower = [c.lower() for c in row]
-            is_header = any(any(k in c for k in ["ünite", "öğrenme birimi", "kazanım", "konular", "ders saati"]) for c in row_lower)
-            if not is_header:
-                data_rows.append(row)
-                
-        for row in data_rows:
+            row_tr = [tr_lower(c) for c in row]
+            is_header = any(any(k in c for k in ["ünite", "öğrenme birimi", "kazanım", "konular", "kazanim", "ogrenme"]) for c in row_tr)
+            if is_header:
+                continue
+
             u_val = row[unit_idx].strip() if 0 <= unit_idx < len(row) else ""
             t_val = row[topic_idx].strip() if 0 <= topic_idx < len(row) else ""
             o_val = row[outcome_idx].strip() if 0 <= outcome_idx < len(row) else ""
             h_val = row[hours_idx].strip() if 0 <= hours_idx < len(row) else ""
             r_val = row[ratio_idx].strip() if 0 <= ratio_idx < len(row) else ""
+
+            # Check if this row marks the end of unit curriculum (practice tasks or notes)
+            u_tr = tr_lower(u_val)
+            if any(k in u_tr for k in ["uygulama faaliyetleri", "temrinler", "dersin uygulanması", "dersin uygulanmasi", "açıklamalar", "aciklamalar"]):
+                break
+
+            # Skip metadata rows or empty unit titles
+            if is_metadata_text(u_val):
+                continue
             
             # Heuristic: if u_val is empty but t_val starts with "ÜNİTE" or "ÖĞRENME BİRİMİ", treat it as unit name
             if not u_val and (re.match(r"^(?:öğrenme\s+birimi|ünite|bölüm)\s*\d+", t_val, re.I)):
@@ -214,9 +263,14 @@ def parse_docx(path):
                 t_val = ""
             
             if u_val:
-                if not active_unit or u_val.lower() != active_unit["title"].lower():
+                u_clean = " ".join(u_val.split())
+                # Look for existing unit to merge
+                matched = next((u for u in units_list if tr_lower(u["title"]) == tr_lower(u_clean)), None)
+                if matched:
+                    active_unit = matched
+                else:
                     active_unit = {
-                        "title": u_val,
+                        "title": u_clean,
                         "hours": 0,
                         "ratio": "",
                         "outcomes_list": [],
@@ -271,9 +325,17 @@ def parse_docx(path):
                     active_unit["topics"].append(text)
                     
     # Format and clean outcomes and topics
+    num_units = max(1, len(units_list))
+    default_unit_hours = 10
+    if meta.get("weeklyHours"):
+        default_unit_hours = max(1, round((meta["weeklyHours"] * 36) / num_units))
+    default_ratio = f"%{round(100 / num_units)}"
+
     for unit in units_list:
         if unit["hours"] == 0:
-            unit["hours"] = 10
+            unit["hours"] = default_unit_hours
+        if not unit["ratio"]:
+            unit["ratio"] = default_ratio
             
         # Merge numbered list items for outcomes
         raw_outcomes = [o.strip() for o in unit["outcomes_list"] if o.strip()]

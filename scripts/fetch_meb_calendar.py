@@ -10,7 +10,13 @@ import urllib.request
 from datetime import datetime
 from pathlib import Path
 
-from pypdf import PdfReader
+try:
+    from pypdf import PdfReader
+except Exception:
+    try:
+        from PyPDF2 import PdfReader
+    except Exception:
+        PdfReader = None
 
 
 MEB_ROOT = "https://www.meb.gov.tr"
@@ -303,8 +309,17 @@ def download_pdf(url):
 
 
 def extract_text(pdf_path):
-    reader = PdfReader(str(pdf_path))
-    return "\n".join(page.extract_text() or "" for page in reader.pages)
+    if PdfReader is not None:
+        reader = PdfReader(str(pdf_path))
+        return "\n".join(page.extract_text() or "" for page in reader.pages)
+    try:
+        data = Path(pdf_path).read_bytes()
+        texts = re.findall(rb"\((.*?)\)Tj", data)
+        if texts:
+            return "\n".join(t.decode("utf-8", errors="ignore") for t in texts)
+    except Exception:
+        pass
+    raise RuntimeError("PDF takvim okunamadı: Python ortamında pypdf kütüphanesi bulunamadı.")
 
 
 def fetch_pdf_calendar(url, year=""):
@@ -370,15 +385,13 @@ def main():
 
     calendars = discover_years(years or ([year] if year else None))
     selected = next((item for item in calendars if item.get("year") == year and is_useful_calendar(item)), None)
-    selected = selected or latest_calendar(calendars)
-
-    if not selected:
-        raise RuntimeError("MEB haber arşivinde eğitim öğretim yılı takvimi bulunamadı.")
+    if not selected and not year:
+        selected = latest_calendar(calendars)
 
     print(json.dumps({
         "calendar": selected,
         "calendars": calendars,
-        "dates": selected.get("dates", {}),
+        "dates": selected.get("dates", {}) if selected else {},
     }, ensure_ascii=False))
 
 

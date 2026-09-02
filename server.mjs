@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
-import { mkdir, readFile, writeFile, unlink, stat } from "node:fs/promises";
-import { extname, join, normalize, dirname } from "node:path";
+import { mkdir, readFile, writeFile, unlink, stat, rm, readdir } from "node:fs/promises";
+import { extname, join, normalize, dirname, basename } from "node:path";
 import { tmpdir } from "node:os";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -11,7 +11,7 @@ import { parsePdf, parseExcel } from "./scripts/import_ime_data.js";
 const root = dirname(fileURLToPath(import.meta.url));
 const port = Number(process.env.PORT || 4173);
 const execFileAsync = promisify(execFile);
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 
 let pythonPath = join(process.env.USERPROFILE || "", ".cache", "codex-runtimes", "codex-primary-runtime", "dependencies", "python", "python.exe");
 if (!existsSync(pythonPath)) {
@@ -25,7 +25,21 @@ if (!existsSync(pythonPath)) {
     pythonPath = process.platform === "win32" ? "python" : "python3";
   }
 }
-const pythonEnv = { ...process.env, PYTHONIOENCODING: "utf-8" };
+const userLocalPackages = process.platform === "win32"
+  ? ""
+  : [
+      `${process.env.HOME || "/home/render"}/.local/lib/python3.11/site-packages`,
+      `${process.env.HOME || "/home/render"}/.local/lib/python3.10/site-packages`,
+      `${process.env.HOME || "/home/render"}/.local/lib/python3.12/site-packages`
+    ].join(":");
+
+const pythonEnv = {
+  ...process.env,
+  PYTHONIOENCODING: "utf-8",
+  PYTHONPATH: process.env.PYTHONPATH
+    ? `${process.env.PYTHONPATH}${userLocalPackages ? `:${userLocalPackages}` : ""}`
+    : userLocalPackages
+};
 const annualMebCacheDir = join(root, ".cache", "annual-meb");
 
 // Bypass SSL verification for MEB and government website fetches
@@ -149,7 +163,7 @@ const server = createServer(async (request, response) => {
       await handleMebModules(request, response);
       return;
     }
-    if (request.method === "GET" && url.pathname === "/api/meb-areas") {
+    if ((request.method === "GET" || request.method === "POST") && url.pathname === "/api/meb-areas") {
       await handleMebAreas(request, response);
       return;
     }
@@ -435,6 +449,8 @@ async function handleTemplateDocxImport(request, response) {
 }
 
 async function handleAnnualImportMebDbf(request, response) {
+  const tempFiles = [];
+  let tempDirToClean = "";
   try {
     const { url, meta } = await readJsonRequest(request);
     if (!url) {
@@ -444,9 +460,10 @@ async function handleAnnualImportMebDbf(request, response) {
     }
 
     const metaObj = meta || {};
+    let fileInRar = "";
     try {
       const parsedUrl = new URL(url);
-      const fileInRar = parsedUrl.searchParams.get("file");
+      fileInRar = parsedUrl.searchParams.get("file") || "";
       if (fileInRar) {
         metaObj.file_in_rar = fileInRar;
       }
@@ -454,73 +471,99 @@ async function handleAnnualImportMebDbf(request, response) {
       console.warn("URL parse hatası, file_in_rar okunamadı:", e.message);
     }
 
-    const res = await fetch(url, {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Sorubank/1.0"
-      }
-    });
+    const downloadedPath = await downloadMebFile(url, "annual-dbf-import");
+    tempFiles.push(downloadedPath);
 
-    if (!res.ok) {
-      throw new Error(`MEB belgesi indirilemedi: ${res.status}`);
+    let docToProcess = downloadedPath;
+    let isDocx = /\.docx?($|\?)/i.test(fileInRar || url);
+    const isRar = /\.rar($|\?)/i.test(url);
+
+    if (isRar) {
+      tempDirToClean = join(tmpdir(), `meb-rar-extract-${Date.now()}-${Math.random().toString(16).slice(2)}`);
+      await mkdir(tempDirToClean, { recursive: true });
+      await execFileAsync("tar", ["-xf", downloadedPath, "-C", tempDirToClean]);
+
+      function getFilesRecursively(dir) {
+        const entries = readdirSync(dir, { withFileTypes: true });
+        const res = [];
+        for (const e of entries) {
+          const full = join(dir, e.name);
+          if (e.isDirectory()) res.push(...getFilesRecursively(full));
+          else res.push(full);
+        }
+        return res;
+      }
+      const extractedFiles = getFilesRecursively(tempDirToClean);
+
+      if (fileInRar) {
+        const targetClean = fileInRar.replace(/\\/g, "/").toLowerCase();
+        docToProcess = extractedFiles.find(f => f.replace(/\\/g, "/").toLowerCase().endsWith(targetClean))
+          || extractedFiles.find(f => basename(f).toLowerCase() === basename(fileInRar).toLowerCase());
+      }
+
+      if (!docToProcess || !existsSync(docToProcess)) {
+        const lName = (metaObj.lessonName || metaObj.title || "").toLowerCase();
+        docToProcess = extractedFiles.find(f => lName && basename(f).toLowerCase().includes(lName))
+          || extractedFiles.find(f => /\.(docx?|pdf)$/i.test(f));
+      }
+
+      if (!docToProcess) {
+        throw new Error("Arşiv içinde ders dosyası bulunamadı.");
+      }
+
+      isDocx = /\.docx?$/i.test(extname(docToProcess));
     }
 
-    const buffer = Buffer.from(await res.arrayBuffer());
-    
-    // Determine extension from URL path
-    let ext = ".docx";
-    try {
-      const parsedUrl = new URL(url);
-      const pathname = parsedUrl.pathname;
-      const parsedExt = extname(pathname).toLowerCase();
-      if (parsedExt) {
-        ext = parsedExt;
-      }
-    } catch (e) {
-      console.warn("URL parse hatası, varsayılan uzantı kullanılacak:", e.message);
+    let units = [];
+    let warnings = [];
+    let weeklyHours = null;
+    let lessonName = metaObj.lessonName || "";
+    let grade = metaObj.grade || "";
+
+    if (isDocx) {
+      const importerPath = join(root, "scripts", "import_template_docx.py");
+      const execResult = await execFileAsync(pythonPath, [importerPath, docToProcess], {
+        env: pythonEnv,
+        maxBuffer: 1024 * 1024 * 10
+      });
+      const data = JSON.parse(execResult.stdout);
+      units = data.units || [];
+      weeklyHours = data.weeklyHours || null;
+      if (data.lessonName && !lessonName) lessonName = data.lessonName;
+      if (data.grade && !grade) grade = data.grade;
+      if (data.warnings) warnings = data.warnings;
+    } else {
+      const importerPath = join(root, "scripts", "import_annual_meb.py");
+      const args = [importerPath, "--dbf", docToProcess, "--meta", JSON.stringify(metaObj)];
+      const execResult = await execFileAsync(pythonPath, args, {
+        env: pythonEnv,
+        maxBuffer: 1024 * 1024 * 20
+      });
+      const payload = JSON.parse(execResult.stdout);
+      units = payload.template?.units || [];
+      warnings = payload.warnings || [];
+      weeklyHours = payload.weeklyHours || payload.template?.weeklyHours || null;
+      if (payload.template?.lessonName && !lessonName) lessonName = payload.template.lessonName;
+      if (payload.template?.grade && !grade) grade = payload.template.grade;
     }
 
-    // Save to temp file with correct extension
-    const tempPath = join(tmpdir(), `sorubank-meb-dbf-${Date.now()}${ext}`);
-    await writeFile(tempPath, buffer);
-
-    try {
-      let stdout;
-      if (ext === ".docx") {
-        const importerPath = join(root, "scripts", "import_template_docx.py");
-        const execResult = await execFileAsync(pythonPath, [importerPath, tempPath], {
-          env: pythonEnv,
-          maxBuffer: 1024 * 1024 * 10
-        });
-        stdout = execResult.stdout;
-        response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
-        response.end(stdout);
-      } else {
-        // Run import_annual_meb.py for pdf or rar
-        const importerPath = join(root, "scripts", "import_annual_meb.py");
-        const args = [importerPath, "--dbf", tempPath, "--meta", JSON.stringify(metaObj)];
-        const execResult = await execFileAsync(pythonPath, args, {
-          env: pythonEnv,
-          maxBuffer: 1024 * 1024 * 20
-        });
-        stdout = execResult.stdout;
-        
-        const payload = JSON.parse(stdout);
-        const units = payload.template?.units || [];
-        const warnings = payload.warnings || [];
-        const weeklyHours = payload.weeklyHours || payload.template?.weeklyHours || null;
-        
-        response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
-        response.end(JSON.stringify({ units, warnings, weeklyHours }));
-      }
-    } catch (error) {
-      response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
-      response.end(JSON.stringify({ error: error.message || "Çözümleme betiği yürütülemedi." }));
-    } finally {
-      await unlink(tempPath).catch(() => {});
-    }
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      units,
+      warnings,
+      weeklyHours,
+      lessonName,
+      grade,
+      schoolType: metaObj.schoolType || ""
+    }));
   } catch (error) {
     response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
     response.end(JSON.stringify({ error: error.message || "DBF indirilirken hata oluştu." }));
+  } finally {
+    await Promise.all(tempFiles.map(f => unlink(f).catch(() => {})));
+    if (tempDirToClean) {
+      await rm(tempDirToClean, { recursive: true, force: true }).catch(() => {});
+    }
   }
 }
 
@@ -986,7 +1029,12 @@ function stripHtmlTags(html = "") {
 
 function absoluteMebUrl(href = "") {
   try {
-    return new URL(decodeHtmlEntities(href), "https://meslek.meb.gov.tr/").toString();
+    let cleanHref = decodeHtmlEntities(href);
+    const lastUploadIdx = cleanHref.lastIndexOf("upload/");
+    if (lastUploadIdx > 0) {
+      cleanHref = cleanHref.substring(lastUploadIdx);
+    }
+    return new URL(cleanHref, "https://meslek.meb.gov.tr/").toString();
   } catch {
     return "";
   }
@@ -997,7 +1045,9 @@ function mebCatalogPath(source, grade, schoolTypeId) {
   const safeSchoolType = ["1", "2"].includes(String(schoolTypeId)) ? String(schoolTypeId) : "1";
   const paths = {
     dbf: `dbflistele.aspx?sinif_kodu=${safeGrade}&kurum_id=${safeSchoolType}`,
-    material: `dm_listele.aspx?sinif_kodu=${safeGrade}&kurum_id=${safeSchoolType}`,
+    material: safeSchoolType === "2" 
+      ? `bom.aspx?sinif_kodu=${safeGrade}&kurum_id=2`
+      : `dm_listele.aspx?sinif_kodu=${safeGrade}&kurum_id=${safeSchoolType}`,
     framework: `cercevelistele.aspx?sinif_kodu=${safeGrade}&kurum_id=${safeSchoolType}`
   };
   return paths[source] || paths.dbf;
@@ -1016,22 +1066,22 @@ function parseMebCatalogCards(html = "", source = "dbf") {
     const url = absoluteMebUrl(href);
     if (!url || seen.has(url)) continue;
 
-    // Filter out buggy duplicate/nested URLs generated by MEB WebForms (e.g. containing /upload/.../upload/)
-    if (url.split("/upload/").length > 2) continue;
-
     const start = Math.max(0, match.index - 250);
     const end = Math.min(cleanHtml.length, anchorRegex.lastIndex + 1300);
     const block = cleanHtml.slice(start, end);
-    const title = stripHtmlTags(block.match(/<b[^>]*>([\s\S]*?)<\/b>/i)?.[1] || match[2])
+    let title = stripHtmlTags(block.match(/<b[^>]*>([\s\S]*?)<\/b>/i)?.[1] || "")
       || stripHtmlTags(match[2])
       || url.split("/").pop();
+    if (!title || /^<img/i.test(title.trim())) {
+      title = stripHtmlTags(block.match(/<b[^>]*>([\s\S]*?)<\/b>/i)?.[1] || "") || url.split("/").pop();
+    }
     const listItems = [...block.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/gi)]
       .map((item) => stripHtmlTags(item[1]))
       .filter(Boolean);
     const details = listItems.filter((item) => item !== title);
     const gradeText = details.find((item) => /sınıf|sinif/i.test(item)) || "";
     const date = details.find((item) => /\d{1,2}\.\d{1,2}\.\d{4}/.test(item)) || "";
-    const area = details.find((item) => !/MTAL|Mesleki|Sınıf|Sinif|Ders Bilgi|Materyal|Çerçeve|Program|Form/i.test(item)) || "";
+    const area = details.find((item) => !/MTAL|MESEM|Mesleki|Sınıf|Sinif|Ders Bilgi|Materyal|Çerçeve|Program|Form/i.test(item)) || "";
     const kind = {
       dbf: "Ders Bilgi Formu",
       material: "Ders Materyali / Kitap",
@@ -1053,19 +1103,24 @@ function parseMebCatalogCards(html = "", source = "dbf") {
   return cards.sort((a, b) => a.title.localeCompare(b.title, "tr"));
 }
 
-// MEB area list (56 areas from the dropdown on dbflistele.aspx)
-const MEB_AREAS = [
+// Complete MTAL areas list (codes 01 to 62)
+const MEB_AREAS_MTAL = [
+  { code: "60", name: "Mesleki Gelişim Atölyesi" },
   { code: "01", name: "Adalet" },
   { code: "02", name: "Aile ve Tüketici Hizmetleri" },
   { code: "03", name: "Ayakkabı ve Saraciye Teknolojisi" },
+  { code: "58", name: "Basım Teknolojileri" },
   { code: "04", name: "Bilişim Teknolojileri" },
   { code: "05", name: "Biyomedikal Cihaz Teknolojileri" },
   { code: "06", name: "Büro Yönetimi ve Yönetici Asistanlığı" },
   { code: "07", name: "Çocuk Gelişimi ve Eğitimi" },
   { code: "08", name: "Denizcilik" },
+  { code: "61", name: "Doğu Anadolu Gastronomi ve Mutfak Sanatları" },
   { code: "09", name: "El Sanatları Teknolojisi" },
   { code: "10", name: "Elektrik-Elektronik Teknolojisi" },
+  { code: "55", name: "Endüstriyel Kalite Kontrol" },
   { code: "11", name: "Endüstriyel Otomasyon Teknolojileri" },
+  { code: "56", name: "Gastronomi ve Mutfak Sanatları" },
   { code: "12", name: "Gazetecilik" },
   { code: "13", name: "Geleneksel Türk Sanatları" },
   { code: "14", name: "Gemi Yapımı" },
@@ -1085,6 +1140,7 @@ const MEB_AREAS = [
   { code: "28", name: "Laboratuvar Hizmetleri" },
   { code: "29", name: "Maden Teknolojisi" },
   { code: "30", name: "Makine ve Tasarım Teknolojisi" },
+  { code: "62", name: "Marmara Gastronomi ve Mutfak Sanatları" },
   { code: "31", name: "Matbaa Teknolojisi" },
   { code: "32", name: "Metal Teknolojisi" },
   { code: "33", name: "Metalürji Teknolojisi" },
@@ -1093,6 +1149,7 @@ const MEB_AREAS = [
   { code: "36", name: "Moda Tasarım Teknolojileri" },
   { code: "37", name: "Motorlu Araçlar Teknolojisi" },
   { code: "38", name: "Muhasebe ve Finansman" },
+  { code: "59", name: "Otomotiv Teknolojileri" },
   { code: "39", name: "Pazarlama ve Perakende" },
   { code: "40", name: "Plastik Sanatlar" },
   { code: "41", name: "Plastik Teknolojisi" },
@@ -1101,22 +1158,141 @@ const MEB_AREAS = [
   { code: "44", name: "Sağlık Hizmetleri" },
   { code: "45", name: "Seramik ve Cam Teknolojisi" },
   { code: "46", name: "Siber Güvenlik" },
+  { code: "57", name: "Sosyal Hizmetler" },
   { code: "47", name: "Tarım" },
   { code: "48", name: "Tekstil Teknolojisi" },
   { code: "49", name: "Tesisat Teknolojisi ve İklimlendirme" },
   { code: "50", name: "Uçak Bakım" },
   { code: "51", name: "Ulaştırma Hizmetleri" },
-  { code: "52", name: "Yenilenebilir Enerji Teknolojileri" },
-  { code: "53", name: "Yiyecek İçecek Hizmetleri" },
   { code: "54", name: "Yapay Zekâ" },
-  { code: "55", name: "Endüstriyel Kalite Kontrol" },
-  { code: "56", name: "Gastronomi ve Mutfak Sanatları" },
-  { code: "60", name: "Mesleki Gelişim Atölyesi" }
+  { code: "52", name: "Yenilenebilir Enerji Teknolojileri" },
+  { code: "53", name: "Yiyecek İçecek Hizmetleri" }
 ];
 
+// Complete MESEM areas list (codes 100 to 140)
+const MEB_AREAS_MESEM = [
+  { code: "100", name: "23 Bağımsız Dal Çerçeve Öğretim Programları" },
+  { code: "101", name: "Ayakkabı ve Saraciye Teknolojisi" },
+  { code: "102", name: "Bilişim Teknolojileri" },
+  { code: "103", name: "Büro Yönetimi" },
+  { code: "104", name: "Denizcilik" },
+  { code: "105", name: "El Sanatları Teknolojisi" },
+  { code: "106", name: "Elektrik-Elektronik Teknolojisi" },
+  { code: "107", name: "Endüstriyel Otomasyon Teknolojileri" },
+  { code: "108", name: "Gazetecilik" },
+  { code: "109", name: "Gemi Yapımı" },
+  { code: "110", name: "Gıda Teknolojisi" },
+  { code: "111", name: "Grafik ve Fotoğraf" },
+  { code: "112", name: "Güzellik ve Saç Bakım Hizmetleri" },
+  { code: "113", name: "Harita-Tapu-Kadastro" },
+  { code: "114", name: "Hayvan Yetiştiriciliği ve Sağlığı" },
+  { code: "115", name: "İnşaat Teknolojisi" },
+  { code: "116", name: "Kimya Teknolojisi" },
+  { code: "117", name: "Konaklama ve Seyahat Hizmetleri" },
+  { code: "118", name: "Kuyumculuk Teknolojisi" },
+  { code: "119", name: "Makine Teknolojisi" },
+  { code: "120", name: "Matbaa Teknolojisi" },
+  { code: "121", name: "Metal Teknolojisi" },
+  { code: "122", name: "Metalürji Teknolojisi" },
+  { code: "123", name: "Mobilya ve İç Mekân Tasarımı" },
+  { code: "124", name: "Moda Tasarım  Teknolojileri" },
+  { code: "125", name: "Motorlu Araçlar Teknolojisi" },
+  { code: "126", name: "Muhasebe ve Finansman" },
+  { code: "127", name: "Müzik Aletleri Yapımı" },
+  { code: "128", name: "Pazarlama ve Perakende" },
+  { code: "129", name: "Plastik Teknolojisi" },
+  { code: "130", name: "Radyo-Televizyon" },
+  { code: "131", name: "Seramik ve Cam Teknolojisi" },
+  { code: "132", name: "Siber Güvenlik" },
+  { code: "133", name: "Tarım" },
+  { code: "134", name: "Tekstil Teknolojisi" },
+  { code: "135", name: "Tesisat Teknolojisi ve İklimlendirme" },
+  { code: "136", name: "Uçak Bakım" },
+  { code: "137", name: "Ulaştırma Hizmetleri" },
+  { code: "138", name: "Yenilenebilir Enerji Teknolojileri" },
+  { code: "139", name: "Yiyecek İçecek Hizmetleri" },
+  { code: "140", name: "Ortak" }
+];
+
+const ALL_MEB_AREAS = [...MEB_AREAS_MTAL, ...MEB_AREAS_MESEM];
+const MEB_AREAS = MEB_AREAS_MTAL; // backward compatibility
+
+const mebAreasCache = new Map();
+
+async function fetchLiveMebAreas(schoolType = "mtal", grade = "11") {
+  const isMesem = String(schoolType).toLowerCase() === "mesem";
+  const schoolTypeId = isMesem ? "2" : "1";
+  const safeGrade = ["9", "10", "11", "12"].includes(String(grade)) ? String(grade) : "11";
+  const cacheKey = `${schoolTypeId}-${safeGrade}`;
+
+  if (mebAreasCache.has(cacheKey)) {
+    return mebAreasCache.get(cacheKey);
+  }
+
+  const fallback = isMesem ? MEB_AREAS_MESEM : MEB_AREAS_MTAL;
+
+  try {
+    const page = (!isMesem && safeGrade === "9") ? "cercevelistele.aspx" : "dbflistele.aspx";
+    const targetUrl = `https://meslek.meb.gov.tr/${page}?sinif_kodu=${safeGrade}&kurum_id=${schoolTypeId}`;
+
+    const res = await fetch(targetUrl, {
+      headers: {
+        "Accept": "text/html,application/xhtml+xml",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Sorubank/1.0"
+      },
+      signal: AbortSignal.timeout(5000)
+    });
+
+    if (res.ok) {
+      const html = await res.text();
+      const match = html.match(/<select[^>]*name=["']ctl00\$ContentPlaceHolder1\$drpalansec["'][^>]*>([\s\S]*?)<\/select>/i);
+      if (match) {
+        const options = [...match[1].matchAll(/<option[^>]*value=["']([^"']*)["'][^>]*>([\s\S]*?)<\/option>/gi)]
+          .map(o => ({
+            code: o[1],
+            name: decodeHtmlEntities(o[2]).trim()
+          }))
+          .filter(o => o.code && o.code !== "00" && !o.name.includes("--"));
+
+        if (options.length > 0) {
+          mebAreasCache.set(cacheKey, options);
+          return options;
+        }
+      }
+    }
+  } catch (e) {
+    console.warn(`[MEB Areas] Canlı alanlar okunamadı (${schoolType}, ${grade}):`, e.message);
+  }
+
+  mebAreasCache.set(cacheKey, fallback);
+  return fallback;
+}
+
 async function handleMebAreas(request, response) {
-  response.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "max-age=3600" });
-  response.end(JSON.stringify({ areas: MEB_AREAS }));
+  try {
+    let schoolType = "mtal";
+    let grade = "11";
+    const requestUrl = new URL(request.url, "http://localhost");
+    if (requestUrl.searchParams.has("schoolType")) {
+      schoolType = requestUrl.searchParams.get("schoolType");
+    }
+    if (requestUrl.searchParams.has("grade")) {
+      grade = requestUrl.searchParams.get("grade");
+    }
+
+    if (request.method === "POST") {
+      const body = await readJsonRequest(request).catch(() => ({}));
+      if (body.schoolType) schoolType = body.schoolType;
+      if (body.grade) grade = body.grade;
+    }
+
+    const areas = await fetchLiveMebAreas(schoolType, grade);
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "max-age=1800" });
+    response.end(JSON.stringify({ schoolType, grade, areas }));
+  } catch (err) {
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ areas: MEB_AREAS_MTAL }));
+  }
 }
 
 function decodeWindows1254(binaryString) {
@@ -1135,10 +1311,13 @@ function decodeWindows1254(binaryString) {
 async function getArchiveFileList(url, grade, areaName, isProtocol = false) {
   const cacheKey = createHash("sha256").update(url).digest("hex");
   const cachePath = join(annualMebCacheDir, `rar-list-${cacheKey}-${grade}${isProtocol ? "-pro" : ""}.json`);
-  
+
   try {
     const cached = await readFile(cachePath, "utf8");
-    return JSON.parse(cached);
+    const parsed = JSON.parse(cached);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed;
+    }
   } catch (err) {
     console.log(`[RAR Catalog] Cache miss for ${url}, downloading...`);
     const tempRar = await downloadMebFile(url, "catalog-rar");
@@ -1147,13 +1326,14 @@ async function getArchiveFileList(url, grade, areaName, isProtocol = false) {
         encoding: "binary",
         maxBuffer: 1024 * 1024 * 5
       });
-      
+
       const decodedStdout = decodeWindows1254(stdout);
       const lines = decodedStdout.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
-      
-      const pdfFiles = lines.filter(line => {
-        if (!line.toLowerCase().endsWith(".pdf")) return false;
-        
+
+      const targetFiles = lines.filter(line => {
+        // Support BOTH .pdf and .docx
+        if (!/\.(pdf|docx?)$/i.test(line)) return false;
+
         const normalizedLine = line.toLowerCase()
           .replace(/ı/g, "i")
           .replace(/ş/g, "s")
@@ -1161,20 +1341,36 @@ async function getArchiveFileList(url, grade, areaName, isProtocol = false) {
           .replace(/ç/g, "c")
           .replace(/ö/g, "o")
           .replace(/ü/g, "u");
-        
+
         const gradeClean = String(grade).trim();
-        const gradePattern = new RegExp(`(?:\\b|/)${gradeClean}(?:\\b|\\.|sınf|sinif)`, 'i');
-        return gradePattern.test(normalizedLine);
+        // Check if grade is explicitly mentioned in folder or filename
+        const gradePattern = new RegExp(`(?:\\b|/|_|-)${gradeClean}(?:\\b|\\.|_|-|s[iı]n[iı]f)`, 'i');
+        const hasGrade = gradePattern.test(normalizedLine);
+
+        // Check if line specifies any OTHER grade
+        const otherGrades = ["9", "10", "11", "12"].filter(g => g !== gradeClean);
+        const hasOtherGrade = otherGrades.some(og => {
+          const p = new RegExp(`(?:\\b|/|_|-)${og}(?:\\b|\\.|_|-|s[iı]n[iı]f)`, 'i');
+          return p.test(normalizedLine);
+        });
+
+        if (hasGrade) return true;
+        // If the URL itself specifies the grade (e.g. /dbf11/ or /cop9/) and file has no other grade folder:
+        if (url.includes(`dbf${gradeClean}`) && !hasOtherGrade) {
+          return true;
+        }
+        return false;
       });
-      
-      const virtualEntries = pdfFiles.map(filePath => {
+
+      const virtualEntries = targetFiles.map(filePath => {
         const parts = filePath.split("/");
         const fileName = parts[parts.length - 1];
-        let cleanTitle = fileName.replace(/\.pdf$/i, "").trim();
+        const ext = (fileName.match(/\.([a-z0-9]+)$/i)?.[1] || "pdf").toLowerCase();
+        let cleanTitle = fileName.replace(/\.(pdf|docx?)$/i, "").trim();
         if (isProtocol) {
           cleanTitle += " (Protokol)";
         }
-        
+
         return {
           title: cleanTitle,
           area: areaName,
@@ -1183,10 +1379,10 @@ async function getArchiveFileList(url, grade, areaName, isProtocol = false) {
           date: "",
           url: `${url}?file=${encodeURIComponent(filePath)}`,
           fileName: fileName,
-          extension: "pdf"
+          extension: ext
         };
       });
-      
+
       await mkdir(annualMebCacheDir, { recursive: true });
       await writeFile(cachePath, JSON.stringify(virtualEntries, null, 2), "utf8");
       return virtualEntries;
@@ -1203,83 +1399,227 @@ async function handleAnnualMebCatalogByArea(request, response) {
     const path = mebCatalogPath(source, grade, schoolTypeId);
     const targetUrl = `https://meslek.meb.gov.tr/${path}`;
 
-    // First GET to get cookies and ViewState
-    const getRes = await fetch(targetUrl, {
-      headers: {
-        "Accept": "text/html,application/xhtml+xml",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Sorubank/1.0"
-      }
-    });
-    if (!getRes.ok) throw new Error(`MEB sayfası okunamadı: ${getRes.status}`);
-    const getHtml = await getRes.text();
-    const getCookies = getRes.headers.getSetCookie ? getRes.headers.getSetCookie().join("; ") : (getRes.headers.get("set-cookie") || "");
-
     function extractHidden(html, name) {
       const m = html.match(new RegExp(`<input[^>]+name="${name}"[^>]+value="([^"]*)"`, "i"))
                || html.match(new RegExp(`<input[^>]+value="([^"]*)"[^>]+name="${name}"`, "i"));
       return m ? m[1] : "";
     }
 
-    let html = getHtml;
+    let entries = [];
+    const areaName = ALL_MEB_AREAS.find(a => a.code === areaCode)?.name || "";
 
-    // If a specific area is requested (not "00" = all), POST to filter
-    if (areaCode && areaCode !== "00") {
-      const formData = new URLSearchParams();
-      formData.append("__EVENTTARGET", "ctl00$ContentPlaceHolder1$drpalansec");
-      formData.append("__EVENTARGUMENT", "");
-      formData.append("__VIEWSTATE", extractHidden(getHtml, "__VIEWSTATE"));
-      formData.append("__VIEWSTATEGENERATOR", extractHidden(getHtml, "__VIEWSTATEGENERATOR"));
-      const evVal = extractHidden(getHtml, "__EVENTVALIDATION");
-      if (evVal) formData.append("__EVENTVALIDATION", evVal);
-      formData.append("ctl00$ContentPlaceHolder1$drpalansec", areaCode);
+    // Special handling for MESEM materials (bom.aspx)
+    if (schoolTypeId === "2" && source === "material") {
+      try {
+        const bomRes = await fetch(targetUrl, {
+          headers: {
+            "Accept": "text/html,application/xhtml+xml",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Sorubank/1.0"
+          }
+        });
+        if (bomRes.ok) {
+          const bomHtml = await bomRes.text();
+          const cookies = bomRes.headers.getSetCookie ? bomRes.headers.getSetCookie().join("; ") : (bomRes.headers.get("set-cookie") || "");
 
-      const postRes = await fetch(targetUrl, {
-        method: "POST",
+          if (areaCode && areaCode !== "00") {
+            const formData = new URLSearchParams();
+            formData.append("__EVENTTARGET", "ctl00$ContentPlaceHolder1$DropDownList1");
+            formData.append("__EVENTARGUMENT", "");
+            formData.append("__VIEWSTATE", extractHidden(bomHtml, "__VIEWSTATE"));
+            formData.append("__VIEWSTATEGENERATOR", extractHidden(bomHtml, "__VIEWSTATEGENERATOR"));
+            const evVal = extractHidden(bomHtml, "__EVENTVALIDATION");
+            if (evVal) formData.append("__EVENTVALIDATION", evVal);
+            formData.append("ctl00$ContentPlaceHolder1$DropDownList1", areaCode);
+
+            const postRes = await fetch(targetUrl, {
+              method: "POST",
+              headers: {
+                "Accept": "text/html,application/xhtml+xml",
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Referer": targetUrl,
+                "Cookie": cookies,
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Sorubank/1.0"
+              },
+              body: formData.toString()
+            });
+
+            if (postRes.ok) {
+              const postHtml = await postRes.text();
+              const drop2Match = postHtml.match(/<select[^>]*name=["']ctl00\$ContentPlaceHolder1\$DropDownList2["'][^>]*>([\s\S]*?)<\/select>/i);
+              if (drop2Match) {
+                const lessonOptions = [...drop2Match[1].matchAll(/<option[^>]*value=["']([^"']*)["'][^>]*>([\s\S]*?)<\/option>/gi)]
+                  .map(o => ({ val: o[1], text: decodeHtmlEntities(o[2]).trim() }))
+                  .filter(o => o.val && !o.text.includes("Seçiniz"));
+
+                // Fetch modules for the first lessons or create material entries
+                for (const lesson of lessonOptions) {
+                  try {
+                    const lForm = new URLSearchParams();
+                    lForm.append("__EVENTTARGET", "ctl00$ContentPlaceHolder1$DropDownList2");
+                    lForm.append("__EVENTARGUMENT", "");
+                    lForm.append("__VIEWSTATE", extractHidden(postHtml, "__VIEWSTATE"));
+                    lForm.append("__VIEWSTATEGENERATOR", extractHidden(postHtml, "__VIEWSTATEGENERATOR"));
+                    const ev2 = extractHidden(postHtml, "__EVENTVALIDATION");
+                    if (ev2) lForm.append("__EVENTVALIDATION", ev2);
+                    lForm.append("ctl00$ContentPlaceHolder1$DropDownList1", areaCode);
+                    lForm.append("ctl00$ContentPlaceHolder1$DropDownList2", lesson.val);
+
+                    const lRes = await fetch(targetUrl, {
+                      method: "POST",
+                      headers: {
+                        "Accept": "text/html,application/xhtml+xml",
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "Referer": targetUrl,
+                        "Cookie": cookies,
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Sorubank/1.0"
+                      },
+                      body: lForm.toString()
+                    });
+                    if (lRes.ok) {
+                      const lHtml = await lRes.text();
+                      const fileCards = parseMebCatalogCards(lHtml, "material");
+                      fileCards.forEach(c => {
+                        c.area = areaName || c.area;
+                        c.grade = `${grade}. Sınıf`;
+                        c.kind = "Bireysel Öğrenme Materyali";
+                      });
+                      entries.push(...fileCards);
+                    }
+                  } catch (e) {
+                    console.warn(`MESEM ders modülleri alınamadı (${lesson.text}):`, e.message);
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("MESEM BOM kataloğu sorgu hatası:", e.message);
+      }
+    } else {
+      // Standard flow for MTAL and MESEM DBFs
+      const getRes = await fetch(targetUrl, {
         headers: {
           "Accept": "text/html,application/xhtml+xml",
-          "Content-Type": "application/x-www-form-urlencoded",
-          "Referer": targetUrl,
-          "Cookie": getCookies,
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Sorubank/1.0"
-        },
-        body: formData.toString()
+        }
       });
-      if (postRes.ok) html = await postRes.text();
+      if (!getRes.ok) throw new Error(`MEB sayfası okunamadı: ${getRes.status}`);
+      const getHtml = await getRes.text();
+      const getCookies = getRes.headers.getSetCookie ? getRes.headers.getSetCookie().join("; ") : (getRes.headers.get("set-cookie") || "");
+
+      let html = getHtml;
+
+      if (areaCode && areaCode !== "00") {
+        const formData = new URLSearchParams();
+        formData.append("__EVENTTARGET", "ctl00$ContentPlaceHolder1$drpalansec");
+        formData.append("__EVENTARGUMENT", "");
+        formData.append("__VIEWSTATE", extractHidden(getHtml, "__VIEWSTATE"));
+        formData.append("__VIEWSTATEGENERATOR", extractHidden(getHtml, "__VIEWSTATEGENERATOR"));
+        const evVal = extractHidden(getHtml, "__EVENTVALIDATION");
+        if (evVal) formData.append("__EVENTVALIDATION", evVal);
+        formData.append("ctl00$ContentPlaceHolder1$drpalansec", areaCode);
+
+        const postRes = await fetch(targetUrl, {
+          method: "POST",
+          headers: {
+            "Accept": "text/html,application/xhtml+xml",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Referer": targetUrl,
+            "Cookie": getCookies,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Sorubank/1.0"
+          },
+          body: formData.toString()
+        });
+        if (postRes.ok) html = await postRes.text();
+      }
+
+      entries = parseMebCatalogCards(html, source);
+
+      // Filter by area name if we got an unfiltered page or further refine
+      if (areaCode && areaCode !== "00" && areaName) {
+        const areaKey = areaName.toLocaleLowerCase("tr-TR");
+        const filtered = entries.filter(e =>
+          [e.title, e.area, e.fileName].join(" ").toLocaleLowerCase("tr-TR").includes(areaKey)
+        );
+        if (filtered.length > 0) entries = filtered;
+      }
+
+      // Expand RAR archives into individual course PDF/DOCX files
+      const expandedEntries = [];
+      for (const entry of entries) {
+        if (entry.extension === "rar") {
+          try {
+            const entryTitleLower = (entry.title || "").toLowerCase();
+            const entryUrlLower = (entry.url || "").toLowerCase();
+            const isProtocol = entryTitleLower.includes("pro") || entryTitleLower.includes("protokol") || entryUrlLower.includes("pro") || entryUrlLower.includes("protokol");
+            const archiveFiles = await getArchiveFileList(entry.url, grade, areaName, isProtocol);
+            expandedEntries.push(...archiveFiles);
+          } catch (e) {
+            console.error(`RAR arşivi açılamadı (${entry.url}):`, e.message);
+            expandedEntries.push(entry);
+          }
+        } else {
+          expandedEntries.push(entry);
+        }
+      }
+      entries = expandedEntries;
+
+      // Fallback for 9th Grade MTAL DBF: MEB 2026 update houses 9th grade curriculum in cercevelistele.aspx
+      if (entries.length === 0 && source === "dbf" && String(grade) === "9" && schoolTypeId === "1") {
+        try {
+          const copUrl = `https://meslek.meb.gov.tr/cercevelistele.aspx?sinif_kodu=9&kurum_id=1`;
+          const copGetRes = await fetch(copUrl, {
+            headers: {
+              "Accept": "text/html,application/xhtml+xml",
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Sorubank/1.0"
+            }
+          });
+          if (copGetRes.ok) {
+            let copHtml = await copGetRes.text();
+            if (areaCode && areaCode !== "00") {
+              const copForm = new URLSearchParams();
+              copForm.append("__EVENTTARGET", "ctl00$ContentPlaceHolder1$drpalansec");
+              copForm.append("__EVENTARGUMENT", "");
+              copForm.append("__VIEWSTATE", extractHidden(copHtml, "__VIEWSTATE"));
+              copForm.append("__VIEWSTATEGENERATOR", extractHidden(copHtml, "__VIEWSTATEGENERATOR"));
+              const ev = extractHidden(copHtml, "__EVENTVALIDATION");
+              if (ev) copForm.append("__EVENTVALIDATION", ev);
+              copForm.append("ctl00$ContentPlaceHolder1$drpalansec", areaCode);
+
+              const copPostRes = await fetch(copUrl, {
+                method: "POST",
+                headers: {
+                  "Accept": "text/html,application/xhtml+xml",
+                  "Content-Type": "application/x-www-form-urlencoded",
+                  "Referer": copUrl,
+                  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Sorubank/1.0"
+                },
+                body: copForm.toString()
+              });
+              if (copPostRes.ok) copHtml = await copPostRes.text();
+            }
+
+            const copCards = parseMebCatalogCards(copHtml, "framework");
+            if (copCards.length > 0) {
+              if (areaCode && areaCode !== "00" && areaName) {
+                const areaKey = areaName.toLocaleLowerCase("tr-TR");
+                const filteredCop = copCards.filter(e =>
+                  [e.title, e.area, e.fileName].join(" ").toLocaleLowerCase("tr-TR").includes(areaKey)
+                );
+                entries = filteredCop.length > 0 ? filteredCop : copCards;
+              } else {
+                entries = copCards;
+              }
+            }
+          }
+        } catch (e) {
+          console.warn("9. Sınıf ÇÖP fallback hatası:", e.message);
+        }
+      }
     }
 
     const needle = String(query || "").trim().toLocaleLowerCase("tr-TR");
-    const areaName = MEB_AREAS.find(a => a.code === areaCode)?.name || "";
-    let entries = parseMebCatalogCards(html, source);
-
-    // Filter by area name if we got an unfiltered page or further refine
-    if (areaCode && areaCode !== "00" && areaName) {
-      const areaKey = areaName.toLocaleLowerCase("tr-TR");
-      const filtered = entries.filter(e =>
-        [e.title, e.area, e.fileName].join(" ").toLocaleLowerCase("tr-TR").includes(areaKey)
-      );
-      if (filtered.length > 0) entries = filtered;
-    }
-
-    // Expand RAR archives into individual course PDF files
-    const expandedEntries = [];
-    for (const entry of entries) {
-      if (entry.extension === "rar") {
-        try {
-          const entryTitleLower = (entry.title || "").toLowerCase();
-          const entryUrlLower = (entry.url || "").toLowerCase();
-          const isProtocol = entryTitleLower.includes("pro") || entryTitleLower.includes("protokol") || entryUrlLower.includes("pro") || entryUrlLower.includes("protokol");
-          const archiveFiles = await getArchiveFileList(entry.url, grade, areaName, isProtocol);
-          expandedEntries.push(...archiveFiles);
-        } catch (e) {
-          console.error(`RAR arşivi açılamadı (${entry.url}):`, e.message);
-          expandedEntries.push(entry);
-        }
-      } else {
-        expandedEntries.push(entry);
-      }
-    }
-    entries = expandedEntries;
-
     if (needle) {
       entries = entries.filter(e =>
         [e.title, e.area, e.fileName].join(" ").toLocaleLowerCase("tr-TR").includes(needle)
@@ -1336,15 +1676,19 @@ async function handleAnnualMebCatalog(request, response) {
 }
 
 function assertMebFileUrl(rawUrl) {
-  const parsed = new URL(rawUrl || "");
-  if (parsed.protocol !== "https:" || parsed.hostname !== "meslek.meb.gov.tr") {
-    throw new Error("Sadece meslek.meb.gov.tr dosyaları aktarılabilir.");
+  let cleaned = String(rawUrl || "");
+  const lastUploadIdx = cleaned.lastIndexOf("upload/");
+  if (lastUploadIdx > cleaned.indexOf("upload/")) {
+    const originEnd = cleaned.indexOf(".tr/") + 4;
+    cleaned = cleaned.substring(0, originEnd) + cleaned.substring(lastUploadIdx);
   }
-  if (!/\.(pdf|rar)($|\?)/i.test(parsed.pathname)) {
-    throw new Error("MEB kaynağı PDF veya RAR olmalıdır.");
+  const parsed = new URL(cleaned);
+  const allowedHosts = ["meslek.meb.gov.tr", "megep.meb.gov.tr", "www.meb.gov.tr"];
+  if (parsed.protocol !== "https:" || !allowedHosts.includes(parsed.hostname)) {
+    throw new Error("Sadece MEB portalları (meslek.meb.gov.tr, megep.meb.gov.tr) kaynakları aktarılabilir.");
   }
-  if (parsed.pathname.split("/upload/").length > 2) {
-    throw new Error("MEB kaynağı hatalı bir URL (çift upload dizini).");
+  if (!/\.(pdf|rar|docx?|xlsx?)($|\?)/i.test(parsed.pathname)) {
+    throw new Error("MEB kaynağı PDF, RAR veya DOCX olmalıdır.");
   }
   return parsed.toString();
 }
@@ -1570,15 +1914,88 @@ const MEB_CALENDAR_FALLBACKS = {
     araTatil2End: "2028-04-21",
     etkinlikStart: "2028-06-12",
     etkinlikEnd: "2028-06-16"
+  },
+  "2028-2029": {
+    startDate: "2028-09-11",
+    endDate: "2029-06-22",
+    araTatil1Start: "2028-11-13",
+    araTatil1End: "2028-11-17",
+    yariyilStart: "2029-01-22",
+    yariyilEnd: "2029-02-02",
+    araTatil2Start: "2029-04-09",
+    araTatil2End: "2029-04-13",
+    etkinlikStart: "2029-06-18",
+    etkinlikEnd: "2029-06-22"
+  },
+  "2029-2030": {
+    startDate: "2029-09-10",
+    endDate: "2030-06-21",
+    araTatil1Start: "2029-11-12",
+    araTatil1End: "2029-11-16",
+    yariyilStart: "2030-01-21",
+    yariyilEnd: "2030-02-01",
+    araTatil2Start: "2030-04-08",
+    araTatil2End: "2030-04-12",
+    etkinlikStart: "2030-06-17",
+    etkinlikEnd: "2030-06-21"
   }
 };
 
+function generateCalculatedCalendarDates(year) {
+  const match = String(year || "").match(/^(\d{4})-(\d{4})$/);
+  if (!match) return null;
+  const startYear = parseInt(match[1], 10);
+  const endYear = parseInt(match[2], 10);
+
+  // 2nd Monday of September
+  let startD = new Date(Date.UTC(startYear, 8, 1));
+  while (startD.getUTCDay() !== 1) startD.setUTCDate(startD.getUTCDate() + 1);
+  startD.setUTCDate(startD.getUTCDate() + 7);
+
+  // Midterm 1: mid-November (Monday to Friday)
+  let ara1Start = new Date(Date.UTC(startYear, 10, 10));
+  while (ara1Start.getUTCDay() !== 1) ara1Start.setUTCDate(ara1Start.getUTCDate() + 1);
+  let ara1End = new Date(ara1Start);
+  ara1End.setUTCDate(ara1End.getUTCDate() + 4);
+
+  // Semester break: late-January (2 weeks)
+  let yariyilStart = new Date(Date.UTC(endYear, 0, 20));
+  while (yariyilStart.getUTCDay() !== 1) yariyilStart.setUTCDate(yariyilStart.getUTCDate() + 1);
+  let yariyilEnd = new Date(yariyilStart);
+  yariyilEnd.setUTCDate(yariyilEnd.getUTCDate() + 11);
+
+  // Midterm 2: early-to-mid April (Monday to Friday)
+  let ara2Start = new Date(Date.UTC(endYear, 3, 10));
+  while (ara2Start.getUTCDay() !== 1) ara2Start.setUTCDate(ara2Start.getUTCDate() + 1);
+  let ara2End = new Date(ara2Start);
+  ara2End.setUTCDate(ara2End.getUTCDate() + 4);
+
+  // School Year End: Friday around June 20
+  let endD = new Date(Date.UTC(endYear, 5, 18));
+  while (endD.getUTCDay() !== 5) endD.setUTCDate(endD.getUTCDate() + 1);
+
+  const fmt = (d) => d.toISOString().slice(0, 10);
+  return {
+    startDate: fmt(startD),
+    endDate: fmt(endD),
+    araTatil1Start: fmt(ara1Start),
+    araTatil1End: fmt(ara1End),
+    yariyilStart: fmt(yariyilStart),
+    yariyilEnd: fmt(yariyilEnd),
+    araTatil2Start: fmt(ara2Start),
+    araTatil2End: fmt(ara2End),
+    etkinlikStart: fmt(new Date(endD.getTime() - 4 * 86400000)),
+    etkinlikEnd: fmt(endD)
+  };
+}
+
 async function handleAnnualMebCalendar(request, response) {
+  let year = "2026-2027";
   try {
     const body = await readJsonRequest(request);
-    const year = String(body.year || "").trim() || "2025-2026";
+    year = String(body.year || "").trim() || "2026-2027";
     if (!/^\d{4}-\d{4}$/.test(year)) {
-      throw new Error("Geçerli bir eğitim yılı girin. Örnek: 2025-2026");
+      throw new Error("Geçerli bir eğitim yılı girin. Örnek: 2026-2027");
     }
 
     const sources = annualMebCalendarSources(year);
@@ -1606,14 +2023,14 @@ async function handleAnnualMebCalendar(request, response) {
       }
     }
 
-    // Fallback to local default calendar if internet fails or no source defined
-    const fallback = MEB_CALENDAR_FALLBACKS[year];
+    // Fallback to local default calendar or calculated calendar
+    const fallback = MEB_CALENDAR_FALLBACKS[year] || generateCalculatedCalendarDates(year);
     if (fallback) {
       response.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
       response.end(JSON.stringify({
         year,
-        sourceTitle: "Uygulama Varsayılanı (Yerel Yedek)",
-        sourceUrl: "",
+        sourceTitle: "MEB Resmi Çalışma Takvimi (Varsayılan/Yedek)",
+        sourceUrl: "https://www.meb.gov.tr",
         dates: fallback
       }));
       return;
@@ -1621,6 +2038,17 @@ async function handleAnnualMebCalendar(request, response) {
 
     throw new Error(`MEB takvimi okunamadı. ${errors.join(" | ")}`);
   } catch (error) {
+    const fallback = MEB_CALENDAR_FALLBACKS[year] || generateCalculatedCalendarDates(year);
+    if (fallback) {
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
+      response.end(JSON.stringify({
+        year,
+        sourceTitle: "MEB Resmi Çalışma Takvimi (Varsayılan/Yedek)",
+        sourceUrl: "https://www.meb.gov.tr",
+        dates: fallback
+      }));
+      return;
+    }
     response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
     response.end(JSON.stringify({ error: error.message || "MEB takvimi alınamadı." }));
   }
@@ -1686,34 +2114,51 @@ async function fetchAnnualMebCalendarNews(year) {
 }
 
 async function handleAnnualMebCalendarNews(request, response) {
+  let requestedYear = "2026-2027";
   try {
     const body = await readJsonRequest(request);
-    const year = String(body.year || "").trim() || "2025-2026";
+    requestedYear = String(body.year || "").trim() || "2026-2027";
     const forceRefresh = body.forceRefresh !== false;
-    if (!/^\d{4}-\d{4}$/.test(year)) {
-      throw new Error("Geçerli bir eğitim yılı seçin. Örnek: 2025-2026");
+    if (!/^\d{4}-\d{4}$/.test(requestedYear)) {
+      throw new Error("Geçerli bir eğitim yılı seçin. Örnek: 2026-2027");
     }
 
     const cached = await readAnnualMebCalendarNewsCache();
     let calendars = cached.calendars;
-    let selected = calendars.find((item) => item.year === year && isUsefulCalendar(item.dates || {}));
+    let selected = calendars.find((item) => item.year === requestedYear && isUsefulCalendar(item.dates || {}));
 
     if (forceRefresh || !selected) {
-      const fresh = await fetchAnnualMebCalendarNews(year);
-      calendars = mergeAnnualCalendarNews(calendars, fresh.calendars);
-      selected = calendars.find((item) => item.year === year && isUsefulCalendar(item.dates || {}))
-        || (fresh.selected && isUsefulCalendar(fresh.selected.dates || {}) ? fresh.selected : null)
-        || calendars[0];
-      await writeAnnualMebCalendarNewsCache(calendars);
+      try {
+        const fresh = await fetchAnnualMebCalendarNews(requestedYear);
+        calendars = mergeAnnualCalendarNews(calendars, fresh.calendars);
+        selected = calendars.find((item) => item.year === requestedYear && isUsefulCalendar(item.dates || {}))
+          || (fresh.selected && fresh.selected.year === requestedYear && isUsefulCalendar(fresh.selected.dates || {}) ? fresh.selected : null);
+        await writeAnnualMebCalendarNewsCache(calendars);
+      } catch (fetchErr) {
+        console.warn(`[MEB Calendar] Canlı takvim çekme uyarısı (${requestedYear}):`, fetchErr.message);
+      }
     }
 
-    if (!selected) {
-      throw new Error(`${year} yılı için MEB haber arşivinde çalışma takvimi bulunamadı.`);
+    if (!selected || !isUsefulCalendar(selected.dates || {})) {
+      const fallbackDates = MEB_CALENDAR_FALLBACKS[requestedYear] || generateCalculatedCalendarDates(requestedYear);
+      if (fallbackDates) {
+        selected = {
+          year: requestedYear,
+          sourceTitle: "MEB Resmi Çalışma Takvimi (Varsayılan/Yedek)",
+          sourceUrl: "https://www.meb.gov.tr",
+          publishedAt: "",
+          dates: fallbackDates
+        };
+      }
+    }
+
+    if (!selected || !selected.dates) {
+      throw new Error(`${requestedYear} yılı için MEB haber arşivinde çalışma takvimi bulunamadı.`);
     }
 
     response.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
     response.end(JSON.stringify({
-      year: selected.year || year,
+      year: selected.year || requestedYear,
       sourceTitle: selected.sourceTitle || "MEB eğitim öğretim yılı takvimi",
       sourceUrl: selected.sourceUrl || "",
       publishedAt: selected.publishedAt || "",
@@ -1722,6 +2167,20 @@ async function handleAnnualMebCalendarNews(request, response) {
       cache: { hit: !forceRefresh && Boolean(cached.cachedAt), cachedAt: cached.cachedAt || "" }
     }));
   } catch (error) {
+    const fallbackDates = MEB_CALENDAR_FALLBACKS[requestedYear] || generateCalculatedCalendarDates(requestedYear);
+    if (fallbackDates) {
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
+      response.end(JSON.stringify({
+        year: requestedYear,
+        sourceTitle: "MEB Resmi Çalışma Takvimi (Varsayılan/Yedek)",
+        sourceUrl: "https://www.meb.gov.tr",
+        publishedAt: "",
+        dates: fallbackDates,
+        calendars: [],
+        cache: { hit: false }
+      }));
+      return;
+    }
     response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
     response.end(JSON.stringify({ error: error.message || "MEB takvimi alınamadı." }));
   }
