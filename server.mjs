@@ -11,7 +11,7 @@ import { parsePdf, parseExcel } from "./scripts/import_ime_data.js";
 const root = dirname(fileURLToPath(import.meta.url));
 const port = Number(process.env.PORT || 4173);
 const execFileAsync = promisify(execFile);
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 let pythonPath = join(process.env.USERPROFILE || "", ".cache", "codex-runtimes", "codex-primary-runtime", "dependencies", "python", "python.exe");
 if (!existsSync(pythonPath)) {
@@ -41,6 +41,16 @@ const pythonEnv = {
     : userLocalPackages
 };
 const annualMebCacheDir = join(root, ".cache", "annual-meb");
+
+let mebRarManifest = {};
+try {
+  const manifestPath = join(root, "data", "meb_rar_manifest.json");
+  if (existsSync(manifestPath)) {
+    mebRarManifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+  }
+} catch (e) {
+  console.warn("Could not load meb_rar_manifest.json:", e.message);
+}
 
 // Bypass SSL verification for MEB and government website fetches
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -1313,9 +1323,21 @@ function decodeWindows1254(binaryString) {
 }
 
 async function getArchiveFileList(url, grade, areaName, isProtocol = false) {
-  const cacheKey = createHash("sha256").update(url).digest("hex");
-  const cachePath = join(annualMebCacheDir, `rar-list-${cacheKey}-${grade}${isProtocol ? "-pro" : ""}.json`);
+  const cleanUrl = url.replace(/upload\/cop9\/upload\//gi, "upload/");
+  const cacheKey = createHash("sha256").update(cleanUrl).digest("hex");
+  const filenameKey = `rar-list-${cacheKey}-${grade}${isProtocol ? "-pro" : ""}`;
+  const fallbackKey = `rar-list-${cacheKey}-${grade}`;
+  const cachePath = join(annualMebCacheDir, `${filenameKey}.json`);
 
+  // 1. Check in bundled manifest first (0ms latency, eliminates network bottlenecks)
+  if (mebRarManifest[filenameKey] && Array.isArray(mebRarManifest[filenameKey]) && mebRarManifest[filenameKey].length > 0) {
+    return mebRarManifest[filenameKey];
+  }
+  if (mebRarManifest[fallbackKey] && Array.isArray(mebRarManifest[fallbackKey]) && mebRarManifest[fallbackKey].length > 0) {
+    return mebRarManifest[fallbackKey];
+  }
+
+  // 2. Check local disk cache
   try {
     const cached = await readFile(cachePath, "utf8");
     const parsed = JSON.parse(cached);
@@ -1326,10 +1348,25 @@ async function getArchiveFileList(url, grade, areaName, isProtocol = false) {
     // Cache miss or read error
   }
 
-  console.log(`[RAR Catalog] Cache miss for ${url}, downloading...`);
+  // 3. Fallback: Search manifest by area name and grade
+  const areaKey = (areaName || "").toLocaleLowerCase("tr-TR").trim();
+  if (areaKey) {
+    for (const [mKey, mList] of Object.entries(mebRarManifest)) {
+      if (Array.isArray(mList) && mList.length > 0) {
+        const first = mList[0];
+        const mArea = (first.area || "").toLocaleLowerCase("tr-TR").trim();
+        const mGrade = String(first.grade || "");
+        if (mArea === areaKey && mGrade.includes(String(grade))) {
+          return mList;
+        }
+      }
+    }
+  }
+
+  console.log(`[RAR Catalog] Cache miss for ${cleanUrl}, downloading...`);
   let tempRar = "";
   try {
-    tempRar = await downloadMebFile(url, "catalog-rar");
+    tempRar = await downloadMebFile(cleanUrl, "catalog-rar");
     const { stdout } = await execFileAsync("tar", ["-tf", tempRar], {
       encoding: "binary",
       maxBuffer: 1024 * 1024 * 5
@@ -1603,25 +1640,32 @@ async function handleAnnualMebCatalogByArea(request, response) {
         if (filtered.length > 0) entries = filtered;
       }
 
-      // Expand RAR archives into individual course PDF/DOCX files
-      const expandedEntries = [];
-      for (const entry of entries) {
-        if (entry.extension === "rar") {
-          try {
-            const entryTitleLower = (entry.title || "").toLowerCase();
-            const entryUrlLower = (entry.url || "").toLowerCase();
-            const isProtocol = entryTitleLower.includes("pro") || entryTitleLower.includes("protokol") || entryUrlLower.includes("pro") || entryUrlLower.includes("protokol");
-            const archiveFiles = await getArchiveFileList(entry.url, grade, areaName, isProtocol);
-            expandedEntries.push(...archiveFiles);
-          } catch (e) {
-            console.error(`RAR arşivi açılamadı (${entry.url}):`, e.message);
-            expandedEntries.push(entry);
+      // Expand RAR archives into individual course PDF/DOCX files in parallel
+      const expandedEntries = (await Promise.all(
+        entries.map(async (entry) => {
+          if (entry.extension === "rar") {
+            try {
+              const entryTitleLower = (entry.title || "").toLowerCase();
+              const entryUrlLower = (entry.url || "").toLowerCase();
+              const isProtocol = entryTitleLower.includes("pro") || entryTitleLower.includes("protokol") || entryUrlLower.includes("pro") || entryUrlLower.includes("protokol");
+              return await getArchiveFileList(entry.url, grade, areaName, isProtocol);
+            } catch (e) {
+              console.error(`RAR arşivi açılamadı (${entry.url}):`, e.message);
+              return [entry];
+            }
           }
-        } else {
-          expandedEntries.push(entry);
-        }
-      }
-      entries = expandedEntries;
+          return [entry];
+        })
+      )).flat();
+
+      // Deduplicate courses by title
+      const seenTitles = new Set();
+      entries = expandedEntries.filter(e => {
+        const cleanTitle = (e.title || "").trim().toLowerCase();
+        if (!cleanTitle || seenTitles.has(cleanTitle)) return false;
+        seenTitles.add(cleanTitle);
+        return true;
+      });
 
       // Fallback for 9th Grade MTAL DBF: MEB 2026 update houses 9th grade curriculum in cercevelistele.aspx
       if (entries.length === 0 && source === "dbf" && String(grade) === "9" && schoolTypeId === "1") {

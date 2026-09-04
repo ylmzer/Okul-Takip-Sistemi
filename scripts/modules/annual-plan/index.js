@@ -2400,17 +2400,22 @@ async function fetchCatalogLessons(schoolType, grade, areaCode) {
     return annualFrontendCatalogCache.get(cacheKey);
   }
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
     const res = await fetch("/api/annual-meb-catalog-by-area", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ source: "dbf", schoolType, grade, areaCode })
+      body: JSON.stringify({ source: "dbf", schoolType, grade, areaCode }),
+      signal: controller.signal
     });
+    clearTimeout(timeoutId);
     if (!res.ok) return [];
     const data = await res.json();
     const entries = data.entries || [];
     annualFrontendCatalogCache.set(cacheKey, entries);
     return entries;
   } catch (e) {
+    console.warn("fetchCatalogLessons hatası:", e.message);
     return [];
   }
 }
@@ -2818,13 +2823,16 @@ async function loadCatalogBoxLessons() {
   if (statusEl) statusEl.textContent = "";
 
   if (entries.length > 0) {
-    selectLesson.innerHTML = `<option value="">-- Ders Seçin --</option>` +
+    selectLesson.innerHTML = `<option value="">-- Ders Seçin (${entries.length} ders listelendi) --</option>` +
       entries.map(e => `<option value="${annualHtml(e.url)}">${annualHtml(e.title)}</option>`).join("");
     if (selectLesson.options.length > 1) {
       selectLesson.selectedIndex = 1;
     }
   } else {
     selectLesson.innerHTML = `<option value="" disabled>Katalogda ders bulunamadı</option>`;
+    if (statusEl) {
+      statusEl.innerHTML = `<span style="color: #b45309; font-weight: 600;">⚠️ Ders listesi alınamadı. Üstten "2. Manuel Giriş" seçeneğini kullanabilirsiniz.</span>`;
+    }
   }
 }
 
