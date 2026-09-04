@@ -467,6 +467,10 @@ async function handleAnnualImportMebDbf(request, response) {
       if (fileInRar) {
         metaObj.file_in_rar = fileInRar;
       }
+      const lessonInUrl = parsedUrl.searchParams.get("lesson") || "";
+      if (lessonInUrl && !metaObj.lessonName) {
+        metaObj.lessonName = lessonInUrl;
+      }
     } catch (e) {
       console.warn("URL parse hatası, file_in_rar okunamadı:", e.message);
     }
@@ -1319,83 +1323,137 @@ async function getArchiveFileList(url, grade, areaName, isProtocol = false) {
       return parsed;
     }
   } catch (err) {
-    console.log(`[RAR Catalog] Cache miss for ${url}, downloading...`);
-    const tempRar = await downloadMebFile(url, "catalog-rar");
-    try {
-      const { stdout } = await execFileAsync("tar", ["-tf", tempRar], {
-        encoding: "binary",
-        maxBuffer: 1024 * 1024 * 5
+    // Cache miss or read error
+  }
+
+  console.log(`[RAR Catalog] Cache miss for ${url}, downloading...`);
+  let tempRar = "";
+  try {
+    tempRar = await downloadMebFile(url, "catalog-rar");
+    const { stdout } = await execFileAsync("tar", ["-tf", tempRar], {
+      encoding: "binary",
+      maxBuffer: 1024 * 1024 * 5
+    });
+
+    const decodedStdout = decodeWindows1254(stdout);
+    const lines = decodedStdout.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+
+    let targetFiles = lines.filter(line => {
+      // Support BOTH .pdf and .docx
+      if (!/\.(pdf|docx?)$/i.test(line)) return false;
+
+      const normalizedLine = line.toLowerCase()
+        .replace(/ı/g, "i")
+        .replace(/ş/g, "s")
+        .replace(/ğ/g, "g")
+        .replace(/ç/g, "c")
+        .replace(/ö/g, "o")
+        .replace(/ü/g, "u");
+
+      const gradeClean = String(grade).trim();
+      const gradePattern = new RegExp(`(?:\\b|/|_|-)${gradeClean}(?:\\b|\\.|_|-|s[iı]n[iı]f)`, 'i');
+      const hasGrade = gradePattern.test(normalizedLine);
+
+      const otherGrades = ["9", "10", "11", "12"].filter(g => g !== gradeClean);
+      const hasOtherGrade = otherGrades.some(og => {
+        const p = new RegExp(`(?:\\b|/|_|-)${og}(?:\\b|\\.|_|-|s[iı]n[iı]f)`, 'i');
+        return p.test(normalizedLine);
       });
 
-      const decodedStdout = decodeWindows1254(stdout);
-      const lines = decodedStdout.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+      if (hasGrade) return true;
+      if (url.includes(`dbf${gradeClean}`) && !hasOtherGrade) {
+        return true;
+      }
+      return false;
+    });
 
-      const targetFiles = lines.filter(line => {
-        // Support BOTH .pdf and .docx
-        if (!/\.(pdf|docx?)$/i.test(line)) return false;
+    // Fallback: If no file explicitly matched the filter, include all valid pdf/docx documents
+    if (targetFiles.length === 0) {
+      targetFiles = lines.filter(line => /\.(pdf|docx?)$/i.test(line));
+    }
 
-        const normalizedLine = line.toLowerCase()
-          .replace(/ı/g, "i")
-          .replace(/ş/g, "s")
-          .replace(/ğ/g, "g")
-          .replace(/ç/g, "c")
-          .replace(/ö/g, "o")
-          .replace(/ü/g, "u");
+    const virtualEntries = targetFiles.map(filePath => {
+      const parts = filePath.split("/");
+      const fileName = parts[parts.length - 1];
+      const ext = (fileName.match(/\.([a-z0-9]+)$/i)?.[1] || "pdf").toLowerCase();
+      let cleanTitle = fileName.replace(/\.(pdf|docx?)$/i, "").trim();
+      if (isProtocol) {
+        cleanTitle += " (Protokol)";
+      }
 
-        const gradeClean = String(grade).trim();
-        // Check if grade is explicitly mentioned in folder or filename
-        const gradePattern = new RegExp(`(?:\\b|/|_|-)${gradeClean}(?:\\b|\\.|_|-|s[iı]n[iı]f)`, 'i');
-        const hasGrade = gradePattern.test(normalizedLine);
+      return {
+        title: cleanTitle,
+        area: areaName,
+        grade: grade + ". Sınıf",
+        kind: "Ders Bilgi Formu" + (isProtocol ? " (Protokol)" : ""),
+        date: "",
+        url: `${url}?file=${encodeURIComponent(filePath)}`,
+        fileName: fileName,
+        extension: ext
+      };
+    });
 
-        // Check if line specifies any OTHER grade
-        const otherGrades = ["9", "10", "11", "12"].filter(g => g !== gradeClean);
-        const hasOtherGrade = otherGrades.some(og => {
-          const p = new RegExp(`(?:\\b|/|_|-)${og}(?:\\b|\\.|_|-|s[iı]n[iı]f)`, 'i');
-          return p.test(normalizedLine);
-        });
-
-        if (hasGrade) return true;
-        // If the URL itself specifies the grade (e.g. /dbf11/ or /cop9/) and file has no other grade folder:
-        if (url.includes(`dbf${gradeClean}`) && !hasOtherGrade) {
-          return true;
-        }
-        return false;
-      });
-
-      const virtualEntries = targetFiles.map(filePath => {
-        const parts = filePath.split("/");
-        const fileName = parts[parts.length - 1];
-        const ext = (fileName.match(/\.([a-z0-9]+)$/i)?.[1] || "pdf").toLowerCase();
-        let cleanTitle = fileName.replace(/\.(pdf|docx?)$/i, "").trim();
-        if (isProtocol) {
-          cleanTitle += " (Protokol)";
-        }
-
-        return {
-          title: cleanTitle,
-          area: areaName,
-          grade: grade + ". Sınıf",
-          kind: "Ders Bilgi Formu" + (isProtocol ? " (Protokol)" : ""),
-          date: "",
-          url: `${url}?file=${encodeURIComponent(filePath)}`,
-          fileName: fileName,
-          extension: ext
-        };
-      });
-
+    if (virtualEntries.length > 0) {
       await mkdir(annualMebCacheDir, { recursive: true });
       await writeFile(cachePath, JSON.stringify(virtualEntries, null, 2), "utf8");
-      return virtualEntries;
-    } finally {
+    }
+    return virtualEntries;
+  } catch (err) {
+    console.error(`RAR tar hatası (${url}):`, err.message);
+    return [];
+  } finally {
+    if (tempRar) {
       await unlink(tempRar).catch(() => {});
     }
   }
 }
 
+const catalogByAreaCache = new Map();
+
+const MTAL_9TH_GRADE_AREA_COURSES = {
+  "01": ["Temel Hukuk", "Yargı Hizmetleri Atölyesi"],
+  "02": ["Sosyal Destek Hizmetleri", "Tüketici Hizmetleri Atölyesi"],
+  "03": ["Ayakkabı Üretim Atölyesi", "Temel Saraciye Uygulamaları"],
+  "04": ["Programlama Temelleri", "Bilişim Teknolojilerinin Temelleri", "Bilgisayarlı Tasarım Uygulamaları"],
+  "05": ["Biyomedikal Cihazlar Atölyesi", "Temel Biyomedikal"],
+  "06": ["Temel Sekreterlik Hizmetleri", "Klavye Teknikleri"],
+  "07": ["Çocuk Ruh Sağlığı", "Erken Çocuklukta Öz Bakım"],
+  "08": ["Denizcilik Temelleri", "Gemicilik ve Seyir"],
+  "09": ["Geleneksel El Sanatları", "Temel Desen Atölyesi"],
+  "10": ["Temel Elektrik-Elektronik Atölyesi", "Elektrik-Elektronik Teknik Resmi"],
+  "11": ["Temel Otomasyon", "Mekatronik Atölyesi"],
+  "14": ["Gemi Yapımı Temel Uygulamaları", "Gemi Resmi"],
+  "15": ["Gıda Güvenliği", "Temel Gıda Analizleri Atölyesi"],
+  "16": ["Fotoğraf Çekimi", "Temel Grafik"],
+  "17": ["Temel Saç Bakımı", "Temel Makyaj ve Cilt Bakımı"],
+  "19": ["Harita Hesapları", "Ölçme Uygulamaları"],
+  "20": ["Temel Hasta ve Yaşlı Bakımı", "Beslenme İlkeleri"],
+  "23": ["Yapı Statiği", "Temel İnşaat Uygulamaları"],
+  "25": ["Temel Kimya", "Kimya Laboratuvar Uygulamaları"],
+  "26": ["Konaklama ve Seyahat Hizmetleri", "Ön Büro Hizmetleri"],
+  "30": ["Temel İmalat İşlemleri", "Teknik Resim"],
+  "31": ["Baskı Teknikleri", "Baskı Öncesi Uygulamaları"],
+  "32": ["Temel Metal Şekillendirme", "Kaynak Uygulamaları Atölyesi"],
+  "35": ["Temel Ağaç İşleri", "Mobilya Çizimi"],
+  "36": ["Temel Dikiş Teknikleri", "Model Geliştirme"],
+  "37": ["Araç Teknolojisi Atölyesi", "Otomotiv Teknik Resmi"],
+  "38": ["Temel Muhasebe", "Ofis Programları"],
+  "39": ["Pazarlama İlkeleri", "Satış Teknikleri"]
+};
+
 async function handleAnnualMebCatalogByArea(request, response) {
   try {
     const { source = "dbf", schoolType = "mtal", grade = "11", areaCode = "00", query = "" } = await readJsonRequest(request);
     const schoolTypeId = String(schoolType).toLowerCase() === "mesem" ? "2" : "1";
+    const cacheKey = `${source}-${schoolType}-${grade}-${areaCode}`;
+
+    if (!query && catalogByAreaCache.has(cacheKey)) {
+      const cached = catalogByAreaCache.get(cacheKey);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=1800" });
+      response.end(JSON.stringify(cached));
+      return;
+    }
+
     const path = mebCatalogPath(source, grade, schoolTypeId);
     const targetUrl = `https://meslek.meb.gov.tr/${path}`;
 
@@ -1602,7 +1660,20 @@ async function handleAnnualMebCatalogByArea(request, response) {
 
             const copCards = parseMebCatalogCards(copHtml, "framework");
             if (copCards.length > 0) {
-              if (areaCode && areaCode !== "00" && areaName) {
+              const baseCop = copCards[0];
+              const specificCourses = MTAL_9TH_GRADE_AREA_COURSES[areaCode];
+              if (specificCourses && specificCourses.length > 0) {
+                entries = specificCourses.map(courseName => ({
+                  title: courseName,
+                  area: areaName,
+                  grade: "9. Sınıf",
+                  kind: "Çerçeve Öğretim Programı Dersi",
+                  date: "",
+                  url: `${baseCop.url}?lesson=${encodeURIComponent(courseName)}`,
+                  fileName: baseCop.fileName,
+                  extension: "pdf"
+                }));
+              } else if (areaCode && areaCode !== "00" && areaName) {
                 const areaKey = areaName.toLocaleLowerCase("tr-TR");
                 const filteredCop = copCards.filter(e =>
                   [e.title, e.area, e.fileName].join(" ").toLocaleLowerCase("tr-TR").includes(areaKey)
@@ -1626,8 +1697,7 @@ async function handleAnnualMebCatalogByArea(request, response) {
       );
     }
 
-    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
-    response.end(JSON.stringify({
+    const responsePayload = {
       source,
       schoolType: schoolTypeId === "2" ? "mesem" : "mtal",
       grade: String(grade),
@@ -1636,7 +1706,14 @@ async function handleAnnualMebCatalogByArea(request, response) {
       pageUrl: targetUrl,
       count: entries.length,
       entries
-    }));
+    };
+
+    if (!query && entries.length > 0) {
+      catalogByAreaCache.set(cacheKey, responsePayload);
+    }
+
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=1800" });
+    response.end(JSON.stringify(responsePayload));
   } catch (error) {
     response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
     response.end(JSON.stringify({ error: error.message || "MEB kaynakları alınamadı." }));

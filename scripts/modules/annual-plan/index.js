@@ -2417,6 +2417,29 @@ function renderCustomTemplateQuickPicker() {
   });
 }
 
+const annualFrontendCatalogCache = new Map();
+
+async function fetchCatalogLessons(schoolType, grade, areaCode) {
+  const cacheKey = `${schoolType}-${grade}-${areaCode}`;
+  if (annualFrontendCatalogCache.has(cacheKey)) {
+    return annualFrontendCatalogCache.get(cacheKey);
+  }
+  try {
+    const res = await fetch("/api/annual-meb-catalog-by-area", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ source: "dbf", schoolType, grade, areaCode })
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const entries = data.entries || [];
+    annualFrontendCatalogCache.set(cacheKey, entries);
+    return entries;
+  } catch (e) {
+    return [];
+  }
+}
+
 async function loadCustomTemplateAreas() {
   const select = document.getElementById("annualCustomAreaCode");
   if (!select) return;
@@ -2432,31 +2455,21 @@ async function loadCustomTemplateAreas() {
 }
 
 async function loadCustomTemplateLessons() {
-  const type = document.getElementById("annualCustomType")?.value || "mtal";
   const selectArea = document.getElementById("annualCustomAreaCode");
-  const gradeVal = document.getElementById("annualCustomGrade")?.value || "11. sınıf";
-  const selectLesson = document.getElementById("annualCustomLessonSelect");
   const lessonInput = document.getElementById("annualCustomLessonName");
-  const cancelBtn = document.getElementById("annualCustomLessonCancelBtn");
+  const datalist = document.getElementById("annualCustomLessonDatalist");
+  const type = document.getElementById("annualCustomType")?.value || "mtal";
+  const gradeVal = document.getElementById("annualCustomGrade")?.value || "11. sınıf";
+  const gradeNum = gradeVal.match(/\d+/)?.[0] || "11";
 
-  if (!selectLesson || !selectArea) return;
-
+  if (!selectArea) return;
   const areaCode = selectArea.value;
-  const areaName = areaCode !== "00" ? selectArea.options[selectArea.selectedIndex].text : "";
+  const areaName = areaCode !== "00" ? selectArea.options[selectArea.selectedIndex]?.text || "" : "";
 
-  // If area is not selected yet, show placeholder
-  if (areaCode === "00") {
-    selectLesson.innerHTML = `<option value="">-- Önce Alan Seçin --</option>`;
-    selectLesson.style.display = "block";
-    if (lessonInput) {
-      lessonInput.style.display = "none";
-    }
-    if (cancelBtn) cancelBtn.style.display = "none";
-    return;
+  // Always keep input accessible
+  if (lessonInput) {
+    lessonInput.style.display = "block";
   }
-
-  // Show loading state
-  selectLesson.innerHTML = `<option value="">Yükleniyor...</option>`;
 
   // Collect lessons from local templates
   const localLessons = new Set();
@@ -2467,68 +2480,22 @@ async function loadCustomTemplateLessons() {
     }
   });
 
-  // Extract grade digits for the API
-  const gradeNum = gradeVal.match(/\d+/)?.[0] || "11";
-
   const apiLessons = new Set();
-  try {
-    // Fetch DBFs from catalog
-    const resDbf = await fetch("/api/annual-meb-catalog-by-area", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ source: "dbf", schoolType: type, grade: gradeNum, areaCode })
-    }).then(r => r.ok ? r.json() : { entries: [] }).catch(() => ({ entries: [] }));
-
-    const entries = resDbf.entries || [];
+  if (areaCode && areaCode !== "00") {
+    const entries = await fetchCatalogLessons(type, gradeNum, areaCode);
     entries.forEach(entry => {
       if (entry.title) {
         const cleaned = cleanLessonName(entry.title);
         if (cleaned) apiLessons.add(cleaned);
       }
     });
-  } catch (error) {
-    console.error("Ders listesi MEB'den alınamadı:", error);
   }
 
-  // Merge unique names
   const allLessons = new Set([...localLessons, ...apiLessons]);
   const sortedLessons = Array.from(allLessons).sort((a, b) => a.localeCompare(b, "tr"));
 
-  // Render options
-  let optionsHtml = `<option value="">-- Ders Seçin --</option>`;
-  if (sortedLessons.length > 0) {
-    optionsHtml += sortedLessons.map(lesson => `<option value="${annualHtml(lesson)}">${annualHtml(lesson)}</option>`).join("");
-  } else {
-    optionsHtml += `<option value="" disabled>Katalogda ders bulunamadı</option>`;
-  }
-  optionsHtml += `<option value="__custom__" style="color: var(--accent-strong); font-weight: bold;">+ Yeni Ders Ekle (Elle Gir)...</option>`;
-  selectLesson.innerHTML = optionsHtml;
-
-  // Set selected lesson or restore views
-  const currentVal = lessonInput ? lessonInput.value.trim() : "";
-  if (currentVal) {
-    // If the currently entered lesson name exists in the list, select it
-    const hasOption = sortedLessons.some(l => l.toLowerCase() === currentVal.toLowerCase());
-    if (hasOption) {
-      const matchingLesson = sortedLessons.find(l => l.toLowerCase() === currentVal.toLowerCase());
-      selectLesson.value = matchingLesson;
-      selectLesson.style.display = "block";
-      if (lessonInput) lessonInput.style.display = "none";
-      if (cancelBtn) cancelBtn.style.display = "none";
-    } else {
-      selectLesson.value = "__custom__";
-      selectLesson.style.display = "none";
-      if (lessonInput) lessonInput.style.display = "block";
-      if (cancelBtn) cancelBtn.style.display = "block";
-    }
-  } else {
-    selectLesson.value = "";
-    selectLesson.style.display = "block";
-    if (lessonInput) {
-      lessonInput.style.display = "none";
-      lessonInput.value = "";
-    }
-    if (cancelBtn) cancelBtn.style.display = "none";
+  if (datalist) {
+    datalist.innerHTML = sortedLessons.map(lesson => `<option value="${annualHtml(lesson)}"></option>`).join("");
   }
 }
 
@@ -2832,17 +2799,175 @@ async function loadImportDialogMebLessons(selectedLessonName = "") {
   }
 }
 
+let currentTemplateMode = "meb";
+
+async function loadCatalogBoxAreas() {
+  const select = document.getElementById("annualCatalogAreaCode");
+  if (!select) return;
+  const schoolType = document.getElementById("annualCatalogSchoolType")?.value || "mtal";
+  const gradeVal = document.getElementById("annualCatalogGrade")?.value || "11";
+  try {
+    delete select.dataset.loadedKey;
+    await loadAnnualMebAreaOptions(select, "-- Alan Seçin --", schoolType, gradeVal);
+  } catch (error) {
+    console.error("Katalog box alan listesi yüklenemedi:", error);
+  }
+}
+
+async function loadCatalogBoxLessons() {
+  const selectArea = document.getElementById("annualCatalogAreaCode");
+  const selectLesson = document.getElementById("annualCatalogLessonSelect");
+  const statusEl = document.getElementById("annualMebCatalogStatus");
+  if (!selectArea || !selectLesson) return;
+
+  const areaCode = selectArea.value;
+  if (!areaCode || areaCode === "00") {
+    selectLesson.innerHTML = `<option value="">-- Önce Alan Seçin --</option>`;
+    if (statusEl) statusEl.textContent = "";
+    return;
+  }
+
+  const schoolType = document.getElementById("annualCatalogSchoolType")?.value || "mtal";
+  const gradeVal = document.getElementById("annualCatalogGrade")?.value || "11";
+
+  selectLesson.innerHTML = `<option value="">Dersler yükleniyor...</option>`;
+  if (statusEl) statusEl.textContent = "⏳ MEB kataloğu taranıyor...";
+
+  const entries = await fetchCatalogLessons(schoolType, gradeVal, areaCode);
+  if (statusEl) statusEl.textContent = "";
+
+  if (entries.length > 0) {
+    selectLesson.innerHTML = `<option value="">-- Ders Seçin --</option>` +
+      entries.map(e => `<option value="${annualHtml(e.url)}">${annualHtml(e.title)}</option>`).join("");
+    if (selectLesson.options.length > 1) {
+      selectLesson.selectedIndex = 1;
+    }
+  } else {
+    selectLesson.innerHTML = `<option value="" disabled>Katalogda ders bulunamadı</option>`;
+  }
+}
+
+function setTemplateMode(mode) {
+  currentTemplateMode = mode;
+  const mebCard = document.getElementById("annualModeMebCard");
+  const manualCard = document.getElementById("annualModeManualCard");
+  const catalogBox = document.getElementById("annualMebCatalogActionBox");
+  const lessonInput = document.getElementById("annualCustomLessonName");
+
+  if (mode === "meb") {
+    mebCard?.classList.add("is-active");
+    if (mebCard) {
+      mebCard.style.borderColor = "var(--accent)";
+      mebCard.style.background = "#f0fdf4";
+    }
+    manualCard?.classList.remove("is-active");
+    if (manualCard) {
+      manualCard.style.borderColor = "#cbd5e1";
+      manualCard.style.background = "#ffffff";
+    }
+    if (catalogBox) catalogBox.style.display = "block";
+    loadCatalogBoxAreas();
+  } else {
+    manualCard?.classList.add("is-active");
+    if (manualCard) {
+      manualCard.style.borderColor = "var(--accent)";
+      manualCard.style.background = "#f0fdf4";
+    }
+    mebCard?.classList.remove("is-active");
+    if (mebCard) {
+      mebCard.style.borderColor = "#cbd5e1";
+      mebCard.style.background = "#ffffff";
+    }
+    if (catalogBox) catalogBox.style.display = "none";
+    if (lessonInput) {
+      lessonInput.focus();
+    }
+  }
+}
+
+async function handleCatalogQuickTransfer() {
+  const lessonSelect = document.getElementById("annualCatalogLessonSelect");
+  const dbfUrl = lessonSelect?.value;
+  if (!dbfUrl) {
+    return annualToast("Lütfen aktarmak için bir ders seçin.", "warning");
+  }
+
+  const selectedOptionText = lessonSelect.options[lessonSelect.selectedIndex].text;
+  const schoolType = document.getElementById("annualCatalogSchoolType")?.value || "mtal";
+  const gradeVal = document.getElementById("annualCatalogGrade")?.value || "11";
+  const selectArea = document.getElementById("annualCatalogAreaCode");
+  const areaName = selectArea && selectArea.value !== "00" ? selectArea.options[selectArea.selectedIndex].text : "";
+  const gradeText = `${gradeVal}. sınıf`;
+
+  try {
+    annualToast(`"${selectedOptionText}" dersinin müfredatı aktarılıyor...`, "info");
+    const response = await fetch("/api/annual-import-meb-dbf", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        url: dbfUrl,
+        meta: {
+          schoolType,
+          areaName,
+          grade: gradeText,
+          lessonName: selectedOptionText.trim()
+        }
+      })
+    });
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error || `Sunucu hatası: ${response.status}`);
+    }
+    const data = await response.json();
+    if (data.error) throw new Error(data.error);
+
+    const lessonInput = document.getElementById("annualCustomLessonName");
+    if (lessonInput) lessonInput.value = data.lessonName || selectedOptionText;
+    const customType = document.getElementById("annualCustomType");
+    if (customType) customType.value = schoolType;
+    const customGrade = document.getElementById("annualCustomGrade");
+    if (customGrade) customGrade.value = gradeText;
+    const customHours = document.getElementById("annualCustomWeeklyHours");
+    if (customHours && data.weeklyHours) customHours.value = data.weeklyHours;
+
+    const customArea = document.getElementById("annualCustomAreaCode");
+    if (customArea && selectArea.value !== "00") {
+      customArea.value = selectArea.value;
+    }
+
+    populateImportedCurriculum(data.units || [], false);
+    annualToast(`"${data.lessonName || selectedOptionText}" dersinin ${data.units?.length || 0} ünitesi ve kazanımları başarıyla aktarıldı!`, "success");
+  } catch (error) {
+    annualToast(`Katalogdan aktarım başarısız: ${error.message}`, "error");
+  }
+}
+
 function initPlanTemplateView() {
   const container = document.getElementById("annualCustomUnitContainer");
   if (!container) return;
   
   renderCustomTemplateQuickPicker();
+  loadCatalogBoxAreas();
   loadCustomTemplateAreas();
   loadCustomTemplateLessons();
   
   if (!customTemplateBound) {
     customTemplateBound = true;
     
+    // Mode switcher buttons
+    document.getElementById("annualModeMebCard")?.addEventListener("click", () => setTemplateMode("meb"));
+    document.getElementById("annualModeManualCard")?.addEventListener("click", () => setTemplateMode("manual"));
+
+    // MEB Catalog Action Box events
+    const onCatalogBoxFilterChanged = async () => {
+      await loadCatalogBoxAreas();
+      await loadCatalogBoxLessons();
+    };
+    document.getElementById("annualCatalogSchoolType")?.addEventListener("change", onCatalogBoxFilterChanged);
+    document.getElementById("annualCatalogGrade")?.addEventListener("change", onCatalogBoxFilterChanged);
+    document.getElementById("annualCatalogAreaCode")?.addEventListener("change", loadCatalogBoxLessons);
+    document.getElementById("annualCatalogQuickTransferBtn")?.addEventListener("click", handleCatalogQuickTransfer);
+
     // Bind reload events for lesson selection
     document.getElementById("annualCustomType")?.addEventListener("change", async () => {
       await loadCustomTemplateAreas();
@@ -3068,7 +3193,19 @@ function initPlanTemplateView() {
         const data = await response.json();
         if (data.error) throw new Error(data.error);
 
-        populateImportedCurriculum(data.units || []);
+        populateImportedCurriculum(data.units || [], false);
+        if (data.lessonName) {
+          const customLessonInput = document.getElementById("annualCustomLessonName");
+          if (customLessonInput) customLessonInput.value = data.lessonName;
+        }
+        if (data.weeklyHours) {
+          const customHours = document.getElementById("annualCustomWeeklyHours");
+          if (customHours) customHours.value = data.weeklyHours;
+        }
+        if (data.grade) {
+          const customGrade = document.getElementById("annualCustomGrade");
+          if (customGrade) customGrade.value = data.grade;
+        }
 
         document.getElementById("annualWordImportDialog")?.close();
         localFileInput.value = "";
@@ -3122,7 +3259,18 @@ function initPlanTemplateView() {
         const data = await response.json();
         if (data.error) throw new Error(data.error);
 
-        populateImportedCurriculum(data.units || [], true);
+        populateImportedCurriculum(data.units || [], false);
+
+        const customLessonInput = document.getElementById("annualCustomLessonName");
+        if (customLessonInput) customLessonInput.value = data.lessonName || lessonName;
+        const customType = document.getElementById("annualCustomType");
+        if (customType) customType.value = importSchoolType;
+        const customGrade = document.getElementById("annualCustomGrade");
+        if (customGrade) customGrade.value = gradeText;
+        const customHours = document.getElementById("annualCustomWeeklyHours");
+        if (customHours && data.weeklyHours) customHours.value = data.weeklyHours;
+        const customArea = document.getElementById("annualCustomAreaCode");
+        if (customArea && selectImportArea && selectImportArea.value !== "00") customArea.value = selectImportArea.value;
 
         document.getElementById("annualWordImportDialog")?.close();
       } catch (error) {

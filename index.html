@@ -2649,6 +2649,73 @@
                 </button>
               </div>
             </div>
+
+            <!-- Şablon Hazırlama Mod Seçici -->
+            <div class="annual-template-mode-selector" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-bottom: 20px;">
+              <div id="annualModeMebCard" class="annual-template-mode-card is-active" role="button" tabindex="0" style="cursor: pointer; border: 2px solid var(--accent); background: #f0fdf4; border-radius: 12px; padding: 14px 16px; transition: all 0.2s ease;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span style="font-size: 1.8rem;">🏛️</span>
+                  <div>
+                    <h4 style="margin: 0 0 4px; font-size: 0.98rem; color: #0f172a; font-weight: 800;">1. MEB Kataloğundan Otomatik Aktar</h4>
+                    <p style="margin: 0; font-size: 0.8rem; color: #475569; line-height: 1.35;">Alan ve dersi seçin; ders saati, tüm üniteler, kazanımlar ve konular otomatik doldurulsun.</p>
+                  </div>
+                </div>
+              </div>
+              <div id="annualModeManualCard" class="annual-template-mode-card" role="button" tabindex="0" style="cursor: pointer; border: 2px solid #cbd5e1; background: #ffffff; border-radius: 12px; padding: 14px 16px; transition: all 0.2s ease;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span style="font-size: 1.8rem;">✍️</span>
+                  <div>
+                    <h4 style="margin: 0 0 4px; font-size: 0.98rem; color: #0f172a; font-weight: 800;">2. Manuel Şablon Hazırla (Elle Giriş)</h4>
+                    <p style="margin: 0; font-size: 0.8rem; color: #475569; line-height: 1.35;">Ders adını ve üniteleri sıfırdan kendiniz yazın. Serbest yazım ve düzenleme modu.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- MEB Kataloğundan Hızlı Aktarma Paneli (Mod 1 için) -->
+            <div id="annualMebCatalogActionBox" style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 16px; margin-bottom: 22px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <span style="font-size: 0.88rem; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 6px;">
+                  <span>⚡</span> MEB Kataloğundan Ders Seçip Tek Tıkla Şablona Aktarın
+                </span>
+                <span id="annualMebCatalogStatus" style="font-size: 0.8rem; color: #64748b; font-weight: 600;"></span>
+              </div>
+              <div class="annual-form-grid" style="grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; align-items: flex-end;">
+                <label>
+                  <span style="font-size: 0.78rem; font-weight: 750;">Okul Türü</span>
+                  <select id="annualCatalogSchoolType" style="width: 100%; min-height: 38px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0 10px; background: #fff;">
+                    <option value="mtal">Meslek Lisesi (MTAL)</option>
+                    <option value="mesem">Mesem</option>
+                  </select>
+                </label>
+                <label>
+                  <span style="font-size: 0.78rem; font-weight: 750;">Sınıf Seviyesi</span>
+                  <select id="annualCatalogGrade" style="width: 100%; min-height: 38px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0 10px; background: #fff;">
+                    <option value="9">9. sınıf</option>
+                    <option value="10">10. sınıf</option>
+                    <option value="11" selected>11. sınıf</option>
+                    <option value="12">12. sınıf</option>
+                  </select>
+                </label>
+                <label>
+                  <span style="font-size: 0.78rem; font-weight: 750;">Alan</span>
+                  <select id="annualCatalogAreaCode" style="width: 100%; min-height: 38px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0 10px; background: #fff;">
+                    <option value="00">-- Alan Seçin --</option>
+                  </select>
+                </label>
+                <label>
+                  <span style="font-size: 0.78rem; font-weight: 750;">Ders</span>
+                  <select id="annualCatalogLessonSelect" style="width: 100%; min-height: 38px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0 10px; background: #fff;">
+                    <option value="">-- Önce Alan Seçin --</option>
+                  </select>
+                </label>
+                <div>
+                  <button class="primary-action" id="annualCatalogQuickTransferBtn" type="button" style="width: 100%; min-height: 38px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                    ✨ Şablona Aktar
+                  </button>
+                </div>
+              </div>
+            </div>
             
             <div class="annual-form-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
               <label>
@@ -2678,11 +2745,10 @@
               <label style="position: relative;">
                 <span>Ders Adı</span>
                 <div id="annualCustomLessonWrapper" style="position: relative;">
-                  <select id="annualCustomLessonSelect" style="width: 100%; min-height: 38px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0 10px; box-sizing: border-box; background-color: #fff;">
-                    <option value="">-- Önce Alan Seçin --</option>
-                  </select>
-                  <input id="annualCustomLessonName" type="text" placeholder="Örn: Web Tabanlı Uygulama Geliştirme" required style="display: none; width: 100%; min-height: 38px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0 10px; box-sizing: border-box;" />
-                  <button id="annualCustomLessonCancelBtn" type="button" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 8px; border-radius: 6px; color: #ef4444; font-size: 0.75rem; cursor: pointer; font-weight: bold; line-height: 1;">İptal</button>
+                  <input id="annualCustomLessonName" list="annualCustomLessonDatalist" type="text" placeholder="Örn: Ağ Sistemleri ve Yönlendirme" required style="width: 100%; min-height: 38px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0 10px; box-sizing: border-box; background: #fff;" />
+                  <datalist id="annualCustomLessonDatalist"></datalist>
+                  <select id="annualCustomLessonSelect" style="display: none;"></select>
+                  <button id="annualCustomLessonCancelBtn" type="button" style="display: none;"></button>
                 </div>
               </label>
               <label>
