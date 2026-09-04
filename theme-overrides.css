@@ -6762,3 +6762,86 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     overflow: visible !important;
   }
 }
+
+/* Annual Plan Template 3-Mode Selector & Action Boxes */
+.annual-template-mode-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.annual-template-mode-card {
+  cursor: pointer;
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 12px 16px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  user-select: none;
+}
+
+.annual-template-mode-card:hover {
+  transform: translateY(-2px);
+  border-color: #94a3b8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.annual-template-mode-card.is-active {
+  border-color: var(--accent, #0f766e) !important;
+  background: #f0fdf4 !important;
+  box-shadow: 0 4px 14px rgba(15, 118, 110, 0.15) !important;
+}
+
+.annual-template-mode-card.is-active h4 {
+  color: var(--accent-strong, #115e59) !important;
+}
+
+#annualMebCatalogActionBox,
+#annualSavedTemplateActionBox {
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+body.dark-mode .annual-template-mode-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+body.dark-mode .annual-template-mode-card h4 {
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .annual-template-mode-card p {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .annual-template-mode-card.is-active {
+  border-color: #2dd4bf !important;
+  background: #132f38 !important;
+}
+
+body.dark-mode .annual-template-mode-card.is-active h4 {
+  color: #5eead4 !important;
+}
+
+body.dark-mode #annualMebCatalogActionBox {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+body.dark-mode #annualSavedTemplateActionBox {
+  background: #132e35 !important;
+  border-color: #115e59 !important;
+}
+
+body.dark-mode #annualSavedTemplateSelect,
+body.dark-mode #annualCatalogSchoolType,
+body.dark-mode #annualCatalogGrade,
+body.dark-mode #annualCatalogAreaCode,
+body.dark-mode #annualCatalogLessonSelect {
+  background: #0f172a !important;
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+}

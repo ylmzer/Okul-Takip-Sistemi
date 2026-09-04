@@ -2363,58 +2363,33 @@ let customTemplateBound = false;
 let editingTemplateId = null;
 
 function renderCustomTemplateQuickPicker() {
-  const panel = document.querySelector('[data-annual-panel="plan-template"] .annual-panel');
-  const title = panel?.querySelector(".annual-panel-title");
-  if (!panel || !title) return;
-
-  let picker = document.getElementById("annualCustomTemplateQuickPicker");
-  if (!picker) {
-    picker = document.createElement("div");
-    picker.id = "annualCustomTemplateQuickPicker";
-    title.insertAdjacentElement("afterend", picker);
+  const oldPicker = document.getElementById("annualCustomTemplateQuickPicker");
+  if (oldPicker) {
+    oldPicker.remove();
   }
 
+  const select = document.getElementById("annualSavedTemplateSelect");
+  if (!select) return;
+
+  const currentVal = select.value;
   const templates = (annualState.templates || []).slice().sort((a, b) => {
     const left = [a.areaName, a.grade, a.lessonName].join(" ");
     const right = [b.areaName, b.grade, b.lessonName].join(" ");
     return left.localeCompare(right, "tr");
   });
 
-  picker.innerHTML = `
-    <div class="annual-settings-summary-card" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 10px 16px;">
-      <div class="summary-details" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.9rem; color: #115e59;">
-        <span style="display: flex; align-items: center; gap: 6px; font-weight: bold; white-space: nowrap;">
-          📂 Kayıtlı şablon:
-        </span>
-        <select id="annualSavedTemplateSelect" style="min-height: 36px; border-radius: 8px; border: 1px solid #99f6e4; padding: 0 10px; width: 320px; max-width: 100%; outline: none; background: #ffffff;">
-          <option value="">-- Kayıtlı şablon seç --</option>
-          ${templates.map((template) => `
-            <option value="${annualHtml(template.id)}">
-              ${annualHtml(template.areaName || "-")} · ${annualHtml(template.grade || "-")} · ${annualHtml(template.lessonName || "-")}
-            </option>
-          `).join("")}
-        </select>
-      </div>
-      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-        <button type="button" id="annualNewTemplateBtn" style="min-height: 32px; border: 1px solid #0f766e; background: transparent; color: #0f766e; font-weight: bold; padding: 0 12px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.2s;">
-          ✨ Yeni Şablon
-        </button>
-        <button type="button" id="annualOpenSavedTemplateBtn" style="min-height: 32px; background: #0f766e; color: #ffffff; border: none; font-weight: bold; padding: 0 12px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px; width: auto; transition: all 0.2s;">
-          ✏️ Aç / Düzenle
-        </button>
-      </div>
-    </div>
+  select.innerHTML = `
+    <option value="">-- Kayıtlı şablon seç (${templates.length} adet mevcut) --</option>
+    ${templates.map((template) => `
+      <option value="${annualHtml(template.id)}">
+        ${annualHtml(template.areaName || "-")} · ${annualHtml(template.grade || "-")} · ${annualHtml(template.lessonName || "-")}
+      </option>
+    `).join("")}
   `;
 
-  picker.querySelector("#annualNewTemplateBtn")?.addEventListener("click", () => {
-    resetCustomTemplateForm();
-    annualToast("Yeni şablon formu açıldı.");
-  });
-  picker.querySelector("#annualOpenSavedTemplateBtn")?.addEventListener("click", () => {
-    const templateId = picker.querySelector("#annualSavedTemplateSelect")?.value || "";
-    if (!templateId) return annualToast("Düzenlemek için kayıtlı bir şablon seçin.", "warning");
-    editCustomTemplate(templateId);
-  });
+  if (currentVal && templates.some(t => t.id === currentVal)) {
+    select.value = currentVal;
+  }
 }
 
 const annualFrontendCatalogCache = new Map();
@@ -2530,6 +2505,9 @@ function resetCustomTemplateForm() {
   }
   addCustomUnitCard();
   
+  const savedSelect = document.getElementById("annualSavedTemplateSelect");
+  if (savedSelect) savedSelect.value = "";
+
   // Reset lesson dropdown and inputs
   loadCustomTemplateLessons();
   updateCustomTemplateTotalRatio();
@@ -2543,6 +2521,9 @@ async function editCustomTemplate(templateId) {
   
   // Set view to plan-template
   setAnnualView("plan-template");
+  setTemplateMode("saved");
+  const savedSelect = document.getElementById("annualSavedTemplateSelect");
+  if (savedSelect) savedSelect.value = templateId;
   
   // Update Title
   const titleEl = document.getElementById("annualCustomTemplateTitle");
@@ -2851,34 +2832,46 @@ function setTemplateMode(mode) {
   currentTemplateMode = mode;
   const mebCard = document.getElementById("annualModeMebCard");
   const manualCard = document.getElementById("annualModeManualCard");
-  const catalogBox = document.getElementById("annualMebCatalogActionBox");
+  const savedCard = document.getElementById("annualModeSavedCard");
+  const mebBox = document.getElementById("annualMebCatalogActionBox");
+  const savedBox = document.getElementById("annualSavedTemplateActionBox");
   const lessonInput = document.getElementById("annualCustomLessonName");
 
+  // Reset all cards styling
+  [mebCard, manualCard, savedCard].forEach(card => {
+    if (!card) return;
+    card.classList.remove("is-active");
+    card.style.borderColor = "#cbd5e1";
+    card.style.background = "#ffffff";
+  });
+
+  // Hide both action panels by default
+  if (mebBox) mebBox.style.display = "none";
+  if (savedBox) savedBox.style.display = "none";
+
   if (mode === "meb") {
-    mebCard?.classList.add("is-active");
     if (mebCard) {
+      mebCard.classList.add("is-active");
       mebCard.style.borderColor = "var(--accent)";
       mebCard.style.background = "#f0fdf4";
     }
-    manualCard?.classList.remove("is-active");
-    if (manualCard) {
-      manualCard.style.borderColor = "#cbd5e1";
-      manualCard.style.background = "#ffffff";
-    }
-    if (catalogBox) catalogBox.style.display = "block";
+    if (mebBox) mebBox.style.display = "block";
     loadCatalogBoxAreas();
+  } else if (mode === "saved") {
+    if (savedCard) {
+      savedCard.classList.add("is-active");
+      savedCard.style.borderColor = "var(--accent)";
+      savedCard.style.background = "#f0fdf4";
+    }
+    if (savedBox) savedBox.style.display = "block";
+    renderCustomTemplateQuickPicker();
   } else {
-    manualCard?.classList.add("is-active");
+    // manual mode
     if (manualCard) {
+      manualCard.classList.add("is-active");
       manualCard.style.borderColor = "var(--accent)";
       manualCard.style.background = "#f0fdf4";
     }
-    mebCard?.classList.remove("is-active");
-    if (mebCard) {
-      mebCard.style.borderColor = "#cbd5e1";
-      mebCard.style.background = "#ffffff";
-    }
-    if (catalogBox) catalogBox.style.display = "none";
     if (lessonInput) {
       lessonInput.focus();
     }
@@ -2947,6 +2940,7 @@ function initPlanTemplateView() {
   if (!container) return;
   
   renderCustomTemplateQuickPicker();
+  setTemplateMode(currentTemplateMode || "meb");
   loadCatalogBoxAreas();
   loadCustomTemplateAreas();
   loadCustomTemplateLessons();
@@ -2957,6 +2951,27 @@ function initPlanTemplateView() {
     // Mode switcher buttons
     document.getElementById("annualModeMebCard")?.addEventListener("click", () => setTemplateMode("meb"));
     document.getElementById("annualModeManualCard")?.addEventListener("click", () => setTemplateMode("manual"));
+    document.getElementById("annualModeSavedCard")?.addEventListener("click", () => setTemplateMode("saved"));
+
+    // Saved Template Action Box events
+    document.getElementById("annualOpenSavedTemplateBtn")?.addEventListener("click", () => {
+      const select = document.getElementById("annualSavedTemplateSelect");
+      const templateId = select?.value || "";
+      if (!templateId) return annualToast("Düzenlemek için kayıtlı bir şablon seçin.", "warning");
+      editCustomTemplate(templateId);
+    });
+
+    document.getElementById("annualNewTemplateBtn")?.addEventListener("click", () => {
+      resetCustomTemplateForm();
+      annualToast("Yeni şablon formu hazırlandı.");
+    });
+
+    document.getElementById("annualSavedTemplateSelect")?.addEventListener("change", (e) => {
+      const templateId = e.target?.value;
+      if (templateId) {
+        editCustomTemplate(templateId);
+      }
+    });
 
     // MEB Catalog Action Box events
     const onCatalogBoxFilterChanged = async () => {
