@@ -1739,8 +1739,8 @@ function planToHtml(plan, { compact = false } = {}) {
         </table>
       </div>
       
-      <div class="annual-plan-footer" style="margin-top: 30px; page-break-inside: avoid; border-top: 1px solid #E5E7EB; padding-top: 20px;">
-        <div class="annual-plan-descriptions" style="margin-bottom: 25px; font-style: italic; font-size: 0.9rem; line-height: 1.6; color: #4B5563; text-align: left;">
+      <div class="annual-plan-footer" style="margin-top: 30px; page-break-inside: avoid; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 20px;">
+        <div class="annual-plan-descriptions" style="margin-bottom: 25px; font-style: italic; font-size: 0.9rem; line-height: 1.6; text-align: left; opacity: 0.85;">
           <p style="margin: 0 0 8px;">Bu plan Mesleki ve Teknik Eğitim Genel Müdürlüğü ile Talim Terbiye Kurulunun yayınladığı Çerçeve Öğretim Programı ve Ders Bilgi Formlarına göre hazırlanmıştır.</p>
           <p style="margin: 0;">Atatürkçülük konuları ile ilgili olarak Talim ve Terbiye Kurulu Başkanlığının 2104 ve 2488 sayılı Tebliğler Dergisinden yararlanılmıştır.</p>
         </div>
@@ -1748,17 +1748,17 @@ function planToHtml(plan, { compact = false } = {}) {
         <div class="annual-plan-signatures" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; text-align: center; margin-top: 60px;">
           ${teachersList.map((t) => `
             <div class="sig-block" style="padding: 12px;">
-              <strong style="display: block; font-size: 0.95rem; color: #111827;">${annualHtml(t)}</strong>
-              <span style="font-size: 0.85rem; color: #6B7280; display: block; margin-top: 4px;">Zümre Öğretmeni</span>
+              <strong style="display: block; font-size: 0.95rem;">${annualHtml(t)}</strong>
+              <span style="font-size: 0.85rem; display: block; margin-top: 4px; opacity: 0.8;">Zümre Öğretmeni</span>
             </div>
           `).join("")}
         </div>
         
         <div class="annual-plan-approval" style="text-align: center; margin-top: 80px; padding-top: 20px;">
-          <p style="font-size: 0.85rem; color: #6B7280; margin: 0 0 4px;">${plan.startDate ? formatTurkishDateSimple(plan.startDate) : ""}</p>
-          <p style="font-weight: bold; margin: 0 0 4px; color: #111827; font-size: 0.95rem;">Uygundur</p>
-          <strong style="display: block; font-size: 0.95rem; color: #111827;">${annualHtml(plan.mudurName || "")}</strong>
-          <span style="font-size: 0.85rem; color: #6B7280; display: block; margin-top: 4px;">Okul Müdürü</span>
+          <p style="font-size: 0.85rem; margin: 0 0 4px; opacity: 0.8;">${plan.startDate ? formatTurkishDateSimple(plan.startDate) : ""}</p>
+          <p style="font-weight: bold; margin: 0 0 4px; font-size: 0.95rem;">Uygundur</p>
+          <strong style="display: block; font-size: 0.95rem;">${annualHtml(plan.mudurName || "")}</strong>
+          <span style="font-size: 0.85rem; display: block; margin-top: 4px; opacity: 0.8;">Okul Müdürü</span>
         </div>
       </div>
     </article>
@@ -1829,26 +1829,16 @@ const closeLicenseModal = closeCreditModal;
 
 function setCreditTab(tab = "code") {
   if (annualEls.creditTabCodeBtn && annualEls.creditTabBuyBtn) {
-    if (tab === "code") {
-      annualEls.creditTabCodeBtn.style.color = "#065f46";
-      annualEls.creditTabCodeBtn.style.fontWeight = "800";
-      annualEls.creditTabCodeBtn.style.borderBottom = "2px solid #065f46";
-      annualEls.creditTabBuyBtn.style.color = "#64748b";
-      annualEls.creditTabBuyBtn.style.fontWeight = "700";
-      annualEls.creditTabBuyBtn.style.borderBottom = "none";
-      if (annualEls.creditTabCodeContent) annualEls.creditTabCodeContent.style.display = "flex";
-      if (annualEls.creditTabBuyContent) annualEls.creditTabBuyContent.style.display = "none";
-    } else {
-      annualEls.creditTabBuyBtn.style.color = "#065f46";
-      annualEls.creditTabBuyBtn.style.fontWeight = "800";
-      annualEls.creditTabBuyBtn.style.borderBottom = "2px solid #065f46";
-      annualEls.creditTabCodeBtn.style.color = "#64748b";
-      annualEls.creditTabCodeBtn.style.fontWeight = "700";
-      annualEls.creditTabCodeBtn.style.borderBottom = "none";
-      if (annualEls.creditTabBuyContent) annualEls.creditTabBuyContent.style.display = "flex";
-      if (annualEls.creditTabCodeContent) annualEls.creditTabCodeContent.style.display = "none";
-      renderPricingPackages();
-    }
+    const isCode = tab === "code";
+    annualEls.creditTabCodeBtn.classList.toggle("is-active", isCode);
+    annualEls.creditTabBuyBtn.classList.toggle("is-active", !isCode);
+    annualEls.creditTabCodeBtn.style.color = "";
+    annualEls.creditTabCodeBtn.style.borderBottom = "";
+    annualEls.creditTabBuyBtn.style.color = "";
+    annualEls.creditTabBuyBtn.style.borderBottom = "";
+    if (annualEls.creditTabCodeContent) annualEls.creditTabCodeContent.style.display = isCode ? "flex" : "none";
+    if (annualEls.creditTabBuyContent) annualEls.creditTabBuyContent.style.display = isCode ? "none" : "flex";
+    if (!isCode) renderPricingPackages();
   }
 }
 
@@ -1856,8 +1846,8 @@ function setCreditStatus(msg, type = "info") {
   if (!annualEls.licenseStatusMsg) return;
   annualEls.licenseStatusMsg.textContent = msg;
   annualEls.licenseStatusMsg.style.display = "block";
-  annualEls.licenseStatusMsg.style.color = type === "error" ? "#ef4444" : type === "success" ? "#166534" : "#2563eb";
-  annualEls.licenseStatusMsg.style.fontWeight = "bold";
+  annualEls.licenseStatusMsg.className = `annual-credit-status-msg is-${type}`;
+  annualEls.licenseStatusMsg.style.color = "";
 }
 
 const showLicenseStatus = setCreditStatus;
@@ -2015,33 +2005,31 @@ function updateCreditUI() {
 
   // 2. Step 4 Plan Status Badge & Notice
   if (annualEls.licenseBadge) {
+    annualEls.licenseBadge.style.background = "";
+    annualEls.licenseBadge.style.color = "";
     if (annualState.isAdmin) {
-      annualEls.licenseBadge.style.background = "#dbeafe";
-      annualEls.licenseBadge.style.color = "#1e40af";
+      annualEls.licenseBadge.dataset.badgeType = "admin";
       if (annualEls.licenseBadgeIcon) annualEls.licenseBadgeIcon.textContent = "👑";
       if (annualEls.licenseBadgeText) annualEls.licenseBadgeText.textContent = "Yönetici (Sınırsız)";
       if (annualEls.step4CreditNoticeText) {
         annualEls.step4CreditNoticeText.innerHTML = "Yönetici modundasınız. Tüm planları sınırsız indirebilir ve yazdırabilirsiniz.";
       }
     } else if (annualState.license?.isLicensed) {
-      annualEls.licenseBadge.style.background = "#dcfce7";
-      annualEls.licenseBadge.style.color = "#166534";
+      annualEls.licenseBadge.dataset.badgeType = "licensed";
       if (annualEls.licenseBadgeIcon) annualEls.licenseBadgeIcon.textContent = "🔑";
       if (annualEls.licenseBadgeText) annualEls.licenseBadgeText.textContent = `Lisanslı (${annualState.license.owner || "Okul"})`;
       if (annualEls.step4CreditNoticeText) {
         annualEls.step4CreditNoticeText.innerHTML = "Kurumsal lisans aktif. Tüm planları sınırsız indirebilir ve yazdırabilirsiniz.";
       }
     } else if (planUnlocked) {
-      annualEls.licenseBadge.style.background = "#dcfce7";
-      annualEls.licenseBadge.style.color = "#166534";
+      annualEls.licenseBadge.dataset.badgeType = "unlocked";
       if (annualEls.licenseBadgeIcon) annualEls.licenseBadgeIcon.textContent = "✅";
       if (annualEls.licenseBadgeText) annualEls.licenseBadgeText.textContent = "Satın Alındı (Ücretsiz)";
       if (annualEls.step4CreditNoticeText) {
         annualEls.step4CreditNoticeText.innerHTML = "Bu plan hesabınızda açıktır. Tekrar indirmek ve yazdırmak <strong>ücretsizdir</strong>.";
       }
     } else {
-      annualEls.licenseBadge.style.background = "#fef3c7";
-      annualEls.licenseBadge.style.color = "#92400e";
+      annualEls.licenseBadge.dataset.badgeType = "credit";
       if (annualEls.licenseBadgeIcon) annualEls.licenseBadgeIcon.textContent = "🪙";
       if (annualEls.licenseBadgeText) annualEls.licenseBadgeText.textContent = `1 Kredi Gerekir (Kalan: ${annualState.credits || 0})`;
       if (annualEls.step4CreditNoticeText) {
@@ -2111,14 +2099,14 @@ function renderPricingPackages() {
   annualEls.pricingPackagesGrid.innerHTML = packages.map(pkg => {
     const waText = encodeURIComponent(`Merhaba, Yıllık Plan için "${pkg.name}" (${pkg.price}) satın almak istiyorum.`);
     return `
-      <div style="background: #fff; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px;">
+      <div class="annual-pricing-card">
         <div>
-          <div style="font-weight: 850; font-size: 0.9rem; color: #0f172a;">${annualHtml(pkg.name)}</div>
-          <div style="font-size: 0.76rem; color: #64748b; margin-top: 2px;">${annualHtml(pkg.description || "")}</div>
+          <div class="annual-pricing-name">${annualHtml(pkg.name)}</div>
+          <div class="annual-pricing-desc">${annualHtml(pkg.description || "")}</div>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
-          <strong style="font-size: 1.1rem; color: #065f46;">${annualHtml(pkg.price)}</strong>
-          <a href="https://wa.me/${cleanPhone}?text=${waText}" target="_blank" rel="noopener" style="background: #25d366; color: #fff; text-decoration: none; border-radius: 6px; padding: 5px 10px; font-size: 0.78rem; font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">
+        <div class="annual-pricing-footer">
+          <strong class="annual-pricing-price">${annualHtml(pkg.price)}</strong>
+          <a href="https://wa.me/${cleanPhone}?text=${waText}" target="_blank" rel="noopener" class="annual-pricing-buy-btn">
             Satın Al 💬
           </a>
         </div>
@@ -2298,25 +2286,25 @@ function renderAdminCreditCodesTable(codes = []) {
   annualEls.adminCreditCodesTableBody.innerHTML = codes.map(c => {
     const isExhausted = c.maxUses && (c.usedCount || 0) >= c.maxUses;
     const statusBadge = !c.isActive 
-      ? `<span style="background: #fee2e2; color: #991b1b; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.76rem;">Pasif</span>`
+      ? `<span class="annual-admin-badge badge-danger">Pasif</span>`
       : isExhausted
-      ? `<span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.76rem;">Tükendi</span>`
-      : `<span style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.76rem;">Aktif</span>`;
+      ? `<span class="annual-admin-badge badge-warning">Tükendi</span>`
+      : `<span class="annual-admin-badge badge-success">Aktif</span>`;
 
     return `
-      <tr style="border-bottom: 1px solid #f1f5f9;">
-        <td style="padding: 10px 14px; font-family: monospace; font-weight: bold; color: #047857;">
-          <span class="annual-copyable-code" data-code="${annualHtml(c.code)}" style="cursor: pointer; text-decoration: underline dotted;" title="Kopyalamak için tıklayın">${annualHtml(c.code)}</span>
+      <tr class="annual-admin-table-row">
+        <td class="annual-admin-code-cell">
+          <span class="annual-copyable-code" data-code="${annualHtml(c.code)}" title="Kopyalamak için tıklayın">${annualHtml(c.code)}</span>
         </td>
-        <td style="padding: 10px 14px; font-weight: 800; color: #0f172a;">${c.credits || 1} Kredi</td>
-        <td style="padding: 10px 14px;">${c.usedCount || 0} / ${c.maxUses || "Sınırsız"}</td>
-        <td style="padding: 10px 14px; color: #475569;">${annualHtml(c.note || "-")}</td>
-        <td style="padding: 10px 14px;">${statusBadge}</td>
-        <td style="padding: 10px 14px; text-align: right; white-space: nowrap;">
-          <button type="button" class="annual-toggle-code-btn" data-code="${annualHtml(c.code)}" style="background: none; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; font-size: 0.78rem; cursor: pointer; margin-right: 4px;">
+        <td class="annual-admin-credits-cell">${c.credits || 1} Kredi</td>
+        <td>${c.usedCount || 0} / ${c.maxUses || "Sınırsız"}</td>
+        <td class="annual-admin-desc-cell">${annualHtml(c.note || "-")}</td>
+        <td>${statusBadge}</td>
+        <td class="annual-admin-actions-cell">
+          <button type="button" class="annual-toggle-code-btn" data-code="${annualHtml(c.code)}">
             ${c.isActive ? "Durdur" : "Aktifleştir"}
           </button>
-          <button type="button" class="annual-delete-code-btn" data-code="${annualHtml(c.code)}" style="background: none; border: 1px solid #fca5a5; color: #ef4444; border-radius: 6px; padding: 4px 8px; font-size: 0.78rem; cursor: pointer;">
+          <button type="button" class="annual-delete-code-btn" data-code="${annualHtml(c.code)}">
             Sil
           </button>
         </td>
@@ -2342,20 +2330,20 @@ function renderAdminUsersTable(users = {}) {
   if (!annualEls.adminUsersTableBody) return;
   const userEntries = Object.entries(users);
   if (!userEntries.length) {
-    annualEls.adminUsersTableBody.innerHTML = `<tr><td colspan="5" style="padding: 16px; text-align: center; color: #64748b;">Henüz kayıtlı kullanıcı hesabı bulunmuyor.</td></tr>`;
+    annualEls.adminUsersTableBody.innerHTML = `<tr><td colspan="5" class="annual-table-empty">Henüz kayıtlı kullanıcı hesabı bulunmuyor.</td></tr>`;
     return;
   }
   annualEls.adminUsersTableBody.innerHTML = userEntries.map(([userKey, u]) => {
     const plansCount = (u.unlockedPlans || []).length;
     const historyCount = (u.history || []).length;
     return `
-      <tr style="border-bottom: 1px solid #f1f5f9;">
-        <td style="padding: 10px 14px; font-family: monospace; font-weight: bold; color: #1e293b;">${annualHtml(userKey)}</td>
-        <td style="padding: 10px 14px; font-weight: 850; color: #065f46;">${u.credits || 0} Kredi</td>
-        <td style="padding: 10px 14px;">${plansCount} Plan</td>
-        <td style="padding: 10px 14px; color: #64748b;">${historyCount} İşlem</td>
-        <td style="padding: 10px 14px; text-align: right;">
-          <button type="button" class="annual-set-user-credit-btn" data-user="${annualHtml(userKey)}" data-credits="${u.credits || 0}" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 10px; font-size: 0.78rem; font-weight: 700; cursor: pointer;">
+      <tr class="annual-admin-table-row">
+        <td class="annual-admin-user-cell">${annualHtml(userKey)}</td>
+        <td class="annual-admin-credits-cell">${u.credits || 0} Kredi</td>
+        <td>${plansCount} Plan</td>
+        <td class="annual-admin-muted-cell">${historyCount} İşlem</td>
+        <td class="annual-admin-actions-cell">
+          <button type="button" class="annual-set-user-credit-btn" data-user="${annualHtml(userKey)}" data-credits="${u.credits || 0}">
             ✏️ Kredi Düzenle
           </button>
         </td>
@@ -2373,33 +2361,33 @@ function renderAdminUsersTable(users = {}) {
 function renderAdminLicensesTable(licenses = []) {
   if (!annualEls.adminLicensesTableBody) return;
   if (!licenses.length) {
-    annualEls.adminLicensesTableBody.innerHTML = `<tr><td colspan="6" style="padding: 16px; text-align: center; color: #64748b;">Henüz kayıtlı lisans anahtarı bulunmuyor.</td></tr>`;
+    annualEls.adminLicensesTableBody.innerHTML = `<tr><td colspan="6" class="annual-table-empty">Henüz kayıtlı lisans anahtarı bulunmuyor.</td></tr>`;
     return;
   }
   annualEls.adminLicensesTableBody.innerHTML = licenses.map(lic => {
     const isExpired = lic.expiresAt && new Date(lic.expiresAt) < new Date();
     const statusBadge = !lic.isActive 
-      ? `<span style="background: #fee2e2; color: #991b1b; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.76rem;">Pasif</span>`
+      ? `<span class="annual-admin-badge badge-danger">Pasif</span>`
       : isExpired
-      ? `<span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.76rem;">Süresi Dolmuş</span>`
-      : `<span style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.76rem;">Aktif</span>`;
+      ? `<span class="annual-admin-badge badge-warning">Süresi Dolmuş</span>`
+      : `<span class="annual-admin-badge badge-success">Aktif</span>`;
     
     const expiresStr = lic.expiresAt ? new Date(lic.expiresAt).toLocaleDateString("tr-TR") : "Süresiz";
 
     return `
-      <tr style="border-bottom: 1px solid #f1f5f9;">
-        <td style="padding: 10px 14px; font-family: monospace; font-weight: bold; color: #0f766e;">
-          <span class="annual-copyable-key" data-key="${annualHtml(lic.key)}" style="cursor: pointer; text-decoration: underline dotted;" title="Kopyalamak için tıklayın">${annualHtml(lic.key)}</span>
+      <tr class="annual-admin-table-row">
+        <td class="annual-admin-key-cell">
+          <span class="annual-copyable-key" data-key="${annualHtml(lic.key)}" title="Kopyalamak için tıklayın">${annualHtml(lic.key)}</span>
         </td>
-        <td style="padding: 10px 14px; font-weight: 600;">${annualHtml(lic.owner || "-")}</td>
-        <td style="padding: 10px 14px; text-transform: capitalize;">${annualHtml(lic.plan || "full")}</td>
-        <td style="padding: 10px 14px;">${expiresStr}</td>
-        <td style="padding: 10px 14px;">${statusBadge}</td>
-        <td style="padding: 10px 14px; text-align: right; white-space: nowrap;">
-          <button type="button" class="annual-toggle-lic-btn" data-key="${annualHtml(lic.key)}" style="background: none; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; font-size: 0.78rem; cursor: pointer; margin-right: 4px;">
+        <td class="annual-admin-owner-cell">${annualHtml(lic.owner || "-")}</td>
+        <td class="annual-admin-plan-cell">${annualHtml(lic.plan || "full")}</td>
+        <td>${expiresStr}</td>
+        <td>${statusBadge}</td>
+        <td class="annual-admin-actions-cell">
+          <button type="button" class="annual-toggle-lic-btn" data-key="${annualHtml(lic.key)}">
             ${lic.isActive ? "Durdur" : "Aktifleştir"}
           </button>
-          <button type="button" class="annual-delete-lic-btn" data-key="${annualHtml(lic.key)}" style="background: none; border: 1px solid #fca5a5; color: #ef4444; border-radius: 6px; padding: 4px 8px; font-size: 0.78rem; cursor: pointer;">
+          <button type="button" class="annual-delete-lic-btn" data-key="${annualHtml(lic.key)}">
             Sil
           </button>
         </td>

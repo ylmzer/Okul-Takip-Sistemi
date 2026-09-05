@@ -33,7 +33,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=94" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=124" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=125" />
   </head>
   <body class="auth-mode">
     <script>
@@ -2418,8 +2418,8 @@
     </dialog>
 
     <!-- Yıllık Plan Kredi ve Lisans Modalı -->
-    <dialog id="annualCreditModal" style="border: none; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.18), 0 8px 10px -6px rgba(0, 0, 0, 0.1); width: min(540px, calc(100vw - 24px)); padding: 0; overflow: hidden; background: #fff; font-family: inherit;">
-      <div style="background: linear-gradient(135deg, #065f46 0%, #064e3b 100%); color: #fff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+    <dialog id="annualCreditModal" class="annual-credit-modal">
+      <div class="annual-credit-modal-header">
         <div style="display: flex; align-items: center; gap: 10px;">
           <span style="font-size: 1.5rem;">🪙</span>
           <div>
@@ -2432,45 +2432,45 @@
 
       <div style="padding: 20px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box; max-height: 80vh; overflow-y: auto;">
         <!-- Kredi Bakiye Kartı -->
-        <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 12px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+        <div class="annual-credit-balance-card">
           <div>
-            <div style="font-size: 0.78rem; color: #166534; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Mevcut Bakiyeniz</div>
-            <div style="font-size: 1.6rem; font-weight: 900; color: #065f46; display: flex; align-items: center; gap: 6px;">
+            <div class="annual-credit-balance-title">Mevcut Bakiyeniz</div>
+            <div style="font-size: 1.6rem; font-weight: 900; display: flex; align-items: center; gap: 6px;">
               <span>🪙</span> <span id="annualModalCreditCount">1 Plan</span>
             </div>
           </div>
           <div style="text-align: right;">
-            <span id="annualModalUnlockedCount" style="display: inline-block; background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 800;">0 Plan Açıldı</span>
-            <div style="font-size: 0.74rem; color: #166534; margin-top: 4px;">Açılan planlar sınırsız indirilebilir</div>
+            <span id="annualModalUnlockedCount" class="annual-credit-unlocked-badge">0 Plan Açıldı</span>
+            <div class="annual-credit-balance-sub">Açılan planlar sınırsız indirilebilir</div>
           </div>
         </div>
 
         <!-- Sekmeler -->
-        <div style="display: flex; border-bottom: 2px solid #e2e8f0; gap: 8px;">
-          <button type="button" id="annualCreditTabCodeBtn" style="background: none; border: none; padding: 8px 14px; font-weight: 800; font-size: 0.88rem; color: #065f46; border-bottom: 2px solid #065f46; margin-bottom: -2px; cursor: pointer;">
+        <div class="annual-credit-tabs">
+          <button type="button" id="annualCreditTabCodeBtn" class="annual-credit-tab-btn is-active">
             🎟️ Kredi Kodu Kullan
           </button>
-          <button type="button" id="annualCreditTabBuyBtn" style="background: none; border: none; padding: 8px 14px; font-weight: 700; font-size: 0.88rem; color: #64748b; margin-bottom: -2px; cursor: pointer;">
+          <button type="button" id="annualCreditTabBuyBtn" class="annual-credit-tab-btn">
             🛒 Kredi Satın Al & Paketler
           </button>
         </div>
 
         <!-- Sekme 1: Kredi Kodu Yükleme -->
         <div id="annualCreditTabCodeContent" style="display: flex; flex-direction: column; gap: 12px;">
-          <label style="font-size: 0.85rem; font-weight: 800; color: #1e293b;" for="annualCreditCodeInput">Kredi Kuponu veya Lisans Kodu</label>
+          <label class="annual-credit-label" for="annualCreditCodeInput">Kredi Kuponu veya Lisans Kodu</label>
           <div style="display: flex; gap: 8px;">
-            <input id="annualCreditCodeInput" type="text" placeholder="Örn: KREDI-5-DEMO veya OTS-..." style="flex: 1; min-height: 42px; border-radius: 8px; border: 1.5px solid #cbd5e1; padding: 0 12px; font-family: monospace; font-size: 0.95rem; text-transform: uppercase;" />
+            <input id="annualCreditCodeInput" class="annual-credit-input" type="text" placeholder="Örn: KREDI-5-DEMO veya OTS-..." style="flex: 1; min-height: 42px; border-radius: 8px; padding: 0 12px; font-family: monospace; font-size: 0.95rem; text-transform: uppercase;" />
             <button id="annualCreditRedeemBtn" class="primary-action" type="button" style="min-height: 42px; padding: 0 18px; font-weight: bold; white-space: nowrap; background: #059669;">Yükle</button>
           </div>
-          <div id="annualCreditStatusMsg" style="font-size: 0.82rem; min-height: 18px; display: none;"></div>
-          <div style="font-size: 0.78rem; color: #64748b; line-height: 1.4;">
+          <div id="annualCreditStatusMsg" class="annual-credit-status-msg" style="display: none;"></div>
+          <div class="annual-credit-hint">
             💡 <em>Size iletilen <strong>kredi kuponunu</strong> veya okulunuza ait <strong>lisans anahtarını</strong> buraya girerek hesabınıza tanımlayabilirsiniz.</em>
           </div>
         </div>
 
         <!-- Sekme 2: Kredi Satın Alma Paketleri -->
         <div id="annualCreditTabBuyContent" style="display: none; flex-direction: column; gap: 12px;">
-          <div style="font-size: 0.82rem; color: #475569; line-height: 1.4;">
+          <div class="annual-credit-hint">
             İhtiyacınıza uygun paketi seçerek WhatsApp üzerinden anında kredi kodu temin edebilirsiniz:
           </div>
 
@@ -2478,20 +2478,20 @@
             <!-- Paketler dinamik doldurulur -->
           </div>
 
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; font-size: 0.82rem; color: #334155; display: flex; flex-direction: column; gap: 6px;">
-            <div style="font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+          <div class="annual-credit-iban-card">
+            <div class="annual-credit-iban-title">
               <span>🏦</span> Banka Havalesi / EFT (IBAN)
             </div>
             <div><strong>Alıcı:</strong> <span id="annualIbanHolder">Okul Takip Sistemi</span></div>
-            <div><strong>IBAN:</strong> <code id="annualIbanNumber" style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; user-select: all;">TR00 0000 0000 0000 0000 0000 00</code></div>
-            <div style="font-size: 0.75rem; color: #64748b;">(Açıklamaya telefon veya e-posta yazınız)</div>
+            <div><strong>IBAN:</strong> <code id="annualIbanNumber" class="annual-credit-iban-code">TR00 0000 0000 0000 0000 0000 00</code></div>
+            <div class="annual-credit-iban-sub">(Açıklamaya telefon veya e-posta yazınız)</div>
           </div>
 
           <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <a id="annualCreditWhatsappLink" href="https://wa.me/905551234567?text=Merhaba,%20Yıllık%20Plan%20için%20kredi%20satın%20almak%20istiyorum." target="_blank" rel="noopener" style="flex: 1; min-width: 140px; background: #25d366; color: #fff; text-decoration: none; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-align: center;">
+            <a id="annualCreditWhatsappLink" href="https://wa.me/905551234567?text=Merhaba,%20Yıllık%20Plan%20için%20kredi%20satın%20almak%20istiyorum." target="_blank" rel="noopener" class="annual-pricing-buy-btn" style="flex: 1; min-width: 140px; padding: 10px 14px; font-size: 0.85rem; justify-content: center;">
               <span>💬</span> WhatsApp ile Satın Al
             </a>
-            <a id="annualCreditEmailLink" href="mailto:iletisim@okultakip.com?subject=Yıllık Plan Kredi Talebi" style="background: #f1f5f9; color: #334155; text-decoration: none; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid #cbd5e1;">
+            <a id="annualCreditEmailLink" href="mailto:iletisim@okultakip.com?subject=Yıllık Plan Kredi Talebi" class="annual-credit-email-btn">
               <span>✉️</span> E-Posta ile İletişim
             </a>
           </div>
@@ -2500,27 +2500,27 @@
     </dialog>
 
     <!-- Yönetici Yeni Kredi Kodu Üretim Modalı -->
-    <dialog id="annualAdminNewCreditModal" style="border: none; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.18); width: min(440px, calc(100vw - 24px)); padding: 0; overflow: hidden; background: #fff; font-family: inherit;">
-      <div style="background: #0f172a; color: #fff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+    <dialog id="annualAdminNewCreditModal" class="annual-admin-modal" style="width: min(440px, calc(100vw - 24px));">
+      <div class="annual-admin-modal-header">
         <h3 style="margin: 0; font-size: 1.05rem; font-weight: 900;">🪙 Yeni Kredi Kodu Üret</h3>
         <button id="annualAdminNewCreditCloseBtn" class="course-dialog-close-btn" type="button" style="color: #fff; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
       </div>
       <form id="annualAdminNewCreditForm" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
         <div>
-          <label style="font-size: 0.8rem; font-weight: 800; color: #334155;" for="annualNewCreditCode">Kredi Kodu (Boş bırakılırsa otomatik üretilir):</label>
-          <input type="text" id="annualNewCreditCode" placeholder="Örn: KREDI-5-OKUL" style="width: 100%; min-height: 38px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0 10px; font-family: monospace; text-transform: uppercase; margin-top: 4px;" />
+          <label class="annual-admin-label" for="annualNewCreditCode">Kredi Kodu (Boş bırakılırsa otomatik üretilir):</label>
+          <input type="text" id="annualNewCreditCode" class="annual-admin-input" placeholder="Örn: KREDI-5-OKUL" style="font-family: monospace; text-transform: uppercase;" />
         </div>
         <div>
-          <label style="font-size: 0.8rem; font-weight: 800; color: #334155;" for="annualNewCreditAmount">Kredi Miktarı (Plan Sayısı):</label>
-          <input type="number" id="annualNewCreditAmount" value="5" min="1" max="1000" style="width: 100%; min-height: 38px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0 10px; margin-top: 4px;" required />
+          <label class="annual-admin-label" for="annualNewCreditAmount">Kredi Miktarı (Plan Sayısı):</label>
+          <input type="number" id="annualNewCreditAmount" class="annual-admin-input" value="5" min="1" max="1000" required />
         </div>
         <div>
-          <label style="font-size: 0.8rem; font-weight: 800; color: #334155;" for="annualNewCreditMaxUses">Kullanım Limiti (Kaç kişi kullanabilir):</label>
-          <input type="number" id="annualNewCreditMaxUses" value="1" min="1" max="10000" style="width: 100%; min-height: 38px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0 10px; margin-top: 4px;" required />
+          <label class="annual-admin-label" for="annualNewCreditMaxUses">Kullanım Limiti (Kaç kişi kullanabilir):</label>
+          <input type="number" id="annualNewCreditMaxUses" class="annual-admin-input" value="1" min="1" max="10000" required />
         </div>
         <div>
-          <label style="font-size: 0.8rem; font-weight: 800; color: #334155;" for="annualNewCreditNote">Not / Açıklama:</label>
-          <input type="text" id="annualNewCreditNote" placeholder="Örn: Zümre Paketi" style="width: 100%; min-height: 38px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0 10px; margin-top: 4px;" />
+          <label class="annual-admin-label" for="annualNewCreditNote">Not / Açıklama:</label>
+          <input type="text" id="annualNewCreditNote" class="annual-admin-input" placeholder="Örn: Zümre Paketi" />
         </div>
         <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
           <button type="button" id="annualAdminNewCreditCancelBtn" class="ghost-action">İptal</button>
@@ -2530,19 +2530,19 @@
     </dialog>
 
     <!-- Yönetici Kullanıcı Kredi Düzenleme Modalı -->
-    <dialog id="annualAdminSetCreditModal" style="border: none; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.18); width: min(400px, calc(100vw - 24px)); padding: 0; overflow: hidden; background: #fff; font-family: inherit;">
-      <div style="background: #0f172a; color: #fff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+    <dialog id="annualAdminSetCreditModal" class="annual-admin-modal" style="width: min(400px, calc(100vw - 24px));">
+      <div class="annual-admin-modal-header">
         <h3 style="margin: 0; font-size: 1.05rem; font-weight: 900;">👤 Kullanıcı Kredisi Düzenle</h3>
         <button id="annualAdminSetCreditCloseBtn" class="course-dialog-close-btn" type="button" style="color: #fff; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
       </div>
       <form id="annualAdminSetCreditForm" style="padding: 20px; display: flex; flex-direction: column; gap: 12px;">
         <div>
-          <label style="font-size: 0.8rem; font-weight: 800; color: #334155;">Kullanıcı:</label>
-          <input type="text" id="annualAdminTargetUser" readonly style="width: 100%; min-height: 38px; border-radius: 8px; border: 1px solid #e2e8f0; background: #f8fafc; padding: 0 10px; margin-top: 4px;" />
+          <label class="annual-admin-label">Kullanıcı:</label>
+          <input type="text" id="annualAdminTargetUser" class="annual-admin-input" readonly />
         </div>
         <div>
-          <label style="font-size: 0.8rem; font-weight: 800; color: #334155;" for="annualAdminNewCredits">Yeni Kredi Miktarı:</label>
-          <input type="number" id="annualAdminNewCredits" min="0" max="10000" style="width: 100%; min-height: 38px; border-radius: 8px; border: 1px solid #cbd5e1; padding: 0 10px; margin-top: 4px;" required />
+          <label class="annual-admin-label" for="annualAdminNewCredits">Yeni Kredi Miktarı:</label>
+          <input type="number" id="annualAdminNewCredits" class="annual-admin-input" min="0" max="10000" required />
         </div>
         <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
           <button type="button" id="annualAdminSetCreditCancelBtn" class="ghost-action">İptal</button>
@@ -2552,8 +2552,8 @@
     </dialog>
 
     <!-- Yönetici Girişi Dialogu -->
-    <dialog id="annualAdminLoginModal" style="border: none; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1); width: min(420px, calc(100vw - 24px)); padding: 0; overflow: hidden; background: #fff; font-family: inherit;">
-      <div style="background: #0f172a; color: #fff; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+    <dialog id="annualAdminLoginModal" class="annual-admin-modal" style="width: min(420px, calc(100vw - 24px));">
+      <div class="annual-admin-modal-header">
         <div style="display: flex; align-items: center; gap: 8px;">
           <span style="font-size: 1.3rem;">🔐</span>
           <h3 style="margin: 0; font-size: 1.05rem; font-weight: 900;">Yönetici Girişi</h3>
@@ -2561,12 +2561,12 @@
         <button id="annualAdminLoginCloseBtn" class="course-dialog-close-btn" type="button" style="color: #fff; background: none; border: none; font-size: 1.5rem; cursor: pointer; line-height: 1;">&times;</button>
       </div>
       <div style="padding: 22px; display: flex; flex-direction: column; gap: 14px; box-sizing: border-box;">
-        <p style="margin: 0; font-size: 0.84rem; color: #475569; line-height: 1.4;">
+        <p class="annual-admin-modal-desc" style="margin: 0; font-size: 0.84rem; line-height: 1.4;">
           Resmi plan şablonlarını yönetmek, platforma yeni dersler yayınlamak veya lisans üretmek için yönetici şifrenizi girin.
         </p>
         <div>
-          <label style="font-size: 0.82rem; font-weight: 800; color: #1e293b; display: block; margin-bottom: 6px;" for="annualAdminPasswordInput">Yönetici Şifresi</label>
-          <input id="annualAdminPasswordInput" type="password" placeholder="Şifrenizi girin" style="width: 100%; min-height: 38px; border-radius: 8px; border: 1.5px solid #cbd5e1; padding: 0 12px; font-size: 0.95rem; box-sizing: border-box;" />
+          <label class="annual-admin-label" style="display: block; margin-bottom: 6px;" for="annualAdminPasswordInput">Yönetici Şifresi</label>
+          <input id="annualAdminPasswordInput" class="annual-admin-input" type="password" placeholder="Şifrenizi girin" style="font-size: 0.95rem; box-sizing: border-box;" />
         </div>
         <div id="annualAdminLoginError" style="color: #ef4444; font-size: 0.82rem; font-weight: 600; display: none;"></div>
         <button id="annualAdminLoginSubmitBtn" class="primary-action" type="button" style="min-height: 40px; border-radius: 8px; font-weight: bold; width: 100%; margin-top: 4px;">Giriş Yap</button>
@@ -2626,11 +2626,11 @@
             <p id="annualPageSubtitle">Kütüphanedeki yıllık planı seçerek otomatik rapor oluşturun.</p>
           </div>
           <div style="display: flex; align-items: center; gap: 10px; margin-left: auto; flex-wrap: wrap;">
-            <div id="annualTopbarCreditsContainer" style="display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid #cbd5e1; padding: 4px 12px; border-radius: 9999px; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
-              <span style="font-size: 0.88rem; font-weight: 850; color: #0f172a; display: inline-flex; align-items: center; gap: 5px; cursor: pointer;" id="annualTopbarCreditsBadge" title="Kredi Detayları ve Yükleme">
+            <div id="annualTopbarCreditsContainer" class="annual-topbar-credits-pill">
+              <span id="annualTopbarCreditsBadge" class="annual-topbar-credits-badge" title="Kredi Detayları ve Yükleme">
                 <span>🪙</span> <span id="annualTopbarCreditsCount">1 Kredi</span>
               </span>
-              <button type="button" id="annualTopbarTopupBtn" style="background: #059669; color: #fff; border: none; border-radius: 6px; padding: 4px 10px; font-size: 0.78rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+              <button type="button" id="annualTopbarTopupBtn" class="annual-topbar-topup-btn">
                 ➕ Kredi Yükle
               </button>
             </div>
@@ -2732,7 +2732,7 @@
                   <h2>Plan önizleme</h2>
                 </div>
                 <div class="annual-panel-actions" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                  <span id="annualLicenseBadge" style="font-size: 0.82rem; font-weight: 800; padding: 6px 14px; border-radius: 8px; background: #fef3c7; color: #92400e; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;" title="Kredi durumunu inceleyin">
+                  <span id="annualLicenseBadge" class="annual-license-badge" data-badge-type="credit" title="Kredi durumunu inceleyin">
                     <span id="annualLicenseBadgeIcon">🪙</span> <span id="annualLicenseBadgeText">1 Kredi Gerekir</span>
                   </span>
                   <button class="secondary-action" id="annualPrintBtn" type="button">Yazdır / PDF</button>
@@ -2740,12 +2740,12 @@
                   <button class="ghost-action" id="annualClearGeneratedBtn" type="button">Temizle</button>
                 </div>
               </div>
-              <div id="annualStep4CreditNotice" style="margin: 0 0 16px 0; padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1e40af;">
+              <div id="annualStep4CreditNotice" class="annual-step4-credit-notice">
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <span style="font-size: 1.2rem;">💡</span>
                   <span id="annualStep4CreditNoticeText">Bu planı indirmek veya yazdırmak <strong>1 Kredi</strong> düşer. Satın alınan planı tekrar indirmek <strong>ücretsizdir</strong>.</span>
                 </div>
-                <button type="button" id="annualStep4TopupBtn" style="background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 5px 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer; white-space: nowrap;">
+                <button type="button" id="annualStep4TopupBtn" class="annual-step4-topup-btn">
                   ➕ Kredi Yükle
                 </button>
               </div>
@@ -3148,36 +3148,36 @@
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 24px;">
-              <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px;">
-                <h4 style="margin: 0 0 10px; font-size: 0.95rem; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+              <div class="annual-admin-stat-card">
+                <h4 style="margin: 0 0 10px; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
                   <span>🪙</span> Kredi Kodları Durumu
                 </h4>
-                <div style="font-size: 0.86rem; color: #475569; display: flex; flex-direction: column; gap: 8px;">
-                  <div>Toplam Kredi Kodu: <strong id="annualAdminCreditCodesCount" style="color: #0f172a;">-</strong></div>
+                <div style="font-size: 0.86rem; display: flex; flex-direction: column; gap: 8px;">
+                  <div>Toplam Kredi Kodu: <strong id="annualAdminCreditCodesCount">-</strong></div>
                   <div>Aktif Kod Sayısı: <strong id="annualAdminActiveCodesCount" style="color: #059669;">-</strong></div>
                   <div>Yönetici Modu: <span style="color: #16a34a; font-weight: bold;">Aktif (Sınırsız)</span></div>
                 </div>
               </div>
 
-              <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px;">
-                <h4 style="margin: 0 0 10px; font-size: 0.95rem; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+              <div class="annual-admin-stat-card">
+                <h4 style="margin: 0 0 10px; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
                   <span>👥</span> Kullanıcılar & Bakiyeler
                 </h4>
-                <div style="font-size: 0.86rem; color: #475569; display: flex; flex-direction: column; gap: 8px;">
-                  <div>Kayıtlı Kullanıcı Sayısı: <strong id="annualAdminUsersCount" style="color: #0f172a;">-</strong></div>
+                <div style="font-size: 0.86rem; display: flex; flex-direction: column; gap: 8px;">
+                  <div>Kayıtlı Kullanıcı Sayısı: <strong id="annualAdminUsersCount">-</strong></div>
                   <div>Toplam Açılan Plan: <strong id="annualAdminUnlockedPlansTotal" style="color: #0284c7;">-</strong></div>
                   <div>Varsayılan Plan Ücreti: <strong>1 Kredi</strong></div>
                 </div>
               </div>
 
-              <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px;">
-                <h4 style="margin: 0 0 10px; font-size: 0.95rem; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+              <div class="annual-admin-stat-card">
+                <h4 style="margin: 0 0 10px; font-size: 0.95rem; display: flex; align-items: center; gap: 6px;">
                   <span>📞</span> İletişim & Lisans Satış
                 </h4>
-                <div style="font-size: 0.86rem; color: #475569; display: flex; flex-direction: column; gap: 8px;">
-                  <div>WhatsApp: <strong id="annualAdminContactWhatsapp" style="color: #0f172a;">-</strong></div>
-                  <div>E-Posta: <strong id="annualAdminContactEmail" style="color: #0f172a;">-</strong></div>
-                  <div style="font-size: 0.76rem; color: #64748b;">(Kullanıcı ödeme ve kupon iletişiminde gösterilir)</div>
+                <div style="font-size: 0.86rem; display: flex; flex-direction: column; gap: 8px;">
+                  <div>WhatsApp: <strong id="annualAdminContactWhatsapp">-</strong></div>
+                  <div>E-Posta: <strong id="annualAdminContactEmail">-</strong></div>
+                  <div style="font-size: 0.76rem; opacity: 0.8;">(Kullanıcı ödeme ve kupon iletişiminde gösterilir)</div>
                 </div>
               </div>
             </div>
@@ -3185,15 +3185,15 @@
             <!-- Kredi Kodları Listesi -->
             <div style="margin-bottom: 28px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-                <h3 style="font-size: 1.05rem; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 6px;">
+                <h3 style="font-size: 1.05rem; margin: 0; display: flex; align-items: center; gap: 6px;">
                   <span>🎟️</span> Kredi Kuponları & Kodlar
                 </h3>
-                <span style="font-size: 0.8rem; color: #64748b;">Koda tıklayarak panoya kopyalayabilirsiniz.</span>
+                <span style="font-size: 0.8rem; opacity: 0.8;">Koda tıklayarak panoya kopyalayabilirsiniz.</span>
               </div>
-              <div style="overflow-x: auto; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 10px;">
-                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.86rem;">
+              <div class="annual-admin-table-wrap">
+                <table class="annual-admin-table">
                   <thead>
-                    <tr style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
+                    <tr>
                       <th style="padding: 10px 14px; font-weight: 850;">Kredi Kodu</th>
                       <th style="padding: 10px 14px; font-weight: 850;">Kredi</th>
                       <th style="padding: 10px 14px; font-weight: 850;">Kullanım Limiti</th>
@@ -3203,7 +3203,7 @@
                     </tr>
                   </thead>
                   <tbody id="annualAdminCreditCodesTableBody">
-                    <tr><td colspan="6" style="padding: 16px; text-align: center; color: #64748b;">Yükleniyor...</td></tr>
+                    <tr><td colspan="6" style="padding: 16px; text-align: center; opacity: 0.7;">Yükleniyor...</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -3212,15 +3212,15 @@
             <!-- Kullanıcı Bakiyeleri Listesi -->
             <div style="margin-bottom: 28px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-                <h3 style="font-size: 1.05rem; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 6px;">
+                <h3 style="font-size: 1.05rem; margin: 0; display: flex; align-items: center; gap: 6px;">
                   <span>👥</span> Kullanıcı Kredi Hesapları
                 </h3>
-                <span style="font-size: 0.8rem; color: #64748b;">Kullanıcıların kredi bakiyelerini doğrudan güncelleyebilirsiniz.</span>
+                <span style="font-size: 0.8rem; opacity: 0.8;">Kullanıcıların kredi bakiyelerini doğrudan güncelleyebilirsiniz.</span>
               </div>
-              <div style="overflow-x: auto; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 10px;">
-                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.86rem;">
+              <div class="annual-admin-table-wrap">
+                <table class="annual-admin-table">
                   <thead>
-                    <tr style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
+                    <tr>
                       <th style="padding: 10px 14px; font-weight: 850;">Kullanıcı ID / E-posta</th>
                       <th style="padding: 10px 14px; font-weight: 850;">Mevcut Kredi</th>
                       <th style="padding: 10px 14px; font-weight: 850;">Açılan Plan Sayısı</th>
@@ -3229,7 +3229,7 @@
                     </tr>
                   </thead>
                   <tbody id="annualAdminUsersTableBody">
-                    <tr><td colspan="5" style="padding: 16px; text-align: center; color: #64748b;">Yükleniyor...</td></tr>
+                    <tr><td colspan="5" style="padding: 16px; text-align: center; opacity: 0.7;">Yükleniyor...</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -3238,15 +3238,15 @@
             <!-- Kurumsal Lisans Anahtarları -->
             <div>
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-                <h3 style="font-size: 1.05rem; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 6px;">
+                <h3 style="font-size: 1.05rem; margin: 0; display: flex; align-items: center; gap: 6px;">
                   <span>🔑</span> Kurumsal / Sınırsız Lisans Anahtarları
                 </h3>
                 <div>Toplam: <strong id="annualAdminActiveLicenseCount">-</strong></div>
               </div>
-              <div style="overflow-x: auto; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 10px;">
-                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.86rem;">
+              <div class="annual-admin-table-wrap">
+                <table class="annual-admin-table">
                   <thead>
-                    <tr style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
+                    <tr>
                       <th style="padding: 10px 14px; font-weight: 850;">Lisans Anahtarı</th>
                       <th style="padding: 10px 14px; font-weight: 850;">Kullanıcı / Kurum</th>
                       <th style="padding: 10px 14px; font-weight: 850;">Plan</th>
@@ -3256,7 +3256,7 @@
                     </tr>
                   </thead>
                   <tbody id="annualAdminLicensesTableBody">
-                    <tr><td colspan="6" style="padding: 16px; text-align: center; color: #64748b;">Yükleniyor...</td></tr>
+                    <tr><td colspan="6" style="padding: 16px; text-align: center; opacity: 0.7;">Yükleniyor...</td></tr>
                   </tbody>
                 </table>
               </div>

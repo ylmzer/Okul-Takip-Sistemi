@@ -3735,7 +3735,973 @@ body.dark-mode .annual-template-summary span {
   color: #94a3b8 !important;
 }
 
-/* 12. Ayarlar Yedekleme ve Senkronizasyon Koyu Tema Düzeltmeleri */
+/* ==========================================================================
+   12. Yıllık Plan Kredi, Lisans & Yönetim Sistemi Stilleri (Açık ve Koyu Tema)
+   ========================================================================== */
+
+/* 1. Üst Bar Kredi Hapı (Topbar Credits Widget) */
+.annual-topbar-credits-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.annual-topbar-credits-badge {
+  font-size: 0.88rem;
+  font-weight: 850;
+  color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.annual-topbar-credits-badge:hover {
+  opacity: 0.85;
+}
+
+.annual-topbar-topup-btn {
+  background: #059669;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+}
+
+.annual-topbar-topup-btn:hover {
+  background: #10b981;
+}
+
+body.dark-mode .annual-topbar-credits-pill {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .annual-topbar-credits-badge {
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode #annualTopbarCreditsCount {
+  color: #34d399 !important;
+}
+
+body.dark-mode .annual-topbar-topup-btn {
+  background: #059669 !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .annual-topbar-topup-btn:hover {
+  background: #10b981 !important;
+}
+
+/* 2. 4. Adım Kredi / Lisans Rozeti (License Badge) */
+.annual-license-badge {
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 6px 14px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.annual-license-badge[data-badge-type="admin"] {
+  background: #dbeafe;
+  color: #1e40af;
+  border-color: #bfdbfe;
+}
+
+.annual-license-badge[data-badge-type="licensed"],
+.annual-license-badge[data-badge-type="unlocked"] {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+.annual-license-badge[data-badge-type="credit"] {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+body.dark-mode .annual-license-badge[data-badge-type="admin"] {
+  background: rgba(59, 130, 246, 0.2) !important;
+  color: #93c5fd !important;
+  border-color: rgba(59, 130, 246, 0.4) !important;
+}
+
+body.dark-mode .annual-license-badge[data-badge-type="licensed"],
+body.dark-mode .annual-license-badge[data-badge-type="unlocked"] {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #6ee7b7 !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+}
+
+body.dark-mode .annual-license-badge[data-badge-type="credit"] {
+  background: rgba(245, 158, 11, 0.2) !important;
+  color: #fcd34d !important;
+  border-color: rgba(245, 158, 11, 0.4) !important;
+}
+
+/* 3. 4. Adım Kredi Bilgi Çubuğu (Step 4 Credit Notice Bar) */
+.annual-step4-credit-notice {
+  margin: 0 0 16px 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  color: #1e40af;
+  transition: all 0.2s ease;
+}
+
+.annual-step4-topup-btn {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.annual-step4-topup-btn:hover {
+  background: #1d4ed8;
+}
+
+body.dark-mode .annual-step4-credit-notice {
+  background: rgba(30, 58, 138, 0.25) !important;
+  border-color: rgba(59, 130, 246, 0.35) !important;
+  color: #bfdbfe !important;
+}
+
+body.dark-mode .annual-step4-credit-notice strong {
+  color: #93c5fd !important;
+}
+
+body.dark-mode .annual-step4-topup-btn {
+  background: #2563eb !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .annual-step4-topup-btn:hover {
+  background: #3b82f6 !important;
+}
+
+/* 4. Kredi & Lisans Modalı (Credit & License Modal) */
+.annual-credit-modal {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.18), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  width: min(540px, calc(100vw - 24px));
+  padding: 0;
+  overflow: hidden;
+  background: #ffffff;
+  font-family: inherit;
+}
+
+.annual-credit-modal-header {
+  background: linear-gradient(135deg, #065f46 0%, #064e3b 100%);
+  color: #ffffff;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.annual-credit-balance-card {
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.annual-credit-balance-title {
+  font-size: 0.78rem;
+  color: #166534;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.annual-credit-unlocked-badge {
+  display: inline-block;
+  background: #dcfce7;
+  color: #15803d;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.annual-credit-balance-sub {
+  font-size: 0.74rem;
+  color: #166534;
+  margin-top: 4px;
+}
+
+.annual-credit-tabs {
+  display: flex;
+  border-bottom: 2px solid #e2e8f0;
+  gap: 8px;
+}
+
+.annual-credit-tab-btn {
+  background: none;
+  border: none;
+  padding: 8px 14px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #64748b;
+  margin-bottom: -2px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.annual-credit-tab-btn.is-active {
+  color: #065f46;
+  font-weight: 800;
+  border-bottom: 2px solid #065f46;
+}
+
+.annual-credit-label {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.annual-credit-input {
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: inherit;
+}
+
+.annual-credit-status-msg {
+  font-size: 0.82rem;
+  min-height: 18px;
+  font-weight: bold;
+}
+
+.annual-credit-status-msg.is-error {
+  color: #ef4444;
+}
+
+.annual-credit-status-msg.is-success {
+  color: #166534;
+}
+
+.annual-credit-status-msg.is-info {
+  color: #2563eb;
+}
+
+.annual-credit-hint {
+  font-size: 0.78rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.annual-credit-iban-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 0.82rem;
+  color: #334155;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.annual-credit-iban-title {
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.annual-credit-iban-code {
+  background: #e2e8f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  user-select: all;
+}
+
+.annual-credit-iban-sub {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.annual-credit-email-btn {
+  background: #f1f5f9;
+  color: #334155;
+  text-decoration: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #cbd5e1;
+  transition: all 0.15s ease;
+}
+
+.annual-credit-email-btn:hover {
+  background: #e2e8f0;
+}
+
+/* Paket Kartları */
+.annual-pricing-card {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.annual-pricing-card:hover {
+  border-color: #059669;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.08);
+}
+
+.annual-pricing-name {
+  font-weight: 850;
+  font-size: 0.9rem;
+  color: #0f172a;
+}
+
+.annual-pricing-desc {
+  font-size: 0.76rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.annual-pricing-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.annual-pricing-price {
+  font-size: 1.1rem;
+  color: #065f46;
+}
+
+.annual-pricing-buy-btn {
+  background: #25d366;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.annual-pricing-buy-btn:hover {
+  background: #22c55e;
+}
+
+/* Koyu Tema: Kredi & Lisans Modalı */
+body.dark-mode .annual-credit-modal {
+  background: #0f172a !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7) !important;
+}
+
+body.dark-mode .annual-credit-modal-header {
+  background: linear-gradient(135deg, #064e3b 0%, #022c22 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .annual-credit-balance-card {
+  background: rgba(5, 150, 105, 0.15) !important;
+  border-color: rgba(5, 150, 105, 0.35) !important;
+}
+
+body.dark-mode .annual-credit-balance-title {
+  color: #6ee7b7 !important;
+}
+
+body.dark-mode #annualModalCreditCount {
+  color: #a7f3d0 !important;
+}
+
+body.dark-mode .annual-credit-unlocked-badge {
+  background: rgba(16, 185, 129, 0.25) !important;
+  color: #6ee7b7 !important;
+  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+}
+
+body.dark-mode .annual-credit-balance-sub {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .annual-credit-tabs {
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .annual-credit-tab-btn {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .annual-credit-tab-btn.is-active {
+  color: #34d399 !important;
+  border-bottom-color: #34d399 !important;
+}
+
+body.dark-mode .annual-credit-label {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-credit-input {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .annual-credit-status-msg.is-error {
+  color: #f87171 !important;
+}
+
+body.dark-mode .annual-credit-status-msg.is-success {
+  color: #4ade80 !important;
+}
+
+body.dark-mode .annual-credit-status-msg.is-info {
+  color: #60a5fa !important;
+}
+
+body.dark-mode .annual-credit-hint {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .annual-credit-hint strong {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-pricing-card {
+  background: #1e293b !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .annual-pricing-card:hover {
+  border-color: #34d399 !important;
+  box-shadow: 0 4px 12px rgba(52, 211, 153, 0.15) !important;
+}
+
+body.dark-mode .annual-pricing-name {
+  color: #f8fafc !important;
+}
+
+body.dark-mode .annual-pricing-desc {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .annual-pricing-price {
+  color: #34d399 !important;
+}
+
+body.dark-mode .annual-credit-iban-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-credit-iban-title {
+  color: #ffffff !important;
+}
+
+body.dark-mode .annual-credit-iban-code {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #38bdf8 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .annual-credit-iban-sub {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .annual-credit-email-btn {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-credit-email-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+/* 5. Yönetici Modalları (Admin Modals) */
+.annual-admin-modal {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.18);
+  padding: 0;
+  overflow: hidden;
+  background: #ffffff;
+  font-family: inherit;
+}
+
+.annual-admin-modal-header {
+  background: #0f172a;
+  color: #ffffff;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.annual-admin-label {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #334155;
+}
+
+.annual-admin-input {
+  width: 100%;
+  min-height: 38px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  padding: 0 10px;
+  margin-top: 4px;
+  box-sizing: border-box;
+}
+
+body.dark-mode .annual-admin-modal {
+  background: #0f172a !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7) !important;
+}
+
+body.dark-mode .annual-admin-modal-header {
+  background: #111e38 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .annual-admin-modal-desc {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .annual-admin-label {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-admin-input {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .annual-admin-input[readonly] {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #94a3b8 !important;
+}
+
+/* 6. Yönetici Paneli & Tabloları (Admin Panel & Tables) */
+.annual-admin-stat-card {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  color: #475569;
+}
+
+.annual-admin-stat-card h4 {
+  color: #0f172a;
+}
+
+.annual-admin-stat-card strong {
+  color: #0f172a;
+}
+
+.annual-admin-table-wrap {
+  overflow-x: auto;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.annual-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.86rem;
+}
+
+.annual-admin-table thead tr {
+  background: #f8fafc;
+  border-bottom: 1.5px solid #e2e8f0;
+}
+
+.annual-admin-table th {
+  color: #0f172a;
+}
+
+.annual-admin-table-row {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.annual-admin-code-cell {
+  padding: 10px 14px;
+  font-family: monospace;
+  font-weight: bold;
+  color: #047857;
+}
+
+.annual-admin-key-cell {
+  padding: 10px 14px;
+  font-family: monospace;
+  font-weight: bold;
+  color: #0f766e;
+}
+
+.annual-admin-credits-cell {
+  padding: 10px 14px;
+  font-weight: 850;
+  color: #0f172a;
+}
+
+.annual-admin-user-cell {
+  padding: 10px 14px;
+  font-family: monospace;
+  font-weight: bold;
+  color: #1e293b;
+}
+
+.annual-admin-owner-cell {
+  padding: 10px 14px;
+  font-weight: 600;
+}
+
+.annual-admin-plan-cell {
+  padding: 10px 14px;
+  text-transform: capitalize;
+}
+
+.annual-admin-desc-cell {
+  padding: 10px 14px;
+  color: #475569;
+}
+
+.annual-admin-muted-cell {
+  padding: 10px 14px;
+  color: #64748b;
+}
+
+.annual-admin-actions-cell {
+  padding: 10px 14px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.annual-copyable-code,
+.annual-copyable-key {
+  cursor: pointer;
+  text-decoration: underline dotted;
+}
+
+.annual-toggle-code-btn,
+.annual-toggle-lic-btn {
+  background: none;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  margin-right: 4px;
+}
+
+.annual-delete-code-btn,
+.annual-delete-lic-btn {
+  background: none;
+  border: 1px solid #fca5a5;
+  color: #ef4444;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.annual-set-user-credit-btn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.annual-admin-badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.76rem;
+  display: inline-block;
+}
+
+.annual-admin-badge.badge-danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.annual-admin-badge.badge-warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.annual-admin-badge.badge-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+/* Koyu Tema: Yönetici Paneli & Tabloları */
+body.dark-mode .annual-admin-stat-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .annual-admin-stat-card h4 {
+  color: #ffffff !important;
+}
+
+body.dark-mode .annual-admin-stat-card strong {
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode [data-annual-panel="admin-licenses"] h3 {
+  color: #ffffff !important;
+}
+
+body.dark-mode .annual-admin-table-wrap {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .annual-admin-table thead tr {
+  background: #12272f !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .annual-admin-table th {
+  color: #5eead4 !important;
+}
+
+body.dark-mode .annual-admin-table-row {
+  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+body.dark-mode .annual-admin-table-row:hover {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+body.dark-mode .annual-admin-table td {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-admin-code-cell,
+body.dark-mode .annual-admin-key-cell {
+  color: #34d399 !important;
+}
+
+body.dark-mode .annual-admin-credits-cell {
+  color: #f8fafc !important;
+}
+
+body.dark-mode .annual-admin-user-cell {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .annual-admin-desc-cell,
+body.dark-mode .annual-admin-muted-cell {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .annual-toggle-code-btn,
+body.dark-mode .annual-toggle-lic-btn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-toggle-code-btn:hover,
+body.dark-mode .annual-toggle-lic-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .annual-delete-code-btn,
+body.dark-mode .annual-delete-lic-btn {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #f87171 !important;
+}
+
+body.dark-mode .annual-delete-code-btn:hover,
+body.dark-mode .annual-delete-lic-btn:hover {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .annual-set-user-credit-btn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-set-user-credit-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .annual-admin-badge.badge-danger {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+body.dark-mode .annual-admin-badge.badge-warning {
+  background: rgba(245, 158, 11, 0.2) !important;
+  color: #fcd34d !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+
+body.dark-mode .annual-admin-badge.badge-success {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #6ee7b7 !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+/* 7. Şablon Üretici ve Kaynak Merkezi Ekstra Koyu Tema Uyumu */
+body.dark-mode #annualPublishPlatformBtn {
+  background: rgba(34, 197, 94, 0.15) !important;
+  border-color: rgba(34, 197, 94, 0.35) !important;
+  color: #4ade80 !important;
+}
+
+body.dark-mode #annualSavedTemplateActionBox {
+  background: rgba(15, 118, 110, 0.15) !important;
+  border-color: rgba(94, 234, 212, 0.25) !important;
+}
+
+body.dark-mode #annualSavedTemplateActionBox span {
+  color: #5eead4 !important;
+}
+
+body.dark-mode #annualSavedTemplateSelect {
+  background-color: #111a2e !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #f8fafc !important;
+}
+
+body.dark-mode #annualAddCustomUnitBtn {
+  background: rgba(15, 118, 110, 0.2) !important;
+  border-color: rgba(94, 234, 212, 0.3) !important;
+  color: #5eead4 !important;
+}
+
+body.dark-mode #annualNewTemplateBtn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode #annualDownloadSchoolType,
+body.dark-mode #annualDownloadGrade,
+body.dark-mode #annualDownloadAreaCode,
+body.dark-mode #annualCatalogSchoolType,
+body.dark-mode #annualCatalogGrade,
+body.dark-mode #annualCatalogAreaCode,
+body.dark-mode #annualCatalogLessonSelect,
+body.dark-mode #annualCustomType,
+body.dark-mode #annualCustomAreaCode,
+body.dark-mode #annualCustomGrade {
+  background-color: #111a2e !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #f8fafc !important;
+}
+
+body.dark-mode #annualDownloadSchoolType option,
+body.dark-mode #annualDownloadGrade option,
+body.dark-mode #annualDownloadAreaCode option,
+body.dark-mode #annualCatalogSchoolType option,
+body.dark-mode #annualCatalogGrade option,
+body.dark-mode #annualCatalogAreaCode option,
+body.dark-mode #annualCatalogLessonSelect option,
+body.dark-mode #annualCustomType option,
+body.dark-mode #annualCustomAreaCode option,
+body.dark-mode #annualCustomGrade option {
+  background-color: #0b1220 !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .annual-plan-footer {
+  border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.dark-mode .annual-plan-descriptions {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .annual-plan-signatures strong,
+body.dark-mode .annual-plan-approval strong,
+body.dark-mode .annual-plan-approval p {
+  color: #ffffff !important;
+}
+
+body.dark-mode .annual-plan-signatures span,
+body.dark-mode .annual-plan-approval span {
+  color: #94a3b8 !important;
+}
+
+/* 13. Ayarlar Yedekleme ve Senkronizasyon Koyu Tema Düzeltmeleri */
 body.dark-mode .backup-module-grid {
   background: linear-gradient(180deg, #111c30, #0b1220) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
