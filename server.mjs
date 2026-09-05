@@ -197,6 +197,22 @@ const server = createServer(async (request, response) => {
       await handleAnnualPlatformTemplates(request, response);
       return;
     }
+    if (request.method === "POST" && url.pathname === "/api/annual-get-credits") {
+      await handleAnnualGetCredits(request, response);
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/annual-redeem-credit") {
+      await handleAnnualRedeemCredit(request, response);
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/annual-admin-credits") {
+      await handleAnnualAdminCredits(request, response);
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/annual-unlock-plan") {
+      await handleAnnualUnlockPlan(request, response);
+      return;
+    }
     if (request.method === "POST" && url.pathname === "/api/annual-verify-license") {
       await handleAnnualVerifyLicense(request, response);
       return;
@@ -2353,11 +2369,18 @@ function readLicensesData() {
   return {
     adminPassword: "admin2026",
     masterKey: "OTS-MASTER-2026",
+    defaultPlanCost: 1,
+    initialUserCredits: 1,
     contactInfo: {
       whatsapp: "+90 555 123 45 67",
       email: "iletisim@okultakip.com",
-      message: "Yıllık Plan Modülü tam sürüm Excel indirme ve çıktı lisansı için iletişime geçebilirsiniz."
+      iban: "TR00 0000 0000 0000 0000 0000 00",
+      accountHolder: "Okul Takip Sistemi",
+      message: "Yıllık Plan Modülü kredi yükleme ve toplu lisans için iletişime geçebilirsiniz."
     },
+    pricingPackages: [],
+    creditCodes: [],
+    users: {},
     licenses: []
   };
 }
@@ -2369,6 +2392,314 @@ function saveLicensesData(data) {
   } catch (e) {
     console.error("Licenses file write error:", e.message);
     return false;
+  }
+}
+
+function getOrCreateUserAccount(userId, email) {
+  const data = readLicensesData();
+  data.users = data.users || {};
+  let userKey = String(userId || email || "").toLowerCase().trim();
+  if (!userKey || userKey === "guest") {
+    userKey = "local-user";
+  }
+  if (!data.users[userKey]) {
+    const initialCredits = Number(data.initialUserCredits !== undefined ? data.initialUserCredits : 1);
+    data.users[userKey] = {
+      credits: initialCredits,
+      unlockedPlans: [],
+      history: [
+        {
+          type: "initial",
+          credits: initialCredits,
+          date: new Date().toISOString()
+        }
+      ],
+      createdAt: new Date().toISOString()
+    };
+    saveLicensesData(data);
+  } else {
+    data.users[userKey].unlockedPlans = Array.isArray(data.users[userKey].unlockedPlans) ? data.users[userKey].unlockedPlans : [];
+    data.users[userKey].history = Array.isArray(data.users[userKey].history) ? data.users[userKey].history : [];
+  }
+  return { userKey, account: data.users[userKey], data };
+}
+
+async function handleAnnualGetCredits(request, response) {
+  try {
+    const { userId, email, adminPassword } = await readJsonRequest(request);
+    const data = readLicensesData();
+    if (adminPassword && adminPassword === data.adminPassword) {
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({
+        credits: 999999,
+        isUnlimited: true,
+        isAdmin: true,
+        unlockedPlans: [],
+        pricingPackages: data.pricingPackages || [],
+        contactInfo: data.contactInfo || {}
+      }));
+      return;
+    }
+
+    const { account } = getOrCreateUserAccount(userId, email);
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      credits: Number(account.credits || 0),
+      isUnlimited: false,
+      isAdmin: false,
+      unlockedPlans: account.unlockedPlans || [],
+      pricingPackages: data.pricingPackages || [],
+      contactInfo: data.contactInfo || {}
+    }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "Kredi bilgisi alınamadı." }));
+  }
+}
+
+async function handleAnnualRedeemCredit(request, response) {
+  try {
+    const { code, userId, email } = await readJsonRequest(request);
+    const rawCode = String(code || "").trim().toUpperCase();
+    if (!rawCode) {
+      response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Lütfen bir kredi kodu girin." }));
+      return;
+    }
+
+    const data = readLicensesData();
+    const codes = data.creditCodes || [];
+    const foundCode = codes.find(c => c.code.toUpperCase() === rawCode && c.isActive !== false);
+
+    if (!foundCode) {
+      response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Geçersiz veya süresi dolmuş kredi kodu." }));
+      return;
+    }
+
+    if (foundCode.maxUses && (foundCode.usedCount || 0) >= foundCode.maxUses) {
+      response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Bu kredi kodunun kullanım limiti dolmuştur." }));
+      return;
+    }
+
+    const { userKey, account } = getOrCreateUserAccount(userId, email);
+    const addedCredits = Number(foundCode.credits || 1);
+
+    account.credits = (Number(account.credits) || 0) + addedCredits;
+    account.history = account.history || [];
+    account.history.push({
+      type: "redeem",
+      code: foundCode.code,
+      added: addedCredits,
+      total: account.credits,
+      date: new Date().toISOString()
+    });
+
+    foundCode.usedCount = (foundCode.usedCount || 0) + 1;
+    foundCode.usedBy = foundCode.usedBy || [];
+    foundCode.usedBy.push({ user: userKey, date: new Date().toISOString() });
+
+    data.users[userKey] = account;
+    saveLicensesData(data);
+
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      success: true,
+      addedCredits,
+      totalCredits: account.credits,
+      message: `${addedCredits} kredi hesabınıza başarıyla eklendi! Toplam krediniz: ${account.credits}`
+    }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "Kredi yüklenemedi." }));
+  }
+}
+
+async function handleAnnualAdminCredits(request, response) {
+  try {
+    const body = await readJsonRequest(request);
+    const { adminPassword, action, newCode, targetCode, targetUser, credits, pricingPackages, contactInfo } = body;
+    const data = readLicensesData();
+    if (adminPassword !== data.adminPassword) {
+      response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Yetkisiz işlem: Yönetici şifresi geçersiz." }));
+      return;
+    }
+
+    data.creditCodes = data.creditCodes || [];
+    data.users = data.users || {};
+
+    if (action === "list") {
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({
+        success: true,
+        creditCodes: data.creditCodes,
+        pricingPackages: data.pricingPackages || [],
+        contactInfo: data.contactInfo || {},
+        users: data.users
+      }));
+      return;
+    }
+
+    if (action === "create_code") {
+      const codeStr = newCode?.code?.trim().toUpperCase() || `KREDI-${newCode?.credits || 5}-${Date.now().toString(36).toUpperCase()}`;
+      const codeObj = {
+        code: codeStr,
+        credits: Number(newCode?.credits || 1),
+        maxUses: Number(newCode?.maxUses || 1),
+        usedCount: 0,
+        note: newCode?.note?.trim() || "Yönetici tarafından üretildi",
+        createdAt: new Date().toISOString(),
+        isActive: true
+      };
+      data.creditCodes.unshift(codeObj);
+      saveLicensesData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, created: codeObj, creditCodes: data.creditCodes }));
+      return;
+    }
+
+    if (action === "toggle_code") {
+      data.creditCodes = data.creditCodes.map(c => c.code === targetCode ? { ...c, isActive: !c.isActive } : c);
+      saveLicensesData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, creditCodes: data.creditCodes }));
+      return;
+    }
+
+    if (action === "delete_code") {
+      data.creditCodes = data.creditCodes.filter(c => c.code !== targetCode);
+      saveLicensesData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, creditCodes: data.creditCodes }));
+      return;
+    }
+
+    if (action === "set_user_credits") {
+      const userKey = String(targetUser || "").toLowerCase().trim();
+      if (userKey && data.users[userKey]) {
+        data.users[userKey].credits = Number(credits || 0);
+        saveLicensesData(data);
+        response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+        response.end(JSON.stringify({ success: true, user: data.users[userKey] }));
+        return;
+      }
+      response.writeHead(404, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Kullanıcı bulunamadı." }));
+      return;
+    }
+
+    if (action === "update_pricing") {
+      if (pricingPackages) data.pricingPackages = pricingPackages;
+      if (contactInfo) data.contactInfo = { ...data.contactInfo, ...contactInfo };
+      saveLicensesData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, pricingPackages: data.pricingPackages, contactInfo: data.contactInfo }));
+      return;
+    }
+
+    response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: "Bilinmeyen eylem." }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "İşlem başarısız." }));
+  }
+}
+
+async function handleAnnualUnlockPlan(request, response) {
+  try {
+    const { userId, email, adminPassword, licenseKey, planId, planName } = await readJsonRequest(request);
+    const data = readLicensesData();
+
+    if ((adminPassword && adminPassword === data.adminPassword) || (licenseKey && (licenseKey === data.masterKey || licenseKey === data.adminPassword))) {
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({
+        success: true,
+        isUnlocked: true,
+        credits: 999999,
+        isUnlimited: true,
+        message: "Yönetici yetkisi ile plan erişimi sağlandı."
+      }));
+      return;
+    }
+
+    if (licenseKey) {
+      const auth = verifyLicenseOrAdmin(licenseKey, "");
+      if (auth.valid) {
+        response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+        response.end(JSON.stringify({
+          success: true,
+          isUnlocked: true,
+          credits: 999999,
+          isUnlimited: true,
+          message: "Lisanslı sürüm ile plan erişimi sağlandı."
+        }));
+        return;
+      }
+    }
+
+    const planFingerprint = String(planId || "").toLowerCase().trim();
+    if (!planFingerprint) {
+      response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Geçersiz plan kimliği." }));
+      return;
+    }
+
+    const { userKey, account } = getOrCreateUserAccount(userId, email);
+
+    if (account.unlockedPlans && account.unlockedPlans.includes(planFingerprint)) {
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({
+        success: true,
+        alreadyUnlocked: true,
+        isUnlocked: true,
+        credits: account.credits,
+        unlockedPlans: account.unlockedPlans,
+        message: "Bu plan daha önce açılmıştır. Tekrar yazdırma ve indirme ücretsizdir."
+      }));
+      return;
+    }
+
+    const cost = Number(data.defaultPlanCost !== undefined ? data.defaultPlanCost : 1);
+    if ((Number(account.credits) || 0) < cost) {
+      response.writeHead(403, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({
+        error: `Bu planı yazdırmak/indirmek için ${cost} krediye ihtiyacınız var. Mevcut krediniz: ${account.credits}`,
+        requiresCredit: true,
+        requiredCredits: cost,
+        currentCredits: account.credits,
+        pricingPackages: data.pricingPackages || [],
+        contactInfo: data.contactInfo || {}
+      }));
+      return;
+    }
+
+    account.credits -= cost;
+    account.unlockedPlans.push(planFingerprint);
+    account.history.push({
+      type: "unlock",
+      plan: planFingerprint,
+      planName: planName || planFingerprint,
+      cost,
+      remaining: account.credits,
+      date: new Date().toISOString()
+    });
+
+    data.users[userKey] = account;
+    saveLicensesData(data);
+
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      success: true,
+      isUnlocked: true,
+      credits: account.credits,
+      unlockedPlans: account.unlockedPlans,
+      message: `1 kredi kullanıldı ve plan kilidi açıldı. Kalan krediniz: ${account.credits}`
+    }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "Plan açılamadı." }));
   }
 }
 
@@ -2562,16 +2893,52 @@ async function handleAnnualPlanXlsx(request, response) {
     const body = await readJsonRequest(request);
     if (!body.plan) throw new Error("Excel aktarımı için plan bulunamadı.");
 
-    // Check License or Admin authorization
-    const auth = verifyLicenseOrAdmin(body.licenseKey, body.adminPassword);
-    if (!auth.valid) {
-      response.writeHead(403, { "Content-Type": "application/json; charset=utf-8" });
-      response.end(JSON.stringify({
-        error: auth.error || "Yıllık Plan Excel çıktısı almak için lisans aktivasyonu gereklidir.",
-        contactInfo: auth.contactInfo,
-        requiresLicense: true
-      }));
-      return;
+    const data = readLicensesData();
+    const isAdminOrMaster = (body.adminPassword && body.adminPassword === data.adminPassword) ||
+                            (body.licenseKey && (body.licenseKey === data.masterKey || body.licenseKey === data.adminPassword));
+
+    let isLegacyLicensed = false;
+    if (!isAdminOrMaster && body.licenseKey) {
+      const auth = verifyLicenseOrAdmin(body.licenseKey, "");
+      if (auth.valid) isLegacyLicensed = true;
+    }
+
+    const planFingerprint = String(body.planId || body.plan?.id || `${safeDownloadName(body.plan?.lessonName || "ders")}_${safeDownloadName(body.plan?.grade || "tum")}_${safeDownloadName(body.plan?.year || "2026")}`).toLowerCase();
+    let remainingCredits = 999999;
+
+    if (!isAdminOrMaster && !isLegacyLicensed) {
+      const { userKey, account } = getOrCreateUserAccount(body.userId, body.email);
+      const isAlreadyUnlocked = account.unlockedPlans && account.unlockedPlans.includes(planFingerprint);
+
+      if (!isAlreadyUnlocked) {
+        const cost = Number(data.defaultPlanCost !== undefined ? data.defaultPlanCost : 1);
+        if ((Number(account.credits) || 0) < cost) {
+          response.writeHead(403, { "Content-Type": "application/json; charset=utf-8" });
+          response.end(JSON.stringify({
+            error: `Bu planı Excel olarak indirmek için ${cost} krediye ihtiyacınız var. Mevcut krediniz: ${account.credits}`,
+            requiresCredit: true,
+            requiredCredits: cost,
+            currentCredits: account.credits,
+            pricingPackages: data.pricingPackages || [],
+            contactInfo: data.contactInfo || {}
+          }));
+          return;
+        }
+
+        account.credits -= cost;
+        account.unlockedPlans.push(planFingerprint);
+        account.history.push({
+          type: "download_excel",
+          plan: planFingerprint,
+          lessonName: body.plan?.lessonName,
+          cost,
+          remaining: account.credits,
+          date: new Date().toISOString()
+        });
+        data.users[userKey] = account;
+        saveLicensesData(data);
+      }
+      remainingCredits = account.credits;
     }
 
     const jsonPath = join(tmpdir(), `annual-plan-${Date.now()}-${Math.random().toString(16).slice(2)}.json`);
@@ -2590,7 +2957,9 @@ async function handleAnnualPlanXlsx(request, response) {
     response.writeHead(200, {
       "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "Content-Disposition": `attachment; filename="${filename}"`,
-      "Cache-Control": "no-store"
+      "Cache-Control": "no-store",
+      "X-Remaining-Credits": String(remainingCredits),
+      "Access-Control-Expose-Headers": "X-Remaining-Credits"
     });
     response.end(file);
   } catch (error) {

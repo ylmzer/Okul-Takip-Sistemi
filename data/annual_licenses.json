@@ -1,11 +1,84 @@
 {
   "adminPassword": "admin2026",
   "masterKey": "OTS-MASTER-2026",
+  "defaultPlanCost": 1,
+  "initialUserCredits": 1,
   "contactInfo": {
     "whatsapp": "+90 555 123 45 67",
     "email": "iletisim@okultakip.com",
-    "message": "Yıllık Plan Modülü tam sürüm Excel indirme ve çıktı lisansı için iletişime geçebilirsiniz."
+    "iban": "TR00 0000 0000 0000 0000 0000 00",
+    "accountHolder": "Okul Takip Sistemi",
+    "message": "Yıllık Plan Modülü kredi yükleme ve toplu okul lisansı için iletişime geçebilirsiniz."
   },
+  "pricingPackages": [
+    {
+      "id": "package-1",
+      "name": "1 Plan Kredisi",
+      "credits": 1,
+      "price": "100 TL",
+      "description": "1 adet Yıllık Plan (Excel ve Yazdırma sınırsız)"
+    },
+    {
+      "id": "package-5",
+      "name": "5 Plan Kredisi (Zümre Paketi)",
+      "credits": 5,
+      "price": "400 TL",
+      "description": "5 adet Yıllık Plan (Plan başı 80 TL)"
+    },
+    {
+      "id": "package-10",
+      "name": "10 Plan Kredisi (Bölüm Paketi)",
+      "credits": 10,
+      "price": "700 TL",
+      "description": "10 adet Yıllık Plan (Plan başı 70 TL)"
+    },
+    {
+      "id": "package-25",
+      "name": "25 Plan Kredisi (Okul Paketi)",
+      "credits": 25,
+      "price": "1500 TL",
+      "description": "25 adet Yıllık Plan (Plan başı 60 TL)"
+    }
+  ],
+  "creditCodes": [
+    {
+      "code": "KREDI-1-DENEME",
+      "credits": 1,
+      "maxUses": 1000,
+      "usedCount": 0,
+      "note": "1 Kredilik Deneme Kuponu",
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "isActive": true
+    },
+    {
+      "code": "KREDI-5-DEMO",
+      "credits": 5,
+      "maxUses": 100,
+      "usedCount": 0,
+      "note": "5 Kredilik Zümre Tanıtım Kodu",
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "isActive": true
+    },
+    {
+      "code": "KREDI-10-VIP",
+      "credits": 10,
+      "maxUses": 50,
+      "usedCount": 0,
+      "note": "10 Kredilik VIP Kupon",
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "isActive": true
+    },
+    {
+      "code": "KREDI-25-OKUL",
+      "credits": 25,
+      "maxUses": 20,
+      "usedCount": 0,
+      "note": "25 Kredilik Okul Lisans Paketi",
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "isActive": true
+    }
+  ],
+  "users": {},
   "licenses": [
     {
       "key": "OTS-DEMO-2026-OKUL",
