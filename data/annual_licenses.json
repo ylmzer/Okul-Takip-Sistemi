@@ -1,0 +1,35 @@
+{
+  "adminPassword": "admin2026",
+  "masterKey": "OTS-MASTER-2026",
+  "contactInfo": {
+    "whatsapp": "+90 555 123 45 67",
+    "email": "iletisim@okultakip.com",
+    "message": "Yıllık Plan Modülü tam sürüm Excel indirme ve çıktı lisansı için iletişime geçebilirsiniz."
+  },
+  "licenses": [
+    {
+      "key": "OTS-DEMO-2026-OKUL",
+      "owner": "Örnek Okul / Öğretmen",
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "expiresAt": "2027-09-01T00:00:00.000Z",
+      "plan": "full",
+      "isActive": true
+    },
+    {
+      "key": "OTS-PLAN-2026-VIP1",
+      "owner": "Lisanslı Kullanıcı 1",
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "expiresAt": "2027-09-01T00:00:00.000Z",
+      "plan": "full",
+      "isActive": true
+    },
+    {
+      "key": "OTS-PLAN-2026-VIP2",
+      "owner": "Lisanslı Kullanıcı 2",
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "expiresAt": "2027-09-01T00:00:00.000Z",
+      "plan": "full",
+      "isActive": true
+    }
+  ]
+}

@@ -1,0 +1,439 @@
+[
+  {
+    "id": "platform-mtal-bilisim-ag-sistemleri-11",
+    "type": "mtal",
+    "areaId": "bilisim-teknolojileri",
+    "areaName": "Bilişim Teknolojileri",
+    "grade": "11. sınıf",
+    "lessonName": "Ağ Sistemleri ve Yönlendirme",
+    "year": "2026-2027",
+    "weeklyHours": 8,
+    "isPlatform": true,
+    "units": [
+      {
+        "title": "Ağ Temelleri ve Protokoller",
+        "hours": 24,
+        "ratio": "18",
+        "topics": [
+          "1. Bilgisayar Ağlarına Giriş ve Topolojiler",
+          "2. OSI ve TCP/IP Başvuru Modelleri",
+          "3. IPv4 ve IPv6 Adresleme Standartları"
+        ],
+        "outcomes": "1. Ağ topolojilerini ve bağlantı türlerini açıklar. 2. OSI ve TCP/IP katmanlarını karşılaştırır. 3. Alt ağlara bölme (subnetting) işlemlerini hesaplar."
+      },
+      {
+        "title": "Anahtarlama (Switching) ve VLAN Yapılandırması",
+        "hours": 32,
+        "ratio": "24",
+        "topics": [
+          "1. Anahtar Donanımı ve Temel Yapılandırma",
+          "2. Sanal Yerel Ağlar (VLAN) ve Trunking (802.1Q)",
+          "3. Spanning Tree Protokolü (STP) ve EtherChannel"
+        ],
+        "outcomes": "1. Yönetilebilir ağ anahtarlarını yapılandırır. 2. VLAN ve Trunk bağlantılarını uygular. 3. Döngüleri engellemek için STP protokolünü yapılandırır."
+      },
+      {
+        "title": "Yönlendirme (Routing) Teknolojileri",
+        "hours": 36,
+        "ratio": "28",
+        "topics": [
+          "1. Yönlendirici Mimarisi ve Statik Yönlendirme",
+          "2. Dinamik Yönlendirme Protokolleri (OSPF)",
+          "3. VLAN'lar Arası Yönlendirme (Router-on-a-Stick)"
+        ],
+        "outcomes": "1. Yönlendiricilerde statik rotaları tanımlar. 2. Tek alanlı OSPF protokolünü çalıştırır. 3. Alt ağlar arası yönlendirmeyi test eder."
+      },
+      {
+        "title": "Ağ Hizmetleri ve Güvenliği",
+        "hours": 28,
+        "ratio": "20",
+        "topics": [
+          "1. DHCP ve DNS Sunucu Hizmetleri",
+          "2. NAT (Ağ Adresi Çevirimi) ve Port Yönlendirme",
+          "3. Erişim Kontrol Listeleri (ACL) ve Ağ Güvenliği"
+        ],
+        "outcomes": "1. DHCP ve DNS servislerini ağ üzerinde yapılandırır. 2. Dinamik NAT ve PAT kurallarını uygular. 3. Standart ve genişletilmiş ACL ile ağ trafiğini sınırlar."
+      },
+      {
+        "title": "Kablosuz Ağlar ve Ağ Sorun Giderme",
+        "hours": 14,
+        "ratio": "10",
+        "topics": [
+          "1. Kablosuz Ağ Standartları ve Güvenliği (WPA3)",
+          "2. Ağ Analiz Araçları ve Sorun Giderme Metodolojisi"
+        ],
+        "outcomes": "1. Güvenli kablosuz erişim noktası yapılandırır. 2. Ping, traceroute ve paket analiz araçları ile ağ hatalarını tespit eder."
+      }
+    ]
+  },
+  {
+    "id": "platform-mtal-bilisim-programlama-temelleri-9",
+    "type": "mtal",
+    "areaId": "bilisim-teknolojileri",
+    "areaName": "Bilişim Teknolojileri",
+    "grade": "9. sınıf",
+    "lessonName": "Programlama Temelleri",
+    "year": "2026-2027",
+    "weeklyHours": 4,
+    "isPlatform": true,
+    "units": [
+      {
+        "title": "Problem Çözme ve Algoritmalar",
+        "hours": 24,
+        "ratio": "22",
+        "topics": [
+          "1. Problem Çözme Adımları ve Bilgi İşlemsel Düşünme",
+          "2. Algoritma Geliştirme ve Sözde Kod (Pseudo-code)",
+          "3. Akış Şemaları ve Semboller"
+        ],
+        "outcomes": "1. Verilen bir problemin çözüm adımlarını planlar. 2. Sözde kod ile algoritma tasarlar. 3. Akış şeması çizim araçlarını kullanarak algoritmaları modeller."
+      },
+      {
+        "title": "Temel Programlama Kavramları",
+        "hours": 32,
+        "ratio": "30",
+        "topics": [
+          "1. Programlama Dili Sözdizimi ve Geliştirme Ortamı",
+          "2. Veri Tipleri, Değişkenler ve Sabitler",
+          "3. Aritmetiksel ve Mantıksal Operatörler"
+        ],
+        "outcomes": "1. Geliştirme ortamını (IDE) kurar ve yapılandırır. 2. Değişkenleri ve uygun veri türlerini tanımlar. 3. Aritmetik ve mantıksal ifadeler içeren kodlar yazar."
+      },
+      {
+        "title": "Kontrol Yapıları ve Döngüler",
+        "hours": 36,
+        "ratio": "33",
+        "topics": [
+          "1. Karar Yapıları (if-else, switch-case)",
+          "2. Sayaç ve Şartlı Döngüler (for, while, do-while)",
+          "3. İç İçe Döngüler ve Akış Kontrolü (break, continue)"
+        ],
+        "outcomes": "1. Şarta bağlı dallanma yapılarını kodlar. 2. Tekrarlayan işlemler için uygun döngü yapılarını seçer ve uygular. 3. Döngü akışını kontrol eden anahtar kelimeleri kullanır."
+      },
+      {
+        "title": "Diziler ve Fonksiyonlar",
+        "hours": 16,
+        "ratio": "15",
+        "topics": [
+          "1. Tek Boyutlu Diziler ve Liste İşlemleri",
+          "2. Fonksiyon / Metot Kavramı ve Parametreler",
+          "3. Değer Döndüren ve Döndürmeyen Fonksiyonlar"
+        ],
+        "outcomes": "1. Dizi yapıları oluşturur ve dizi elemanlarını işler. 2. Modüler programlama amacıyla parametreli ve parametresiz fonksiyonlar tanımlar."
+      }
+    ]
+  },
+  {
+    "id": "platform-mtal-bilisim-temelleri-9",
+    "type": "mtal",
+    "areaId": "bilisim-teknolojileri",
+    "areaName": "Bilişim Teknolojileri",
+    "grade": "9. sınıf",
+    "lessonName": "Bilişim Teknolojilerinin Temelleri",
+    "year": "2026-2027",
+    "weeklyHours": 3,
+    "isPlatform": true,
+    "units": [
+      {
+        "title": "Bilişim Sistemleri ve Donanım",
+        "hours": 30,
+        "ratio": "35",
+        "topics": [
+          "1. Bilgisayar Bileşenleri (İşlemci, Bellek, Depolama)",
+          "2. Giriş-Çıkış Birimleri ve Anakart Bağlantıları",
+          "3. Bilgisayar Montajı ve Güvenlik Önlemleri"
+        ],
+        "outcomes": "1. İç ve dış donanım birimlerini tanımlar. 2. Bilgisayar parçalarının montajını kurallara uygun yapar. 3. İş sağlığı ve güvenliği kurallarına uyar."
+      },
+      {
+        "title": "İşletim Sistemleri ve Kurulum",
+        "hours": 36,
+        "ratio": "42",
+        "topics": [
+          "1. İşletim Sistemi Mimarisi ve Çeşitleri (Windows, GNU/Linux)",
+          "2. Disk Bölümleme (MBR/GPT) ve Kurulum Medyası Hazırlama",
+          "3. İşletim Sistemi Kurulumu ve Sürücü (Driver) Yükleme"
+        ],
+        "outcomes": "1. İşletim sistemlerinin görevlerini açıklar. 2. Kurulum medyasını hazırlar ve BIOS/UEFI ayarlarını yapılandırır. 3. İşletim sistemi ve gerekli aygıt sürücülerini kurar."
+      },
+      {
+        "title": "Temel Ağ Bilgisi ve Siber Güvenlik",
+        "hours": 20,
+        "ratio": "23",
+        "topics": [
+          "1. Yerel Ağ (LAN) Bağlantısı ve IP Yapılandırması",
+          "2. Siber Tehditler, Zararlı Yazılımlar ve Korunma Yöntemleri",
+          "3. Yedekleme ve Sistem Geri Yükleme"
+        ],
+        "outcomes": "1. Basit bir yerel ağ bağlantısı kurar ve dosya paylaşımını yönetir. 2. Zararlı yazılımlara karşı güvenlik önlemlerini uygular. 3. Veri yedekleme işlemlerini yürütür."
+      }
+    ]
+  },
+  {
+    "id": "platform-mtal-muhasebe-bilgisayarli-11",
+    "type": "mtal",
+    "areaId": "muhasebe-ve-finansman",
+    "areaName": "Muhasebe ve Finansman",
+    "grade": "11. sınıf",
+    "lessonName": "Bilgisayarlı Muhasebe",
+    "year": "2026-2027",
+    "weeklyHours": 7,
+    "isPlatform": true,
+    "units": [
+      {
+        "title": "Muhasebe Paket Programına Giriş",
+        "hours": 28,
+        "ratio": "14",
+        "topics": [
+          "1. Paket Programın Kurulumu ve Şirket Açma İşlemleri",
+          "2. Çalışma Dönemleri ve Hesap Planı Tanımlamaları",
+          "3. Kullanıcı Yetkilendirme ve Veri Güvenliği"
+        ],
+        "outcomes": "1. Muhasebe paket programını yükler ve yeni şirket kartı açar. 2. Tekdüzen hesap planını programa entegre eder. 3. Kullanıcı şifreleme ve yetkilendirmeyi uygular."
+      },
+      {
+        "title": "Kasa ve Banka Modülü İşlemleri",
+        "hours": 42,
+        "ratio": "21",
+        "topics": [
+          "1. Kasa Tanımları, Tahsilat ve Tediye İşlemleri",
+          "2. Banka Hesap Tanımları, Havale ve EFT Kayıtları",
+          "3. Kasa ve Banka Raporlarının Alınması"
+        ],
+        "outcomes": "1. Kasa hareketlerini programa kaydeder. 2. Banka virman ve transfer işlemlerini yürütür. 3. Kasa ve banka defteri dökümlerini inceler."
+      },
+      {
+        "title": "Cari Hesap ve Fatura Modülü",
+        "hours": 56,
+        "ratio": "28",
+        "topics": [
+          "1. Alıcı ve Satıcı Cari Kartlarının Açılması",
+          "2. Alış ve Satış Faturalarının Düzenlenmesi ve Girişi",
+          "3. İrsaliye İşlemleri ve Faturalaştırma",
+          "4. Cari Hesap Ekstresi ve Yaşlandırma Raporları"
+        ],
+        "outcomes": "1. Müşteri ve tedarikçi cari kartlarını tanımlar. 2. İrsaliyeli ve irsaliyesiz fatura kayıtlarını yapar. 3. Borç/alacak takibi için cari hesap ekstrelerini analiz eder."
+      },
+      {
+        "title": "Stok ve Çek-Senet Modülü",
+        "hours": 42,
+        "ratio": "21",
+        "topics": [
+          "1. Stok Kartı Açma, Birim ve Fiyat Tanımlama",
+          "2. Stok Giriş-Çıkış Fişleri ve Depo Transferleri",
+          "3. Alınan ve Verilen Çek-Senet Giriş/Çıkış Bordroları"
+        ],
+        "outcomes": "1. Ürün ve hammadde stok kartlarını oluşturur. 2. Depolar arası transferleri ve envanter kontrollerini yapar. 3. Kıymetli evrak bordro hareketlerini muhasebeleştirir."
+      },
+      {
+        "title": "Genel Muhasebe Entegrasyonu ve Dönem Sonu",
+        "hours": 32,
+        "ratio": "16",
+        "topics": [
+          "1. Ön Muhasebe Fişlerinin Genel Muhasebeye Aktarılması",
+          "2. Yevmiye Defteri ve Defteri Kebir Dökümleri",
+          "3. Aylık Mizan ve Mali Tabloların Üretilmesi",
+          "4. Yıl Sonu Devir İşlemleri ve Veri Yedekleme"
+        ],
+        "outcomes": "1. Modüllerden otomatik mahsup fişi üretir. 2. Yasal defter dökümlerini hazırlar. 3. Bilanço ve gelir tablosu raporlarını alır. 4. Dönem sonu devir kayıtlarını tamamlar."
+      }
+    ]
+  },
+  {
+    "id": "platform-mtal-muhasebe-genel-10",
+    "type": "mtal",
+    "areaId": "muhasebe-ve-finansman",
+    "areaName": "Muhasebe ve Finansman",
+    "grade": "10. sınıf",
+    "lessonName": "Genel Muhasebe",
+    "year": "2026-2027",
+    "weeklyHours": 7,
+    "isPlatform": true,
+    "units": [
+      {
+        "title": "Muhasebenin Temel Kavramları ve Bilanço Eşitliği",
+        "hours": 35,
+        "ratio": "18",
+        "topics": [
+          "1. Muhasebenin Tanımı, Fonksiyonları ve İlkeleri",
+          "2. Varlık, Kaynak ve Sermaye Kavramları",
+          "3. Temel Mali Tablolar: Bilanço ve Gelir Tablosu"
+        ],
+        "outcomes": "1. Genel muhasebe ilkelerini sıralar. 2. Temel bilanço denkliğini kurar. 3. Açılış bilançosu düzenler."
+      },
+      {
+        "title": "Hesap Kavramı ve Çift Taraflı Kayıt Sistemi",
+        "hours": 42,
+        "ratio": "21",
+        "topics": [
+          "1. Hesapların İşleyiş Kuralları (Aktif, Pasif, Gelir, Gider)",
+          "2. Yevmiye Maddesi Türleri (Basit, Bileşik, Karma)",
+          "3. Defteri Kebir Kayıtları ve Yardımcı Defterler"
+        ],
+        "outcomes": "1. Hesapların borç ve alacak kurallarını uygular. 2. Yevmiye defterine mali işlem kayıtlarını girer. 3. Büyük defter T hesaplarına aktarım yapar."
+      },
+      {
+        "title": "Dönen Varlıklar ve Ticari İşlemler",
+        "hours": 56,
+        "ratio": "28",
+        "topics": [
+          "1. Kasa ve Banka Hesaplarının Muhasebeleştirilmesi",
+          "2. Ticari Mal Alış, Satış ve İade Kayıtları",
+          "3. KDV Hesaplarının İşleyişi (191, 391, 190, 360)",
+          "4. Alacak ve Borç Senetleri İşlemleri"
+        ],
+        "outcomes": "1. Nakit ve banka hareketlerini muhasebeleştirir. 2. Mal alım-satım ve iskonto işlemlerini kaydeder. 3. Ay sonu KDV tahakkuk kaydını tamamlar."
+      },
+      {
+        "title": "Duran Varlıklar ve Yabancı Kaynaklar",
+        "hours": 35,
+        "ratio": "18",
+        "topics": [
+          "1. Maddi Duran Varlık Edinimi ve Amortisman Ayrılması",
+          "2. Banka Kredileri ve Finansman Giderleri",
+          "3. Satıcılar ve Personele Borçlar Hesapları"
+        ],
+        "outcomes": "1. Duran varlık alış kayıtlarını yapar. 2. Normal ve azalan bakiyeler yöntemiyle amortisman hesaplar. 3. Kredi faiz ve anapara taksitlerini yevmiyeye yansıtır."
+      },
+      {
+        "title": "Dönem Sonu Envanter İşlemleri ve Kapanış",
+        "hours": 32,
+        "ratio": "15",
+        "topics": [
+          "1. Genel Geçici Mizan Düzenleme",
+          "2. Gelir ve Gider Hesaplarının Kapatılması (690)",
+          "3. Dönem Kâr veya Zararının Belirlenmesi",
+          "4. Kesin Mizan ve Kapanış Kayıtları"
+        ],
+        "outcomes": "1. Envanter öncesi geçici mizanı kontrol eder. 2. 6'lı gelir tablosu hesaplarını kâr/zarar hesabına devreder. 3. Kesin mizan ve nihai kapanış bilançosunu hazırlar."
+      }
+    ]
+  },
+  {
+    "id": "platform-mtal-elektrik-temel-10",
+    "type": "mtal",
+    "areaId": "elektrik-elektronik-teknolojisi",
+    "areaName": "Elektrik-Elektronik Teknolojisi",
+    "grade": "10. sınıf",
+    "lessonName": "Temel Elektrik-Elektronik Atölyesi",
+    "year": "2026-2027",
+    "weeklyHours": 9,
+    "isPlatform": true,
+    "units": [
+      {
+        "title": "İş Sağlığı ve Güvenliği ile El Aletleri",
+        "hours": 36,
+        "ratio": "13",
+        "topics": [
+          "1. Elektrik Atölyesinde İş Güvenliği ve Kişisel Koruyucular",
+          "2. El Aletleri ve Mekanik Montaj Teknikleri",
+          "3. İletken Bağlantıları ve Lehimleme Uygulamaları"
+        ],
+        "outcomes": "1. Atölye güvenlik kurallarına eksiksiz uyar. 2. El aletlerini doğru ve güvenli kullanır. 3. Nitelikli lehimleme ve ekleme yapar."
+      },
+      {
+        "title": "Doğru Akım (DC) Esasları ve Devre Çözümleri",
+        "hours": 72,
+        "ratio": "26",
+        "topics": [
+          "1. Gerilim, Akım, Direnç Kavramları ve Ohm Kanunu",
+          "2. Seri, Paralel ve Karışık Direnç Bağlantıları",
+          "3. Kirchhoff Kanunları (Akımlar ve Gerilimler Kanunu)",
+          "4. Güç, Enerji ve Verim Hesaplamaları"
+        ],
+        "outcomes": "1. DC devre büyüklüklerini ölçü aletiyle ölçer. 2. Ohm ve Kirchhoff kanunları ile devre analizi yapar. 3. Elektriksel güç ve enerji hesabı yapar."
+      },
+      {
+        "title": "Alternatif Akım (AC) Esasları ve Ölçümler",
+        "hours": 72,
+        "ratio": "26",
+        "topics": [
+          "1. AC Sinüsoidal Dalga Parametreleri (Genlik, Frekans, Periyot)",
+          "2. RL, RC ve RLC Devreleri",
+          "3. Güç Katsayısı ve Kompanzasyon Temelleri",
+          "4. Osiloskop ile Sinyal İnceleme ve Ölçüm"
+        ],
+        "outcomes": "1. AC sinyal büyüklüklerini açıklar. 2. Osiloskop ve sinyal jeneratörünü devre testinde kullanır. 3. Reaktif güç ve kompanzasyon kavramlarını yorumlar."
+      },
+      {
+        "title": "Temel Elektronik Bileşenler ve Devreler",
+        "hours": 63,
+        "ratio": "23",
+        "topics": [
+          "1. Yarıiletkenler ve Diyot Çeşitleri (Doğrultma Devreleri)",
+          "2. BJT ve MOSFET Transistörlerin Çalışma Prensipleri",
+          "3. Doğrultmaç ve Regüleli Güç Kaynağı Uygulamaları"
+        ],
+        "outcomes": "1. Diyot sağlamlık kontrolü yapar ve doğrultmaç devresi kurar. 2. Transistörü anahtar ve yükselteç olarak bağlar. 3. DC regüleli güç kaynağı devresini test eder."
+      },
+      {
+        "title": "Elektriksel Tesisat ve Koruma Elemanları",
+        "hours": 33,
+        "ratio": "12",
+        "topics": [
+          "1. Sigorta, Kaçak Akım Rölesi ve Topraklama Sistemleri",
+          "2. Aydınlatma ve Priz Devresi Uygulamaları"
+        ],
+        "outcomes": "1. Koruma elemanlarının seçimini yapar. 2. Basit aydınlatma ve priz tesisat devresini döşer ve test eder."
+      }
+    ]
+  },
+  {
+    "id": "platform-mtal-adalet-ceza-11",
+    "type": "mtal",
+    "areaId": "adalet",
+    "areaName": "Adalet",
+    "grade": "11. sınıf",
+    "lessonName": "Ceza ve Ceza Muhakemesi Hukuku",
+    "year": "2026-2027",
+    "weeklyHours": 4,
+    "isPlatform": true,
+    "units": [
+      {
+        "title": "Ceza Hukukunun Genel İlkeleri",
+        "hours": 28,
+        "ratio": "25",
+        "topics": [
+          "1. Suçta ve Cezada Kanunilik İlkesi",
+          "2. Suçun Unsurları (Maddi, Manevi, Hukuka Aykırılık)",
+          "3. Kusurluluk ve Ceza Sorumluluğunu Kaldıran Haller"
+        ],
+        "outcomes": "1. Türk Ceza Kanununun temel prensiplerini sıralar. 2. Suç teşkil eden fiillerin unsurlarını analiz eder. 3. Meşru müdafaa ve zorunluluk halini ayırt eder."
+      },
+      {
+        "title": "Yaptırım Teorisi ve Cezalar",
+        "hours": 28,
+        "ratio": "25",
+        "topics": [
+          "1. Hapis Cezaları ve Adli Para Cezaları",
+          "2. Güvenlik Tedbirleri ve Müsadere",
+          "3. Cezanın Bireyselleştirilmesi ve Ertelenmesi"
+        ],
+        "outcomes": "1. Ceza türlerini ve sürelerini sınıflandırır. 2. Güvenlik tedbirlerinin uygulanışını açıklar. 3. Hükmün açıklanmasının geri bırakılması (HAGB) şartlarını listeler."
+      },
+      {
+        "title": "Ceza Muhakemesinde Soruşturma Evresi",
+        "hours": 36,
+        "ratio": "32",
+        "topics": [
+          "1. Suç İhbarı, Şikâyet ve Cumhuriyet Savcısının Görevleri",
+          "2. Koruma Tedbirleri: Yakalama, Gözaltı ve Tutuklama",
+          "3. Arama, El Koyma ve İfade Alma İşlemleri",
+          "4. İddianamenin Düzenlenmesi ve Kabulü"
+        ],
+        "outcomes": "1. Soruşturma adımlarını sırasıyla açıklar. 2. Koruma tedbirlerinin yasal koşullarını değerlendirir. 3. İddianame ve kovuşturmaya yer olmadığına dair karar (KYOK) kavramlarını uygular."
+      },
+      {
+        "title": "Kovuşturma Evresi ve Kanun Yolları",
+        "hours": 20,
+        "ratio": "18",
+        "topics": [
+          "1. Duruşma Düzeni, Delillerin İkamesi ve Tartışılması",
+          "2. Hüküm Türleri (Beraat, Mahkûmiyet, Düşme)",
+          "3. Olağan Kanun Yolları: İtiraz, İstinaf ve Temyiz"
+        ],
+        "outcomes": "1. Mahkeme salonu duruşma tutanaklarını inceler. 2. Hüküm çeşitlerini açıklar. 3. İstinaf ve temyiz başvuru süre ve usullerini kavrar."
+      }
+    ]
+  }
+]

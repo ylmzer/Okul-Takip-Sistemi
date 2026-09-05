@@ -29,10 +29,19 @@ const annualDefaultMaterials = [
 ];
 
 const annualDefaults = {
-  activeView: "download",
+  activeView: "wizard",
   selectedType: "mtal",
-  selectedAreaId: "muhasebe",
+  selectedAreaId: "bilisim-teknolojileri",
   selectedTemplateId: "",
+  license: {
+    isLicensed: false,
+    licenseKey: "",
+    owner: "",
+    expiresAt: "",
+    plan: ""
+  },
+  isAdmin: false,
+  adminPassword: "",
   settings: {
     schoolName: "",
     teacherName: "",
@@ -128,7 +137,33 @@ const annualEls = {
   fetchMebCalendar: document.querySelector("#annualFetchMebCalendarBtn"),
   mebCalendarStatus: document.querySelector("#annualMebCalendarStatus"),
   saveSettings: document.querySelector("#annualSaveSettingsBtn"),
-  // MEB Wizard elements removed
+  // License & Admin elements
+  adminNavSection: document.querySelector("#annualAdminNavSection"),
+  adminToggleBtn: document.querySelector("#annualAdminToggleBtn"),
+  adminToggleBtnText: document.querySelector("#annualAdminToggleBtnText"),
+  adminMobileOptGroup: document.querySelector("#annualNavMobileAdminOptGroup"),
+  licenseModal: document.querySelector("#annualLicenseModal"),
+  licenseCloseBtn: document.querySelector("#annualLicenseCloseBtn"),
+  licenseKeyInput: document.querySelector("#annualLicenseKeyInput"),
+  licenseVerifyBtn: document.querySelector("#annualLicenseVerifyBtn"),
+  licenseStatusMsg: document.querySelector("#annualLicenseStatusMsg"),
+  licenseContactMsg: document.querySelector("#annualLicenseContactMsg"),
+  licenseWhatsappLink: document.querySelector("#annualLicenseWhatsappLink"),
+  licenseEmailLink: document.querySelector("#annualLicenseEmailLink"),
+  licenseBadge: document.querySelector("#annualLicenseBadge"),
+  licenseBadgeText: document.querySelector("#annualLicenseBadgeText"),
+  adminLoginModal: document.querySelector("#annualAdminLoginModal"),
+  adminLoginCloseBtn: document.querySelector("#annualAdminLoginCloseBtn"),
+  adminPasswordInput: document.querySelector("#annualAdminPasswordInput"),
+  adminLoginError: document.querySelector("#annualAdminLoginError"),
+  adminLoginSubmitBtn: document.querySelector("#annualAdminLoginSubmitBtn"),
+  publishPlatformBtn: document.querySelector("#annualPublishPlatformBtn"),
+  adminNewLicenseBtn: document.querySelector("#annualAdminNewLicenseBtn"),
+  adminLicensesTableBody: document.querySelector("#annualAdminLicensesTableBody"),
+  adminPlatformTemplateCount: document.querySelector("#annualAdminPlatformTemplateCount"),
+  adminActiveLicenseCount: document.querySelector("#annualAdminActiveLicenseCount"),
+  adminContactWhatsapp: document.querySelector("#annualAdminContactWhatsapp"),
+  adminContactEmail: document.querySelector("#annualAdminContactEmail")
 };
 
 let annualState = loadAnnualState();
@@ -148,10 +183,15 @@ function loadAnnualState() {
     ];
     let templates = Array.isArray(parsed.templates) ? parsed.templates : [];
     templates = templates.filter(t => !oldSeedIds.includes(t.id));
+    const activeView = (parsed.activeView && parsed.activeView !== "download") ? parsed.activeView : "wizard";
     return {
       ...annualDefaults,
       ...parsed,
+      activeView,
       templates,
+      license: { ...annualDefaults.license, ...(parsed.license || {}) },
+      isAdmin: Boolean(parsed.isAdmin),
+      adminPassword: parsed.adminPassword || "",
       mebCalendars: Array.isArray(parsed.mebCalendars) ? parsed.mebCalendars : [],
       generatedPlans: Array.isArray(parsed.generatedPlans) ? parsed.generatedPlans : [],
       importDrafts: [],
@@ -559,6 +599,10 @@ function selectedAnnualMaterials() {
 }
 
 function setAnnualView(view) {
+  if (view === "admin-licenses" && !annualState.isAdmin) {
+    openAdminLoginModal();
+    return;
+  }
   annualState.activeView = view;
   saveAnnualState();
   annualEls.navButtons.forEach((button) => button.classList.toggle("is-active", button.dataset.annualView === view));
@@ -573,13 +617,15 @@ function setAnnualView(view) {
     import: ["Yıllık Plan Veri Aktarımı", "MEB'den alan ve ders bilgi formunu seçerek otomatik şablon üretin veya JSON/CSV aktarımı yapın."],
     library: ["Plan Kütüphanesi", "Kullanılabilir alan ve ders şablonları."],
     generated: ["Üretilen Planlar", "Oluşturulan planları görüntüleyin veya yazdırın."],
-    settings: ["Plan Ayarları", "Varsayılan okul, öğretmen ve takvim bilgileri."]
+    settings: ["Plan Ayarları", "Varsayılan okul, öğretmen ve takvim bilgileri."],
+    "admin-licenses": ["Lisans Yönetimi", "Yıllık plan lisans anahtarlarını görüntüleyin ve yönetin."]
   };
   const [title, subtitle] = titles[view] || titles.wizard;
   if (annualEls.title) annualEls.title.textContent = title;
   if (annualEls.subtitle) annualEls.subtitle.textContent = subtitle;
   if (view === "download") initDownloadView();
   if (view === "plan-template") initPlanTemplateView();
+  if (view === "admin-licenses") initAdminLicensesView();
   renderAnnualModule();
 }
 
@@ -598,8 +644,7 @@ function renderAnnualModule() {
   renderAnnualGeneratedList();
   renderAnnualSettings();
   updateWizardStepVisibility();
-  void initDownloadView();
-  if (annualState.activeView === "plan-template") void initPlanTemplateView();
+  updateLicenseUI();
 }
 
 function renderAnnualStepper() {
@@ -1673,9 +1718,422 @@ function planToHtml(plan, { compact = false } = {}) {
   `;
 }
 
+function isPlanLicensedOrAdmin() {
+  return Boolean(annualState.isAdmin || annualState.license?.isLicensed);
+}
+
+function openLicenseModal() {
+  if (annualEls.licenseModal) {
+    if (annualEls.licenseStatusMsg) annualEls.licenseStatusMsg.style.display = "none";
+    if (annualEls.licenseKeyInput) annualEls.licenseKeyInput.value = annualState.license?.licenseKey || "";
+    if (typeof annualEls.licenseModal.showModal === "function") annualEls.licenseModal.showModal();
+    else annualEls.licenseModal.style.display = "block";
+  }
+}
+
+function closeLicenseModal() {
+  if (annualEls.licenseModal) {
+    if (typeof annualEls.licenseModal.close === "function") annualEls.licenseModal.close();
+    else annualEls.licenseModal.style.display = "none";
+  }
+}
+
+function showLicenseStatus(msg, type = "info") {
+  if (!annualEls.licenseStatusMsg) return;
+  annualEls.licenseStatusMsg.textContent = msg;
+  annualEls.licenseStatusMsg.style.display = "block";
+  annualEls.licenseStatusMsg.style.color = type === "error" ? "#ef4444" : "#16a34a";
+  annualEls.licenseStatusMsg.style.fontWeight = "bold";
+}
+
+async function verifyLicenseKey(key = "") {
+  const rawKey = String(key || annualEls.licenseKeyInput?.value || "").trim();
+  if (!rawKey) {
+    showLicenseStatus("Lütfen geçerli bir lisans anahtarı girin.", "error");
+    return;
+  }
+  if (annualEls.licenseVerifyBtn) annualEls.licenseVerifyBtn.disabled = true;
+  try {
+    const res = await fetch("/api/annual-verify-license", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ licenseKey: rawKey })
+    });
+    const data = await res.json();
+    if (data.valid) {
+      annualState.license = {
+        isLicensed: true,
+        licenseKey: rawKey,
+        owner: data.owner || "Lisanslı Kullanıcı",
+        expiresAt: data.expiresAt || "",
+        plan: data.plan || "full"
+      };
+      if (data.isAdmin) {
+        annualState.isAdmin = true;
+      }
+      saveAnnualState();
+      updateLicenseUI();
+      annualToast(`Lisans başarıyla aktifleştirildi: ${data.owner}`);
+      closeLicenseModal();
+    } else {
+      showLicenseStatus(data.error || "Geçersiz veya süresi dolmuş lisans anahtarı.", "error");
+    }
+  } catch (e) {
+    showLicenseStatus(`Lisans doğrulama hatası: ${e.message}`, "error");
+  } finally {
+    if (annualEls.licenseVerifyBtn) annualEls.licenseVerifyBtn.disabled = false;
+  }
+}
+
+function openAdminLoginModal() {
+  if (annualState.isAdmin) {
+    if (confirm("Yönetici modundan çıkmak istiyor musunuz?")) {
+      handleAdminLogout();
+    }
+    return;
+  }
+  if (annualEls.adminLoginModal) {
+    if (annualEls.adminLoginError) annualEls.adminLoginError.style.display = "none";
+    if (annualEls.adminPasswordInput) {
+      annualEls.adminPasswordInput.value = "";
+      setTimeout(() => annualEls.adminPasswordInput?.focus(), 100);
+    }
+    if (typeof annualEls.adminLoginModal.showModal === "function") annualEls.adminLoginModal.showModal();
+    else annualEls.adminLoginModal.style.display = "block";
+  }
+}
+
+function closeAdminLoginModal() {
+  if (annualEls.adminLoginModal) {
+    if (typeof annualEls.adminLoginModal.close === "function") annualEls.adminLoginModal.close();
+    else annualEls.adminLoginModal.style.display = "none";
+  }
+}
+
+async function handleAdminLogin() {
+  const password = annualEls.adminPasswordInput?.value || "";
+  if (!password) {
+    if (annualEls.adminLoginError) {
+      annualEls.adminLoginError.textContent = "Lütfen yönetici şifresini girin.";
+      annualEls.adminLoginError.style.display = "block";
+    }
+    return;
+  }
+  if (annualEls.adminLoginSubmitBtn) annualEls.adminLoginSubmitBtn.disabled = true;
+  try {
+    const res = await fetch("/api/annual-verify-license", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ adminPassword: password })
+    });
+    const data = await res.json();
+    if (data.valid && data.isAdmin) {
+      annualState.isAdmin = true;
+      annualState.adminPassword = password;
+      saveAnnualState();
+      updateLicenseUI();
+      closeAdminLoginModal();
+      annualToast("Yönetici girişi başarılı. Yönetici araçları açıldı.");
+    } else {
+      if (annualEls.adminLoginError) {
+        annualEls.adminLoginError.textContent = "Geçersiz yönetici şifresi!";
+        annualEls.adminLoginError.style.display = "block";
+      }
+    }
+  } catch (e) {
+    if (annualEls.adminLoginError) {
+      annualEls.adminLoginError.textContent = `Giriş hatası: ${e.message}`;
+      annualEls.adminLoginError.style.display = "block";
+    }
+  } finally {
+    if (annualEls.adminLoginSubmitBtn) annualEls.adminLoginSubmitBtn.disabled = false;
+  }
+}
+
+function handleAdminLogout() {
+  annualState.isAdmin = false;
+  annualState.adminPassword = "";
+  saveAnnualState();
+  updateLicenseUI();
+  if (["download", "plan-template", "admin-licenses"].includes(annualState.activeView)) {
+    setAnnualView("wizard");
+  }
+  annualToast("Yönetici oturumu kapatıldı.");
+}
+
+function updateLicenseUI() {
+  const isLicensed = isPlanLicensedOrAdmin();
+  if (annualEls.licenseBadge) {
+    if (annualState.isAdmin) {
+      annualEls.licenseBadge.style.background = "#dbeafe";
+      annualEls.licenseBadge.style.color = "#1e40af";
+      if (annualEls.licenseBadgeText) annualEls.licenseBadgeText.textContent = "Yönetici Modu";
+    } else if (annualState.license?.isLicensed) {
+      annualEls.licenseBadge.style.background = "#dcfce7";
+      annualEls.licenseBadge.style.color = "#166534";
+      const owner = annualState.license.owner ? ` (${annualState.license.owner})` : "";
+      if (annualEls.licenseBadgeText) annualEls.licenseBadgeText.textContent = `Lisanslı Sürüm${owner}`;
+    } else {
+      annualEls.licenseBadge.style.background = "#fef3c7";
+      annualEls.licenseBadge.style.color = "#92400e";
+      if (annualEls.licenseBadgeText) annualEls.licenseBadgeText.textContent = "Lisanssız (Demo)";
+    }
+  }
+
+  // Admin UI toggling
+  if (annualEls.adminNavSection) {
+    annualEls.adminNavSection.style.display = annualState.isAdmin ? "block" : "none";
+  }
+  if (annualEls.adminMobileOptGroup) {
+    annualEls.adminMobileOptGroup.style.display = annualState.isAdmin ? "" : "none";
+  }
+  if (annualEls.publishPlatformBtn) {
+    annualEls.publishPlatformBtn.style.display = annualState.isAdmin ? "inline-flex" : "none";
+  }
+  if (annualEls.adminToggleBtnText) {
+    annualEls.adminToggleBtnText.textContent = annualState.isAdmin ? "🔓 Yönetici (Çıkış Yap)" : "🔐 Yönetici Girişi";
+  }
+}
+
+async function loadPlatformTemplates() {
+  try {
+    const res = await fetch("/api/annual-platform-templates");
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data.templates) && data.templates.length) {
+        // Keep custom user templates
+        const customTemplates = (annualState.templates || []).filter(t => !t.isPlatform);
+        annualState.templates = [...data.templates, ...customTemplates];
+        if (!annualState.selectedTemplateId && data.templates[0]) {
+          annualState.selectedTemplateId = data.templates[0].id;
+          annualState.selectedType = data.templates[0].type;
+          annualState.selectedAreaId = data.templates[0].areaId;
+        }
+        saveAnnualState();
+        renderAnnualTemplatePicker();
+        renderAnnualLibrary();
+      }
+    }
+  } catch (e) {
+    console.warn("Could not load platform templates:", e);
+  }
+}
+
+async function verifyCurrentLicense() {
+  if (!annualState.license?.licenseKey && !annualState.adminPassword) return;
+  try {
+    const res = await fetch("/api/annual-verify-license", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        licenseKey: annualState.license?.licenseKey || "",
+        adminPassword: annualState.adminPassword || ""
+      })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.valid) {
+        annualState.license = {
+          isLicensed: true,
+          licenseKey: annualState.license?.licenseKey || "",
+          owner: data.owner || "",
+          expiresAt: data.expiresAt || "",
+          plan: data.plan || "full"
+        };
+        if (data.isAdmin) {
+          annualState.isAdmin = true;
+        }
+      } else {
+        if (!annualState.isAdmin) {
+          annualState.license.isLicensed = false;
+        }
+      }
+      saveAnnualState();
+      updateLicenseUI();
+    }
+  } catch (e) {
+    console.warn("License check failed:", e);
+  }
+}
+
+async function initAdminLicensesView() {
+  if (!annualState.isAdmin) return;
+  await loadAdminLicenses();
+}
+
+async function loadAdminLicenses() {
+  if (!annualState.adminPassword) return;
+  try {
+    const res = await fetch("/api/annual-admin-licenses", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        adminPassword: annualState.adminPassword,
+        action: "list"
+      })
+    });
+    if (!res.ok) throw new Error("Lisans listesi alınamadı.");
+    const data = await res.json();
+    renderAdminLicensesTable(data.licenses || []);
+    if (annualEls.adminPlatformTemplateCount) {
+      const pCount = annualState.templates?.filter(t => t.isPlatform)?.length || 0;
+      annualEls.adminPlatformTemplateCount.textContent = `${pCount} Ders`;
+    }
+    if (annualEls.adminActiveLicenseCount) {
+      const activeCount = (data.licenses || []).filter(l => l.isActive !== false).length;
+      annualEls.adminActiveLicenseCount.textContent = `${activeCount} / ${(data.licenses || []).length} Lisans`;
+    }
+    if (data.contactInfo) {
+      if (annualEls.adminContactWhatsapp) annualEls.adminContactWhatsapp.textContent = data.contactInfo.whatsapp || "-";
+      if (annualEls.adminContactEmail) annualEls.adminContactEmail.textContent = data.contactInfo.email || "-";
+      if (annualEls.licenseContactMsg && data.contactInfo.message) {
+        annualEls.licenseContactMsg.textContent = data.contactInfo.message;
+      }
+      if (annualEls.licenseWhatsappLink && data.contactInfo.whatsapp) {
+        const cleanPhone = data.contactInfo.whatsapp.replace(/[^0-9]/g, "");
+        annualEls.licenseWhatsappLink.href = `https://wa.me/${cleanPhone}?text=${encodeURIComponent("Merhaba, Yıllık Plan Modülü lisansı hakkında bilgi almak istiyorum.")}`;
+      }
+      if (annualEls.licenseEmailLink && data.contactInfo.email) {
+        annualEls.licenseEmailLink.href = `mailto:${data.contactInfo.email}?subject=${encodeURIComponent("Yıllık Plan Lisans Talebi")}`;
+      }
+    }
+  } catch (err) {
+    annualToast(`Lisans listesi hatası: ${err.message}`, "error");
+  }
+}
+
+function renderAdminLicensesTable(licenses = []) {
+  if (!annualEls.adminLicensesTableBody) return;
+  if (!licenses.length) {
+    annualEls.adminLicensesTableBody.innerHTML = `<tr><td colspan="6" style="padding: 16px; text-align: center; color: #64748b;">Henüz kayıtlı lisans anahtarı bulunmuyor.</td></tr>`;
+    return;
+  }
+  annualEls.adminLicensesTableBody.innerHTML = licenses.map(lic => {
+    const isExpired = lic.expiresAt && new Date(lic.expiresAt) < new Date();
+    const statusBadge = !lic.isActive 
+      ? `<span style="background: #fee2e2; color: #991b1b; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.76rem;">Pasif</span>`
+      : isExpired
+      ? `<span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.76rem;">Süresi Dolmuş</span>`
+      : `<span style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.76rem;">Aktif</span>`;
+    
+    const createdStr = lic.createdAt ? new Date(lic.createdAt).toLocaleDateString("tr-TR") : "-";
+    const expiresStr = lic.expiresAt ? new Date(lic.expiresAt).toLocaleDateString("tr-TR") : "Süresiz";
+
+    return `
+      <tr style="border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 10px 14px; font-family: monospace; font-weight: bold; color: #0f766e;">
+          <span class="annual-copyable-key" data-key="${annualHtml(lic.key)}" style="cursor: pointer; text-decoration: underline dotted;" title="Kopyalamak için tıklayın">${annualHtml(lic.key)}</span>
+        </td>
+        <td style="padding: 10px 14px; font-weight: 600;">${annualHtml(lic.owner || "-")}</td>
+        <td style="padding: 10px 14px; text-transform: capitalize;">${annualHtml(lic.plan || "full")}</td>
+        <td style="padding: 10px 14px;">${expiresStr}</td>
+        <td style="padding: 10px 14px;">${statusBadge}</td>
+        <td style="padding: 10px 14px; text-align: right; white-space: nowrap;">
+          <button type="button" class="annual-toggle-lic-btn" data-key="${annualHtml(lic.key)}" style="background: none; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; font-size: 0.78rem; cursor: pointer; margin-right: 4px;">
+            ${lic.isActive ? "Durdur" : "Aktifleştir"}
+          </button>
+          <button type="button" class="annual-delete-lic-btn" data-key="${annualHtml(lic.key)}" style="background: none; border: 1px solid #fca5a5; color: #ef4444; border-radius: 6px; padding: 4px 8px; font-size: 0.78rem; cursor: pointer;">
+            Sil
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  // Bind copy clicks
+  annualEls.adminLicensesTableBody.querySelectorAll(".annual-copyable-key").forEach(el => {
+    el.addEventListener("click", () => {
+      const k = el.dataset.key;
+      navigator.clipboard?.writeText(k);
+      annualToast(`Lisans anahtarı kopyalandı: ${k}`);
+    });
+  });
+
+  // Bind toggle clicks
+  annualEls.adminLicensesTableBody.querySelectorAll(".annual-toggle-lic-btn").forEach(el => {
+    el.addEventListener("click", () => toggleAdminLicense(el.dataset.key));
+  });
+
+  // Bind delete clicks
+  annualEls.adminLicensesTableBody.querySelectorAll(".annual-delete-lic-btn").forEach(el => {
+    el.addEventListener("click", () => deleteAdminLicense(el.dataset.key));
+  });
+}
+
+async function createAdminLicense() {
+  if (!annualState.adminPassword) return;
+  const owner = prompt("Lisans verilecek kurum veya öğretmen adı:", "Kadıköy MTAL / Bilişim Zümresi");
+  if (!owner) return;
+  try {
+    const res = await fetch("/api/annual-admin-licenses", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        adminPassword: annualState.adminPassword,
+        action: "create",
+        newLicense: { owner }
+      })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.error || "Lisans üretilemedi.");
+    annualToast(`Yeni lisans üretildi: ${data.created?.key}`);
+    await loadAdminLicenses();
+  } catch (err) {
+    annualToast(`Lisans üretim hatası: ${err.message}`, "error");
+  }
+}
+
+async function toggleAdminLicense(targetKey) {
+  if (!annualState.adminPassword || !targetKey) return;
+  try {
+    const res = await fetch("/api/annual-admin-licenses", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        adminPassword: annualState.adminPassword,
+        action: "toggle",
+        targetKey
+      })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.error || "İşlem başarısız.");
+    annualToast("Lisans durumu güncellendi.");
+    renderAdminLicensesTable(data.licenses || []);
+  } catch (err) {
+    annualToast(`Hata: ${err.message}`, "error");
+  }
+}
+
+async function deleteAdminLicense(targetKey) {
+  if (!annualState.adminPassword || !targetKey) return;
+  if (!confirm(`"${targetKey}" lisans anahtarını silmek istediğinize emin misiniz?`)) return;
+  try {
+    const res = await fetch("/api/annual-admin-licenses", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        adminPassword: annualState.adminPassword,
+        action: "delete",
+        targetKey
+      })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.error || "Silinemedi.");
+    annualToast("Lisans anahtarı silindi.");
+    renderAdminLicensesTable(data.licenses || []);
+  } catch (err) {
+    annualToast(`Hata: ${err.message}`, "error");
+  }
+}
+
 function printAnnualPlan() {
   const plan = annualState.generatedPlans.find((item) => item.id === annualState.previewPlanId);
   if (!plan) return annualToast("Yazdırılacak plan yok.", "warning");
+  if (!isPlanLicensedOrAdmin()) {
+    annualToast("Yazdırma ve PDF çıktısı için lisans aktivasyonu gereklidir.", "warning");
+    openLicenseModal();
+    return;
+  }
   const printWindow = window.open("", "_blank");
   if (!printWindow) return annualToast("Tarayıcı açılır pencereyi engelledi.", "warning");
   const annualReportDate = (function() {
@@ -1709,15 +2167,32 @@ function printAnnualPlan() {
 async function exportAnnualPlanExcel() {
   const plan = annualState.generatedPlans.find((item) => item.id === annualState.previewPlanId);
   if (!plan) return annualToast("Excel'e aktarılacak plan yok.", "warning");
+  if (!isPlanLicensedOrAdmin()) {
+    annualToast("Excel çıktısı almak için lisans aktivasyonu gereklidir.", "warning");
+    openLicenseModal();
+    return;
+  }
   if (annualEls.excel) annualEls.excel.disabled = true;
   try {
     const response = await fetch("/api/annual-plan-xlsx", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan })
+      body: JSON.stringify({
+        plan,
+        licenseKey: annualState.license?.licenseKey || "",
+        adminPassword: annualState.adminPassword || ""
+      })
     });
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
+      if (response.status === 403 || error.requiresLicense) {
+        if (!annualState.isAdmin && annualState.license) {
+          annualState.license.isLicensed = false;
+          saveAnnualState();
+          updateLicenseUI();
+        }
+        openLicenseModal();
+      }
       throw new Error(error.error || "Excel dosyası üretilemedi.");
     }
     const blob = await response.blob();
@@ -2016,6 +2491,22 @@ function bindAnnualEvents() {
   annualEls.defaultYariyilStart?.addEventListener("change", autoCalculateExamsOnSettingsChange);
   annualEls.defaultYariyilEnd?.addEventListener("change", autoCalculateExamsOnSettingsChange);
   annualEls.defaultAraTatil2Start?.addEventListener("change", autoCalculateExamsOnSettingsChange);
+  
+  // Admin & License bindings
+  annualEls.adminToggleBtn?.addEventListener("click", openAdminLoginModal);
+  annualEls.licenseBadge?.addEventListener("click", openLicenseModal);
+  annualEls.licenseCloseBtn?.addEventListener("click", closeLicenseModal);
+  annualEls.licenseVerifyBtn?.addEventListener("click", () => verifyLicenseKey());
+  annualEls.licenseKeyInput?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") verifyLicenseKey();
+  });
+  annualEls.adminLoginCloseBtn?.addEventListener("click", closeAdminLoginModal);
+  annualEls.adminLoginSubmitBtn?.addEventListener("click", handleAdminLogin);
+  annualEls.adminPasswordInput?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleAdminLogin();
+  });
+  annualEls.publishPlatformBtn?.addEventListener("click", publishCurrentTemplateToPlatform);
+  annualEls.adminNewLicenseBtn?.addEventListener("click", createAdminLicense);
   
   // Custom bindings for download and plan-template views
   document.getElementById("annualDownloadListBtn")?.addEventListener("click", fetchDownloadResources);
@@ -3305,6 +3796,7 @@ function initPlanTemplateView() {
       addCustomUnitCard();
     });
     document.getElementById("annualSaveCustomTemplateBtn")?.addEventListener("click", saveCustomTemplate);
+    document.getElementById("annualPublishPlatformBtn")?.addEventListener("click", publishCurrentTemplateToPlatform);
   }
   
   // If container is empty, add one initial unit card
@@ -3517,17 +4009,96 @@ async function saveCustomTemplate() {
   setAnnualView("wizard");
 }
 
+async function publishCurrentTemplateToPlatform() {
+  if (!annualState.isAdmin || !annualState.adminPassword) {
+    openAdminLoginModal();
+    return;
+  }
+  const type = document.getElementById("annualCustomType")?.value || "mtal";
+  const selectArea = document.getElementById("annualCustomAreaCode");
+  const areaName = selectArea && selectArea.value !== "00" ? selectArea.options[selectArea.selectedIndex].text : "";
+  const grade = document.getElementById("annualCustomGrade")?.value || "";
+  const lessonName = getCustomTemplateLessonName();
+  const weeklyHours = parseInt(document.getElementById("annualCustomWeeklyHours")?.value, 10) || 2;
+  const year = (annualState.settings && annualState.settings.year) ? annualState.settings.year : (document.getElementById("annualCustomYear")?.value.trim() || "2026-2027");
+
+  if (!areaName || !lessonName) {
+    return annualToast("Lütfen Alan Adı ve Ders Adı alanlarını doldurun.", "warning");
+  }
+
+  const units = [];
+  const cards = document.querySelectorAll(".annual-custom-unit-card");
+  cards.forEach(card => {
+    const title = card.querySelector(".custom-unit-title")?.value.trim();
+    const hours = parseInt(card.querySelector(".custom-unit-hours")?.value, 10) || 10;
+    const ratio = card.querySelector(".custom-unit-ratio")?.value.trim() || "";
+    const outcomesRaw = card.querySelector(".custom-unit-outcomes")?.value.trim() || "";
+    const topicsRaw = card.querySelector(".custom-unit-topics")?.value.trim() || "";
+    if (!title) return;
+    const topics = topicsRaw.split(/\r?\n/).map(t => t.trim()).filter(Boolean);
+    const outcomesList = outcomesRaw.split(/\r?\n/)
+      .map(o => o.trim())
+      .filter(Boolean)
+      .map(o => o.endsWith(".") ? o : o + ".");
+    const outcomes = outcomesList.join(" ");
+    units.push({ title, hours, ratio, outcomes, topics, topicOutcomePairs: [] });
+  });
+
+  if (units.length === 0) {
+    return annualToast("Lütfen en az bir adet geçerli öğrenme birimi ekleyin.", "warning");
+  }
+
+  const template = {
+    type,
+    areaId: annualSlug(areaName),
+    areaName,
+    grade,
+    lessonName,
+    year,
+    weeklyHours,
+    units
+  };
+
+  try {
+    if (annualEls.publishPlatformBtn) annualEls.publishPlatformBtn.disabled = true;
+    const res = await fetch("/api/annual-admin-save-template", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        adminPassword: annualState.adminPassword,
+        template
+      })
+    });
+    const result = await res.json();
+    if (!res.ok || !result.success) {
+      throw new Error(result.error || "Şablon yayınlanamadı.");
+    }
+    annualToast(`"${lessonName}" başarıyla platforma resmi şablon olarak yayınlandı! (Toplam: ${result.totalTemplates} ders)`);
+    await loadPlatformTemplates();
+  } catch (err) {
+    annualToast(`Yayınlama hatası: ${err.message}`, "error");
+  } finally {
+    if (annualEls.publishPlatformBtn) annualEls.publishPlatformBtn.disabled = false;
+  }
+}
+
 bindAnnualEvents();
 renderAnnualModule();
+loadPlatformTemplates();
+verifyCurrentLicense();
 
 const annualPlanModule = {
   callbacks: {},
   init(callbacks = {}) {
     this.callbacks = { ...this.callbacks, ...callbacks };
     annualCallbacks = this.callbacks;
+    loadPlatformTemplates();
+    verifyCurrentLicense();
   },
   loadState() {
     annualState = loadAnnualState();
+    loadPlatformTemplates();
+    verifyCurrentLicense();
   },
   get shell() {
     return annualEls.shell;

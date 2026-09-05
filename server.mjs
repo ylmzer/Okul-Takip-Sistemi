@@ -11,7 +11,7 @@ import { parsePdf, parseExcel } from "./scripts/import_ime_data.js";
 const root = dirname(fileURLToPath(import.meta.url));
 const port = Number(process.env.PORT || 4173);
 const execFileAsync = promisify(execFile);
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 
 let pythonPath = join(process.env.USERPROFILE || "", ".cache", "codex-runtimes", "codex-primary-runtime", "dependencies", "python", "python.exe");
 if (!existsSync(pythonPath)) {
@@ -191,6 +191,22 @@ const server = createServer(async (request, response) => {
     }
     if (request.method === "POST" && url.pathname === "/api/annual-meb-calendar") {
       await handleAnnualMebCalendarNews(request, response);
+      return;
+    }
+    if (request.method === "GET" && url.pathname === "/api/annual-platform-templates") {
+      await handleAnnualPlatformTemplates(request, response);
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/annual-verify-license") {
+      await handleAnnualVerifyLicense(request, response);
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/annual-admin-licenses") {
+      await handleAnnualAdminLicenses(request, response);
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/annual-admin-save-template") {
+      await handleAnnualAdminSaveTemplate(request, response);
       return;
     }
     if (request.method === "POST" && url.pathname === "/api/annual-plan-xlsx") {
@@ -2323,11 +2339,241 @@ function safeDownloadName(value, fallback = "yillik-plan") {
     || fallback;
 }
 
+const annualLicensesPath = join(root, "data", "annual_licenses.json");
+const platformTemplatesPath = join(root, "data", "platform_annual_templates.json");
+
+function readLicensesData() {
+  try {
+    if (existsSync(annualLicensesPath)) {
+      return JSON.parse(readFileSync(annualLicensesPath, "utf8"));
+    }
+  } catch (e) {
+    console.warn("Licenses file read error:", e.message);
+  }
+  return {
+    adminPassword: "admin2026",
+    masterKey: "OTS-MASTER-2026",
+    contactInfo: {
+      whatsapp: "+90 555 123 45 67",
+      email: "iletisim@okultakip.com",
+      message: "Yıllık Plan Modülü tam sürüm Excel indirme ve çıktı lisansı için iletişime geçebilirsiniz."
+    },
+    licenses: []
+  };
+}
+
+function saveLicensesData(data) {
+  try {
+    writeFileSync(annualLicensesPath, JSON.stringify(data, null, 2), "utf8");
+    return true;
+  } catch (e) {
+    console.error("Licenses file write error:", e.message);
+    return false;
+  }
+}
+
+function readPlatformTemplates() {
+  try {
+    if (existsSync(platformTemplatesPath)) {
+      return JSON.parse(readFileSync(platformTemplatesPath, "utf8"));
+    }
+  } catch (e) {
+    console.warn("Platform templates file read error:", e.message);
+  }
+  return [];
+}
+
+function savePlatformTemplates(templates) {
+  try {
+    writeFileSync(platformTemplatesPath, JSON.stringify(templates, null, 2), "utf8");
+    return true;
+  } catch (e) {
+    console.error("Platform templates file write error:", e.message);
+    return false;
+  }
+}
+
+function verifyLicenseOrAdmin(licenseKey = "", adminPassword = "") {
+  const data = readLicensesData();
+  const rawKey = String(licenseKey || "").trim();
+  const rawPass = String(adminPassword || "").trim();
+
+  if (rawPass && rawPass === data.adminPassword) {
+    return { valid: true, isAdmin: true, owner: "Yönetici", contactInfo: data.contactInfo };
+  }
+  if (rawKey && (rawKey === data.masterKey || rawKey === data.adminPassword)) {
+    return { valid: true, isAdmin: true, owner: "Master Lisans", contactInfo: data.contactInfo };
+  }
+  if (rawKey) {
+    const found = (data.licenses || []).find(lic => lic.key.toLowerCase() === rawKey.toLowerCase() && lic.isActive !== false);
+    if (found) {
+      if (found.expiresAt && new Date(found.expiresAt) < new Date()) {
+        return { valid: false, expired: true, error: "Lisans süresi dolmuş.", contactInfo: data.contactInfo };
+      }
+      return { valid: true, isAdmin: false, owner: found.owner, plan: found.plan, expiresAt: found.expiresAt, contactInfo: data.contactInfo };
+    }
+  }
+  return { valid: false, error: "Geçersiz lisans anahtarı veya şifre.", contactInfo: data.contactInfo };
+}
+
+async function handleAnnualPlatformTemplates(request, response) {
+  try {
+    const templates = readPlatformTemplates();
+    response.writeHead(200, {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "public, max-age=30"
+    });
+    response.end(JSON.stringify({ templates, count: templates.length }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "Şablonlar okunamadı." }));
+  }
+}
+
+async function handleAnnualVerifyLicense(request, response) {
+  try {
+    const { licenseKey, adminPassword } = await readJsonRequest(request);
+    const result = verifyLicenseOrAdmin(licenseKey, adminPassword);
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify(result));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ valid: false, error: error.message }));
+  }
+}
+
+async function handleAnnualAdminLicenses(request, response) {
+  try {
+    const body = await readJsonRequest(request);
+    const { adminPassword, action, newLicense, targetKey, contactInfo } = body;
+    const data = readLicensesData();
+    if (adminPassword !== data.adminPassword) {
+      response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Yetkisiz işlem: Yönetici şifresi geçersiz." }));
+      return;
+    }
+
+    if (action === "list") {
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, licenses: data.licenses || [], contactInfo: data.contactInfo }));
+      return;
+    }
+
+    if (action === "create") {
+      const key = newLicense?.key?.trim() || `OTS-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+      const lic = {
+        key,
+        owner: newLicense?.owner?.trim() || "Lisanslı Kullanıcı",
+        createdAt: new Date().toISOString(),
+        expiresAt: newLicense?.expiresAt || new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString(),
+        plan: newLicense?.plan || "full",
+        isActive: true
+      };
+      data.licenses = data.licenses || [];
+      data.licenses.unshift(lic);
+      saveLicensesData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, created: lic, licenses: data.licenses }));
+      return;
+    }
+
+    if (action === "delete") {
+      data.licenses = (data.licenses || []).filter(l => l.key !== targetKey);
+      saveLicensesData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, licenses: data.licenses }));
+      return;
+    }
+
+    if (action === "toggle") {
+      data.licenses = (data.licenses || []).map(l => l.key === targetKey ? { ...l, isActive: !l.isActive } : l);
+      saveLicensesData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, licenses: data.licenses }));
+      return;
+    }
+
+    if (action === "update_contact") {
+      if (contactInfo) {
+        data.contactInfo = { ...data.contactInfo, ...contactInfo };
+        saveLicensesData(data);
+      }
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, contactInfo: data.contactInfo }));
+      return;
+    }
+
+    response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: "Bilinmeyen eylem." }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "İşlem başarısız." }));
+  }
+}
+
+async function handleAnnualAdminSaveTemplate(request, response) {
+  try {
+    const { adminPassword, template } = await readJsonRequest(request);
+    const data = readLicensesData();
+    if (adminPassword !== data.adminPassword) {
+      response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Yetkisiz işlem: Yönetici şifresi geçersiz." }));
+      return;
+    }
+    if (!template || !template.lessonName || !template.units || !template.units.length) {
+      response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Geçersiz şablon verisi. Ders adı ve üniteler zorunludur." }));
+      return;
+    }
+
+    const templates = readPlatformTemplates();
+    const templateId = template.id || `platform-${safeDownloadName(template.areaName || template.type || "alan")}-${safeDownloadName(template.lessonName)}-${safeDownloadName(template.grade || "all")}`;
+    const cleanTemplate = {
+      ...template,
+      id: templateId,
+      isPlatform: true,
+      updatedAt: new Date().toISOString()
+    };
+
+    const existingIdx = templates.findIndex(t => t.id === templateId || (
+      t.lessonName?.toLowerCase() === cleanTemplate.lessonName?.toLowerCase() &&
+      String(t.grade || "").toLowerCase() === String(cleanTemplate.grade || "").toLowerCase() &&
+      String(t.areaName || "").toLowerCase() === String(cleanTemplate.areaName || "").toLowerCase()
+    ));
+
+    if (existingIdx >= 0) {
+      templates[existingIdx] = { ...templates[existingIdx], ...cleanTemplate };
+    } else {
+      templates.push(cleanTemplate);
+    }
+
+    savePlatformTemplates(templates);
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ success: true, templateId, totalTemplates: templates.length }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "Şablon kaydedilemedi." }));
+  }
+}
+
 async function handleAnnualPlanXlsx(request, response) {
   const tempFiles = [];
   try {
     const body = await readJsonRequest(request);
     if (!body.plan) throw new Error("Excel aktarımı için plan bulunamadı.");
+
+    // Check License or Admin authorization
+    const auth = verifyLicenseOrAdmin(body.licenseKey, body.adminPassword);
+    if (!auth.valid) {
+      response.writeHead(403, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({
+        error: auth.error || "Yıllık Plan Excel çıktısı almak için lisans aktivasyonu gereklidir.",
+        contactInfo: auth.contactInfo,
+        requiresLicense: true
+      }));
+      return;
+    }
+
     const jsonPath = join(tmpdir(), `annual-plan-${Date.now()}-${Math.random().toString(16).slice(2)}.json`);
     const xlsxPath = join(tmpdir(), `annual-plan-${Date.now()}-${Math.random().toString(16).slice(2)}.xlsx`);
     tempFiles.push(jsonPath, xlsxPath);
