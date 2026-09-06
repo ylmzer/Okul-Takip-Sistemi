@@ -64,6 +64,8 @@
               document.body.classList.add("course-mode");
             } else if (activeModule === "settings") {
               document.body.classList.add("global-settings-mode");
+            } else if (activeModule === "system-admin") {
+              document.body.classList.add("admin-mode");
             } else {
               document.body.classList.add("module-mode");
             }
@@ -71,6 +73,16 @@
         } catch (e) {}
       })();
     </script>
+
+    <!-- Sistem Genel Duyuru Bandı -->
+    <div id="globalAnnouncementBar" class="global-announcement-bar" hidden>
+      <div class="announcement-content">
+        <span class="announcement-icon">📢</span>
+        <span id="globalAnnouncementText" class="announcement-text"></span>
+      </div>
+      <button type="button" class="announcement-close" onclick="this.parentElement.hidden = true" aria-label="Duyuruyu Kapat">&times;</button>
+    </div>
+
     <section class="auth-shell" id="authShell" aria-label="Giriş ve modül seçimi">
       <div class="auth-brand">
         <img src="icons/logo-clean.svg" class="auth-brand-mark" alt="Logo" style="filter: drop-shadow(0 3px 6px rgba(0,0,0,0.15));" />
@@ -139,6 +151,7 @@
               </span>
             </button>
             <div class="user-menu-popover" id="moduleUserMenu" hidden>
+              <button type="button" data-profile-action="admin" style="font-weight: 700; color: #f59e0b;">👑 Sistem Yönetimi</button>
               <button type="button" data-profile-action="settings">Profil ayarları</button>
               <button type="button" data-profile-action="logout">Çıkış</button>
             </div>
@@ -190,6 +203,14 @@
             <span class="module-status">Genel</span>
             <strong>Ayarlar</strong>
             <small>Profil, yedek ve senkron</small>
+            <em aria-hidden="true">→</em>
+            <span class="module-card-art" aria-hidden="true"></span>
+          </button>
+          <button class="module-card is-ready module-card-admin" type="button" data-module="system-admin" id="hubAdminModuleCard">
+            <span class="module-icon module-icon-admin" aria-hidden="true">👑</span>
+            <span class="module-status" style="background: rgba(245, 158, 11, 0.18); color: #d97706;">Yönetici</span>
+            <strong>Yönetim Paneli</strong>
+            <small>Kullanıcı, yetki, modül ve kredi</small>
             <em aria-hidden="true">→</em>
             <span class="module-card-art" aria-hidden="true"></span>
           </button>
@@ -391,6 +412,370 @@
                   <option value="20" selected>En son 20 yedeği sakla (Varsayılan)</option>
                   <option value="50">En son 50 yedeği sakla</option>
                 </select>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- Sistem Yönetim Paneli Shell -->
+    <div class="system-admin-shell" id="systemAdminShell" hidden>
+      <aside class="system-admin-sidebar" aria-label="Yönetim Paneli Menüsü">
+        <div class="system-admin-brand module-sidebar-brand" data-module-brand="admin" data-module-switcher-trigger>
+          <span class="system-admin-brand-icon" aria-hidden="true">👑</span>
+          <div>
+            <strong>Yönetim Paneli</strong>
+            <small class="system-admin-badge">Sistem Konsolu</small>
+          </div>
+        </div>
+        <p class="system-admin-subtitle">Kullanıcılar, yetkiler, modüller ve krediler</p>
+        <nav class="system-admin-nav" aria-label="Yönetim bölümleri">
+          <button class="is-active" type="button" data-admin-tab="overview"><span class="nav-icon">📊</span> Genel Bakış</button>
+          <button type="button" data-admin-tab="users"><span class="nav-icon">👥</span> Kullanıcılar & Yetkiler</button>
+          <button type="button" data-admin-tab="modules"><span class="nav-icon">🧩</span> Modül Kontrolü</button>
+          <button type="button" data-admin-tab="credits"><span class="nav-icon">🎟️</span> Kredi & Kuponlar</button>
+          <button type="button" data-admin-tab="security"><span class="nav-icon">🔒</span> Güvenlik & Sistem</button>
+        </nav>
+
+        <div class="system-admin-mobile-select-wrap">
+          <select id="adminMobileSelect" class="system-admin-mobile-select" aria-label="Yönetim Bölümü Seçin">
+            <option value="overview">📊 Genel Bakış</option>
+            <option value="users">👥 Kullanıcılar & Yetkiler</option>
+            <option value="modules">🧩 Modül Kontrolü</option>
+            <option value="credits">🎟️ Kredi & Kuponlar</option>
+            <option value="security">🔒 Güvenlik & Sistem</option>
+          </select>
+        </div>
+
+        <div class="system-admin-sidebar-footer">
+          <div class="admin-session-indicator">
+            <span class="admin-live-dot"></span>
+            <span>Yönetici Oturumu</span>
+          </div>
+          <button type="button" id="adminLogoutSessionBtn" class="admin-session-logout-btn">🔒 Çıkış Yap</button>
+        </div>
+      </aside>
+
+      <main class="system-admin-workspace">
+        <header class="system-admin-topbar">
+          <div>
+            <p class="eyebrow">Merkezi Yönetim Konsolu</p>
+            <h1 id="adminCurrentTabTitle">Genel Bakış</h1>
+          </div>
+          <div class="system-admin-topbar-actions">
+            <span id="adminMaintenanceBadge" class="admin-top-badge" hidden>⚠️ Sistem Bakım Modunda</span>
+            <button class="secondary-action module-switch-action" id="adminModuleSwitchBtn" data-module-switcher-trigger type="button" aria-expanded="false" aria-controls="moduleFloatPanel">Modül değiştir</button>
+            <button class="primary-action" id="adminQuickAddUserBtn" type="button">➕ Yeni Kullanıcı</button>
+          </div>
+        </header>
+
+        <div class="system-admin-panels">
+          <!-- 1. GENEL BAKIŞ -->
+          <section class="system-admin-panel is-active" data-admin-panel="overview">
+            <div class="admin-stats-grid">
+              <div class="admin-stat-card">
+                <span class="admin-stat-icon">👥</span>
+                <div class="admin-stat-content">
+                  <small>Toplam Kayıtlı Kullanıcı</small>
+                  <strong id="adminStatTotalUsers">-</strong>
+                </div>
+              </div>
+              <div class="admin-stat-card">
+                <span class="admin-stat-icon">🟢</span>
+                <div class="admin-stat-content">
+                  <small>Aktif Kullanıcılar</small>
+                  <strong id="adminStatActiveUsers">-</strong>
+                </div>
+              </div>
+              <div class="admin-stat-card">
+                <span class="admin-stat-icon">🔴</span>
+                <div class="admin-stat-content">
+                  <small>Dondurulan (Pasif)</small>
+                  <strong id="adminStatSuspendedUsers">-</strong>
+                </div>
+              </div>
+              <div class="admin-stat-card">
+                <span class="admin-stat-icon">💳</span>
+                <div class="admin-stat-content">
+                  <small>Sistem Toplam Kredi</small>
+                  <strong id="adminStatTotalCredits">-</strong>
+                </div>
+              </div>
+              <div class="admin-stat-card">
+                <span class="admin-stat-icon">🎟️</span>
+                <div class="admin-stat-content">
+                  <small>Aktif Kupon Kodu</small>
+                  <strong id="adminStatActiveCoupons">-</strong>
+                </div>
+              </div>
+              <div class="admin-stat-card">
+                <span class="admin-stat-icon">⚡</span>
+                <div class="admin-stat-content">
+                  <small>Sistem Durumu</small>
+                  <div id="adminStatSystemStatus"><span class="badge-status status-success">🟢 Sistem Aktif</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="admin-card-row">
+              <div class="admin-box admin-box-half">
+                <div class="admin-box-head">
+                  <h3>⚙️ Genel Bakım Modu</h3>
+                  <small>Yöneticiler hariç tüm sistem erişimini geçici olarak durdurur</small>
+                </div>
+                <div class="admin-box-body">
+                  <label class="admin-checkbox-label">
+                    <input type="checkbox" id="adminQuickMaintenanceToggle" />
+                    <strong>Bakım Modunu Aktifleştir</strong>
+                  </label>
+                  <div class="admin-form-group" style="margin-top: 12px;">
+                    <label for="adminQuickMaintenanceMsg">Kullanıcılara Gösterilecek Bakım Mesajı</label>
+                    <textarea id="adminQuickMaintenanceMsg" rows="2" placeholder="Planlı bakım çalışması yapılıyor..."></textarea>
+                  </div>
+                  <button type="button" class="primary-action" id="adminSaveMaintenanceBtn" style="margin-top: 10px;">Bakım Durumunu Kaydet</button>
+                </div>
+              </div>
+
+              <div class="admin-box admin-box-half">
+                <div class="admin-box-head">
+                  <h3>📢 Sistem Genel Duyurusu</h3>
+                  <small>Tüm modüllerin üstünde gösterilecek duyuru şeridi</small>
+                </div>
+                <div class="admin-box-body">
+                  <label class="admin-checkbox-label">
+                    <input type="checkbox" id="adminAnnouncementActiveToggle" />
+                    <strong>Duyuruyu Yayına Al</strong>
+                  </label>
+                  <div class="admin-form-group" style="margin-top: 12px;">
+                    <label for="adminAnnouncementMsgInput">Duyuru Metni</label>
+                    <input type="text" id="adminAnnouncementMsgInput" placeholder="Örn: 2026-2027 Müfredat güncellemeleri tamamlanmıştır." />
+                  </div>
+                  <div class="admin-form-group" style="margin-top: 8px;">
+                    <label for="adminAnnouncementTypeSelect">Duyuru Türü</label>
+                    <select id="adminAnnouncementTypeSelect">
+                      <option value="info">Mavi (Bilgi)</option>
+                      <option value="success">Yeşil (Başarı/Müjde)</option>
+                      <option value="warning">Sarı (Dikkat/Önemli)</option>
+                    </select>
+                  </div>
+                  <button type="button" class="primary-action" id="adminSaveAnnouncementBtn" style="margin-top: 10px;">Duyuruyu Güncelle</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="admin-box" style="margin-top: 20px;">
+              <div class="admin-box-head">
+                <h3>📜 Son Güvenlik ve Yönetici İşlem Kayıtları</h3>
+                <small>Sistemde gerçekleştirilen son eylemlerin güvenlik günlüğü</small>
+              </div>
+              <div class="admin-box-body">
+                <div class="admin-audit-list" id="adminAuditLogsContainer">
+                  <p class="empty-state-text">Yükleniyor...</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 2. KULLANICILAR & YETKİLER -->
+          <section class="system-admin-panel" data-admin-panel="users">
+            <div class="admin-table-toolbar">
+              <div class="admin-search-wrap">
+                <input type="text" id="adminUserSearchInput" placeholder="Kullanıcı adı, e-posta veya ID ile ara..." />
+              </div>
+              <div class="admin-filters-wrap">
+                <select id="adminUserStatusFilter">
+                  <option value="all">Tüm Durumlar</option>
+                  <option value="active">Sadece Aktifler</option>
+                  <option value="suspended">Sadece Dondurulanlar</option>
+                </select>
+                <select id="adminUserRoleFilter">
+                  <option value="all">Tüm Roller</option>
+                  <option value="admin">Yöneticiler</option>
+                  <option value="teacher">Öğretmenler</option>
+                  <option value="user">Standart Kullanıcılar</option>
+                </select>
+                <button type="button" class="primary-action" id="adminAddUserBtn">➕ Yeni Kullanıcı Ekle</button>
+              </div>
+            </div>
+
+            <div class="admin-table-card">
+              <table class="admin-data-table">
+                <thead>
+                  <tr>
+                    <th>Kullanıcı</th>
+                    <th>Rol</th>
+                    <th>Durum</th>
+                    <th>İzinli Modüller</th>
+                    <th>Kredi</th>
+                    <th>Kayıt Tarihi</th>
+                    <th style="text-align: right;">İşlemler</th>
+                  </tr>
+                </thead>
+                <tbody id="adminUsersTableBody">
+                  <tr>
+                    <td colspan="7" class="table-empty-cell">Yükleniyor...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- 3. PROGRAM & MODÜL KONTROLÜ -->
+          <section class="system-admin-panel" data-admin-panel="modules">
+            <div class="admin-notice-card">
+              <strong>ℹ️ Program Geneli Modül Kontrolü</strong>
+              <p>Buradan bir modülü kapattığınızda, o modül tüm standart öğretmen ve kullanıcılar için sistem genelinde kilitlenir ve bakım uyarısı gösterilir. Yöneticiler her zaman erişebilir.</p>
+            </div>
+            <div class="admin-module-grid" id="adminModuleControlGrid">
+              <!-- Modül kartları render ModuleControls ile üretilir -->
+            </div>
+          </section>
+
+          <!-- 4. KREDİ VE KUPONLAR -->
+          <section class="system-admin-panel" data-admin-panel="credits">
+            <div class="admin-card-row">
+              <div class="admin-box admin-box-half">
+                <div class="admin-box-head">
+                  <h3>🎟️ Yeni Kredi Kuponu Oluştur</h3>
+                  <small>Öğretmenlerin hesaplarına bakiye yükleyebileceği promosyon kodları</small>
+                </div>
+                <form id="adminCreateCouponForm" class="admin-box-body">
+                  <div class="admin-form-group">
+                    <label for="adminNewCouponCode">Kupon Kodu</label>
+                    <div style="display: flex; gap: 8px;">
+                      <input type="text" id="adminNewCouponCode" placeholder="Örn: KREDI-10-OKUL" style="text-transform: uppercase;" required />
+                      <button type="button" class="secondary-action" id="adminGenerateRandomCodeBtn" style="white-space: nowrap;">🎲 Rastgele Kod</button>
+                    </div>
+                  </div>
+                  <div class="admin-form-row">
+                    <div class="admin-form-group">
+                      <label for="adminNewCouponCredits">Kredi Miktarı</label>
+                      <input type="number" id="adminNewCouponCredits" value="5" min="1" max="10000" required />
+                    </div>
+                    <div class="admin-form-group">
+                      <label for="adminNewCouponMaxUses">Maksimum Kullanım Limiti</label>
+                      <input type="number" id="adminNewCouponMaxUses" value="10" min="1" max="10000" required />
+                    </div>
+                  </div>
+                  <div class="admin-form-group">
+                    <label for="adminNewCouponNote">Açıklama / Zümre Notu</label>
+                    <input type="text" id="adminNewCouponNote" placeholder="Örn: Bilişim Zümresi Tanıtım Kuponu" />
+                  </div>
+                  <button type="submit" class="primary-action" style="margin-top: 10px;">Kupon Kodunu Üret</button>
+                </form>
+              </div>
+
+              <div class="admin-box admin-box-half">
+                <div class="admin-box-head">
+                  <h3>ℹ️ Kredi & Harcama Kuralları</h3>
+                  <small>Kredi mekanizmasının çalışma mantığı</small>
+                </div>
+                <div class="admin-box-body">
+                  <div class="admin-info-item">
+                    <strong>1 Kredi = 1 Yıllık Plan</strong>
+                    <p>Bir planın kilidi 1 kez açıldıktan sonra kullanıcı aynı planı sınırsız sayıda Excel ve PDF olarak tekrar indirebilir.</p>
+                  </div>
+                  <div class="admin-info-item">
+                    <strong>Kullanıcıya Doğrudan Kredi Yükleme</strong>
+                    <p>Kupon kodu vermeden, "Kullanıcılar" sekmesinden herhangi bir öğretmenin yanındaki 💳 butonuna tıklayarak doğrudan hesabına bakiye ekleyebilirsiniz.</p>
+                  </div>
+                  <div class="admin-info-item">
+                    <strong>Kupon Güvenliği</strong>
+                    <p>Kupon kullanım limiti dolduğunda veya pasife alındığında sistem otomatik olarak kodu devre dışı bırakır.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="admin-table-card" style="margin-top: 20px;">
+              <div class="admin-box-head" style="padding: 16px 20px; border-bottom: 1px solid var(--corp-line);">
+                <h3 style="margin: 0;">Mevcut Kupon Kodları</h3>
+              </div>
+              <table class="admin-data-table">
+                <thead>
+                  <tr>
+                    <th>Kupon Kodu</th>
+                    <th>Kredi</th>
+                    <th>Kullanım</th>
+                    <th>Durum</th>
+                    <th>Açıklama</th>
+                    <th>Oluşturulma</th>
+                    <th style="text-align: right;">İşlemler</th>
+                  </tr>
+                </thead>
+                <tbody id="adminCouponsTableBody">
+                  <tr>
+                    <td colspan="7" class="table-empty-cell">Yükleniyor...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- 5. GÜVENLİK & SİSTEM AYARLARI -->
+          <section class="system-admin-panel" data-admin-panel="security">
+            <div class="admin-card-row">
+              <div class="admin-box admin-box-half">
+                <div class="admin-box-head">
+                  <h3>🔑 Yönetici Şifresini Değiştir</h3>
+                  <small>Sistem yönetim konsoluna erişim sağlayan ana yönetici parolası</small>
+                </div>
+                <form id="adminChangePasswordForm" class="admin-box-body">
+                  <div class="admin-form-group">
+                    <label for="adminCurrentPasswordInput">Mevcut Yönetici Şifresi</label>
+                    <input type="password" id="adminCurrentPasswordInput" placeholder="Mevcut şifreniz (varsayılan: admin2026)" required />
+                  </div>
+                  <div class="admin-form-group">
+                    <label for="adminNewPasswordInput">Yeni Yönetici Şifresi</label>
+                    <input type="password" id="adminNewPasswordInput" placeholder="En az 4 karakter yeni şifre" minlength="4" required />
+                  </div>
+                  <div class="admin-form-group">
+                    <label for="adminNewPasswordConfirmInput">Yeni Şifre (Tekrar)</label>
+                    <input type="password" id="adminNewPasswordConfirmInput" placeholder="Yeni şifreyi tekrar girin" minlength="4" required />
+                  </div>
+                  <button type="submit" class="primary-action" style="margin-top: 10px;">Şifreyi Güncelle</button>
+                </form>
+              </div>
+
+              <div class="admin-box admin-box-half">
+                <div class="admin-box-head">
+                  <h3>🎯 Yeni Kullanıcı Başlangıç Ayarları</h3>
+                  <small>Sisteme yeni kaydolan her kullanıcıya otomatik atanacak başlangıç hakları</small>
+                </div>
+                <div class="admin-box-body">
+                  <div class="admin-form-group">
+                    <label for="adminDefaultCreditsInput">Başlangıç Hediye Kredisi</label>
+                    <input type="number" id="adminDefaultCreditsInput" value="1" min="0" max="100" />
+                    <small style="color: var(--corp-muted); margin-top: 4px; display: block;">Kayıt olan her yeni kullanıcıya otomatik tanımlanacak kredi.</small>
+                  </div>
+                  <div class="admin-form-group" style="margin-top: 12px;">
+                    <label>Yeni Kullanıcılara Varsayılan Olarak Açılacak Modüller</label>
+                    <div class="admin-module-check-list">
+                      <label class="admin-checkbox-label">
+                        <input type="checkbox" class="admin-default-module-check" value="sorubank" checked />
+                        <span>Soru Bankası</span>
+                      </label>
+                      <label class="admin-checkbox-label">
+                        <input type="checkbox" class="admin-default-module-check" value="student-tracking" checked />
+                        <span>Ders Takibi</span>
+                      </label>
+                      <label class="admin-checkbox-label">
+                        <input type="checkbox" class="admin-default-module-check" value="skill-training" checked />
+                        <span>Beceri Eğitimi</span>
+                      </label>
+                      <label class="admin-checkbox-label">
+                        <input type="checkbox" class="admin-default-module-check" value="course-tracking" checked />
+                        <span>Kurs Takibi</span>
+                      </label>
+                      <label class="admin-checkbox-label">
+                        <input type="checkbox" class="admin-default-module-check" value="annual-plan" checked />
+                        <span>Yıllık Plan</span>
+                      </label>
+                    </div>
+                  </div>
+                  <button type="button" class="primary-action" id="adminSaveDefaultsBtn" style="margin-top: 12px;">Varsayılanları Kaydet</button>
+                </div>
               </div>
             </div>
           </section>
@@ -4341,6 +4726,7 @@
         <button type="button" data-dock-module="course-tracking" aria-label="Kurs Takibi"><span class="desktop-module-dock-icon" aria-hidden="true"></span><span class="desktop-module-dock-copy"><strong>Kurs Takibi</strong><small>Devam ve not yönetimi</small></span></button>
         <button type="button" data-dock-module="annual-plan" aria-label="Yıllık Plan"><span class="desktop-module-dock-icon" aria-hidden="true"></span><span class="desktop-module-dock-copy"><strong>Yıllık Plan</strong><small>Alan, ders ve plan üretimi</small></span></button>
         <button type="button" data-dock-module="settings" aria-label="Ayarlar"><span class="desktop-module-dock-icon" aria-hidden="true"></span><span class="desktop-module-dock-copy"><strong>Ayarlar</strong><small>Profil, yedek ve görünüm</small></span></button>
+        <button type="button" data-dock-module="system-admin" class="dock-admin-btn" aria-label="Yönetim Paneli"><span class="desktop-module-dock-icon" aria-hidden="true">👑</span><span class="desktop-module-dock-copy"><strong>Yönetim Paneli</strong><small>Kullanıcı, yetki ve krediler</small></span></button>
       </div>
     </nav>
     <button class="desktop-sidebar-collapse-btn" id="desktopSidebarCollapseBtn" type="button" aria-label="Sol paneli daralt" aria-expanded="true"><span class="desktop-sidebar-collapse-icon" aria-hidden="true"></span></button>
@@ -4370,6 +4756,7 @@
           <button type="button" data-floating-module="course-tracking"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Kurs Takibi</strong></span></button>
           <button type="button" data-floating-module="annual-plan"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Yıllık Plan</strong></span></button>
           <button type="button" data-floating-module="settings"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Ayarlar</strong></span></button>
+          <button type="button" data-floating-module="system-admin" class="float-admin-btn"><span class="module-float-icon" aria-hidden="true">👑</span><span class="module-switcher-copy"><strong>Yönetim Paneli</strong></span></button>
           <button type="button" data-floating-action="profile"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Profil</strong></span></button>
           <button type="button" data-floating-action="logout"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Çıkış</strong></span></button>
         </div>
@@ -4420,17 +4807,172 @@
       </div>
     </dialog>
 
+    <!-- Yönetici Giriş Doğrulama Modalı -->
+    <dialog id="adminAuthModal" class="admin-modal admin-auth-dialog">
+      <div class="admin-modal-content">
+        <div class="admin-modal-header">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 1.5rem;">👑</span>
+            <div>
+              <h2 style="margin: 0; font-size: 1.15rem;">Yönetici Girişi</h2>
+              <small style="color: var(--corp-muted);">Sistem Yönetim Konsolu</small>
+            </div>
+          </div>
+        </div>
+        <form id="adminAuthModalForm" class="admin-modal-body">
+          <p style="margin-top: 0; font-size: 0.88rem; color: var(--corp-ink);">Yönetim paneline erişmek için sistem yönetici şifresini giriniz:</p>
+          <div class="admin-form-group">
+            <input type="password" id="adminAuthModalPasswordInput" placeholder="Yönetici şifresi" required autocomplete="current-password" autofocus />
+          </div>
+          <div id="adminAuthModalError" class="admin-modal-error" hidden></div>
+          <div class="admin-modal-footer">
+            <button type="button" id="adminAuthModalCancelBtn" class="secondary-action">İptal</button>
+            <button type="submit" class="primary-action">Doğrula ve Gir</button>
+          </div>
+        </form>
+      </div>
+    </dialog>
+
+    <!-- Kullanıcı Ekleme / Düzenleme Modalı -->
+    <dialog id="adminUserModal" class="admin-modal admin-user-dialog">
+      <div class="admin-modal-content" style="max-width: 560px;">
+        <div class="admin-modal-header">
+          <h2 id="adminUserModalTitle" style="margin: 0; font-size: 1.15rem;">Kullanıcı Yetkilendirme</h2>
+          <button type="button" id="adminUserModalCloseBtn" class="modal-close-x">&times;</button>
+        </div>
+        <form id="adminUserModalForm" class="admin-modal-body">
+          <div class="admin-form-row">
+            <div class="admin-form-group">
+              <label for="adminUserModalName">Ad Soyad</label>
+              <input type="text" id="adminUserModalName" placeholder="Örn: Ahmet Yılmaz" required />
+            </div>
+            <div class="admin-form-group">
+              <label for="adminUserModalEmail">E-posta</label>
+              <input type="email" id="adminUserModalEmail" placeholder="ornek@okul.com" required />
+            </div>
+          </div>
+          <div class="admin-form-row">
+            <div class="admin-form-group">
+              <label for="adminUserModalPassword">Şifre <small style="color: var(--corp-muted);">(Boş bırakılırsa değişmez)</small></label>
+              <input type="password" id="adminUserModalPassword" placeholder="Şifre belirleyin" />
+            </div>
+            <div class="admin-form-group">
+              <label for="adminUserModalRole">Kullanıcı Rolü</label>
+              <select id="adminUserModalRole">
+                <option value="teacher">👨‍🏫 Öğretmen (Standart Yetkili)</option>
+                <option value="admin">👑 Yönetici (Tam Yetkili)</option>
+                <option value="user">👤 Standart Kullanıcı</option>
+              </select>
+            </div>
+          </div>
+          <div class="admin-form-row">
+            <div class="admin-form-group">
+              <label for="adminUserModalCredits">Mevcut Kredi Bakiyesi</label>
+              <input type="number" id="adminUserModalCredits" value="1" min="0" />
+            </div>
+            <div class="admin-form-group" style="display: flex; align-items: flex-end; padding-bottom: 8px;">
+              <label class="admin-checkbox-label">
+                <input type="checkbox" id="adminUserModalIsActive" checked />
+                <strong>Hesap Aktif (Kullanımda)</strong>
+              </label>
+            </div>
+          </div>
+          <div class="admin-form-group" style="margin-top: 10px;">
+            <label>Erişebileceği Modüller (Yetki İzinleri)</label>
+            <div class="admin-module-check-list">
+              <label class="admin-checkbox-label">
+                <input type="checkbox" class="admin-user-module-check" value="sorubank" checked />
+                <span>Soru Bankası</span>
+              </label>
+              <label class="admin-checkbox-label">
+                <input type="checkbox" class="admin-user-module-check" value="student-tracking" checked />
+                <span>Ders Takibi</span>
+              </label>
+              <label class="admin-checkbox-label">
+                <input type="checkbox" class="admin-user-module-check" value="skill-training" checked />
+                <span>Beceri Eğitimi</span>
+              </label>
+              <label class="admin-checkbox-label">
+                <input type="checkbox" class="admin-user-module-check" value="course-tracking" checked />
+                <span>Kurs Takibi</span>
+              </label>
+              <label class="admin-checkbox-label">
+                <input type="checkbox" class="admin-user-module-check" value="annual-plan" checked />
+                <span>Yıllık Plan</span>
+              </label>
+            </div>
+          </div>
+          <div class="admin-form-group" style="margin-top: 10px;">
+            <label for="adminUserModalNotes">Yönetici Notu</label>
+            <input type="text" id="adminUserModalNotes" placeholder="Örn: Bilişim Alan Şefi" />
+          </div>
+          <div class="admin-modal-footer" style="margin-top: 16px;">
+            <button type="submit" class="primary-action">Kaydet ve Yetkileri Uygula</button>
+          </div>
+        </form>
+      </div>
+    </dialog>
+
+    <!-- Kullanıcıya Kredi Yükleme Modalı -->
+    <dialog id="adminCreditModal" class="admin-modal admin-credit-dialog">
+      <div class="admin-modal-content">
+        <div class="admin-modal-header">
+          <div>
+            <h2 style="margin: 0; font-size: 1.15rem;">Kredi Yükle / Düzenle</h2>
+            <small id="adminCreditModalUserLabel" style="color: var(--corp-muted);">-</small>
+          </div>
+          <button type="button" id="adminCreditModalCloseBtn" class="modal-close-x">&times;</button>
+        </div>
+        <form id="adminCreditModalForm" class="admin-modal-body">
+          <div class="admin-credit-status-box">
+            <span>Mevcut Bakiye:</span>
+            <strong id="adminCreditModalCurrent">0 Kredi</strong>
+          </div>
+          <div class="admin-form-group" style="margin-top: 12px;">
+            <label for="adminCreditModalType">İşlem Türü</label>
+            <select id="adminCreditModalType">
+              <option value="add">Kredi Ekle (+)</option>
+              <option value="set">Doğrudan Bakiye Belirle (=)</option>
+            </select>
+          </div>
+          <div class="admin-form-group" style="margin-top: 10px;">
+            <label for="adminCreditModalAmount">Kredi Miktarı</label>
+            <input type="number" id="adminCreditModalAmount" value="5" min="1" required />
+          </div>
+          <div class="admin-form-group" style="margin-top: 10px;">
+            <label for="adminCreditModalNote">İşlem Açıklaması / Dekont Notu</label>
+            <input type="text" id="adminCreditModalNote" placeholder="Örn: Kurumsal paket kredi yüklemesi" />
+          </div>
+          <div class="admin-modal-footer" style="margin-top: 16px;">
+            <button type="submit" class="primary-action">Krediyi Uygula</button>
+          </div>
+        </form>
+      </div>
+    </dialog>
+
+    <!-- Hesap Donduruldu / Askıya Alındı Ekranı -->
+    <div id="accountSuspendedOverlay" class="account-suspended-overlay" hidden>
+      <div class="suspended-card">
+        <span class="suspended-icon">⏸️</span>
+        <h2>Hesabınız Askıya Alındı</h2>
+        <p>Okul Takip Sistemi hesabınız sistem yöneticisi tarafından geçici olarak dondurulmuştur veya erişiminiz kısıtlanmıştır.</p>
+        <p class="suspended-hint">Yetkilerinizin yeniden açılması veya bilgi almak için lütfen kurumunuzun sistem yöneticisi ile iletişime geçiniz.</p>
+        <button type="button" id="suspendedLogoutBtn" class="primary-action" onclick="window.logoutLocalSession?.()">Çıkış Yap</button>
+      </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./scripts/core/module-registry.js?v=1"></script>
-    <script src="./app.js?v=123"></script>
+    <script src="./app.js?v=125"></script>
     <script src="./scripts/modules/settings/index.js?v=8"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=9"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=17"></script>
     <script src="./scripts/modules/sorubank/index.js?v=8"></script>
     <script src="./scripts/modules/skill-training/index.js?v=13"></script>
     <script src="./scripts/modules/student-tracking/index.js?v=14"></script>
+    <script src="./scripts/modules/system-admin/index.js?v=1"></script>
   </body>
 </html>
 

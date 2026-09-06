@@ -1,0 +1,292 @@
+{
+  "adminPassword": "admin2026",
+  "masterKey": "OTS-MASTER-2026",
+  "maintenanceMode": false,
+  "maintenanceMessage": "Okul Takip Sistemi planlı bakım çalışması nedeniyle geçici olarak hizmete kapalıdır. Kısa süre sonra tekrar deneyiniz.",
+  "announcement": {
+    "active": false,
+    "message": "",
+    "type": "info",
+    "updatedAt": "2026-09-06T17:58:50.023Z"
+  },
+  "globalModules": {
+    "sorubank": {
+      "id": "sorubank",
+      "name": "Soru Bankası",
+      "description": "Soru, sınav ve analiz modülü",
+      "enabled": true
+    },
+    "student-tracking": {
+      "id": "student-tracking",
+      "name": "Ders Takibi",
+      "description": "Sınıf ve öğrenci izleme modülü",
+      "enabled": true
+    },
+    "skill-training": {
+      "id": "skill-training",
+      "name": "Beceri Eğitimi",
+      "description": "İşletme ve evrak takibi modülü",
+      "enabled": true
+    },
+    "course-tracking": {
+      "id": "course-tracking",
+      "name": "Kurs Takibi",
+      "description": "Devam ve not yönetimi modülü",
+      "enabled": true
+    },
+    "annual-plan": {
+      "id": "annual-plan",
+      "name": "Yıllık Plan",
+      "description": "Alan, ders ve plan üretim modülü",
+      "enabled": true
+    }
+  },
+  "initialUserCredits": 1,
+  "defaultAllowedModules": [
+    "sorubank",
+    "student-tracking",
+    "skill-training",
+    "course-tracking",
+    "annual-plan"
+  ],
+  "users": {
+    "admin": {
+      "id": "admin",
+      "name": "Sistem Yöneticisi",
+      "email": "admin@okultakip.local",
+      "role": "admin",
+      "isActive": true,
+      "allowedModules": [
+        "sorubank",
+        "student-tracking",
+        "skill-training",
+        "course-tracking",
+        "annual-plan",
+        "system-admin"
+      ],
+      "credits": 999999,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "lastLoginAt": "",
+      "unlockedPlans": [],
+      "history": [],
+      "notes": "Varsayılan Süper Yönetici"
+    },
+    "local-user": {
+      "id": "local-user",
+      "name": "local-user",
+      "email": "local-user",
+      "role": "teacher",
+      "isActive": true,
+      "allowedModules": [
+        "sorubank",
+        "student-tracking",
+        "skill-training",
+        "course-tracking",
+        "annual-plan"
+      ],
+      "credits": 1,
+      "unlockedPlans": [],
+      "history": [
+        {
+          "type": "initial",
+          "credits": 1,
+          "date": "2026-09-06T17:58:50.002Z"
+        }
+      ],
+      "createdAt": "2026-09-06T17:58:50.002Z"
+    }
+  },
+  "creditCodes": [
+    {
+      "code": "KREDI-1-DENEME",
+      "credits": 1,
+      "maxUses": 1000,
+      "usedCount": 0,
+      "note": "1 Kredilik Deneme Kuponu",
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "isActive": true
+    },
+    {
+      "code": "KREDI-5-DEMO",
+      "credits": 5,
+      "maxUses": 100,
+      "usedCount": 0,
+      "note": "5 Kredilik Zümre Tanıtım Kodu",
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "isActive": true
+    },
+    {
+      "code": "KREDI-10-VIP",
+      "credits": 10,
+      "maxUses": 50,
+      "usedCount": 0,
+      "note": "10 Kredilik VIP Kupon",
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "isActive": true
+    },
+    {
+      "code": "KREDI-25-OKUL",
+      "credits": 25,
+      "maxUses": 20,
+      "usedCount": 0,
+      "note": "25 Kredilik Okul Lisans Paketi",
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "isActive": true
+    }
+  ],
+  "licenses": [
+    {
+      "key": "OTS-DEMO-2026-OKUL",
+      "owner": "Örnek Okul / Öğretmen",
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "expiresAt": "2027-09-01T00:00:00.000Z",
+      "plan": "full",
+      "isActive": true
+    },
+    {
+      "key": "OTS-PLAN-2026-VIP1",
+      "owner": "Lisanslı Kullanıcı 1",
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "expiresAt": "2027-09-01T00:00:00.000Z",
+      "plan": "full",
+      "isActive": true
+    },
+    {
+      "key": "OTS-PLAN-2026-VIP2",
+      "owner": "Lisanslı Kullanıcı 2",
+      "createdAt": "2026-09-05T00:00:00.000Z",
+      "expiresAt": "2027-09-01T00:00:00.000Z",
+      "plan": "full",
+      "isActive": true
+    }
+  ],
+  "contactInfo": {
+    "whatsapp": "+90 555 123 45 67",
+    "email": "iletisim@okultakip.com",
+    "iban": "TR00 0000 0000 0000 0000 0000 00",
+    "accountHolder": "Okul Takip Sistemi",
+    "message": "Kredi yükleme ve toplu okul lisansı için iletişime geçebilirsiniz."
+  },
+  "pricingPackages": [
+    {
+      "id": "package-1",
+      "name": "1 Plan Kredisi",
+      "credits": 1,
+      "price": "100 TL",
+      "description": "1 adet Yıllık Plan (Excel ve Yazdırma sınırsız)"
+    },
+    {
+      "id": "package-5",
+      "name": "5 Plan Kredisi (Zümre Paketi)",
+      "credits": 5,
+      "price": "400 TL",
+      "description": "5 adet Yıllık Plan (Plan başı 80 TL)"
+    },
+    {
+      "id": "package-10",
+      "name": "10 Plan Kredisi (Bölüm Paketi)",
+      "credits": 10,
+      "price": "700 TL",
+      "description": "10 adet Yıllık Plan (Plan başı 70 TL)"
+    },
+    {
+      "id": "package-25",
+      "name": "25 Plan Kredisi (Okul Paketi)",
+      "credits": 25,
+      "price": "1500 TL",
+      "description": "25 adet Yıllık Plan (Plan başı 60 TL)"
+    }
+  ],
+  "auditLogs": [
+    {
+      "action": "USER_UPSERT",
+      "details": "Kullanıcı oluşturuldu/güncellendi: Test Öğretmen (test_ogretmen_1788717003460@okul.com)",
+      "date": "2026-09-06T17:50:03.469Z"
+    },
+    {
+      "action": "USER_STATUS_TOGGLE",
+      "details": "test_ogretmen_1788717003460@okul.com kullanıcısı Donduruldu/Pasif yapıldı",
+      "date": "2026-09-06T17:50:03.479Z"
+    },
+    {
+      "action": "CREDIT_ADJUSTMENT",
+      "details": "test_ogretmen_1788717003460@okul.com kullanıcısına +25 kredi uygulandı. Yeni bakiye: 35",
+      "date": "2026-09-06T17:50:03.487Z"
+    },
+    {
+      "action": "USER_DELETE",
+      "details": "test_ogretmen_1788717003460@okul.com kullanıcısı sistemden silindi.",
+      "date": "2026-09-06T17:50:03.495Z"
+    },
+    {
+      "action": "MODULE_TOGGLE",
+      "details": "Kurs Takibi modülü Devre Dışı yapıldı.",
+      "date": "2026-09-06T17:50:03.513Z"
+    },
+    {
+      "action": "MODULE_TOGGLE",
+      "details": "Kurs Takibi modülü Aktif yapıldı.",
+      "date": "2026-09-06T17:50:03.541Z"
+    },
+    {
+      "action": "COUPON_CREATE",
+      "details": "Yeni kupon üretildi: TEST-KUPON-MTQ3X53Q (15 kredi, 5 kullanım)",
+      "date": "2026-09-06T17:50:03.546Z"
+    },
+    {
+      "action": "COUPON_DELETE",
+      "details": "Kupon silindi: TEST-KUPON-MTQ3X53Q",
+      "date": "2026-09-06T17:50:03.559Z"
+    },
+    {
+      "action": "USER_UPSERT",
+      "details": "Kullanıcı oluşturuldu/güncellendi: Test Öğretmen (test_ogretmen_1788717529891@okul.com)",
+      "date": "2026-09-06T17:58:49.897Z"
+    },
+    {
+      "action": "USER_STATUS_TOGGLE",
+      "details": "test_ogretmen_1788717529891@okul.com kullanıcısı Donduruldu/Pasif yapıldı",
+      "date": "2026-09-06T17:58:49.910Z"
+    },
+    {
+      "action": "CREDIT_ADJUSTMENT",
+      "details": "test_ogretmen_1788717529891@okul.com kullanıcısına +25 kredi uygulandı. Yeni bakiye: 35",
+      "date": "2026-09-06T17:58:49.924Z"
+    },
+    {
+      "action": "USER_DELETE",
+      "details": "test_ogretmen_1788717529891@okul.com kullanıcısı sistemden silindi.",
+      "date": "2026-09-06T17:58:49.930Z"
+    },
+    {
+      "action": "MODULE_TOGGLE",
+      "details": "Kurs Takibi modülü Devre Dışı yapıldı.",
+      "date": "2026-09-06T17:58:49.942Z"
+    },
+    {
+      "action": "MODULE_TOGGLE",
+      "details": "Kurs Takibi modülü Aktif yapıldı.",
+      "date": "2026-09-06T17:58:49.959Z"
+    },
+    {
+      "action": "COUPON_CREATE",
+      "details": "Yeni kupon üretildi: TEST-KUPON-MTQ48FAI (15 kredi, 5 kullanım)",
+      "date": "2026-09-06T17:58:49.972Z"
+    },
+    {
+      "action": "COUPON_DELETE",
+      "details": "Kupon silindi: TEST-KUPON-MTQ48FAI",
+      "date": "2026-09-06T17:58:49.986Z"
+    },
+    {
+      "action": "ANNOUNCEMENT_UPDATE",
+      "details": "Sistem duyurusu yayına alındı: Sistem güncellemesi tamamlandı.",
+      "date": "2026-09-06T17:58:50.007Z"
+    },
+    {
+      "action": "ANNOUNCEMENT_UPDATE",
+      "details": "Sistem duyurusu kaldırıldı: ",
+      "date": "2026-09-06T17:58:50.023Z"
+    }
+  ]
+}

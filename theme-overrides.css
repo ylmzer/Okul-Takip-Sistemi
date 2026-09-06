@@ -7811,3 +7811,1224 @@ body.dark-mode #annualCatalogLessonSelect {
   color: #f1f5f9 !important;
   border-color: #334155 !important;
 }
+
+/* ==========================================================================
+   SİSTEM YÖNETİM PANELİ (SYSTEM ADMIN PANEL) STILLERI
+   ========================================================================== */
+
+body.admin-mode .system-admin-shell {
+  display: flex !important;
+}
+
+.system-admin-shell {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: var(--corp-bg, #f8fafc);
+  color: var(--corp-ink, #0f172a);
+  font-family: inherit;
+}
+
+/* Sol Panel (Sidebar) */
+.system-admin-sidebar {
+  width: var(--corp-sidebar-width, 320px);
+  flex-shrink: 0;
+  background: var(--corp-sidebar, #111827);
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.system-admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
+
+.system-admin-brand-icon {
+  font-size: 1.8rem;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 10px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.system-admin-brand strong {
+  font-size: 1.15rem;
+  font-weight: 700;
+  display: block;
+  color: #ffffff;
+}
+
+.system-admin-badge {
+  font-size: 0.72rem;
+  color: #f59e0b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.system-admin-subtitle {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin: 14px 0 20px 0;
+  line-height: 1.4;
+}
+
+.system-admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.system-admin-nav button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #cbd5e1;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.system-admin-nav button .nav-icon {
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.system-admin-nav button:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+.system-admin-nav button.is-active {
+  background: rgba(245, 158, 11, 0.16);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+}
+
+.system-admin-mobile-select-wrap {
+  display: none;
+  margin-bottom: 16px;
+}
+
+.system-admin-mobile-select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #1e293b;
+  color: #f8fafc;
+  border: 1px solid #334155;
+  font-size: 0.9rem;
+}
+
+.system-admin-sidebar-footer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.admin-session-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.admin-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+}
+
+.admin-session-logout-btn {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.admin-session-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+
+/* Çalışma Alanı (Workspace) */
+.system-admin-workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: var(--corp-bg, #f8fafc);
+}
+
+.system-admin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 32px;
+  background: var(--corp-panel, #ffffff);
+  border-bottom: 1px solid var(--corp-line, #e2e8f0);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+}
+
+.system-admin-topbar h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--corp-ink, #0f172a);
+}
+
+.system-admin-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-top-badge {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  animation: pulse 2s infinite;
+}
+
+/* Paneller */
+.system-admin-panels {
+  padding: 28px 32px;
+  flex: 1;
+}
+
+.system-admin-panel {
+  display: none;
+}
+
+.system-admin-panel.is-active {
+  display: block;
+}
+
+/* İstatistik Kartları Grid */
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-stat-card {
+  background: var(--corp-panel, #ffffff);
+  border: 1px solid var(--corp-line, #e2e8f0);
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s;
+}
+
+.admin-stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.admin-stat-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.admin-stat-content small {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--corp-muted, #64748b);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.admin-stat-content strong {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--corp-ink, #0f172a);
+}
+
+/* Kart & Kutu Yapısı */
+.admin-card-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.admin-box {
+  background: var(--corp-panel, #ffffff);
+  border: 1px solid var(--corp-line, #e2e8f0);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  flex: 1;
+  overflow: hidden;
+}
+
+.admin-box-half {
+  min-width: 320px;
+}
+
+.admin-box-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--corp-line, #e2e8f0);
+}
+
+.admin-box-head h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--corp-ink, #0f172a);
+}
+
+.admin-box-head small {
+  color: var(--corp-muted, #64748b);
+  font-size: 0.78rem;
+  margin-top: 2px;
+  display: block;
+}
+
+.admin-box-body {
+  padding: 20px;
+}
+
+/* Formlar */
+.admin-form-group {
+  margin-bottom: 14px;
+}
+
+.admin-form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--corp-ink, #0f172a);
+  margin-bottom: 6px;
+}
+
+.admin-form-group input,
+.admin-form-group select,
+.admin-form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--corp-line, #cbd5e1);
+  background: var(--corp-panel, #ffffff);
+  color: var(--corp-ink, #0f172a);
+  font-size: 0.85rem;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.admin-form-group input:focus,
+.admin-form-group select:focus,
+.admin-form-group textarea:focus {
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+}
+
+.admin-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.admin-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.86rem;
+  user-select: none;
+}
+
+.admin-checkbox-label input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  accent-color: #0f766e;
+  cursor: pointer;
+}
+
+.admin-module-check-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.02);
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--corp-line, #e2e8f0);
+}
+
+/* Tablolar */
+.admin-table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-search-wrap {
+  flex: 1;
+  min-width: 240px;
+}
+
+.admin-search-wrap input {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--corp-line, #cbd5e1);
+  background: var(--corp-panel, #ffffff);
+  color: var(--corp-ink, #0f172a);
+  font-size: 0.86rem;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.admin-filters-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-filters-wrap select {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--corp-line, #cbd5e1);
+  background: var(--corp-panel, #ffffff);
+  color: var(--corp-ink, #0f172a);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.admin-table-card {
+  background: var(--corp-panel, #ffffff);
+  border: 1px solid var(--corp-line, #e2e8f0);
+  border-radius: 12px;
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.admin-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-data-table th {
+  padding: 12px 18px;
+  background: rgba(0, 0, 0, 0.02);
+  border-bottom: 1px solid var(--corp-line, #e2e8f0);
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--corp-muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-data-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--corp-line-soft, #f1f5f9);
+  font-size: 0.86rem;
+  color: var(--corp-ink, #0f172a);
+  vertical-align: middle;
+}
+
+.admin-data-table tbody tr:hover {
+  background: rgba(15, 118, 110, 0.025);
+}
+
+.admin-data-table tbody tr.is-suspended {
+  background: rgba(239, 68, 68, 0.03);
+  opacity: 0.85;
+}
+
+.admin-user-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar-small {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0f766e, #0d9488);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.admin-user-cell small {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--corp-muted, #64748b);
+}
+
+/* Rozetler */
+.badge-role {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.badge-role.role-admin {
+  background: rgba(245, 158, 11, 0.15);
+  color: #b45309;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.badge-role.role-teacher {
+  background: rgba(14, 165, 233, 0.15);
+  color: #0369a1;
+  border: 1px solid rgba(14, 165, 233, 0.3);
+}
+
+.badge-role.role-user {
+  background: rgba(100, 116, 139, 0.15);
+  color: #475569;
+  border: 1px solid rgba(100, 116, 139, 0.3);
+}
+
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.badge-status.status-success {
+  background: rgba(34, 197, 94, 0.15);
+  color: #15803d;
+}
+
+.badge-status.status-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
+}
+
+.badge-module {
+  background: rgba(15, 118, 110, 0.1);
+  color: #0f766e;
+  border: 1px solid rgba(15, 118, 110, 0.25);
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.badge-credit {
+  background: rgba(16, 185, 129, 0.15);
+  color: #047857;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.code-badge {
+  font-family: monospace;
+  font-size: 0.88rem;
+  letter-spacing: 0.5px;
+  color: var(--corp-ink, #0f172a);
+}
+
+.module-badges-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.badge-none {
+  color: var(--corp-muted, #94a3b8);
+  font-size: 0.78rem;
+  font-style: italic;
+}
+
+/* Satır Aksiyon Butonları */
+.admin-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.btn-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--corp-line, #cbd5e1);
+  background: var(--corp-panel, #ffffff);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  transition: all 0.15s;
+}
+
+.btn-action:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.btn-action-delete:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+}
+
+/* Modül Kontrol Izgarası */
+.admin-notice-card {
+  background: rgba(15, 118, 110, 0.08);
+  border: 1px solid rgba(15, 118, 110, 0.25);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.admin-notice-card strong {
+  display: block;
+  font-size: 0.92rem;
+  color: #0f766e;
+  margin-bottom: 4px;
+}
+
+.admin-notice-card p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--corp-ink, #0f172a);
+  line-height: 1.5;
+}
+
+.admin-module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.admin-module-card {
+  background: var(--corp-panel, #ffffff);
+  border: 2px solid var(--corp-line, #e2e8f0);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.admin-module-card.is-enabled {
+  border-color: rgba(45, 212, 191, 0.6);
+}
+
+.admin-module-card.is-disabled {
+  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.02);
+}
+
+.admin-module-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.admin-module-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.admin-module-card.is-disabled .admin-module-icon {
+  background: #64748b;
+}
+
+.admin-module-info strong {
+  font-size: 1rem;
+  color: var(--corp-ink, #0f172a);
+  display: block;
+}
+
+.admin-module-info p {
+  margin: 4px 0 0 0;
+  font-size: 0.78rem;
+  color: var(--corp-muted, #64748b);
+  line-height: 1.4;
+}
+
+.admin-module-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--corp-line-soft, #f1f5f9);
+}
+
+.admin-module-status-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.admin-module-status-badge.status-active {
+  color: #16a34a;
+}
+
+.admin-module-status-badge.status-inactive {
+  color: #dc2626;
+}
+
+/* Switch */
+.admin-toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.admin-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.admin-toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #cbd5e1;
+  transition: .3s;
+  border-radius: 26px;
+}
+
+.admin-toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.admin-toggle-switch input:checked + .admin-toggle-slider {
+  background-color: #0f766e;
+}
+
+.admin-toggle-switch input:checked + .admin-toggle-slider:before {
+  transform: translateX(22px);
+}
+
+/* Bilgi Kutuları */
+.admin-info-item {
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--corp-line-soft, #f1f5f9);
+}
+
+.admin-info-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.admin-info-item strong {
+  font-size: 0.86rem;
+  color: var(--corp-ink, #0f172a);
+  display: block;
+}
+
+.admin-info-item p {
+  margin: 4px 0 0 0;
+  font-size: 0.78rem;
+  color: var(--corp-muted, #64748b);
+  line-height: 1.4;
+}
+
+/* Güvenlik Günlüğü (Audit Logs) */
+.admin-audit-list {
+  max-height: 260px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-audit-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+.admin-audit-time {
+  color: var(--corp-muted, #64748b);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.admin-audit-action {
+  font-weight: 700;
+  color: #0f766e;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  background: rgba(15, 118, 110, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.admin-audit-desc {
+  color: var(--corp-ink, #0f172a);
+  flex: 1;
+}
+
+/* Modal Genel */
+.admin-modal {
+  border: none;
+  border-radius: 16px;
+  padding: 0;
+  background: var(--corp-panel, #ffffff);
+  color: var(--corp-ink, #0f172a);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.admin-modal::backdrop {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.admin-modal-content {
+  padding: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--corp-line, #e2e8f0);
+}
+
+.admin-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-close-x {
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  color: var(--corp-muted, #64748b);
+  cursor: pointer;
+}
+
+.admin-modal-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  margin-top: 10px;
+}
+
+.admin-credit-status-box {
+  background: rgba(15, 118, 110, 0.08);
+  border: 1px solid rgba(15, 118, 110, 0.2);
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Hesap Donduruldu Ekranı */
+.account-suspended-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.suspended-card {
+  background: var(--corp-panel, #ffffff);
+  border: 1px solid var(--corp-line, #cbd5e1);
+  border-radius: 18px;
+  max-width: 460px;
+  width: 100%;
+  padding: 36px 30px;
+  text-align: center;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+}
+
+.suspended-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.suspended-card h2 {
+  margin: 0 0 8px 0;
+  color: #ef4444;
+  font-size: 1.4rem;
+}
+
+.suspended-card p {
+  color: var(--corp-ink, #0f172a);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.suspended-hint {
+  font-size: 0.8rem !important;
+  color: var(--corp-muted, #64748b) !important;
+  margin-bottom: 24px !important;
+}
+
+/* Genel Duyuru Bandı */
+.global-announcement-bar {
+  position: relative;
+  width: 100%;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, #0284c7, #0369a1);
+  color: #ffffff;
+  font-size: 0.86rem;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  z-index: 9990;
+  box-sizing: border-box;
+}
+
+.global-announcement-bar.type-success {
+  background: linear-gradient(90deg, #16a34a, #15803d);
+}
+
+.global-announcement-bar.type-warning {
+  background: linear-gradient(90deg, #d97706, #b45309);
+}
+
+.announcement-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.announcement-close {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0 4px;
+  opacity: 0.8;
+}
+
+.announcement-close:hover {
+  opacity: 1;
+}
+
+/* Hub ve Menü Butonları */
+.module-card-admin {
+  border-color: rgba(245, 158, 11, 0.4) !important;
+}
+
+.module-card-admin:hover {
+  border-color: #f59e0b !important;
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.15) !important;
+}
+
+.module-card.is-forbidden {
+  opacity: 0.55 !important;
+  filter: grayscale(0.7) !important;
+  cursor: not-allowed !important;
+}
+
+.module-card.is-maintenance {
+  border-color: #f59e0b !important;
+  background: rgba(245, 158, 11, 0.03) !important;
+}
+
+.dock-admin-btn,
+.float-admin-btn {
+  color: #f59e0b !important;
+}
+
+.dock-admin-btn .desktop-module-dock-icon,
+.float-admin-btn .module-float-icon {
+  background: rgba(245, 158, 11, 0.2) !important;
+}
+
+/* ==========================================================================
+   KOYU TEMA UYUMLULUĞU (DARK MODE OVERRIDES FOR SYSTEM ADMIN)
+   ========================================================================== */
+
+body.dark-mode .system-admin-shell {
+  background: #0b1220 !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .system-admin-sidebar {
+  background: #070d18 !important;
+  border-right-color: #1e293b !important;
+}
+
+body.dark-mode .system-admin-topbar {
+  background: #0f172a !important;
+  border-bottom-color: #1e293b !important;
+}
+
+body.dark-mode .system-admin-topbar h1 {
+  color: #f8fafc !important;
+}
+
+body.dark-mode .admin-stat-card {
+  background: #0f172a !important;
+  border-color: #1e293b !important;
+}
+
+body.dark-mode .admin-stat-content strong {
+  color: #f8fafc !important;
+}
+
+body.dark-mode .admin-box {
+  background: #0f172a !important;
+  border-color: #1e293b !important;
+}
+
+body.dark-mode .admin-box-head {
+  border-bottom-color: #1e293b !important;
+}
+
+body.dark-mode .admin-box-head h3 {
+  color: #f8fafc !important;
+}
+
+body.dark-mode .admin-form-group label {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .admin-form-group input,
+body.dark-mode .admin-form-group select,
+body.dark-mode .admin-form-group textarea,
+body.dark-mode .admin-search-wrap input,
+body.dark-mode .admin-filters-wrap select {
+  background: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+body.dark-mode .admin-table-card {
+  background: #0f172a !important;
+  border-color: #1e293b !important;
+}
+
+body.dark-mode .admin-data-table th {
+  background: #1e293b !important;
+  border-bottom-color: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .admin-data-table td {
+  border-bottom-color: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .admin-data-table tbody tr:hover {
+  background: rgba(45, 212, 191, 0.05) !important;
+}
+
+body.dark-mode .admin-data-table tbody tr.is-suspended {
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+
+body.dark-mode .btn-action {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .btn-action:hover {
+  background: #334155 !important;
+}
+
+body.dark-mode .admin-module-card {
+  background: #0f172a !important;
+  border-color: #1e293b !important;
+}
+
+body.dark-mode .admin-module-card.is-enabled {
+  border-color: #0f766e !important;
+}
+
+body.dark-mode .admin-module-card.is-disabled {
+  border-color: #7f1d1d !important;
+  background: #160b12 !important;
+}
+
+body.dark-mode .admin-module-info strong {
+  color: #f8fafc !important;
+}
+
+body.dark-mode .admin-module-card-footer {
+  border-top-color: #1e293b !important;
+}
+
+body.dark-mode .admin-notice-card {
+  background: rgba(15, 118, 110, 0.15) !important;
+  border-color: rgba(15, 118, 110, 0.35) !important;
+}
+
+body.dark-mode .admin-notice-card p {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .admin-modal {
+  background: #0f172a !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #1e293b !important;
+}
+
+body.dark-mode .admin-modal-header {
+  border-bottom-color: #1e293b !important;
+}
+
+body.dark-mode .admin-credit-status-box {
+  background: rgba(15, 118, 110, 0.2) !important;
+  border-color: rgba(15, 118, 110, 0.4) !important;
+}
+
+body.dark-mode .suspended-card {
+  background: #0f172a !important;
+  border-color: #1e293b !important;
+}
+
+body.dark-mode .suspended-card p {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .code-badge {
+  color: #38bdf8 !important;
+}
+
+body.dark-mode .admin-audit-item {
+  background: #1e293b !important;
+}
+
+body.dark-mode .admin-audit-desc {
+  color: #e2e8f0 !important;
+}
+
+/* Mobil Uyumluluk */
+@media (max-width: 900px) {
+  .system-admin-shell {
+    flex-direction: column;
+    height: 100vh;
+  }
+  .system-admin-sidebar {
+    width: 100%;
+    padding: 14px 16px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .system-admin-nav {
+    display: none;
+  }
+  .system-admin-mobile-select-wrap {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 0;
+  }
+  .system-admin-workspace {
+    width: 100%;
+  }
+  .system-admin-topbar {
+    padding: 14px 16px;
+  }
+  .system-admin-panels {
+    padding: 16px;
+  }
+  .admin-card-row {
+    flex-direction: column;
+  }
+}
+

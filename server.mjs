@@ -133,6 +133,42 @@ const server = createServer(async (request, response) => {
       }));
       return;
     }
+    if (request.method === "GET" && url.pathname === "/api/system/public-config") {
+      await handleSystemPublicConfig(request, response, url);
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/admin/verify") {
+      await handleAdminVerify(request, response);
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/admin/overview") {
+      await handleAdminOverview(request, response);
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/admin/users") {
+      await handleAdminUsers(request, response);
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/admin/user-credits") {
+      await handleAdminUserCredits(request, response);
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/admin/modules") {
+      await handleAdminModules(request, response);
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/admin/announcement") {
+      await handleAdminAnnouncement(request, response);
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/admin/credit-codes") {
+      await handleAdminCreditCodes(request, response);
+      return;
+    }
+    if (request.method === "POST" && url.pathname === "/api/admin/change-password") {
+      await handleAdminChangePassword(request, response);
+      return;
+    }
     if (request.method === "POST" && url.pathname === "/api/import-curriculum") {
       await handleCurriculumImport(request, response, url);
       return;
@@ -2356,47 +2392,117 @@ function safeDownloadName(value, fallback = "yillik-plan") {
 }
 
 const annualLicensesPath = join(root, "data", "annual_licenses.json");
+const systemAdminPath = join(root, "data", "system_admin.json");
 const platformTemplatesPath = join(root, "data", "platform_annual_templates.json");
 
-function readLicensesData() {
+function generateId(prefix = "usr") {
+  return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function logAudit(data, action, details) {
+  data.auditLogs = Array.isArray(data.auditLogs) ? data.auditLogs : [];
+  data.auditLogs.push({
+    action,
+    details,
+    date: new Date().toISOString()
+  });
+  if (data.auditLogs.length > 200) {
+    data.auditLogs = data.auditLogs.slice(-200);
+  }
+}
+
+function readSystemAdminData() {
   try {
+    if (existsSync(systemAdminPath)) {
+      return JSON.parse(readFileSync(systemAdminPath, "utf8"));
+    }
     if (existsSync(annualLicensesPath)) {
-      return JSON.parse(readFileSync(annualLicensesPath, "utf8"));
+      const legacy = JSON.parse(readFileSync(annualLicensesPath, "utf8"));
+      const migrated = {
+        adminPassword: legacy.adminPassword || "admin2026",
+        masterKey: legacy.masterKey || "OTS-MASTER-2026",
+        maintenanceMode: false,
+        maintenanceMessage: "Okul Takip Sistemi planlı bakım çalışması nedeniyle geçici olarak hizmete kapalıdır. Kısa süre sonra tekrar deneyiniz.",
+        announcement: { active: false, message: "", type: "info" },
+        globalModules: {
+          sorubank: { id: "sorubank", name: "Soru Bankası", description: "Soru, sınav ve analiz modülü", enabled: true },
+          "student-tracking": { id: "student-tracking", name: "Ders Takibi", description: "Sınıf ve öğrenci izleme modülü", enabled: true },
+          "skill-training": { id: "skill-training", name: "Beceri Eğitimi", description: "İşletme ve evrak takibi modülü", enabled: true },
+          "course-tracking": { id: "course-tracking", name: "Kurs Takibi", description: "Devam ve not yönetimi modülü", enabled: true },
+          "annual-plan": { id: "annual-plan", name: "Yıllık Plan", description: "Alan, ders ve plan üretim modülü", enabled: true }
+        },
+        initialUserCredits: legacy.initialUserCredits !== undefined ? Number(legacy.initialUserCredits) : 1,
+        defaultAllowedModules: ["sorubank", "student-tracking", "skill-training", "course-tracking", "annual-plan"],
+        users: legacy.users || {},
+        creditCodes: legacy.creditCodes || [],
+        licenses: legacy.licenses || [],
+        contactInfo: legacy.contactInfo || {},
+        pricingPackages: legacy.pricingPackages || [],
+        auditLogs: []
+      };
+      saveSystemAdminData(migrated);
+      return migrated;
     }
   } catch (e) {
-    console.warn("Licenses file read error:", e.message);
+    console.warn("System admin file read error:", e.message);
   }
   return {
     adminPassword: "admin2026",
     masterKey: "OTS-MASTER-2026",
-    defaultPlanCost: 1,
-    initialUserCredits: 1,
-    contactInfo: {
-      whatsapp: "+90 555 123 45 67",
-      email: "iletisim@okultakip.com",
-      iban: "TR00 0000 0000 0000 0000 0000 00",
-      accountHolder: "Okul Takip Sistemi",
-      message: "Yıllık Plan Modülü kredi yükleme ve toplu lisans için iletişime geçebilirsiniz."
+    maintenanceMode: false,
+    maintenanceMessage: "Okul Takip Sistemi planlı bakım çalışması nedeniyle geçici olarak hizmete kapalıdır. Kısa süre sonra tekrar deneyiniz.",
+    announcement: { active: false, message: "", type: "info" },
+    globalModules: {
+      sorubank: { id: "sorubank", name: "Soru Bankası", description: "Soru, sınav ve analiz modülü", enabled: true },
+      "student-tracking": { id: "student-tracking", name: "Ders Takibi", description: "Sınıf ve öğrenci izleme modülü", enabled: true },
+      "skill-training": { id: "skill-training", name: "Beceri Eğitimi", description: "İşletme ve evrak takibi modülü", enabled: true },
+      "course-tracking": { id: "course-tracking", name: "Kurs Takibi", description: "Devam ve not yönetimi modülü", enabled: true },
+      "annual-plan": { id: "annual-plan", name: "Yıllık Plan", description: "Alan, ders ve plan üretim modülü", enabled: true }
     },
-    pricingPackages: [],
-    creditCodes: [],
+    initialUserCredits: 1,
+    defaultAllowedModules: ["sorubank", "student-tracking", "skill-training", "course-tracking", "annual-plan"],
     users: {},
-    licenses: []
+    creditCodes: [],
+    licenses: [],
+    contactInfo: {},
+    pricingPackages: [],
+    auditLogs: []
   };
 }
 
-function saveLicensesData(data) {
+function saveSystemAdminData(data) {
   try {
-    writeFileSync(annualLicensesPath, JSON.stringify(data, null, 2), "utf8");
+    writeFileSync(systemAdminPath, JSON.stringify(data, null, 2), "utf8");
+    // Also keep annual_licenses.json in sync for legacy compatibility
+    const legacySubset = {
+      adminPassword: data.adminPassword,
+      masterKey: data.masterKey,
+      defaultPlanCost: data.defaultPlanCost !== undefined ? data.defaultPlanCost : 1,
+      initialUserCredits: data.initialUserCredits,
+      contactInfo: data.contactInfo,
+      pricingPackages: data.pricingPackages,
+      creditCodes: data.creditCodes,
+      users: data.users,
+      licenses: data.licenses
+    };
+    writeFileSync(annualLicensesPath, JSON.stringify(legacySubset, null, 2), "utf8");
     return true;
   } catch (e) {
-    console.error("Licenses file write error:", e.message);
+    console.error("System admin file write error:", e.message);
     return false;
   }
 }
 
-function getOrCreateUserAccount(userId, email) {
-  const data = readLicensesData();
+function readLicensesData() {
+  return readSystemAdminData();
+}
+
+function saveLicensesData(data) {
+  return saveSystemAdminData(data);
+}
+
+function getOrCreateUserAccount(userId, email, extraInfo = {}) {
+  const data = readSystemAdminData();
   data.users = data.users || {};
   let userKey = String(userId || email || "").toLowerCase().trim();
   if (!userKey || userKey === "guest") {
@@ -2405,6 +2511,12 @@ function getOrCreateUserAccount(userId, email) {
   if (!data.users[userKey]) {
     const initialCredits = Number(data.initialUserCredits !== undefined ? data.initialUserCredits : 1);
     data.users[userKey] = {
+      id: userId || userKey,
+      name: extraInfo.name || userKey,
+      email: email || (userKey.includes("@") ? userKey : ""),
+      role: extraInfo.role || "teacher",
+      isActive: true,
+      allowedModules: Array.isArray(extraInfo.allowedModules) ? extraInfo.allowedModules : (data.defaultAllowedModules || ["sorubank", "student-tracking", "skill-training", "course-tracking", "annual-plan"]),
       credits: initialCredits,
       unlockedPlans: [],
       history: [
@@ -2416,12 +2528,480 @@ function getOrCreateUserAccount(userId, email) {
       ],
       createdAt: new Date().toISOString()
     };
-    saveLicensesData(data);
+    saveSystemAdminData(data);
   } else {
     data.users[userKey].unlockedPlans = Array.isArray(data.users[userKey].unlockedPlans) ? data.users[userKey].unlockedPlans : [];
     data.users[userKey].history = Array.isArray(data.users[userKey].history) ? data.users[userKey].history : [];
+    if (!Array.isArray(data.users[userKey].allowedModules)) {
+      data.users[userKey].allowedModules = data.defaultAllowedModules || ["sorubank", "student-tracking", "skill-training", "course-tracking", "annual-plan"];
+    }
   }
   return { userKey, account: data.users[userKey], data };
+}
+
+async function handleSystemPublicConfig(request, response, url) {
+  try {
+    const data = readSystemAdminData();
+    const email = url ? (url.searchParams?.get("email") || "") : "";
+    let userAccount = null;
+    if (email) {
+      const { account } = getOrCreateUserAccount(email, email);
+      userAccount = {
+        id: account.id,
+        name: account.name,
+        email: account.email,
+        role: account.role,
+        isActive: account.isActive !== false,
+        allowedModules: account.allowedModules || (data.defaultAllowedModules || ["sorubank", "student-tracking", "skill-training", "course-tracking", "annual-plan"]),
+        credits: Number(account.credits || 0)
+      };
+    }
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
+    response.end(JSON.stringify({
+      maintenanceMode: Boolean(data.maintenanceMode),
+      maintenanceMessage: data.maintenanceMessage || "Sistem planlı bakım nedeniyle geçici olarak hizmete kapalıdır.",
+      announcement: data.announcement || { active: false, message: "", type: "info" },
+      globalModules: data.globalModules || {},
+      initialUserCredits: Number(data.initialUserCredits ?? 1),
+      user: userAccount
+    }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "Sistem yapılandırması alınamadı." }));
+  }
+}
+
+async function handleAdminVerify(request, response) {
+  try {
+    const { adminPassword } = await readJsonRequest(request);
+    const data = readSystemAdminData();
+    if (!adminPassword || adminPassword !== data.adminPassword) {
+      response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Geçersiz yönetici şifresi." }));
+      return;
+    }
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      success: true,
+      message: "Yönetici doğrulaması başarılı.",
+      role: "admin",
+      token: createHash("sha256").update(`${data.adminPassword}_${Date.now()}`).digest("hex").slice(0, 32)
+    }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "Doğrulama başarısız." }));
+  }
+}
+
+async function handleAdminOverview(request, response) {
+  try {
+    const { adminPassword } = await readJsonRequest(request);
+    const data = readSystemAdminData();
+    if (!adminPassword || adminPassword !== data.adminPassword) {
+      response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Yetkisiz erişim: Yönetici şifresi geçersiz." }));
+      return;
+    }
+
+    const users = Object.values(data.users || {});
+    const totalUsers = users.length;
+    const activeUsers = users.filter(u => u.isActive !== false).length;
+    const suspendedUsers = users.filter(u => u.isActive === false).length;
+    const totalCredits = users.reduce((sum, u) => sum + (Number(u.credits) || 0), 0);
+    const activeCoupons = (data.creditCodes || []).filter(c => c.isActive !== false).length;
+
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      success: true,
+      stats: {
+        totalUsers,
+        activeUsers,
+        suspendedUsers,
+        totalCredits,
+        activeCoupons,
+        maintenanceMode: Boolean(data.maintenanceMode),
+        announcementActive: Boolean(data.announcement?.active)
+      },
+      globalModules: data.globalModules || {},
+      maintenanceMode: Boolean(data.maintenanceMode),
+      maintenanceMessage: data.maintenanceMessage || "",
+      announcement: data.announcement || { active: false, message: "", type: "info" },
+      recentLogs: (data.auditLogs || []).slice(-30).reverse()
+    }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "Genel bakış alınamadı." }));
+  }
+}
+
+async function handleAdminUsers(request, response) {
+  try {
+    const body = await readJsonRequest(request);
+    const { adminPassword, action, user, targetUserId, password, role, allowedModules, isActive } = body;
+    const data = readSystemAdminData();
+    if (!adminPassword || adminPassword !== data.adminPassword) {
+      response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Yetkisiz erişim: Yönetici şifresi geçersiz." }));
+      return;
+    }
+
+    data.users = data.users || {};
+
+    if (action === "list") {
+      const userList = Object.entries(data.users).map(([key, u]) => ({
+        userKey: key,
+        id: u.id || key,
+        name: u.name || key,
+        email: u.email || "",
+        role: u.role || "teacher",
+        isActive: u.isActive !== false,
+        allowedModules: Array.isArray(u.allowedModules) ? u.allowedModules : (data.defaultAllowedModules || []),
+        credits: Number(u.credits || 0),
+        unlockedPlansCount: (u.unlockedPlans || []).length,
+        createdAt: u.createdAt || "",
+        lastLoginAt: u.lastLoginAt || "",
+        notes: u.notes || ""
+      }));
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, users: userList, defaultAllowedModules: data.defaultAllowedModules }));
+      return;
+    }
+
+    if (action === "create" || action === "upsert") {
+      const email = String(user?.email || "").trim().toLowerCase();
+      const userKey = email || String(user?.id || generateId("usr")).toLowerCase().trim();
+      const existing = data.users[userKey] || {};
+      const newUser = {
+        id: user?.id || existing.id || generateId("usr"),
+        name: user?.name?.trim() || existing.name || "Kullanıcı",
+        email: email || existing.email || "",
+        password: user?.password || existing.password || "",
+        role: user?.role || existing.role || "teacher",
+        isActive: user?.isActive !== undefined ? Boolean(user.isActive) : (existing.isActive !== undefined ? existing.isActive : true),
+        allowedModules: Array.isArray(user?.allowedModules) ? user.allowedModules : (existing.allowedModules || data.defaultAllowedModules || ["sorubank", "student-tracking", "skill-training", "course-tracking", "annual-plan"]),
+        credits: user?.credits !== undefined ? Number(user.credits) : (existing.credits !== undefined ? existing.credits : Number(data.initialUserCredits || 1)),
+        unlockedPlans: existing.unlockedPlans || [],
+        history: existing.history || [],
+        createdAt: existing.createdAt || new Date().toISOString(),
+        lastLoginAt: existing.lastLoginAt || "",
+        notes: user?.notes?.trim() || existing.notes || ""
+      };
+      data.users[userKey] = newUser;
+      logAudit(data, "USER_UPSERT", `Kullanıcı oluşturuldu/güncellendi: ${newUser.name} (${userKey})`);
+      saveSystemAdminData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, user: newUser }));
+      return;
+    }
+
+    if (action === "update_permissions") {
+      const userKey = String(targetUserId || "").toLowerCase().trim();
+      if (!data.users[userKey]) {
+        response.writeHead(404, { "Content-Type": "application/json; charset=utf-8" });
+        response.end(JSON.stringify({ error: "Kullanıcı bulunamadı." }));
+        return;
+      }
+      if (role) data.users[userKey].role = role;
+      if (Array.isArray(allowedModules)) data.users[userKey].allowedModules = allowedModules;
+      if (isActive !== undefined) data.users[userKey].isActive = Boolean(isActive);
+      logAudit(data, "USER_PERMISSIONS", `Yetkiler güncellendi: ${userKey}, Rol: ${data.users[userKey].role}, Modüller: ${data.users[userKey].allowedModules.join(",")}`);
+      saveSystemAdminData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, user: data.users[userKey] }));
+      return;
+    }
+
+    if (action === "toggle_active") {
+      const userKey = String(targetUserId || "").toLowerCase().trim();
+      if (!data.users[userKey]) {
+        response.writeHead(404, { "Content-Type": "application/json; charset=utf-8" });
+        response.end(JSON.stringify({ error: "Kullanıcı bulunamadı." }));
+        return;
+      }
+      data.users[userKey].isActive = !(data.users[userKey].isActive !== false);
+      const statusText = data.users[userKey].isActive ? "Aktif yapıldı" : "Donduruldu/Pasif yapıldı";
+      logAudit(data, "USER_STATUS_TOGGLE", `${userKey} kullanıcısı ${statusText}`);
+      saveSystemAdminData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, isActive: data.users[userKey].isActive, user: data.users[userKey] }));
+      return;
+    }
+
+    if (action === "reset_password") {
+      const userKey = String(targetUserId || "").toLowerCase().trim();
+      if (!data.users[userKey]) {
+        response.writeHead(404, { "Content-Type": "application/json; charset=utf-8" });
+        response.end(JSON.stringify({ error: "Kullanıcı bulunamadı." }));
+        return;
+      }
+      data.users[userKey].password = String(password || "");
+      logAudit(data, "USER_PASSWORD_RESET", `${userKey} kullanıcısının şifresi güncellendi.`);
+      saveSystemAdminData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, message: "Kullanıcı şifresi güncellendi." }));
+      return;
+    }
+
+    if (action === "delete") {
+      const userKey = String(targetUserId || "").toLowerCase().trim();
+      if (userKey === "admin") {
+        response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+        response.end(JSON.stringify({ error: "Ana yönetici hesabı silinemez." }));
+        return;
+      }
+      delete data.users[userKey];
+      logAudit(data, "USER_DELETE", `${userKey} kullanıcısı sistemden silindi.`);
+      saveSystemAdminData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, message: "Kullanıcı silindi." }));
+      return;
+    }
+
+    response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: "Bilinmeyen kullanıcı işlemi." }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "Kullanıcı işlemi gerçekleştirilemedi." }));
+  }
+}
+
+async function handleAdminUserCredits(request, response) {
+  try {
+    const { adminPassword, targetUserId, amount, type = "add", note = "" } = await readJsonRequest(request);
+    const data = readSystemAdminData();
+    if (!adminPassword || adminPassword !== data.adminPassword) {
+      response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Yetkisiz erişim: Yönetici şifresi geçersiz." }));
+      return;
+    }
+
+    const userKey = String(targetUserId || "").toLowerCase().trim();
+    if (!data.users[userKey]) {
+      response.writeHead(404, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Kullanıcı bulunamadı." }));
+      return;
+    }
+
+    const val = Number(amount || 0);
+    const current = Number(data.users[userKey].credits || 0);
+    let updated = current;
+
+    if (type === "set") {
+      updated = Math.max(0, val);
+    } else {
+      updated = Math.max(0, current + val);
+    }
+
+    data.users[userKey].credits = updated;
+    data.users[userKey].history = data.users[userKey].history || [];
+    data.users[userKey].history.push({
+      type: "admin_adjustment",
+      change: updated - current,
+      total: updated,
+      note: note || "Yönetici tarafından bakiye düzenlendi",
+      date: new Date().toISOString()
+    });
+
+    logAudit(data, "CREDIT_ADJUSTMENT", `${userKey} kullanıcısına ${updated - current >= 0 ? '+' : ''}${updated - current} kredi uygulandı. Yeni bakiye: ${updated}`);
+    saveSystemAdminData(data);
+
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({
+      success: true,
+      credits: updated,
+      message: `${data.users[userKey].name || userKey} kullanıcısının kredisi ${updated} olarak güncellendi.`
+    }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "Kredi güncellenemedi." }));
+  }
+}
+
+async function handleAdminModules(request, response) {
+  try {
+    const { adminPassword, action, moduleId, enabled, maintenanceMode, maintenanceMessage, defaultAllowedModules, initialUserCredits } = await readJsonRequest(request);
+    const data = readSystemAdminData();
+    if (!adminPassword || adminPassword !== data.adminPassword) {
+      response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Yetkisiz erişim: Yönetici şifresi geçersiz." }));
+      return;
+    }
+
+    if (action === "toggle_module") {
+      if (!data.globalModules[moduleId]) {
+        response.writeHead(404, { "Content-Type": "application/json; charset=utf-8" });
+        response.end(JSON.stringify({ error: "Modül bulunamadı." }));
+        return;
+      }
+      data.globalModules[moduleId].enabled = Boolean(enabled);
+      logAudit(data, "MODULE_TOGGLE", `${data.globalModules[moduleId].name} modülü ${enabled ? 'Aktif' : 'Devre Dışı'} yapıldı.`);
+      saveSystemAdminData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, globalModules: data.globalModules }));
+      return;
+    }
+
+    if (action === "set_maintenance") {
+      data.maintenanceMode = Boolean(maintenanceMode);
+      if (maintenanceMessage !== undefined) data.maintenanceMessage = String(maintenanceMessage).trim();
+      logAudit(data, "MAINTENANCE_TOGGLE", `Genel Bakım Modu ${data.maintenanceMode ? 'Açıldı' : 'Kapatıldı'}.`);
+      saveSystemAdminData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({
+        success: true,
+        maintenanceMode: data.maintenanceMode,
+        maintenanceMessage: data.maintenanceMessage
+      }));
+      return;
+    }
+
+    if (action === "update_defaults") {
+      if (Array.isArray(defaultAllowedModules)) data.defaultAllowedModules = defaultAllowedModules;
+      if (initialUserCredits !== undefined) data.initialUserCredits = Number(initialUserCredits);
+      logAudit(data, "DEFAULTS_UPDATE", `Varsayılan ayarlar güncellendi. Başlangıç kredisi: ${data.initialUserCredits}`);
+      saveSystemAdminData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({
+        success: true,
+        defaultAllowedModules: data.defaultAllowedModules,
+        initialUserCredits: data.initialUserCredits
+      }));
+      return;
+    }
+
+    response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: "Bilinmeyen modül kontrol işlemi." }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "Modül işlemi başarısız." }));
+  }
+}
+
+async function handleAdminAnnouncement(request, response) {
+  try {
+    const { adminPassword, active, message, type } = await readJsonRequest(request);
+    const data = readSystemAdminData();
+    if (!adminPassword || adminPassword !== data.adminPassword) {
+      response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Yetkisiz erişim: Yönetici şifresi geçersiz." }));
+      return;
+    }
+
+    data.announcement = {
+      active: Boolean(active),
+      message: String(message || "").trim(),
+      type: type || "info",
+      updatedAt: new Date().toISOString()
+    };
+
+    logAudit(data, "ANNOUNCEMENT_UPDATE", `Sistem duyurusu ${active ? 'yayına alındı' : 'kaldırıldı'}: ${data.announcement.message.slice(0, 40)}`);
+    saveSystemAdminData(data);
+
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ success: true, announcement: data.announcement }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "Duyuru güncellenemedi." }));
+  }
+}
+
+async function handleAdminCreditCodes(request, response) {
+  try {
+    const { adminPassword, action, newCode, code } = await readJsonRequest(request);
+    const data = readSystemAdminData();
+    if (!adminPassword || adminPassword !== data.adminPassword) {
+      response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Yetkisiz erişim: Yönetici şifresi geçersiz." }));
+      return;
+    }
+
+    data.creditCodes = data.creditCodes || [];
+
+    if (action === "list") {
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, creditCodes: data.creditCodes }));
+      return;
+    }
+
+    if (action === "create") {
+      const codeStr = String(newCode?.code || "").trim().toUpperCase() || `KREDI-${newCode?.credits || 5}-${Date.now().toString(36).toUpperCase()}`;
+      if (data.creditCodes.some(c => c.code.toUpperCase() === codeStr)) {
+        response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+        response.end(JSON.stringify({ error: "Bu kupon kodu zaten mevcut." }));
+        return;
+      }
+      const codeObj = {
+        code: codeStr,
+        credits: Number(newCode?.credits || 1),
+        maxUses: Number(newCode?.maxUses || 1),
+        usedCount: 0,
+        note: newCode?.note?.trim() || "Yönetim panelinden üretildi",
+        createdAt: new Date().toISOString(),
+        isActive: true
+      };
+      data.creditCodes.unshift(codeObj);
+      logAudit(data, "COUPON_CREATE", `Yeni kupon üretildi: ${codeStr} (${codeObj.credits} kredi, ${codeObj.maxUses} kullanım)`);
+      saveSystemAdminData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, created: codeObj, creditCodes: data.creditCodes }));
+      return;
+    }
+
+    if (action === "toggle") {
+      const target = data.creditCodes.find(c => c.code.toUpperCase() === String(code).toUpperCase());
+      if (target) {
+        target.isActive = !(target.isActive !== false);
+        logAudit(data, "COUPON_TOGGLE", `Kupon durumu değiştirildi: ${target.code} (${target.isActive ? 'Aktif' : 'Pasif'})`);
+        saveSystemAdminData(data);
+        response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+        response.end(JSON.stringify({ success: true, creditCodes: data.creditCodes }));
+        return;
+      }
+      response.writeHead(404, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Kupon bulunamadı." }));
+      return;
+    }
+
+    if (action === "delete") {
+      data.creditCodes = data.creditCodes.filter(c => c.code.toUpperCase() !== String(code).toUpperCase());
+      logAudit(data, "COUPON_DELETE", `Kupon silindi: ${code}`);
+      saveSystemAdminData(data);
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, creditCodes: data.creditCodes }));
+      return;
+    }
+
+    response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: "Bilinmeyen kupon işlemi." }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "Kupon işlemi gerçekleştirilemedi." }));
+  }
+}
+
+async function handleAdminChangePassword(request, response) {
+  try {
+    const { currentPassword, newPassword } = await readJsonRequest(request);
+    const data = readSystemAdminData();
+    if (!currentPassword || currentPassword !== data.adminPassword) {
+      response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Mevcut yönetici şifresi hatalı." }));
+      return;
+    }
+    if (!newPassword || newPassword.trim().length < 4) {
+      response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "Yeni şifre en az 4 karakter olmalıdır." }));
+      return;
+    }
+    data.adminPassword = newPassword.trim();
+    logAudit(data, "ADMIN_PASSWORD_CHANGE", "Yönetici şifresi başarıyla değiştirildi.");
+    saveSystemAdminData(data);
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ success: true, message: "Yönetici şifresi başarıyla güncellendi." }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "Şifre güncellenemedi." }));
+  }
 }
 
 async function handleAnnualGetCredits(request, response) {

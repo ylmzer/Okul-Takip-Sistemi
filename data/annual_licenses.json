@@ -8,7 +8,7 @@
     "email": "iletisim@okultakip.com",
     "iban": "TR00 0000 0000 0000 0000 0000 00",
     "accountHolder": "Okul Takip Sistemi",
-    "message": "Yıllık Plan Modülü kredi yükleme ve toplu okul lisansı için iletişime geçebilirsiniz."
+    "message": "Kredi yükleme ve toplu okul lisansı için iletişime geçebilirsiniz."
   },
   "pricingPackages": [
     {
@@ -78,7 +78,53 @@
       "isActive": true
     }
   ],
-  "users": {},
+  "users": {
+    "admin": {
+      "id": "admin",
+      "name": "Sistem Yöneticisi",
+      "email": "admin@okultakip.local",
+      "role": "admin",
+      "isActive": true,
+      "allowedModules": [
+        "sorubank",
+        "student-tracking",
+        "skill-training",
+        "course-tracking",
+        "annual-plan",
+        "system-admin"
+      ],
+      "credits": 999999,
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "lastLoginAt": "",
+      "unlockedPlans": [],
+      "history": [],
+      "notes": "Varsayılan Süper Yönetici"
+    },
+    "local-user": {
+      "id": "local-user",
+      "name": "local-user",
+      "email": "local-user",
+      "role": "teacher",
+      "isActive": true,
+      "allowedModules": [
+        "sorubank",
+        "student-tracking",
+        "skill-training",
+        "course-tracking",
+        "annual-plan"
+      ],
+      "credits": 1,
+      "unlockedPlans": [],
+      "history": [
+        {
+          "type": "initial",
+          "credits": 1,
+          "date": "2026-09-06T17:58:50.002Z"
+        }
+      ],
+      "createdAt": "2026-09-06T17:58:50.002Z"
+    }
+  },
   "licenses": [
     {
       "key": "OTS-DEMO-2026-OKUL",

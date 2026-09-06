@@ -695,6 +695,11 @@ const els = {
   loginPanel: document.querySelector("#loginPanel"),
   moduleHub: document.querySelector("#moduleHub"),
   globalSettingsShell: document.querySelector("#globalSettingsShell"),
+  systemAdminShell: document.querySelector("#systemAdminShell"),
+  hubAdminModuleCard: document.querySelector("#hubAdminModuleCard"),
+  accountSuspendedOverlay: document.querySelector("#accountSuspendedOverlay"),
+  globalAnnouncementBar: document.querySelector("#globalAnnouncementBar"),
+  globalAnnouncementText: document.querySelector("#globalAnnouncementText"),
   quickStartBtn: document.querySelector("#quickStartBtn"),
   showRegisterBtn: document.querySelector("#showRegisterBtn"),
   showLoginBtn: document.querySelector("#showLoginBtn"),
@@ -1102,7 +1107,8 @@ const MODULE_SWITCHER_LABELS = {
   "skill-training": "Beceri Eğitimi",
   "course-tracking": "Kurs Takibi",
   "annual-plan": "Yıllık Plan",
-  settings: "Ayarlar"
+  settings: "Ayarlar",
+  "system-admin": "Yönetim Paneli"
 };
 const DESKTOP_SIDEBAR_COLLAPSED_KEY = "sorubank:desktop-sidebar-collapsed";
 
@@ -1430,7 +1436,8 @@ function renderAccessShell() {
   const showAnnualPlan = hasUser && activeModule === "annual-plan";
   const showCourse = hasUser && activeModule === "course-tracking";
   const showGlobalSettings = hasUser && activeModule === "settings";
-  const showModules = hasUser && !showApp && !showSkill && !showStudent && !showAnnualPlan && !showCourse && !showGlobalSettings;
+  const showAdmin = hasUser && activeModule === "system-admin";
+  const showModules = hasUser && !showApp && !showSkill && !showStudent && !showAnnualPlan && !showCourse && !showGlobalSettings && !showAdmin;
 
   // Tarayıcı sekme başlığını (title) dinamik olarak güncelle
   if (showApp) {
@@ -1445,6 +1452,8 @@ function renderAccessShell() {
     document.title = "OTS - Kurs Takibi";
   } else if (showGlobalSettings) {
     document.title = "OTS - Ayarlar";
+  } else if (showAdmin) {
+    document.title = "OTS - Yönetim Paneli";
   } else {
     document.title = "Okul Takip Sistemi";
   }
@@ -1457,15 +1466,18 @@ function renderAccessShell() {
   document.body.classList.toggle("annual-mode", showAnnualPlan);
   document.body.classList.toggle("course-mode", showCourse);
   document.body.classList.toggle("global-settings-mode", showGlobalSettings);
+  document.body.classList.toggle("admin-mode", showAdmin);
   if (!showApp) document.body.classList.remove("settings-mode");
   if (els.loginPanel) els.loginPanel.hidden = hasUser;
   if (els.moduleHub) els.moduleHub.hidden = !showModules;
   if (els.globalSettingsShell) els.globalSettingsShell.hidden = !showGlobalSettings;
+  if (els.systemAdminShell) els.systemAdminShell.hidden = !showAdmin;
   const sorubankModule = getAppModule("sorubank");
   const skillModule = getAppModule("skill-training");
   const studentModule = getAppModule("student-tracking");
   const annualModule = getAppModule("annual-plan");
   const courseModule = getAppModule("course-tracking");
+  const adminModule = getAppModule("system-admin");
   const sorubankShell = sorubankModule?.shell || document.querySelector(".app-shell");
   if (sorubankShell) sorubankShell.hidden = !showApp;
   const skillShell = skillModule?.shell || els.skillShell;
@@ -1481,6 +1493,7 @@ function renderAccessShell() {
   if (showAnnualPlan) annualModule?.render();
   if (showCourse) courseModule?.render();
   if (showGlobalSettings) renderGlobalSettings();
+  if (showAdmin) adminModule?.render(localSession);
   updateFloatingModuleSwitcher();
 }
 
@@ -1788,6 +1801,12 @@ async function handleLocalLogin(event) {
     return;
   }
 
+  if (user.isActive === false) {
+    showToast("Hesabınız sistem yöneticisi tarafından dondurulmuştur.", "error", "Hesap Askıya Alındı");
+    if (els.accountSuspendedOverlay) els.accountSuspendedOverlay.hidden = false;
+    return;
+  }
+
   clearLocalUserData();
 
   saveLocalSession({
@@ -1797,14 +1816,53 @@ async function handleLocalLogin(event) {
     activeModule: landingModule,
     createdAt: new Date().toISOString()
   });
+
+  syncSystemPermissions();
 }
 
 function openModule(moduleKey) {
   if (!localSession) return;
-  if (!["sorubank", "skill-training", "student-tracking", "annual-plan", "course-tracking", "settings"].includes(moduleKey)) {
+  if (!["sorubank", "skill-training", "student-tracking", "annual-plan", "course-tracking", "settings", "system-admin"].includes(moduleKey)) {
     showToast("Bu modül sonraki aşamada bu yapıya bağlanacak.", "warning", "Hazırlanıyor");
     return;
   }
+
+  // Hesap askıya alınma kontrolü
+  const userAccount = getCurrentUserAccount();
+  if (userAccount && userAccount.isActive === false) {
+    if (els.accountSuspendedOverlay) els.accountSuspendedOverlay.hidden = false;
+    showToast("Hesabınız sistem yöneticisi tarafından askıya alınmıştır.", "error", "Erişim Engellendi");
+    return;
+  }
+
+  const isAdmin = Boolean(sessionStorage.getItem("ots:admin-token-pass"));
+  const globalConfig = window.OTS_PUBLIC_CONFIG;
+
+  // Modül kısıtlama kontrolleri (Yönetim Paneli ve Ayarlar hariç)
+  if (moduleKey !== "system-admin" && moduleKey !== "settings") {
+    // 1. Genel Sistem Bakım Modu
+    if (!isAdmin && globalConfig?.maintenanceMode) {
+      showToast(globalConfig.maintenanceMessage || "Sistem bakım modundadır. Modüllere erişim geçici olarak durdurulmuştur.", "warning", "Sistem Bakımda");
+      return;
+    }
+
+    // 2. Genel Modül Devre Dışı Bırakılması
+    if (!isAdmin && globalConfig?.globalModules?.[moduleKey]?.enabled === false) {
+      const moduleName = globalConfig.globalModules[moduleKey]?.name || MODULE_SWITCHER_LABELS[moduleKey] || moduleKey;
+      showToast(`${moduleName} modülü geçici olarak kullanıma kapatılmıştır.`, "warning", "Modül Devre Dışı");
+      return;
+    }
+
+    // 3. Kullanıcıya Özel Modül Yetkisi Kontrolü
+    if (!isAdmin && userAccount && Array.isArray(userAccount.allowedModules)) {
+      if (!userAccount.allowedModules.includes(moduleKey)) {
+        const moduleName = MODULE_SWITCHER_LABELS[moduleKey] || moduleKey;
+        showToast(`${moduleName} modülüne erişim yetkiniz bulunmuyor. Sistem yöneticisi ile görüşünüz.`, "error", "Yetki Yetersiz");
+        return;
+      }
+    }
+  }
+
   saveLocalSession({
     ...localSession,
     activeModule: moduleKey,
@@ -1829,6 +1887,10 @@ function openModule(moduleKey) {
     module?.setView(module.state?.activeView || "tracking");
   }
   if (moduleKey === "settings") renderGlobalSettings();
+  if (moduleKey === "system-admin") {
+    const adminModule = getAppModule("system-admin");
+    adminModule?.render(localSession);
+  }
 }
 
 function returnToModuleHub() {
@@ -1872,6 +1934,10 @@ function toggleUserMenu(menu) {
 
 function handleProfileMenuAction(action) {
   closeUserMenus();
+  if (action === "admin") {
+    openModule("system-admin");
+    return;
+  }
   if (action === "settings") {
     openProfileDialog();
     return;
@@ -1880,6 +1946,113 @@ function handleProfileMenuAction(action) {
     logoutLocalSession();
   }
 }
+
+function getCurrentUserAccount() {
+  if (!localSession?.email) return null;
+  const email = normalizeEmail(localSession.email);
+  const users = loadLocalUsers();
+  return users.find((item) => normalizeEmail(item.email) === email) || null;
+}
+
+async function syncSystemPermissions() {
+  try {
+    const emailParam = localSession?.email ? `?email=${encodeURIComponent(normalizeEmail(localSession.email))}` : "";
+    const res = await fetch(`/api/system/public-config${emailParam}`);
+    if (!res.ok) return;
+    const config = await res.json();
+    window.OTS_PUBLIC_CONFIG = config;
+
+    // 1. Duyuru Çubuğu (Global Announcement Bar)
+    if (config.announcement && config.announcement.active && config.announcement.message) {
+      if (els.globalAnnouncementBar) {
+        els.globalAnnouncementBar.hidden = false;
+        els.globalAnnouncementBar.style.display = "flex";
+        els.globalAnnouncementBar.setAttribute("data-announcement-type", config.announcement.type || "info");
+      }
+      if (els.globalAnnouncementText) {
+        els.globalAnnouncementText.textContent = config.announcement.message;
+      }
+    } else {
+      if (els.globalAnnouncementBar) {
+        els.globalAnnouncementBar.hidden = true;
+        els.globalAnnouncementBar.style.display = "none";
+      }
+    }
+
+    // 2. Kullanıcı senkronizasyonu (System admin -> local users)
+    if (config.user) {
+      const users = loadLocalUsers();
+      const userIndex = users.findIndex((u) => normalizeEmail(u.email) === normalizeEmail(config.user.email));
+      if (userIndex >= 0) {
+        users[userIndex] = {
+          ...users[userIndex],
+          isActive: config.user.isActive !== false,
+          allowedModules: Array.isArray(config.user.allowedModules) ? config.user.allowedModules : users[userIndex].allowedModules,
+          role: config.user.role || users[userIndex].role,
+          credits: config.user.credits !== undefined ? config.user.credits : users[userIndex].credits
+        };
+        saveLocalUsers(users);
+      }
+    }
+
+    // 3. Hesap askıya alınma kontrolü
+    const currentUser = getCurrentUserAccount();
+    if (currentUser && currentUser.isActive === false) {
+      if (els.accountSuspendedOverlay) els.accountSuspendedOverlay.hidden = false;
+      document.body.classList.add("is-account-suspended");
+    } else {
+      if (els.accountSuspendedOverlay) els.accountSuspendedOverlay.hidden = true;
+      document.body.classList.remove("is-account-suspended");
+    }
+
+    // 4. Modül Hub Kartları rozetleri ve durumları
+    const globalModules = config.globalModules || {};
+    const allowedModules = currentUser?.allowedModules || ["sorubank", "student-tracking", "skill-training", "course-tracking", "annual-plan"];
+    const isAdmin = Boolean(sessionStorage.getItem("ots:admin-token-pass"));
+
+    const hubCards = document.querySelectorAll("#moduleHub .module-card[data-module]");
+    hubCards.forEach((card) => {
+      const modKey = card.dataset.module;
+      if (!modKey || modKey === "system-admin" || modKey === "settings") return;
+      const modConfig = globalModules[modKey];
+      const isGloballyDisabled = modConfig && modConfig.enabled === false;
+      const isPermitted = allowedModules.includes(modKey);
+
+      let badge = card.querySelector(".module-access-badge");
+      if (!badge) {
+        badge = document.createElement("span");
+        badge.className = "module-access-badge";
+        const header = card.querySelector(".module-card-header") || card;
+        header.appendChild(badge);
+      }
+
+      if (config.maintenanceMode && !isAdmin) {
+        card.classList.add("is-module-restricted");
+        badge.textContent = "⚠️ Sistem Bakımda";
+        badge.className = "module-access-badge badge-maintenance";
+        badge.hidden = false;
+      } else if (isGloballyDisabled && !isAdmin) {
+        card.classList.add("is-module-restricted");
+        badge.textContent = "🔴 Bakımda";
+        badge.className = "module-access-badge badge-disabled";
+        badge.hidden = false;
+      } else if (!isPermitted && !isAdmin) {
+        card.classList.add("is-module-restricted");
+        badge.textContent = "🔒 Yetkisiz";
+        badge.className = "module-access-badge badge-forbidden";
+        badge.hidden = false;
+      } else {
+        card.classList.remove("is-module-restricted");
+        badge.hidden = true;
+      }
+    });
+
+  } catch (err) {
+    console.warn("syncSystemPermissions error:", err);
+  }
+}
+window.syncSystemPermissions = syncSystemPermissions;
+window.logoutLocalSession = logoutLocalSession;
 
 function openProfileDialog() {
   if (!localSession) return;
@@ -13307,8 +13480,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
   initializeDesktopSidebar();
   setView(state.currentView || "bank");
-  setAuthMode("register");
   renderAccessShell();
+  syncSystemPermissions();
+  document.getElementById("suspendedLogoutBtn")?.addEventListener("click", () => {
+    logoutLocalSession();
+  });
   renderSkillModule();
   updateBackupSnapshotStatus();
   initializeCloud();
