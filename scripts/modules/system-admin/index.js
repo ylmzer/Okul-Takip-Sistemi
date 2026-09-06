@@ -77,6 +77,11 @@
       userStatusFilter: byId("adminUserStatusFilter"),
       userRoleFilter: byId("adminUserRoleFilter"),
       addUserBtn: byId("adminAddUserBtn"),
+      syncUsersBtn: byId("adminSyncUsersBtn"),
+      supabaseKeyBadge: byId("adminSupabaseKeyBadge"),
+      supabaseServiceKeyInput: byId("adminSupabaseServiceKeyInput"),
+      saveServiceKeyBtn: byId("adminSaveServiceKeyBtn"),
+      triggerSupabaseSyncBtn: byId("adminTriggerSupabaseSyncBtn"),
       userModal: byId("adminUserModal"),
       userModalForm: byId("adminUserModalForm"),
       userModalTitle: byId("adminUserModalTitle"),
@@ -286,6 +291,17 @@
     if (state.els.announcementActiveToggle) state.els.announcementActiveToggle.checked = Boolean(announcement?.active);
     if (state.els.announcementMsgInput) state.els.announcementMsgInput.value = announcement?.message || "";
     if (state.els.announcementTypeSelect) state.els.announcementTypeSelect.value = announcement?.type || "info";
+
+    if (state.els.supabaseKeyBadge) {
+      const hasKey = Boolean(state.overview?.hasSupabaseServiceKey || state.overview?.stats?.hasSupabaseServiceKey);
+      if (hasKey) {
+        state.els.supabaseKeyBadge.className = "badge-status status-success";
+        state.els.supabaseKeyBadge.textContent = "🟢 Servis Anahtarı Tanımlı";
+      } else {
+        state.els.supabaseKeyBadge.className = "badge-status status-danger";
+        state.els.supabaseKeyBadge.textContent = "⚠️ Servis Anahtarı Tanımsız";
+      }
+    }
 
     // Render audit logs
     if (state.els.auditLogsContainer) {
@@ -606,6 +622,75 @@
     // Quick add user
     state.els.quickAddUserBtn?.addEventListener("click", () => openUserModal(null));
     state.els.addUserBtn?.addEventListener("click", () => openUserModal(null));
+
+    // Sync users button (Local + Cloud)
+    state.els.syncUsersBtn?.addEventListener("click", async () => {
+      try {
+        window.showToast?.("Kullanıcılar senkronize ediliyor...", "info");
+        let localUsers = [];
+        try {
+          localUsers = JSON.parse(localStorage.getItem("sorubank:local-users:v1") || "[]");
+        } catch (e) {}
+
+        const batchRes = await adminFetch("/api/admin/users", {
+          action: "batch_sync",
+          users: localUsers
+        });
+
+        let extraMsg = "";
+        const hasKey = Boolean(state.overview?.hasSupabaseServiceKey || state.overview?.stats?.hasSupabaseServiceKey);
+        if (hasKey) {
+          try {
+            const sbRes = await adminFetch("/api/admin/users", { action: "sync_supabase" });
+            extraMsg = ` (${sbRes.totalSupabaseUsers} Supabase kullanıcısı tarandı)`;
+          } catch (sbErr) {
+            console.warn("Supabase sync warning:", sbErr.message);
+          }
+        }
+
+        window.showToast?.(`Senkronizasyon tamamlandı: ${batchRes.addedCount} yeni kullanıcı eklendi, ${batchRes.updatedCount} güncellendi.${extraMsg}`, "success");
+        await refreshAll();
+      } catch (err) {
+        window.showToast?.(err.message, "error");
+      }
+    });
+
+    // Save Supabase Service Key
+    state.els.saveServiceKeyBtn?.addEventListener("click", async () => {
+      const serviceKey = state.els.supabaseServiceKeyInput?.value?.trim();
+      if (!serviceKey) {
+        window.showToast?.("Lütfen geçerli bir Supabase Service Role Key girin.", "warning");
+        return;
+      }
+      try {
+        await adminFetch("/api/admin/users", { action: "save_supabase_key", serviceKey });
+        window.showToast?.("Supabase Service Role Key başarıyla kaydedildi.", "success");
+        if (state.els.supabaseServiceKeyInput) state.els.supabaseServiceKeyInput.value = "";
+        await refreshOverview();
+      } catch (err) {
+        window.showToast?.(err.message, "error");
+      }
+    });
+
+    // Trigger Supabase Cloud Sync Directly
+    state.els.triggerSupabaseSyncBtn?.addEventListener("click", async () => {
+      const tempKey = state.els.supabaseServiceKeyInput?.value?.trim();
+      try {
+        window.showToast?.("Supabase bulut kullanıcıları çekiliyor...", "info");
+        const res = await adminFetch("/api/admin/users", {
+          action: "sync_supabase",
+          serviceKey: tempKey || undefined
+        });
+        window.showToast?.(`Supabase'den ${res.totalSupabaseUsers} kullanıcı tarandı: ${res.addedCount} yeni eklendi, ${res.updatedCount} güncellendi.`, "success");
+        if (tempKey && state.els.supabaseServiceKeyInput) {
+          await adminFetch("/api/admin/users", { action: "save_supabase_key", serviceKey: tempKey });
+          state.els.supabaseServiceKeyInput.value = "";
+        }
+        await refreshAll();
+      } catch (err) {
+        window.showToast?.(err.message, "error");
+      }
+    });
 
     // User search & filters
     state.els.userSearchInput?.addEventListener("input", (e) => {

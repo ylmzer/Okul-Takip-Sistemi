@@ -182,7 +182,8 @@ body.skill-mode .auth-shell,
 body.student-mode .auth-shell,
 body.annual-mode .auth-shell,
 body.course-mode .auth-shell,
-body.global-settings-mode .auth-shell {
+body.global-settings-mode .auth-shell,
+body.admin-mode .auth-shell {
   display: none;
 }
 

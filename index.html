@@ -595,6 +595,7 @@
                   <option value="teacher">Öğretmenler</option>
                   <option value="user">Standart Kullanıcılar</option>
                 </select>
+                <button type="button" class="secondary-action" id="adminSyncUsersBtn" title="Kayıtlı tüm yerel ve bulut kullanıcılarını eşitle">🔄 Senkronize Et</button>
                 <button type="button" class="primary-action" id="adminAddUserBtn">➕ Yeni Kullanıcı Ekle</button>
               </div>
             </div>
@@ -775,6 +776,32 @@
                     </div>
                   </div>
                   <button type="button" class="primary-action" id="adminSaveDefaultsBtn" style="margin-top: 12px;">Varsayılanları Kaydet</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="admin-box" style="margin-top: 20px;">
+              <div class="admin-box-head">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                  <div>
+                    <h3 style="margin: 0;">☁️ Supabase Bulut Kullanıcı Senkronizasyonu</h3>
+                    <small>Supabase Auth üzerindeki tüm kayıtlı kullanıcıları tek tıkla yönetim paneline çekin</small>
+                  </div>
+                  <span id="adminSupabaseKeyBadge" class="badge-status status-danger">⚠️ Anahtar Tanımsız</span>
+                </div>
+              </div>
+              <div class="admin-box-body">
+                <p style="font-size: 0.9rem; color: var(--corp-muted); margin-top: 0; margin-bottom: 12px; line-height: 1.5;">
+                  Kullanıcılar web uygulamasına giriş yaptıkça otomatik olarak yönetim paneline kaydedilir. Henüz bu tarayıcıdan giriş yapmamış tüm bulut kullanıcılarını hemen çekmek için Supabase Dashboard &gt; Project Settings &gt; API &gt; <strong>service_role (secret)</strong> anahtarınızı tanımlayabilirsiniz.
+                </p>
+                <div class="admin-form-group">
+                  <label for="adminSupabaseServiceKeyInput">Supabase Service Role Key (Gizli Sunucu Anahtarı)</label>
+                  <input type="password" id="adminSupabaseServiceKeyInput" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." autocomplete="off" />
+                  <small style="color: var(--corp-muted); margin-top: 4px; display: block;">Bu anahtar sadece sunucu tarafında saklanır ve kullanıcılara asla iletilmez.</small>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;">
+                  <button type="button" class="primary-action" id="adminSaveServiceKeyBtn">💾 Anahtarı Kaydet</button>
+                  <button type="button" class="secondary-action" id="adminTriggerSupabaseSyncBtn">🔄 Buluttaki Tüm Kullanıcıları Şimdi Çek</button>
                 </div>
               </div>
             </div>

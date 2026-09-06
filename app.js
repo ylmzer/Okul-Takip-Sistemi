@@ -1468,6 +1468,7 @@ function renderAccessShell() {
   document.body.classList.toggle("global-settings-mode", showGlobalSettings);
   document.body.classList.toggle("admin-mode", showAdmin);
   if (!showApp) document.body.classList.remove("settings-mode");
+  if (els.authShell) els.authShell.hidden = showAdmin || (hasUser && !showModules);
   if (els.loginPanel) els.loginPanel.hidden = hasUser;
   if (els.moduleHub) els.moduleHub.hidden = !showModules;
   if (els.globalSettingsShell) els.globalSettingsShell.hidden = !showGlobalSettings;
@@ -1690,6 +1691,7 @@ async function handleLocalRegister(event) {
             createdAt: new Date().toISOString()
           });
           showToast("Hesap oluşturuldu ve giriş yapıldı.");
+          await syncUserToServer({ id: newUser.id, name: newUser.name, email: newUser.email, role: "teacher" });
           await pushCloudState();
         } else {
           showToast("Hesap oluşturuldu. Supabase e-posta onayı açıksa gelen kutusunu kontrol edin.", "info", "Kayıt Yapıldı");
@@ -1701,6 +1703,7 @@ async function handleLocalRegister(event) {
             activeModule: landingModule,
             createdAt: new Date().toISOString()
           });
+          await syncUserToServer({ id: newUser.id, name: newUser.name, email: newUser.email, role: "teacher" });
         }
         return;
       }
@@ -1737,6 +1740,7 @@ async function handleLocalRegister(event) {
     createdAt: new Date().toISOString()
   });
   showToast("Hesabınız oluşturuldu ve giriş yapıldı.");
+  await syncUserToServer({ id: newUser.id, name: newUser.name, email: newUser.email, role: "teacher" });
 }
 
 async function handleLocalLogin(event) {
@@ -1783,6 +1787,7 @@ async function handleLocalLogin(event) {
           createdAt: new Date().toISOString()
         });
 
+        await syncUserToServer({ id: data.session.user.id, name, email, role: "teacher" });
         showToast("Giriş yapıldı, bulut verileri eşitleniyor...");
         await syncCloudNow();
         return;
@@ -1817,6 +1822,7 @@ async function handleLocalLogin(event) {
     createdAt: new Date().toISOString()
   });
 
+  await syncUserToServer({ id: user.id, name: user.name, email: user.email, role: user.role || "teacher" });
   syncSystemPermissions();
 }
 
@@ -1954,10 +1960,37 @@ function getCurrentUserAccount() {
   return users.find((item) => normalizeEmail(item.email) === email) || null;
 }
 
+async function syncUserToServer(user) {
+  const targetUser = user || localSession;
+  if (!targetUser || (!targetUser.email && !targetUser.id)) return;
+  try {
+    const res = await fetch("/api/system/sync-user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: targetUser.id || "",
+        email: normalizeEmail(targetUser.email || ""),
+        name: targetUser.name || (targetUser.email ? targetUser.email.split("@")[0] : "Kullanıcı"),
+        role: targetUser.role || "teacher",
+        allowedModules: targetUser.allowedModules
+      })
+    });
+    if (res.ok) {
+      await syncSystemPermissions();
+    }
+  } catch (err) {
+    console.warn("syncUserToServer error:", err);
+  }
+}
+window.syncUserToServer = syncUserToServer;
+
 async function syncSystemPermissions() {
   try {
-    const emailParam = localSession?.email ? `?email=${encodeURIComponent(normalizeEmail(localSession.email))}` : "";
-    const res = await fetch(`/api/system/public-config${emailParam}`);
+    const email = localSession?.email ? normalizeEmail(localSession.email) : "";
+    const name = localSession?.name || "";
+    const id = localSession?.id || "";
+    const query = email ? `?email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&id=${encodeURIComponent(id)}` : "";
+    const res = await fetch(`/api/system/public-config${query}`);
     if (!res.ok) return;
     const config = await res.json();
     window.OTS_PUBLIC_CONFIG = config;
@@ -2812,10 +2845,10 @@ async function initializeCloud() {
     
      if (data.session) {
       const email = normalizeEmail(data.session.user.email);
+      const name = data.session.user.user_metadata?.name || data.session.user.user_metadata?.full_name || email.split("@")[0];
       const localEmail = localSession ? normalizeEmail(localSession.email) : "";
       if (email && localEmail && email !== localEmail) {
         console.warn("Session email mismatch. Syncing local profile to active cloud account:", email);
-        const name = data.session.user.user_metadata?.name || data.session.user.user_metadata?.full_name || email.split("@")[0];
         saveLocalSession({
           id: data.session.user.id,
           name: name,
@@ -2824,6 +2857,7 @@ async function initializeCloud() {
           createdAt: new Date().toISOString()
         });
       }
+      syncUserToServer({ id: data.session.user.id, name, email, role: "teacher" });
       await checkAndSyncCloudBackground();
     } else {
       if (overlay) overlay.setAttribute("hidden", "true");
@@ -2833,9 +2867,9 @@ async function initializeCloud() {
       cloudState.session = session;
       if (session) {
         const email = normalizeEmail(session.user.email);
+        const name = session.user.user_metadata?.name || session.user.user_metadata?.full_name || email.split("@")[0];
         const localEmail = localSession ? normalizeEmail(localSession.email) : "";
         if (email && localEmail && email !== localEmail) {
-          const name = session.user.user_metadata?.name || session.user.user_metadata?.full_name || email.split("@")[0];
           saveLocalSession({
             id: session.user.id,
             name: name,
@@ -2844,6 +2878,7 @@ async function initializeCloud() {
             createdAt: new Date().toISOString()
           });
         }
+        syncUserToServer({ id: session.user.id, name, email, role: "teacher" });
       }
       renderCloudStatus();
     });
@@ -13366,6 +13401,12 @@ els.quickStartBtn?.addEventListener("click", () => {
     email: demoUser.email,
     activeModule: landingModule,
     createdAt: new Date().toISOString()
+  });
+  syncUserToServer({
+    id: demoUser.id,
+    name: demoUser.name,
+    email: demoUser.email,
+    role: "teacher"
   });
   showToast("Hoş geldiniz! Demo hesapla giriş yapıldı.");
 });

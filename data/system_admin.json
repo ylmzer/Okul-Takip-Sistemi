@@ -338,6 +338,21 @@
       "action": "ANNOUNCEMENT_UPDATE",
       "details": "Sistem duyurusu kaldırıldı: ",
       "date": "2026-09-06T18:12:38.019Z"
+    },
+    {
+      "action": "USER_DELETE",
+      "details": "deneme_bulut_ogretmen@okul.com kullanıcısı sistemden silindi.",
+      "date": "2026-09-06T18:38:43.303Z"
+    },
+    {
+      "action": "USER_DELETE",
+      "details": "yerel_ogretmen1@okul.com kullanıcısı sistemden silindi.",
+      "date": "2026-09-06T18:38:43.311Z"
+    },
+    {
+      "action": "USER_DELETE",
+      "details": "yerel_ogretmen2@okul.com kullanıcısı sistemden silindi.",
+      "date": "2026-09-06T18:38:43.320Z"
     }
   ]
 }

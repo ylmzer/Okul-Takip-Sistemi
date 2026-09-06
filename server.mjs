@@ -137,6 +137,10 @@ const server = createServer(async (request, response) => {
       await handleSystemPublicConfig(request, response, url);
       return;
     }
+    if (request.method === "POST" && url.pathname === "/api/system/sync-user") {
+      await handleSystemSyncUser(request, response);
+      return;
+    }
     if (request.method === "POST" && url.pathname === "/api/admin/verify") {
       await handleAdminVerify(request, response);
       return;
@@ -2560,16 +2564,18 @@ function saveLicensesData(data) {
 function getOrCreateUserAccount(userId, email, extraInfo = {}) {
   const data = readSystemAdminData();
   data.users = data.users || {};
-  let userKey = String(userId || email || "").toLowerCase().trim();
+  const normEmail = String(email || "").toLowerCase().trim();
+  let userKey = normEmail || String(userId || "").toLowerCase().trim();
   if (!userKey || userKey === "guest") {
     userKey = "local-user";
   }
   if (!data.users[userKey]) {
     const initialCredits = Number(data.initialUserCredits !== undefined ? data.initialUserCredits : 1);
+    const resolvedName = extraInfo.name?.trim() || (normEmail ? normEmail.split("@")[0] : userKey);
     data.users[userKey] = {
       id: userId || userKey,
-      name: extraInfo.name || userKey,
-      email: email || (userKey.includes("@") ? userKey : ""),
+      name: resolvedName,
+      email: normEmail || (userKey.includes("@") ? userKey : ""),
       role: extraInfo.role || "teacher",
       isActive: true,
       allowedModules: Array.isArray(extraInfo.allowedModules) ? extraInfo.allowedModules : (data.defaultAllowedModules || ["sorubank", "student-tracking", "skill-training", "course-tracking", "annual-plan"]),
@@ -2582,26 +2588,65 @@ function getOrCreateUserAccount(userId, email, extraInfo = {}) {
           date: new Date().toISOString()
         }
       ],
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      lastLoginAt: new Date().toISOString()
     };
     saveSystemAdminData(data);
   } else {
-    data.users[userKey].unlockedPlans = Array.isArray(data.users[userKey].unlockedPlans) ? data.users[userKey].unlockedPlans : [];
-    data.users[userKey].history = Array.isArray(data.users[userKey].history) ? data.users[userKey].history : [];
-    if (!Array.isArray(data.users[userKey].allowedModules)) {
-      data.users[userKey].allowedModules = data.defaultAllowedModules || ["sorubank", "student-tracking", "skill-training", "course-tracking", "annual-plan"];
+    let changed = false;
+    const existing = data.users[userKey];
+    if (extraInfo.name && extraInfo.name.trim() && (existing.name === userKey || !existing.name || existing.name === existing.email)) {
+      existing.name = extraInfo.name.trim();
+      changed = true;
     }
+    if (userId && (!existing.id || existing.id === userKey)) {
+      existing.id = userId;
+      changed = true;
+    }
+    if (normEmail && !existing.email) {
+      existing.email = normEmail;
+      changed = true;
+    }
+    existing.lastLoginAt = new Date().toISOString();
+    existing.unlockedPlans = Array.isArray(existing.unlockedPlans) ? existing.unlockedPlans : [];
+    existing.history = Array.isArray(existing.history) ? existing.history : [];
+    if (!Array.isArray(existing.allowedModules)) {
+      existing.allowedModules = data.defaultAllowedModules || ["sorubank", "student-tracking", "skill-training", "course-tracking", "annual-plan"];
+      changed = true;
+    }
+    saveSystemAdminData(data);
   }
   return { userKey, account: data.users[userKey], data };
+}
+
+async function handleSystemSyncUser(request, response) {
+  try {
+    const body = await readJsonRequest(request);
+    const { id, email, name, role, allowedModules } = body;
+    if (!email && !id) {
+      response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: "E-posta veya kullanıcı kimliği gerekli." }));
+      return;
+    }
+    const { userKey, account, data } = getOrCreateUserAccount(id, email, { name, role, allowedModules });
+    logAudit(data, "USER_SYNC", `Kullanıcı senkronize edildi: ${account.name} (${userKey})`);
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ success: true, user: account }));
+  } catch (error) {
+    response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: error.message || "Kullanıcı senkronizasyonu başarısız." }));
+  }
 }
 
 async function handleSystemPublicConfig(request, response, url) {
   try {
     const data = readSystemAdminData();
     const email = url ? (url.searchParams?.get("email") || "") : "";
+    const name = url ? (url.searchParams?.get("name") || "") : "";
+    const id = url ? (url.searchParams?.get("id") || "") : "";
     let userAccount = null;
-    if (email) {
-      const { account } = getOrCreateUserAccount(email, email);
+    if (email || id) {
+      const { account } = getOrCreateUserAccount(id || email, email, { name });
       userAccount = {
         id: account.id,
         name: account.name,
@@ -2697,8 +2742,10 @@ async function handleAdminOverview(request, response) {
         totalCredits,
         activeCoupons,
         maintenanceMode: Boolean(data.maintenanceMode),
-        announcementActive: Boolean(data.announcement?.active)
+        announcementActive: Boolean(data.announcement?.active),
+        hasSupabaseServiceKey: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY || data.supabaseServiceKey)
       },
+      hasSupabaseServiceKey: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY || data.supabaseServiceKey),
       globalModules: data.globalModules || {},
       maintenanceMode: Boolean(data.maintenanceMode),
       maintenanceMessage: data.maintenanceMessage || "",
@@ -2832,6 +2879,174 @@ async function handleAdminUsers(request, response) {
       response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
       response.end(JSON.stringify({ success: true, message: "Kullanıcı silindi." }));
       return;
+    }
+
+    if (action === "save_supabase_key") {
+      const serviceKey = String(body.serviceKey || "").trim();
+      data.supabaseServiceKey = serviceKey;
+      saveSystemAdminData(data);
+      logAudit(data, "SUPABASE_CONFIG", "Supabase Service Role Key güncellendi.");
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, message: "Supabase Service Role Key kaydedildi." }));
+      return;
+    }
+
+    if (action === "batch_sync") {
+      const userList = Array.isArray(body.users) ? body.users : [];
+      let addedCount = 0;
+      let updatedCount = 0;
+      const initialCredits = Number(data.initialUserCredits !== undefined ? data.initialUserCredits : 1);
+      const defaultModules = Array.isArray(data.defaultAllowedModules) ? data.defaultAllowedModules : ["sorubank", "student-tracking", "skill-training", "course-tracking", "annual-plan"];
+
+      for (const u of userList) {
+        const email = String(u.email || "").trim().toLowerCase();
+        const id = String(u.id || "");
+        const name = String(u.name || "").trim();
+        if (!email && !id) continue;
+        const userKey = email || id.toLowerCase();
+        if (!data.users[userKey]) {
+          data.users[userKey] = {
+            id: id || userKey,
+            name: name || (email ? email.split("@")[0] : userKey),
+            email: email || (userKey.includes("@") ? userKey : ""),
+            role: u.role || "teacher",
+            isActive: true,
+            allowedModules: Array.isArray(u.allowedModules) ? u.allowedModules : defaultModules,
+            credits: initialCredits,
+            unlockedPlans: [],
+            history: [{ type: "initial", credits: initialCredits, date: new Date().toISOString() }],
+            createdAt: new Date().toISOString(),
+            lastLoginAt: new Date().toISOString()
+          };
+          addedCount++;
+        } else {
+          if (name && (data.users[userKey].name === userKey || !data.users[userKey].name || data.users[userKey].name === data.users[userKey].email)) {
+            data.users[userKey].name = name;
+            updatedCount++;
+          }
+          if (id && (!data.users[userKey].id || data.users[userKey].id === userKey)) {
+            data.users[userKey].id = id;
+          }
+        }
+      }
+      saveSystemAdminData(data);
+      logAudit(data, "USER_BATCH_SYNC", `Toplu senkronizasyon: ${addedCount} yeni kullanıcı eklendi, ${updatedCount} güncellendi.`);
+      const allUsers = Object.entries(data.users).map(([key, u]) => ({
+        userKey: key,
+        id: u.id || key,
+        name: u.name || key,
+        email: u.email || "",
+        role: u.role || "teacher",
+        isActive: u.isActive !== false,
+        allowedModules: Array.isArray(u.allowedModules) ? u.allowedModules : (data.defaultAllowedModules || []),
+        credits: Number(u.credits || 0),
+        unlockedPlansCount: (u.unlockedPlans || []).length,
+        createdAt: u.createdAt || "",
+        lastLoginAt: u.lastLoginAt || "",
+        notes: u.notes || ""
+      }));
+      response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ success: true, addedCount, updatedCount, users: allUsers }));
+      return;
+    }
+
+    if (action === "sync_supabase") {
+      const supabaseUrl = process.env.SUPABASE_URL || data.supabaseUrl || "https://uwlncuyjrxpduiyfujun.supabase.co";
+      const serviceKey = String(body.serviceKey || process.env.SUPABASE_SERVICE_ROLE_KEY || data.supabaseServiceKey || "").trim();
+
+      if (!serviceKey) {
+        response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });
+        response.end(JSON.stringify({
+          error: "Supabase Service Role Key bulunamadı. Lütfen 'Güvenlik & Sistem' sekmesinden Service Role Key girin veya .env dosyasına SUPABASE_SERVICE_ROLE_KEY ekleyin."
+        }));
+        return;
+      }
+
+      try {
+        const cleanUrl = supabaseUrl.replace(/\/+$/, "");
+        const sbRes = await fetch(`${cleanUrl}/auth/v1/admin/users?per_page=1000`, {
+          method: "GET",
+          headers: {
+            "apikey": serviceKey,
+            "Authorization": `Bearer ${serviceKey}`
+          }
+        });
+
+        if (!sbRes.ok) {
+          const errText = await sbRes.text();
+          throw new Error(`Supabase API Hatası (${sbRes.status}): ${errText}`);
+        }
+
+        const sbData = await sbRes.json();
+        const sbUsers = Array.isArray(sbData?.users) ? sbData.users : [];
+        let addedCount = 0;
+        let updatedCount = 0;
+        const initialCredits = Number(data.initialUserCredits !== undefined ? data.initialUserCredits : 1);
+        const defaultModules = Array.isArray(data.defaultAllowedModules) ? data.defaultAllowedModules : ["sorubank", "student-tracking", "skill-training", "course-tracking", "annual-plan"];
+
+        for (const u of sbUsers) {
+          const email = String(u.email || "").trim().toLowerCase();
+          const id = String(u.id || "");
+          const name = String(u.user_metadata?.name || u.user_metadata?.full_name || (email ? email.split("@")[0] : "Kullanıcı")).trim();
+          if (!email && !id) continue;
+          const userKey = email || id.toLowerCase();
+          if (!data.users[userKey]) {
+            data.users[userKey] = {
+              id: id || userKey,
+              name: name || (email ? email.split("@")[0] : userKey),
+              email: email || (userKey.includes("@") ? userKey : ""),
+              role: "teacher",
+              isActive: true,
+              allowedModules: defaultModules,
+              credits: initialCredits,
+              unlockedPlans: [],
+              history: [{ type: "initial", credits: initialCredits, date: new Date().toISOString() }],
+              createdAt: u.created_at || new Date().toISOString(),
+              lastLoginAt: u.last_sign_in_at || new Date().toISOString()
+            };
+            addedCount++;
+          } else {
+            if (name && (data.users[userKey].name === userKey || !data.users[userKey].name || data.users[userKey].name === data.users[userKey].email)) {
+              data.users[userKey].name = name;
+              updatedCount++;
+            }
+            if (id && (!data.users[userKey].id || data.users[userKey].id === userKey)) {
+              data.users[userKey].id = id;
+            }
+          }
+        }
+
+        saveSystemAdminData(data);
+        logAudit(data, "SUPABASE_SYNC", `Supabase senkronizasyonu: ${addedCount} yeni kullanıcı eklendi, ${updatedCount} güncellendi.`);
+        const allUsers = Object.entries(data.users).map(([key, u]) => ({
+          userKey: key,
+          id: u.id || key,
+          name: u.name || key,
+          email: u.email || "",
+          role: u.role || "teacher",
+          isActive: u.isActive !== false,
+          allowedModules: Array.isArray(u.allowedModules) ? u.allowedModules : (data.defaultAllowedModules || []),
+          credits: Number(u.credits || 0),
+          unlockedPlansCount: (u.unlockedPlans || []).length,
+          createdAt: u.createdAt || "",
+          lastLoginAt: u.lastLoginAt || "",
+          notes: u.notes || ""
+        }));
+
+        response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+        response.end(JSON.stringify({
+          success: true,
+          addedCount,
+          updatedCount,
+          totalSupabaseUsers: sbUsers.length,
+          users: allUsers
+        }));
+        return;
+      } catch (err) {
+        response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
+        response.end(JSON.stringify({ error: err.message || "Supabase ile bağlantı kurulamadı." }));
+        return;
+      }
     }
 
     response.writeHead(400, { "Content-Type": "application/json; charset=utf-8" });

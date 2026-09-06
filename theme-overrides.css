@@ -7816,8 +7816,26 @@ body.dark-mode #annualCatalogLessonSelect {
    SİSTEM YÖNETİM PANELİ (SYSTEM ADMIN PANEL) STILLERI
    ========================================================================== */
 
+body.admin-mode .auth-shell,
+body.admin-mode .app-shell,
+body.admin-mode .skill-shell,
+body.admin-mode .course-shell,
+body.admin-mode .global-settings-shell,
+body.admin-mode .student-shell {
+  display: none !important;
+}
+
 body.admin-mode .system-admin-shell {
   display: flex !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 1000 !important;
+  margin: 0 !important;
 }
 
 .system-admin-shell {
