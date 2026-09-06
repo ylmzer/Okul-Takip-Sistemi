@@ -2047,12 +2047,79 @@ async function syncSystemPermissions() {
       }
     });
 
+    // 5. Yönetici Butonlarının Rol Tabanlı Gizlenmesi / Gösterilmesi
+    const hasAdminToken = Boolean(sessionStorage.getItem("ots:admin-token-pass"));
+    const isAdminUser = Boolean((currentUser && currentUser.role === "admin") || hasAdminToken);
+
+    const adminElements = [
+      document.querySelector("#hubAdminModuleCard"),
+      document.querySelector("#profileMenuAdminBtn"),
+      document.querySelector('[data-dock-module="system-admin"]'),
+      document.querySelector('[data-floating-module="system-admin"]')
+    ];
+
+    adminElements.forEach((el) => {
+      if (!el) return;
+      if (isAdminUser) {
+        el.removeAttribute("hidden");
+        el.style.removeProperty("display");
+        if (el.classList.contains("module-card")) {
+          el.style.display = "flex";
+        }
+      } else {
+        el.setAttribute("hidden", "");
+        el.style.setProperty("display", "none", "important");
+      }
+    });
+
   } catch (err) {
     console.warn("syncSystemPermissions error:", err);
   }
 }
 window.syncSystemPermissions = syncSystemPermissions;
 window.logoutLocalSession = logoutLocalSession;
+
+// --- GİZLİ YÖNETİCİ ERİŞİM TETİKLEYİCİLERİ ---
+// 1. Klavye Kısayolu: Ctrl + Shift + A veya Alt + Shift + A
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey && e.shiftKey && (e.key === "A" || e.key === "a")) ||
+      (e.altKey && e.shiftKey && (e.key === "A" || e.key === "a"))) {
+    e.preventDefault();
+    openModule("system-admin");
+  }
+});
+
+// 2. Gizli URL Kontrolü (?admin=gate veya #yonetim veya #admin)
+function checkAdminSecretUrl() {
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const hash = window.location.hash;
+    if (urlParams.get("admin") === "gate" || hash === "#yonetim" || hash === "#admin") {
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+      setTimeout(() => {
+        openModule("system-admin");
+      }, 250);
+    }
+  } catch (e) {}
+}
+
+// 3. Gizli Logo 5-Tıklama Easter Egg
+let secretLogoClickCount = 0;
+let secretLogoClickTimer = null;
+function handleSecretLogoClick() {
+  secretLogoClickCount++;
+  clearTimeout(secretLogoClickTimer);
+  secretLogoClickTimer = setTimeout(() => {
+    secretLogoClickCount = 0;
+  }, 2000);
+  if (secretLogoClickCount >= 5) {
+    secretLogoClickCount = 0;
+    showToast("Gizli Yönetici Giriş Kapısı Açılıyor...", "info");
+    openModule("system-admin");
+  }
+}
+window.handleSecretLogoClick = handleSecretLogoClick;
 
 function openProfileDialog() {
   if (!localSession) return;
@@ -13482,6 +13549,10 @@ window.addEventListener("DOMContentLoaded", () => {
   setView(state.currentView || "bank");
   renderAccessShell();
   syncSystemPermissions();
+  checkAdminSecretUrl();
+  document.querySelectorAll(".auth-brand-mark, .sidebar-brand, .brand, .app-brand").forEach((el) => {
+    el.addEventListener("click", handleSecretLogoClick);
+  });
   document.getElementById("suspendedLogoutBtn")?.addEventListener("click", () => {
     logoutLocalSession();
   });

@@ -151,7 +151,7 @@
               </span>
             </button>
             <div class="user-menu-popover" id="moduleUserMenu" hidden>
-              <button type="button" data-profile-action="admin" style="font-weight: 700; color: #f59e0b;">👑 Sistem Yönetimi</button>
+              <button type="button" data-profile-action="admin" id="profileMenuAdminBtn" hidden style="display: none !important; font-weight: 700; color: #f59e0b;">👑 Sistem Yönetimi</button>
               <button type="button" data-profile-action="settings">Profil ayarları</button>
               <button type="button" data-profile-action="logout">Çıkış</button>
             </div>
@@ -206,7 +206,7 @@
             <em aria-hidden="true">→</em>
             <span class="module-card-art" aria-hidden="true"></span>
           </button>
-          <button class="module-card is-ready module-card-admin" type="button" data-module="system-admin" id="hubAdminModuleCard">
+          <button class="module-card is-ready module-card-admin" type="button" data-module="system-admin" id="hubAdminModuleCard" hidden style="display: none !important;">
             <span class="module-icon module-icon-admin" aria-hidden="true">👑</span>
             <span class="module-status" style="background: rgba(245, 158, 11, 0.18); color: #d97706;">Yönetici</span>
             <strong>Yönetim Paneli</strong>
@@ -4726,7 +4726,7 @@
         <button type="button" data-dock-module="course-tracking" aria-label="Kurs Takibi"><span class="desktop-module-dock-icon" aria-hidden="true"></span><span class="desktop-module-dock-copy"><strong>Kurs Takibi</strong><small>Devam ve not yönetimi</small></span></button>
         <button type="button" data-dock-module="annual-plan" aria-label="Yıllık Plan"><span class="desktop-module-dock-icon" aria-hidden="true"></span><span class="desktop-module-dock-copy"><strong>Yıllık Plan</strong><small>Alan, ders ve plan üretimi</small></span></button>
         <button type="button" data-dock-module="settings" aria-label="Ayarlar"><span class="desktop-module-dock-icon" aria-hidden="true"></span><span class="desktop-module-dock-copy"><strong>Ayarlar</strong><small>Profil, yedek ve görünüm</small></span></button>
-        <button type="button" data-dock-module="system-admin" class="dock-admin-btn" aria-label="Yönetim Paneli"><span class="desktop-module-dock-icon" aria-hidden="true">👑</span><span class="desktop-module-dock-copy"><strong>Yönetim Paneli</strong><small>Kullanıcı, yetki ve krediler</small></span></button>
+        <button type="button" data-dock-module="system-admin" class="dock-admin-btn" aria-label="Yönetim Paneli" hidden style="display: none !important;"><span class="desktop-module-dock-icon" aria-hidden="true">👑</span><span class="desktop-module-dock-copy"><strong>Yönetim Paneli</strong><small>Kullanıcı, yetki ve krediler</small></span></button>
       </div>
     </nav>
     <button class="desktop-sidebar-collapse-btn" id="desktopSidebarCollapseBtn" type="button" aria-label="Sol paneli daralt" aria-expanded="true"><span class="desktop-sidebar-collapse-icon" aria-hidden="true"></span></button>
@@ -4756,7 +4756,7 @@
           <button type="button" data-floating-module="course-tracking"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Kurs Takibi</strong></span></button>
           <button type="button" data-floating-module="annual-plan"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Yıllık Plan</strong></span></button>
           <button type="button" data-floating-module="settings"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Ayarlar</strong></span></button>
-          <button type="button" data-floating-module="system-admin" class="float-admin-btn"><span class="module-float-icon" aria-hidden="true">👑</span><span class="module-switcher-copy"><strong>Yönetim Paneli</strong></span></button>
+          <button type="button" data-floating-module="system-admin" class="float-admin-btn" hidden style="display: none !important;"><span class="module-float-icon" aria-hidden="true">👑</span><span class="module-switcher-copy"><strong>Yönetim Paneli</strong></span></button>
           <button type="button" data-floating-action="profile"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Profil</strong></span></button>
           <button type="button" data-floating-action="logout"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Çıkış</strong></span></button>
         </div>
@@ -4965,7 +4965,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./scripts/core/module-registry.js?v=1"></script>
-    <script src="./app.js?v=125"></script>
+    <script src="./app.js?v=126"></script>
     <script src="./scripts/modules/settings/index.js?v=8"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=9"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=17"></script>

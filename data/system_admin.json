@@ -1,5 +1,6 @@
 {
-  "adminPassword": "admin2026",
+  "adminPasswordHash": "3c22231bbb5bb3159cc0769fa9c3ac2092883f664734ceea1a8ca78aec7f3c2e",
+  "passwordSalt": "OTS_SALT_2026",
   "masterKey": "OTS-MASTER-2026",
   "maintenanceMode": false,
   "maintenanceMessage": "Okul Takip Sistemi planlı bakım çalışması nedeniyle geçici olarak hizmete kapalıdır. Kısa süre sonra tekrar deneyiniz.",
@@ -7,7 +8,7 @@
     "active": false,
     "message": "",
     "type": "info",
-    "updatedAt": "2026-09-06T17:58:50.023Z"
+    "updatedAt": "2026-09-06T18:12:38.019Z"
   },
   "globalModules": {
     "sorubank": {
@@ -287,6 +288,56 @@
       "action": "ANNOUNCEMENT_UPDATE",
       "details": "Sistem duyurusu kaldırıldı: ",
       "date": "2026-09-06T17:58:50.023Z"
+    },
+    {
+      "action": "USER_UPSERT",
+      "details": "Kullanıcı oluşturuldu/güncellendi: Test Öğretmen (test_ogretmen_1788718357872@okul.com)",
+      "date": "2026-09-06T18:12:37.889Z"
+    },
+    {
+      "action": "USER_STATUS_TOGGLE",
+      "details": "test_ogretmen_1788718357872@okul.com kullanıcısı Donduruldu/Pasif yapıldı",
+      "date": "2026-09-06T18:12:37.903Z"
+    },
+    {
+      "action": "CREDIT_ADJUSTMENT",
+      "details": "test_ogretmen_1788718357872@okul.com kullanıcısına +25 kredi uygulandı. Yeni bakiye: 35",
+      "date": "2026-09-06T18:12:37.920Z"
+    },
+    {
+      "action": "USER_DELETE",
+      "details": "test_ogretmen_1788718357872@okul.com kullanıcısı sistemden silindi.",
+      "date": "2026-09-06T18:12:37.926Z"
+    },
+    {
+      "action": "MODULE_TOGGLE",
+      "details": "Kurs Takibi modülü Devre Dışı yapıldı.",
+      "date": "2026-09-06T18:12:37.935Z"
+    },
+    {
+      "action": "MODULE_TOGGLE",
+      "details": "Kurs Takibi modülü Aktif yapıldı.",
+      "date": "2026-09-06T18:12:37.949Z"
+    },
+    {
+      "action": "COUPON_CREATE",
+      "details": "Yeni kupon üretildi: TEST-KUPON-MTQ4Q668 (15 kredi, 5 kullanım)",
+      "date": "2026-09-06T18:12:37.966Z"
+    },
+    {
+      "action": "COUPON_DELETE",
+      "details": "Kupon silindi: TEST-KUPON-MTQ4Q668",
+      "date": "2026-09-06T18:12:37.981Z"
+    },
+    {
+      "action": "ANNOUNCEMENT_UPDATE",
+      "details": "Sistem duyurusu yayına alındı: Sistem güncellemesi tamamlandı.",
+      "date": "2026-09-06T18:12:38.000Z"
+    },
+    {
+      "action": "ANNOUNCEMENT_UPDATE",
+      "details": "Sistem duyurusu kaldırıldı: ",
+      "date": "2026-09-06T18:12:38.019Z"
     }
   ]
 }

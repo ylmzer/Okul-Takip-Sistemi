@@ -40,6 +40,7 @@
       sessionStorage.removeItem("ots:admin-token-pass");
       state.isVerified = false;
     }
+    if (window.syncSystemPermissions) window.syncSystemPermissions();
   }
 
   function collectElements() {

@@ -2475,7 +2475,7 @@ function saveSystemAdminData(data) {
     writeFileSync(systemAdminPath, JSON.stringify(data, null, 2), "utf8");
     // Also keep annual_licenses.json in sync for legacy compatibility
     const legacySubset = {
-      adminPassword: data.adminPassword,
+      adminPassword: data.adminPassword || data.adminPasswordHash || "admin2026",
       masterKey: data.masterKey,
       defaultPlanCost: data.defaultPlanCost !== undefined ? data.defaultPlanCost : 1,
       initialUserCredits: data.initialUserCredits,
@@ -2491,6 +2491,62 @@ function saveSystemAdminData(data) {
     console.error("System admin file write error:", e.message);
     return false;
   }
+}
+
+function hashAdminPassword(password, salt = "OTS_SALT_2026") {
+  return createHash("sha256").update(`${password}_${salt}`).digest("hex");
+}
+
+function verifyAdminPassword(inputPassword, storedData) {
+  if (!inputPassword || !storedData) return false;
+  const salt = storedData.passwordSalt || "OTS_SALT_2026";
+  const inputHash = hashAdminPassword(inputPassword, salt);
+  if (storedData.adminPasswordHash && storedData.adminPasswordHash === inputHash) {
+    return true;
+  }
+  if (storedData.adminPassword && storedData.adminPassword === inputPassword) {
+    // Otomatik hash migrasyonu
+    storedData.adminPasswordHash = inputHash;
+    delete storedData.adminPassword;
+    storedData.passwordSalt = salt;
+    saveSystemAdminData(storedData);
+    return true;
+  }
+  return false;
+}
+
+const ADMIN_LOGIN_ATTEMPTS = new Map();
+const MAX_ADMIN_ATTEMPTS = 5;
+const ADMIN_LOCK_DURATION_MS = 15 * 60 * 1000; // 15 dakika kilit
+
+function getClientIp(request) {
+  const forwarded = request.headers["x-forwarded-for"];
+  if (forwarded) return forwarded.split(",")[0].trim();
+  return request.socket?.remoteAddress || "127.0.0.1";
+}
+
+function checkAdminRateLimit(ip) {
+  const now = Date.now();
+  const record = ADMIN_LOGIN_ATTEMPTS.get(ip);
+  if (record && record.lockUntil && record.lockUntil > now) {
+    const remainingMinutes = Math.ceil((record.lockUntil - now) / 60000);
+    return { locked: true, remainingMinutes };
+  }
+  return { locked: false, remainingMinutes: 0 };
+}
+
+function recordAdminAttempt(ip, success) {
+  const now = Date.now();
+  if (success) {
+    ADMIN_LOGIN_ATTEMPTS.delete(ip);
+    return;
+  }
+  const record = ADMIN_LOGIN_ATTEMPTS.get(ip) || { count: 0, lockUntil: 0 };
+  record.count += 1;
+  if (record.count >= MAX_ADMIN_ATTEMPTS) {
+    record.lockUntil = now + ADMIN_LOCK_DURATION_MS;
+  }
+  ADMIN_LOGIN_ATTEMPTS.set(ip, record);
 }
 
 function readLicensesData() {
@@ -2573,19 +2629,40 @@ async function handleSystemPublicConfig(request, response, url) {
 
 async function handleAdminVerify(request, response) {
   try {
-    const { adminPassword } = await readJsonRequest(request);
-    const data = readSystemAdminData();
-    if (!adminPassword || adminPassword !== data.adminPassword) {
-      response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
-      response.end(JSON.stringify({ error: "Geçersiz yönetici şifresi." }));
+    const ip = getClientIp(request);
+    const rateCheck = checkAdminRateLimit(ip);
+    if (rateCheck.locked) {
+      response.writeHead(429, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({
+        error: `Çok fazla başarısız deneme yapıldı. Güvenlik nedeniyle erişim ${rateCheck.remainingMinutes} dakika kilitlendi.`
+      }));
       return;
     }
+
+    const { adminPassword } = await readJsonRequest(request);
+    const data = readSystemAdminData();
+    const isValid = verifyAdminPassword(adminPassword, data);
+
+    if (!isValid) {
+      recordAdminAttempt(ip, false);
+      const updatedRecord = ADMIN_LOGIN_ATTEMPTS.get(ip);
+      const remainingAttempts = Math.max(0, MAX_ADMIN_ATTEMPTS - (updatedRecord?.count || 0));
+      const errMsg = remainingAttempts > 0 
+        ? `Geçersiz yönetici şifresi. (Kalan deneme hakkı: ${remainingAttempts})`
+        : "Çok fazla başarısız deneme yapıldı. Erişim 15 dakika kilitlendi.";
+      const statusCode = remainingAttempts > 0 ? 401 : 429;
+      response.writeHead(statusCode, { "Content-Type": "application/json; charset=utf-8" });
+      response.end(JSON.stringify({ error: errMsg }));
+      return;
+    }
+
+    recordAdminAttempt(ip, true);
     response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
     response.end(JSON.stringify({
       success: true,
       message: "Yönetici doğrulaması başarılı.",
       role: "admin",
-      token: createHash("sha256").update(`${data.adminPassword}_${Date.now()}`).digest("hex").slice(0, 32)
+      token: createHash("sha256").update(`${adminPassword}_${Date.now()}`).digest("hex").slice(0, 32)
     }));
   } catch (error) {
     response.writeHead(500, { "Content-Type": "application/json; charset=utf-8" });
@@ -2597,7 +2674,7 @@ async function handleAdminOverview(request, response) {
   try {
     const { adminPassword } = await readJsonRequest(request);
     const data = readSystemAdminData();
-    if (!adminPassword || adminPassword !== data.adminPassword) {
+    if (!verifyAdminPassword(adminPassword, data)) {
       response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
       response.end(JSON.stringify({ error: "Yetkisiz erişim: Yönetici şifresi geçersiz." }));
       return;
@@ -2639,7 +2716,7 @@ async function handleAdminUsers(request, response) {
     const body = await readJsonRequest(request);
     const { adminPassword, action, user, targetUserId, password, role, allowedModules, isActive } = body;
     const data = readSystemAdminData();
-    if (!adminPassword || adminPassword !== data.adminPassword) {
+    if (!verifyAdminPassword(adminPassword, data)) {
       response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
       response.end(JSON.stringify({ error: "Yetkisiz erişim: Yönetici şifresi geçersiz." }));
       return;
@@ -2769,7 +2846,7 @@ async function handleAdminUserCredits(request, response) {
   try {
     const { adminPassword, targetUserId, amount, type = "add", note = "" } = await readJsonRequest(request);
     const data = readSystemAdminData();
-    if (!adminPassword || adminPassword !== data.adminPassword) {
+    if (!verifyAdminPassword(adminPassword, data)) {
       response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
       response.end(JSON.stringify({ error: "Yetkisiz erişim: Yönetici şifresi geçersiz." }));
       return;
@@ -2821,7 +2898,7 @@ async function handleAdminModules(request, response) {
   try {
     const { adminPassword, action, moduleId, enabled, maintenanceMode, maintenanceMessage, defaultAllowedModules, initialUserCredits } = await readJsonRequest(request);
     const data = readSystemAdminData();
-    if (!adminPassword || adminPassword !== data.adminPassword) {
+    if (!verifyAdminPassword(adminPassword, data)) {
       response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
       response.end(JSON.stringify({ error: "Yetkisiz erişim: Yönetici şifresi geçersiz." }));
       return;
@@ -2881,7 +2958,7 @@ async function handleAdminAnnouncement(request, response) {
   try {
     const { adminPassword, active, message, type } = await readJsonRequest(request);
     const data = readSystemAdminData();
-    if (!adminPassword || adminPassword !== data.adminPassword) {
+    if (!verifyAdminPassword(adminPassword, data)) {
       response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
       response.end(JSON.stringify({ error: "Yetkisiz erişim: Yönetici şifresi geçersiz." }));
       return;
@@ -2909,7 +2986,7 @@ async function handleAdminCreditCodes(request, response) {
   try {
     const { adminPassword, action, newCode, code } = await readJsonRequest(request);
     const data = readSystemAdminData();
-    if (!adminPassword || adminPassword !== data.adminPassword) {
+    if (!verifyAdminPassword(adminPassword, data)) {
       response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
       response.end(JSON.stringify({ error: "Yetkisiz erişim: Yönetici şifresi geçersiz." }));
       return;
@@ -2983,7 +3060,7 @@ async function handleAdminChangePassword(request, response) {
   try {
     const { currentPassword, newPassword } = await readJsonRequest(request);
     const data = readSystemAdminData();
-    if (!currentPassword || currentPassword !== data.adminPassword) {
+    if (!verifyAdminPassword(currentPassword, data)) {
       response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
       response.end(JSON.stringify({ error: "Mevcut yönetici şifresi hatalı." }));
       return;
@@ -2993,7 +3070,10 @@ async function handleAdminChangePassword(request, response) {
       response.end(JSON.stringify({ error: "Yeni şifre en az 4 karakter olmalıdır." }));
       return;
     }
-    data.adminPassword = newPassword.trim();
+    const salt = data.passwordSalt || "OTS_SALT_2026";
+    data.adminPasswordHash = hashAdminPassword(newPassword.trim(), salt);
+    delete data.adminPassword;
+    data.passwordSalt = salt;
     logAudit(data, "ADMIN_PASSWORD_CHANGE", "Yönetici şifresi başarıyla değiştirildi.");
     saveSystemAdminData(data);
     response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
@@ -3008,7 +3088,7 @@ async function handleAnnualGetCredits(request, response) {
   try {
     const { userId, email, adminPassword } = await readJsonRequest(request);
     const data = readLicensesData();
-    if (adminPassword && adminPassword === data.adminPassword) {
+    if (adminPassword && verifyAdminPassword(adminPassword, data)) {
       response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
       response.end(JSON.stringify({
         credits: 999999,
@@ -3101,7 +3181,7 @@ async function handleAnnualAdminCredits(request, response) {
     const body = await readJsonRequest(request);
     const { adminPassword, action, newCode, targetCode, targetUser, credits, pricingPackages, contactInfo } = body;
     const data = readLicensesData();
-    if (adminPassword !== data.adminPassword) {
+    if (!verifyAdminPassword(adminPassword, data)) {
       response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
       response.end(JSON.stringify({ error: "Yetkisiz işlem: Yönetici şifresi geçersiz." }));
       return;
@@ -3192,7 +3272,7 @@ async function handleAnnualUnlockPlan(request, response) {
     const { userId, email, adminPassword, licenseKey, planId, planName } = await readJsonRequest(request);
     const data = readLicensesData();
 
-    if ((adminPassword && adminPassword === data.adminPassword) || (licenseKey && (licenseKey === data.masterKey || licenseKey === data.adminPassword))) {
+    if ((adminPassword && verifyAdminPassword(adminPassword, data)) || (licenseKey && (licenseKey === data.masterKey || verifyAdminPassword(licenseKey, data)))) {
       response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
       response.end(JSON.stringify({
         success: true,
@@ -3309,10 +3389,10 @@ function verifyLicenseOrAdmin(licenseKey = "", adminPassword = "") {
   const rawKey = String(licenseKey || "").trim();
   const rawPass = String(adminPassword || "").trim();
 
-  if (rawPass && rawPass === data.adminPassword) {
+  if (rawPass && verifyAdminPassword(rawPass, data)) {
     return { valid: true, isAdmin: true, owner: "Yönetici", contactInfo: data.contactInfo };
   }
-  if (rawKey && (rawKey === data.masterKey || rawKey === data.adminPassword)) {
+  if (rawKey && (rawKey === data.masterKey || verifyAdminPassword(rawKey, data))) {
     return { valid: true, isAdmin: true, owner: "Master Lisans", contactInfo: data.contactInfo };
   }
   if (rawKey) {
@@ -3358,7 +3438,7 @@ async function handleAnnualAdminLicenses(request, response) {
     const body = await readJsonRequest(request);
     const { adminPassword, action, newLicense, targetKey, contactInfo } = body;
     const data = readLicensesData();
-    if (adminPassword !== data.adminPassword) {
+    if (!verifyAdminPassword(adminPassword, data)) {
       response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
       response.end(JSON.stringify({ error: "Yetkisiz işlem: Yönetici şifresi geçersiz." }));
       return;
@@ -3426,7 +3506,7 @@ async function handleAnnualAdminSaveTemplate(request, response) {
   try {
     const { adminPassword, template } = await readJsonRequest(request);
     const data = readLicensesData();
-    if (adminPassword !== data.adminPassword) {
+    if (!verifyAdminPassword(adminPassword, data)) {
       response.writeHead(401, { "Content-Type": "application/json; charset=utf-8" });
       response.end(JSON.stringify({ error: "Yetkisiz işlem: Yönetici şifresi geçersiz." }));
       return;
