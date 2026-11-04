@@ -31,7 +31,7 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg" />
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
-    <link rel="stylesheet" href="./styles.css?v=94" />
+    <link rel="stylesheet" href="./styles.css?v=95" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
     <link rel="stylesheet" href="./theme-overrides.css?v=125" />
   </head>
@@ -2617,53 +2617,60 @@
         <!-- Step 2: Önizleme ve Sisteme Aktarma -->
         <div id="skillImportStep2" style="display: none; flex-direction: column; flex: 1; min-height: 0;">
           <!-- Preview Area (Shared) -->
-          <div id="skillImportPreviewArea" style="display: flex; flex-direction: column; flex: 1; min-height: 0; margin-top: 2px; border: 1px solid var(--line); padding: 8px; border-radius: 8px;">
-            <h3 style="font-size: 0.9rem; margin-bottom: 4px; color: var(--ink); margin-top: 0;">Çözümleme Sonucu</h3>
-            <div id="skillImportSettings" style="display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 6px; background: var(--surface); border: 1px solid var(--line); padding: 4px 8px; border-radius: 8px; font-size: 0.82rem; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
-              <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="font-weight: bold; color: var(--ink);">Okul Türü:</span>
-                <select id="skillImportSchoolType" style="padding: 4px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: bold; outline: none; cursor: pointer; font-size: 0.8rem;">
+          <div id="skillImportPreviewArea" style="display: flex; flex-direction: column; flex: 1; min-height: 0; margin-top: 2px; border: 1px solid var(--line); padding: 4px 6px; border-radius: 8px;">
+            <!-- Row 1: Title, School Type and Stats in one slim bar -->
+            <div id="skillImportSettings" style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 4px; background: var(--surface); border: 1px solid var(--line); padding: 2px 8px; border-radius: 6px; font-size: 0.78rem; width: 100%; box-sizing: border-box; min-height: 28px;">
+              <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                <strong style="color: var(--ink); font-size: 0.8rem; white-space: nowrap;">⚡ Çözümleme Sonucu</strong>
+                <span style="color: var(--line);">|</span>
+                <span style="font-weight: 600; color: var(--muted); font-size: 0.75rem; white-space: nowrap;">Okul Türü:</span>
+                <select id="skillImportSchoolType" style="padding: 1px 6px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: bold; outline: none; cursor: pointer; font-size: 0.75rem; height: 22px;">
                   <option value="mesem" selected>Mesleki Eğitim Merkezi (MESEM)</option>
                   <option value="mtal">Mesleki ve Teknik Anadolu Lisesi (MTAL)</option>
                 </select>
               </div>
-              <div id="skillImportStats" style="display: flex; align-items: center; gap: 12px; font-size: 0.8rem; font-weight: bold; color: var(--ink);"></div>
+              <div id="skillImportStats" style="display: flex; align-items: center; gap: 8px; font-size: 0.75rem; font-weight: 600; color: var(--ink); white-space: nowrap;"></div>
             </div>
-            <div id="skillImportGlobalActions" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; background: rgba(var(--accent-rgb), 0.05); border: 1px solid rgba(var(--accent-rgb), 0.2); padding: 6px 10px; border-radius: 8px; font-size: 0.8rem; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
-              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                <span style="font-weight: 700; color: var(--ink); white-space: nowrap;">Koordinatör Md. Yrd.:</span>
-                <input id="skillImportDeputyInput" type="text" list="skillImportDeputyList" placeholder="Md. Yrd. Adı..." style="padding: 3px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 0.78rem; height: 26px; width: 160px; outline: none; box-sizing: border-box;" />
-                <button id="skillImportApplyDeputyAllBtn" type="button" class="secondary-action" style="padding: 0 8px; font-size: 0.75rem; font-weight: bold; height: 26px; min-height: 26px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Müdür yardımcısını tüm kayıtlara aktar">
+
+            <!-- Row 2: Global Fast Actions in one single line -->
+            <div id="skillImportGlobalActions" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; background: rgba(var(--accent-rgb), 0.04); border: 1px solid rgba(var(--accent-rgb), 0.15); padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; width: 100%; box-sizing: border-box; min-height: 28px;">
+              <div style="display: flex; align-items: center; gap: 5px; flex: 1;">
+                <span style="font-weight: 700; color: var(--ink); white-space: nowrap; font-size: 0.74rem;">Koordinatör Md. Yrd.:</span>
+                <input id="skillImportDeputyInput" type="text" list="skillImportDeputyList" placeholder="Md. Yrd. Adı..." style="flex: 1; max-width: 160px; min-width: 100px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 0.74rem; height: 22px; outline: none; box-sizing: border-box;" />
+                <button id="skillImportApplyDeputyAllBtn" type="button" class="secondary-action" style="padding: 0 8px; font-size: 0.72rem; font-weight: bold; height: 22px; min-height: 22px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap;" title="Müdür yardımcısını tüm kayıtlara aktar">
                   ⚡ Herkese Md. Yrd. Ata
                 </button>
               </div>
+
+              <div style="width: 1px; height: 16px; background: var(--line); margin: 0 4px; flex-shrink: 0;"></div>
               
-              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                <span style="font-weight: 700; color: var(--ink); white-space: nowrap;">Tüm İşletmelere Öğretmen:</span>
-                <input id="skillImportAllTeacherInput" type="text" list="importTeacherList" placeholder="Öğretmen seç veya yaz..." style="padding: 3px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 0.78rem; height: 26px; width: 170px; outline: none; box-sizing: border-box;" />
-                <button id="skillImportApplyTeacherAllBtn" type="button" class="primary-action" style="padding: 0 10px; font-size: 0.75rem; font-weight: bold; height: 26px; min-height: 26px; border-radius: 6px; border: none; background: var(--accent); color: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);" title="Seçilen öğretmeni tüm işletmelere koordinatör olarak ata">
+              <div style="display: flex; align-items: center; gap: 5px; flex: 1; justify-content: flex-end;">
+                <span style="font-weight: 700; color: var(--ink); white-space: nowrap; font-size: 0.74rem;">Tüm İşletmelere Öğretmen:</span>
+                <input id="skillImportAllTeacherInput" type="text" list="importTeacherList" placeholder="Öğretmen seç veya yaz..." style="flex: 1; max-width: 170px; min-width: 100px; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 0.74rem; height: 22px; outline: none; box-sizing: border-box;" />
+                <button id="skillImportApplyTeacherAllBtn" type="button" class="primary-action" style="padding: 0 10px; font-size: 0.72rem; font-weight: bold; height: 22px; min-height: 22px; border-radius: 4px; border: none; background: var(--accent); color: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; box-shadow: 0 1px 2px rgba(0,0,0,0.1);" title="Seçilen öğretmeni tüm işletmelere koordinatör olarak ata">
                   ⚡ Tümüne Öğretmen Ata
                 </button>
               </div>
             </div>
 
-            <div id="skillImportBulkActions" style="display: none; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; background: rgba(var(--accent-rgb), 0.08); border: 1px solid var(--accent); padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; width: 100%; box-sizing: border-box; flex-wrap: wrap;">
-              <div style="display: flex; align-items: center; gap: 6px;">
-                <span style="display: inline-flex; align-items: center; justify-content: center; background: var(--accent); color: white; border-radius: 12px; padding: 1px 7px; font-weight: bold; font-size: 0.72rem;" id="skillImportSelectedCount">0</span>
-                <span style="font-weight: bold; color: var(--ink);" id="skillImportBulkText">seçildi:</span>
+            <!-- Row 3: Bulk Actions (Shown only when rows are selected) -->
+            <div id="skillImportBulkActions" style="display: none; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 4px; background: rgba(var(--accent-rgb), 0.08); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 6px; font-size: 0.74rem; width: 100%; box-sizing: border-box; min-height: 28px;">
+              <div style="display: flex; align-items: center; gap: 5px;">
+                <span style="display: inline-flex; align-items: center; justify-content: center; background: var(--accent); color: white; border-radius: 10px; padding: 1px 6px; font-weight: bold; font-size: 0.7rem;" id="skillImportSelectedCount">0</span>
+                <span style="font-weight: bold; color: var(--ink); font-size: 0.73rem;" id="skillImportBulkText">seçildi:</span>
               </div>
-              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <div style="display: flex; align-items: center; gap: 4px;">
-                  <span style="color: var(--muted); font-weight: bold; font-size: 0.75rem;">Alan/Dal:</span>
-                  <input id="skillImportBulkFieldInput" type="text" list="importAlanDalList" placeholder="Alan/Dal ara..." style="padding: 3px 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 160px; font-size: 0.76rem; height: 26px; outline: none; box-sizing: border-box;" />
+              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 3px;">
+                  <span style="color: var(--muted); font-weight: bold; font-size: 0.72rem;">Alan/Dal:</span>
+                  <input id="skillImportBulkFieldInput" type="text" list="importAlanDalList" placeholder="Alan/Dal ara..." style="padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 130px; font-size: 0.73rem; height: 22px; outline: none; box-sizing: border-box;" />
                 </div>
-                <div style="display: flex; align-items: center; gap: 4px;">
-                  <span style="color: var(--muted); font-weight: bold; font-size: 0.75rem;">Öğretmen:</span>
-                  <input id="skillImportBulkTeacherInput" type="text" list="importTeacherList" placeholder="Öğretmen seç/yaz..." style="padding: 3px 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 140px; font-size: 0.76rem; height: 26px; outline: none; box-sizing: border-box;" />
+                <div style="display: flex; align-items: center; gap: 3px;">
+                  <span style="color: var(--muted); font-weight: bold; font-size: 0.72rem;">Öğretmen:</span>
+                  <input id="skillImportBulkTeacherInput" type="text" list="importTeacherList" placeholder="Öğretmen seç/yaz..." style="padding: 1px 5px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); width: 120px; font-size: 0.73rem; height: 22px; outline: none; box-sizing: border-box;" />
                 </div>
-                <div style="display: flex; align-items: center; gap: 4px;">
-                  <span style="color: var(--muted); font-weight: bold; font-size: 0.75rem;">Ziyaret Günü:</span>
-                  <select id="skillImportBulkDaySelect" style="padding: 2px 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 0.76rem; height: 26px; outline: none; cursor: pointer; width: 105px; box-sizing: border-box;">
+                <div style="display: flex; align-items: center; gap: 3px;">
+                  <span style="color: var(--muted); font-weight: bold; font-size: 0.72rem;">Ziyaret Günü:</span>
+                  <select id="skillImportBulkDaySelect" style="padding: 1px 4px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 0.73rem; height: 22px; outline: none; cursor: pointer; width: 90px; box-sizing: border-box;">
                     <option value="">Seçilmesin</option>
                     <option value="Pazartesi">Pazartesi</option>
                     <option value="Salı">Salı</option>
@@ -2672,19 +2679,21 @@
                     <option value="Cuma">Cuma</option>
                   </select>
                 </div>
-                <div style="display: flex; align-items: center; gap: 6px; margin-left: 4px;">
-                  <button id="skillImportBulkApplyBtn" type="button" class="primary-action" style="padding: 0 12px; font-size: 0.76rem; font-weight: bold; height: 26px; min-height: 26px; border-radius: 6px; border: none; cursor: pointer; background: var(--accent); color: #fff;" title="Doldurulan bilgileri seçili öğrencilere ve işletmelerine uygula">
+                <div style="display: flex; align-items: center; gap: 4px; margin-left: 4px;">
+                  <button id="skillImportBulkApplyBtn" type="button" class="primary-action" style="padding: 0 8px; font-size: 0.72rem; font-weight: bold; height: 22px; min-height: 22px; border-radius: 4px; border: none; cursor: pointer; background: var(--accent); color: #fff;" title="Doldurulan bilgileri seçili öğrencilere ve işletmelerine uygula">
                     ✓ Uygula
                   </button>
-                  <button id="skillImportBulkDayBtn" type="button" class="secondary-action" style="padding: 0 10px; font-size: 0.76rem; font-weight: bold; height: 26px; min-height: 26px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer;" title="Seçilen işletmelere tek seferde gün ata">
+                  <button id="skillImportBulkDayBtn" type="button" class="secondary-action" style="padding: 0 8px; font-size: 0.72rem; font-weight: bold; height: 22px; min-height: 22px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer;" title="Seçilen işletmelere tek seferde gün ata">
                     📅 Seçilenlere Gün Ata
                   </button>
-                  <button id="skillImportBulkClearBtn" type="button" class="secondary-action" style="padding: 0 8px; font-size: 0.76rem; font-weight: bold; height: 26px; min-height: 26px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer;">
+                  <button id="skillImportBulkClearBtn" type="button" class="secondary-action" style="padding: 0 6px; font-size: 0.72rem; font-weight: bold; height: 22px; min-height: 22px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer;">
                     Temizle
                   </button>
                 </div>
               </div>
             </div>
+
+            <!-- Table Card: Takes FULL remaining vertical height -->
             <div class="skill-table-card" style="margin-top: 0; padding: 0; flex: 1; min-height: 0; overflow-y: auto; width: 100%;">
               <table class="skill-data-table" style="font-size: 0.82rem;">
                 <thead>
@@ -2709,9 +2718,9 @@
             <datalist id="skillImportDeputyList"></datalist>
           </div>
 
-          <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; width: 100%;">
-            <button class="secondary-action" id="skillImportPrevBtn" type="button" style="min-height: 38px; font-weight: bold; padding: 8px 20px;">← Geri</button>
-            <button class="primary-action" id="skillImportSaveBtn" type="submit" disabled style="min-height: 38px; font-weight: bold; padding: 8px 20px;">Verileri Sisteme Aktar</button>
+          <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <button class="secondary-action" id="skillImportPrevBtn" type="button" style="min-height: 32px; font-weight: bold; padding: 6px 16px; font-size: 0.82rem;">← Geri</button>
+            <button class="primary-action" id="skillImportSaveBtn" type="submit" disabled style="min-height: 32px; font-weight: bold; padding: 6px 20px; font-size: 0.82rem;">Verileri Sisteme Aktar</button>
           </div>
         </div>
       </form>
@@ -5026,7 +5035,7 @@
     <script src="./scripts/modules/course-tracking/index.js?v=9"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=17"></script>
     <script src="./scripts/modules/sorubank/index.js?v=8"></script>
-    <script src="./scripts/modules/skill-training/index.js?v=15"></script>
+    <script src="./scripts/modules/skill-training/index.js?v=16"></script>
     <script src="./scripts/modules/student-tracking/index.js?v=14"></script>
     <script src="./scripts/modules/system-admin/index.js?v=1"></script>
   </body>

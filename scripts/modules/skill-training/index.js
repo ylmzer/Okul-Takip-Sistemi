@@ -568,26 +568,18 @@ function updateBulkActionsBar() {
   const checkedCount = parsedImportRecords.filter(r => r.selected).length;
   const hasRecords = parsedImportRecords.length > 0;
   
-  if (hasRecords) {
+  if (hasRecords && checkedCount > 0) {
     bulkBar.style.display = "flex";
     const bulkText = document.getElementById("skillImportBulkText");
     if (bulkText) {
-      if (checkedCount > 0) {
-        bulkText.textContent = "seçildi. Seçililere uygulanacak işlemler:";
-        if (selectedCountSpan) {
-          selectedCountSpan.textContent = checkedCount;
-          selectedCountSpan.style.display = "inline-flex";
-        }
-      } else {
-        bulkText.textContent = "Toplu İşlemler (Tablodan öğrenci seçin):";
-        if (selectedCountSpan) {
-          selectedCountSpan.style.display = "none";
-        }
+      bulkText.textContent = "seçildi:";
+      if (selectedCountSpan) {
+        selectedCountSpan.textContent = checkedCount;
+        selectedCountSpan.style.display = "inline-flex";
       }
     }
     
-    const hasSelection = checkedCount > 0;
-    const elementsToDisable = [
+    const elementsToEnable = [
       document.getElementById("skillImportBulkFieldInput"),
       document.getElementById("skillImportBulkTeacherInput"),
       document.getElementById("skillImportBulkDaySelect"),
@@ -596,16 +588,11 @@ function updateBulkActionsBar() {
       document.getElementById("skillImportBulkClearBtn")
     ];
     
-    elementsToDisable.forEach(el => {
+    elementsToEnable.forEach(el => {
       if (el) {
-        el.disabled = !hasSelection;
-        if (!hasSelection) {
-          el.style.opacity = "0.5";
-          el.style.cursor = "not-allowed";
-        } else {
-          el.style.opacity = "1";
-          el.style.cursor = "";
-        }
+        el.disabled = false;
+        el.style.opacity = "1";
+        el.style.cursor = "";
       }
     });
   } else {
@@ -860,15 +847,15 @@ async function analyzeImeImportFile(file) {
     
     if (els.skillImportStats) {
       els.skillImportStats.innerHTML = `
-        <span>Toplam: <strong style="color:var(--accent); font-size: 0.9rem;">${parsedImportRecords.length}</strong></span>
+        <span>Toplam: <strong style="color:var(--accent);">${parsedImportRecords.length}</strong></span>
         <span style="color: var(--line);">|</span>
-        <span>Sistemde Kayıtlı: <strong style="color:#10b981; font-size: 0.9rem;">${existingStudentMatches}</strong></span>
+        <span>Kayıtlı: <strong style="color:#10b981;">${existingStudentMatches}</strong></span>
         <span style="color: var(--line);">|</span>
-        <span>Yeni: <strong style="color:#3b82f6; font-size: 0.9rem;">${parsedImportRecords.length - existingStudentMatches}</strong></span>
+        <span>Yeni: <strong style="color:#3b82f6;">${parsedImportRecords.length - existingStudentMatches}</strong></span>
         <span style="color: var(--line);">|</span>
-        <span>İşletme: <strong style="color:var(--accent); font-size: 0.9rem;">${uniqueBusinesses.size}</strong></span>
+        <span>İşletme: <strong style="color:var(--accent);">${uniqueBusinesses.size}</strong></span>
         <span style="color: var(--line);">|</span>
-        <span>Öğretmen: <strong style="color:var(--accent); font-size: 0.9rem;">${uniqueTeachers.size}</strong></span>
+        <span>Öğretmen: <strong style="color:var(--accent);">${uniqueTeachers.size}</strong></span>
       `;
     }
     
