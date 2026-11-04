@@ -3478,7 +3478,15 @@ function renderSkillHolidays() {
   renderSkillHolidayYears();
   const year = getSkillHolidayYear();
   if (!els.skillHolidayStartDate?.value && !els.skillHolidayId?.value) clearSkillHolidayForm();
-  let rows = sortSkillHolidays(skillState.holidays.filter((holiday) => String(holiday.startDate || "").startsWith(`${year}-`)));
+  const searchQuery = (document.getElementById("skillHolidaySearch")?.value || "").trim().toLocaleLowerCase("tr-TR");
+  let rows = sortSkillHolidays(skillState.holidays.filter((holiday) => {
+    if (!String(holiday.startDate || "").startsWith(`${year}-`)) return false;
+    if (searchQuery) {
+      const hay = [holiday.name, formatSkillDate(holiday.startDate), formatSkillDate(holiday.endDate)].join(" ").toLocaleLowerCase("tr-TR");
+      if (!hay.includes(searchQuery)) return false;
+    }
+    return true;
+  }));
   const sort = window.skillTableSort?.holidays;
   if (sort && sort.key) {
     rows.sort((a, b) => {
@@ -3506,7 +3514,7 @@ function renderSkillHolidays() {
     <table class="skill-data-table skill-holiday-table">
       <thead>
         <tr>
-          <th>Seç</th>
+          <th><input type="checkbox" id="skillHolidaySelectAll" style="cursor: pointer;" title="Tümünü Seç" /></th>
           <th class="skill-sort-col ${sort?.key === 'index' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="index" title="Sıralamak için tıklayın">No ${getSkillSortIcon("holidays", "index")}</th>
           <th class="skill-sort-col ${sort?.key === 'startDate' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="startDate" title="Sıralamak için tıklayın">Başlangıç ${getSkillSortIcon("holidays", "startDate")}</th>
           <th class="skill-sort-col ${sort?.key === 'endDate' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="endDate" title="Sıralamak için tıklayın">Bitiş ${getSkillSortIcon("holidays", "endDate")}</th>
@@ -6917,7 +6925,16 @@ function renderSkillStudents() {
 function renderSkillBusinesses() {
   if (!els.skillBusinessTable) return;
   const sort = window.skillTableSort?.businesses;
-  let businesses = [...skillState.businesses];
+  const searchQuery = (document.getElementById("skillBusinessSearch")?.value || "").trim().toLocaleLowerCase("tr-TR");
+  const groupFilter = document.getElementById("skillBusinessGroupFilter")?.value || "";
+  let businesses = skillState.businesses.filter((business) => {
+    if (groupFilter && String(business.group || "1") !== groupFilter) return false;
+    if (searchQuery) {
+      const hay = [business.name, business.phone, business.address].join(" ").toLocaleLowerCase("tr-TR");
+      if (!hay.includes(searchQuery)) return false;
+    }
+    return true;
+  });
   if (sort && sort.key) {
     businesses.sort((a, b) => {
       let vA, vB;
@@ -6939,7 +6956,7 @@ function renderSkillBusinesses() {
   }
 
   const businessRows = businesses.length ? businesses.map((business, index) => `
-    <div class="skill-row skill-grid-row" data-skill-edit-business="${business.id}">
+    <div class="skill-row skill-grid-row skill-business-grid-row" data-skill-edit-business="${business.id}">
       <span><input type="checkbox" value="${business.id}" data-skill-select-business /></span>
       <span>${index + 1}</span>
       <strong>${escapeHtml(business.name)}</strong>
@@ -6949,7 +6966,7 @@ function renderSkillBusinesses() {
     </div>
   `).join("") : `<div class="empty-state">İşletme kaydı bulunamadı.</div>`;
   els.skillBusinessTable.innerHTML = `
-    <div class="skill-grid-row skill-grid-head">
+    <div class="skill-grid-row skill-grid-head skill-business-grid-row">
       <span><input type="checkbox" id="skillBusinessSelectAll" style="cursor: pointer;" /></span>
       <span class="skill-sort-col ${sort?.key === 'index' ? 'is-active' : ''}" data-sort-table="businesses" data-sort-key="index" title="Sıralamak için tıklayın">No ${getSkillSortIcon("businesses", "index")}</span>
       <span class="skill-sort-col ${sort?.key === 'name' ? 'is-active' : ''}" data-sort-table="businesses" data-sort-key="name" title="Sıralamak için tıklayın">İşletme Adı ${getSkillSortIcon("businesses", "name")}</span>
@@ -6965,7 +6982,19 @@ function renderSkillCoordinators() {
   if (!els.skillCoordinatorTable) return;
   ensureSkillCollections();
   const sort = window.skillTableSort?.coordinators;
-  let coordinators = [...skillState.coordinators];
+  const searchQuery = (document.getElementById("skillCoordinatorSearch")?.value || "").trim().toLocaleLowerCase("tr-TR");
+  const dayFilter = document.getElementById("skillCoordinatorDayFilter")?.value || "";
+  let coordinators = skillState.coordinators.filter((coordinator) => {
+    if (dayFilter === "none" && coordinator.day) return false;
+    if (dayFilter && dayFilter !== "none" && String(coordinator.day || "") !== dayFilter) return false;
+    if (searchQuery) {
+      const business = getSkillBusiness(coordinator.businessId);
+      const school = skillState.schoolRecords.find((item) => item.id === coordinator.schoolId) || skillState.schoolRecords[0];
+      const hay = [business?.name, coordinator.teacher, coordinator.deputy, school?.name, getSkillDayName(coordinator.day)].join(" ").toLocaleLowerCase("tr-TR");
+      if (!hay.includes(searchQuery)) return false;
+    }
+    return true;
+  });
   if (sort && sort.key) {
     coordinators.sort((a, b) => {
       let vA, vB;

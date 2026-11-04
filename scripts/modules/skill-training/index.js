@@ -2559,3 +2559,79 @@ document.getElementById("skillStudentFilterResetBtn")?.addEventListener("click",
   syncSkillStudentFilterResetBtn();
   renderSkillStudents();
 });
+
+// Business, Coordinator & Holiday filter bar events & reset buttons
+function syncSkillMgmtFilterBars() {
+  const bizReset = document.getElementById("skillBusinessFilterResetBtn");
+  if (bizReset) {
+    const hasBiz = Boolean(
+      document.getElementById("skillBusinessSearch")?.value?.trim() ||
+      document.getElementById("skillBusinessGroupFilter")?.value
+    );
+    bizReset.style.display = hasBiz ? "inline-flex" : "none";
+  }
+
+  const coordReset = document.getElementById("skillCoordinatorFilterResetBtn");
+  if (coordReset) {
+    const hasCoord = Boolean(
+      document.getElementById("skillCoordinatorSearch")?.value?.trim() ||
+      document.getElementById("skillCoordinatorDayFilter")?.value
+    );
+    coordReset.style.display = hasCoord ? "inline-flex" : "none";
+  }
+
+  const holReset = document.getElementById("skillHolidayFilterResetBtn");
+  if (holReset) {
+    const hasHol = Boolean(document.getElementById("skillHolidaySearch")?.value?.trim());
+    holReset.style.display = hasHol ? "inline-flex" : "none";
+  }
+}
+
+["input", "change"].forEach((evt) => {
+  document.getElementById("skillBusinessSearch")?.addEventListener(evt, () => {
+    syncSkillMgmtFilterBars();
+    renderSkillBusinesses?.();
+  });
+  document.getElementById("skillBusinessGroupFilter")?.addEventListener(evt, () => {
+    syncSkillMgmtFilterBars();
+    renderSkillBusinesses?.();
+  });
+  document.getElementById("skillCoordinatorSearch")?.addEventListener(evt, () => {
+    syncSkillMgmtFilterBars();
+    renderSkillCoordinators?.();
+  });
+  document.getElementById("skillCoordinatorDayFilter")?.addEventListener(evt, () => {
+    syncSkillMgmtFilterBars();
+    renderSkillCoordinators?.();
+  });
+  document.getElementById("skillHolidaySearch")?.addEventListener(evt, () => {
+    syncSkillMgmtFilterBars();
+    renderSkillHolidays?.();
+  });
+});
+
+document.getElementById("skillBusinessFilterResetBtn")?.addEventListener("click", () => {
+  const s = document.getElementById("skillBusinessSearch");
+  const g = document.getElementById("skillBusinessGroupFilter");
+  if (s) s.value = "";
+  if (g) g.value = "";
+  syncSkillMgmtFilterBars();
+  renderSkillBusinesses?.();
+});
+
+document.getElementById("skillCoordinatorFilterResetBtn")?.addEventListener("click", () => {
+  const s = document.getElementById("skillCoordinatorSearch");
+  const d = document.getElementById("skillCoordinatorDayFilter");
+  if (s) s.value = "";
+  if (d) d.value = "";
+  syncSkillMgmtFilterBars();
+  renderSkillCoordinators?.();
+});
+
+document.getElementById("skillHolidayFilterResetBtn")?.addEventListener("click", () => {
+  const s = document.getElementById("skillHolidaySearch");
+  if (s) s.value = "";
+  syncSkillMgmtFilterBars();
+  renderSkillHolidays?.();
+});
+
