@@ -340,6 +340,92 @@ async function analyzeSqliteProfile() {
   }
 }
 
+function dayToNumber(day) {
+  if (day === null || day === undefined || day === "") return "";
+  const d = String(day).trim();
+  if (["1", "2", "3", "4", "5"].includes(d)) return d;
+  const map = {
+    "pazartesi": "1", "pzt": "1",
+    "salı": "2", "sali": "2", "sal": "2",
+    "çarşamba": "3", "carsamba": "3", "çar": "3", "car": "3",
+    "perşembe": "4", "persembe": "4", "per": "4",
+    "cuma": "5", "cum": "5"
+  };
+  return map[turkishClean(d)] || "";
+}
+
+function dayToName(day) {
+  if (day === null || day === undefined || day === "") return "";
+  const d = String(day).trim();
+  const map = {
+    "1": "Pazartesi",
+    "2": "Salı",
+    "3": "Çarşamba",
+    "4": "Perşembe",
+    "5": "Cuma"
+  };
+  if (map[d]) return map[d];
+  const num = dayToNumber(d);
+  return map[num] || d;
+}
+
+window.getSkillDayName = function(day) {
+  if (day === null || day === undefined || day === "") return "Gün yok";
+  const str = String(day).trim();
+  const map = {
+    "1": "Pazartesi",
+    "2": "Salı",
+    "3": "Çarşamba",
+    "4": "Perşembe",
+    "5": "Cuma"
+  };
+  if (map[str]) return map[str];
+  const nameMap = {
+    "pazartesi": "Pazartesi", "pzt": "Pazartesi",
+    "salı": "Salı", "sali": "Salı", "sal": "Salı",
+    "çarşamba": "Çarşamba", "carsamba": "Çarşamba", "çar": "Çarşamba", "car": "Çarşamba",
+    "perşembe": "Perşembe", "persembe": "Perşembe", "per": "Perşembe",
+    "cuma": "Cuma", "cum": "Cuma"
+  };
+  const lower = str.toLowerCase();
+  if (nameMap[lower]) return nameMap[lower];
+  return str || "Gün yok";
+};
+
+function populateImportDatalists() {
+  const teacherDatalist = document.getElementById("importTeacherList");
+  if (teacherDatalist) {
+    const teacherNames = new Set();
+    (skillState.teacherPool || []).forEach(t => {
+      if (t.name) teacherNames.add(t.name.trim().toUpperCase());
+    });
+    (parsedImportRecords || []).forEach(r => {
+      if (r.coordinator_name && r.coordinator_name !== "Atanmadı" && r.coordinator_name !== "-") {
+        teacherNames.add(r.coordinator_name.trim().toUpperCase());
+      }
+    });
+    teacherDatalist.innerHTML = Array.from(teacherNames)
+      .sort((a, b) => a.localeCompare(b, "tr"))
+      .map(name => `<option value="${escapeHtml(name)}"></option>`)
+      .join("");
+  }
+
+  const deputyDatalist = document.getElementById("skillImportDeputyList");
+  if (deputyDatalist) {
+    const deputyNames = new Set();
+    (skillState.schoolRecords || []).forEach(s => {
+      if (s.deputy) deputyNames.add(s.deputy.trim());
+    });
+    (skillState.coordinators || []).forEach(c => {
+      if (c.deputy) deputyNames.add(c.deputy.trim());
+    });
+    deputyDatalist.innerHTML = Array.from(deputyNames)
+      .sort((a, b) => a.localeCompare(b, "tr"))
+      .map(name => `<option value="${escapeHtml(name)}"></option>`)
+      .join("");
+  }
+}
+
 function openSkillImportDialog() {
   const step1 = document.getElementById("skillImportStep1");
   const step2 = document.getElementById("skillImportStep2");
@@ -389,6 +475,17 @@ function openSkillImportDialog() {
     }
   }
 
+  // Pre-fill Coordinator Deputy from selected school
+  const currentSchoolId = schoolSelect ? schoolSelect.value : "";
+  const targetSchool = skillState.schoolRecords.find(s => s.id === currentSchoolId) || skillState.schoolRecords[0] || skillState.school;
+  const deputyInput = document.getElementById("skillImportDeputyInput");
+  if (deputyInput) {
+    deputyInput.value = targetSchool?.deputy || "";
+  }
+  const allTeacherInput = document.getElementById("skillImportAllTeacherInput");
+  if (allTeacherInput) allTeacherInput.value = "";
+
+  populateImportDatalists();
   els.skillImportDialog?.showModal();
 }
 
@@ -476,25 +573,26 @@ function updateBulkActionsBar() {
     const bulkText = document.getElementById("skillImportBulkText");
     if (bulkText) {
       if (checkedCount > 0) {
-        bulkText.textContent = " öğrenci seçildi. Seçililere uygulanacak işlemler:";
+        bulkText.textContent = "seçildi. Seçililere uygulanacak işlemler:";
         if (selectedCountSpan) {
           selectedCountSpan.textContent = checkedCount;
           selectedCountSpan.style.display = "inline-flex";
         }
       } else {
-        bulkText.textContent = "Toplu İşlemler (Lütfen listeden öğrenci seçin):";
+        bulkText.textContent = "Toplu İşlemler (Tablodan öğrenci seçin):";
         if (selectedCountSpan) {
           selectedCountSpan.style.display = "none";
         }
       }
     }
     
-    // Enable/disable actions
     const hasSelection = checkedCount > 0;
     const elementsToDisable = [
       document.getElementById("skillImportBulkFieldInput"),
+      document.getElementById("skillImportBulkTeacherInput"),
       document.getElementById("skillImportBulkDaySelect"),
       document.getElementById("skillImportBulkApplyBtn"),
+      document.getElementById("skillImportBulkDayBtn"),
       document.getElementById("skillImportBulkClearBtn")
     ];
     
@@ -526,9 +624,8 @@ function renderImportPreviewTable() {
   const schoolTypeSelect = document.getElementById("skillImportSchoolType");
   const schoolType = schoolTypeSelect ? schoolTypeSelect.value : "mesem";
   
-  const typeList = alanDalListesi[schoolType] || {};
+  const typeList = alanDalListesi ? (alanDalListesi[schoolType] || {}) : {};
   
-  // Update the datalist options
   const datalist = document.getElementById("importAlanDalList");
   if (datalist) {
     let datalistHtml = "";
@@ -539,54 +636,67 @@ function renderImportPreviewTable() {
     }
     datalist.innerHTML = datalistHtml;
   }
+  populateImportDatalists();
   
   let html = "";
   parsedImportRecords.forEach((r, idx) => {
     if (!r.originalField) {
       r.originalField = r.field;
     }
-    const matchedField = findClosestMatch(r.originalField, schoolType);
-    r.field = matchedField;
+    if (!r.field || r.field === "Belirtilmedi") {
+      const matchedField = findClosestMatch(r.originalField, schoolType);
+      if (matchedField) r.field = matchedField;
+    }
     
-    // Autocomplete datalist input instead of dropdown select
     let fieldInputHtml = `
-      <input class="import-field-input" type="text" list="importAlanDalList" data-index="${idx}" value="${escapeHtml(r.field)}" placeholder="Alan/Dal ara..." style="padding: 2px 6px !important; border-radius: 6px !important; border: 1px solid var(--line) !important; background: var(--surface) !important; color: var(--ink) !important; width: 100% !important; max-width: 360px !important; font-size: 0.78rem !important; height: 26px !important; outline: none !important; box-sizing: border-box !important; margin: 0 !important;" />
+      <input class="import-field-input" type="text" list="importAlanDalList" data-index="${idx}" value="${escapeHtml(r.field || '')}" placeholder="Alan/Dal ara..." style="padding: 2px 6px !important; border-radius: 4px !important; border: 1px solid var(--line) !important; background: var(--surface) !important; color: var(--ink) !important; width: 100% !important; font-size: 0.78rem !important; height: 24px !important; outline: none !important; box-sizing: border-box !important; margin: 0 !important;" />
     `;
     
+    let teacherInputHtml = `
+      <input class="import-teacher-input" type="text" list="importTeacherList" data-index="${idx}" value="${escapeHtml(r.coordinator_name || '')}" placeholder="Öğretmen ata..." style="padding: 2px 6px !important; border-radius: 4px !important; border: 1px solid var(--line) !important; background: var(--surface) !important; color: var(--ink) !important; width: 100% !important; font-size: 0.76rem !important; height: 24px !important; outline: none !important; font-weight: 600 !important; box-sizing: border-box !important; margin: 0 !important;" />
+    `;
+
     const days = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma"];
-    let daySelectHtml = `<select class="import-coord-day-select" data-index="${idx}" style="padding: 2px 4px !important; font-size: 0.75rem !important; border-radius: 4px !important; border: 1px solid var(--line) !important; background: var(--surface) !important; color: var(--ink) !important; margin: 0 !important; height: 24px !important; outline: none !important; cursor: pointer !important; max-width: 120px !important; flex-shrink: 0 !important;">`;
+    let daySelectHtml = `<select class="import-coord-day-select" data-index="${idx}" style="padding: 2px 4px !important; font-size: 0.75rem !important; border-radius: 4px !important; border: 1px solid var(--line) !important; background: var(--surface) !important; color: var(--ink) !important; margin: 0 !important; height: 24px !important; outline: none !important; cursor: pointer !important; width: 100% !important; box-sizing: border-box !important;">`;
     daySelectHtml += `<option value="">Gün Seçin</option>`;
     for (const d of days) {
-      const isSelected = r.coord_day === d;
+      const isSelected = dayToName(r.coord_day) === d;
       daySelectHtml += `<option value="${d}" ${isSelected ? "selected" : ""}>${d}</option>`;
     }
     daySelectHtml += `</select>`;
+
+    let stuDaysInputHtml = `
+      <input class="import-days-input" type="text" data-index="${idx}" value="${escapeHtml(r.days || '')}" placeholder="Pzt, Sal" title="Öğrencinin Okul / Teorik Eğitim Günleri" style="padding: 2px 6px !important; border-radius: 4px !important; border: 1px solid var(--line) !important; background: var(--surface) !important; color: var(--ink) !important; width: 100% !important; font-size: 0.75rem !important; height: 24px !important; outline: none !important; box-sizing: border-box !important; margin: 0 !important;" />
+    `;
+
+    const statusBadge = r.isExistingStudent
+      ? `<span style="display: inline-block; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; font-weight: bold; background: rgba(16,185,129,0.15); color: #059669; white-space: nowrap;" title="Sistemdeki mevcut öğrenci verileri getirildi">✓ Kayıtlı</span>`
+      : `<span style="display: inline-block; padding: 2px 6px; border-radius: 10px; font-size: 0.7rem; font-weight: bold; background: rgba(59,130,246,0.15); color: #2563eb; white-space: nowrap;" title="Sisteme yeni eklenecek">Yeni</span>`;
     
     const isChecked = r.selected ? "checked" : "";
     
     html += `
-      <tr style="height: 34px !important;">
-        <td style="text-align: center !important; padding: 3px 4px !important; vertical-align: middle !important;">
+      <tr style="height: 32px !important;">
+        <td style="text-align: center !important; padding: 2px 4px !important; vertical-align: middle !important;">
           <input type="checkbox" class="import-row-checkbox" data-index="${idx}" ${isChecked} style="cursor: pointer; width: 15px; height: 15px; margin: 0; vertical-align: middle;" />
         </td>
-        <td style="padding: 3px 6px !important; vertical-align: middle !important;">${escapeHtml(r.student_no || "-")}</td>
-        <td style="padding: 3px 6px !important; vertical-align: middle !important;"><strong>${escapeHtml(r.student_name || "-")}</strong></td>
-        <td style="padding: 3px 6px !important; vertical-align: middle !important;">${escapeHtml(r.class_name || "-")}</td>
-        <td style="padding: 3px 6px !important; vertical-align: middle !important;">${fieldInputHtml}</td>
-        <td style="padding: 3px 6px !important; vertical-align: middle !important; font-size: 0.78rem !important; max-width: 250px !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important;" title="${escapeHtml(r.business_name || "")}">${escapeHtml(r.business_name || "-")}</td>
-        <td style="padding: 3px 6px !important; vertical-align: middle !important;">
-          <div style="display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; width: 100% !important;">
-            <span style="font-weight: 700; white-space: nowrap !important; font-size: 0.8rem !important;">${escapeHtml(r.coordinator_name || "-")}</span>
-            ${daySelectHtml}
-          </div>
+        <td style="text-align: center !important; padding: 2px 4px !important; vertical-align: middle !important;">${statusBadge}</td>
+        <td style="padding: 2px 6px !important; vertical-align: middle !important;">${escapeHtml(r.student_no || "-")}</td>
+        <td style="padding: 2px 6px !important; vertical-align: middle !important;"><strong>${escapeHtml(r.student_name || "-")}</strong></td>
+        <td style="padding: 2px 6px !important; vertical-align: middle !important;">${escapeHtml(r.class_name || "-")}</td>
+        <td style="padding: 2px 6px !important; vertical-align: middle !important;">${fieldInputHtml}</td>
+        <td style="padding: 2px 6px !important; vertical-align: middle !important; font-size: 0.78rem !important; max-width: 200px !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important;" title="${escapeHtml(r.business_name || "")}">
+          <strong>${escapeHtml(r.business_name || "-")}</strong>
         </td>
+        <td style="padding: 2px 6px !important; vertical-align: middle !important;">${teacherInputHtml}</td>
+        <td style="padding: 2px 4px !important; vertical-align: middle !important;">${daySelectHtml}</td>
+        <td style="padding: 2px 4px !important; vertical-align: middle !important;">${stuDaysInputHtml}</td>
       </tr>
     `;
   });
   
   tableBody.innerHTML = html;
   
-  // Uncheck select all checkbox and reset bulk bar state
   const selectAllCheckbox = document.getElementById("skillImportSelectAll");
   if (selectAllCheckbox) selectAllCheckbox.checked = false;
   updateBulkActionsBar();
@@ -600,10 +710,10 @@ async function analyzeImeImportFile(file) {
   if (els.skillImportPreviewTable) {
     els.skillImportPreviewTable.innerHTML = `
       <tr>
-        <td colspan="7" style="padding: 0; border: none; display: table-cell;">
+        <td colspan="10" style="padding: 0; border: none; display: table-cell;">
           <div class="skill-import-loading">
             <div class="skill-import-loading-spinner"></div>
-            <span>Dosya analiz ediliyor, lütfen bekleyin...</span>
+            <span>Dosya analiz ediliyor ve mevcut sistem kayıtları taranıyor, lütfen bekleyin...</span>
           </div>
         </td>
       </tr>
@@ -613,7 +723,6 @@ async function analyzeImeImportFile(file) {
   if (els.skillImportStats) els.skillImportStats.textContent = "";
   
   try {
-    // Load Alan/Dal list from JSON before rendering preview
     await loadAlanDalListesi();
 
     const formData = new FormData();
@@ -643,7 +752,7 @@ async function analyzeImeImportFile(file) {
       if (els.skillImportPreviewTable) {
         els.skillImportPreviewTable.innerHTML = `
           <tr>
-            <td colspan="6" style="text-align: center; padding: 20px; color: var(--danger);">
+            <td colspan="10" style="text-align: center; padding: 20px; color: var(--danger);">
               Seçilen dosyada geçerli öğrenci veya işletme verisi bulunamadı.
             </td>
           </tr>
@@ -652,14 +761,101 @@ async function analyzeImeImportFile(file) {
       if (els.skillImportStats) els.skillImportStats.textContent = "Sonuç: 0 kayıt bulundu.";
       return;
     }
-    
+
+    const currentSchoolId = (importSchoolType === "existing" ? importSchoolExistingId : "") || (skillState.schoolRecords[0] ? skillState.schoolRecords[0].id : "");
+    const targetSchool = skillState.schoolRecords.find(s => s.id === currentSchoolId) || skillState.schoolRecords[0] || skillState.school;
+    const defaultDeputy = document.getElementById("skillImportDeputyInput")?.value?.trim() || targetSchool?.deputy || "";
+    const deputyInput = document.getElementById("skillImportDeputyInput");
+    if (deputyInput && defaultDeputy) {
+      deputyInput.value = defaultDeputy;
+    }
+
+    let existingStudentMatches = 0;
+    let existingBusinessMatches = 0;
+
+    // Scan existing state and match records
+    parsedImportRecords.forEach(r => {
+      const stuNo = (r.student_no || "").trim();
+      const stuName = (r.student_name || "").trim().toLowerCase();
+      
+      let existingStu = null;
+      if (stuNo) {
+        existingStu = skillState.students.find(s => String(s.no || "").trim() === stuNo);
+      }
+      if (!existingStu && stuName) {
+        existingStu = skillState.students.find(s => (s.name || "").trim().toLowerCase() === stuName);
+      }
+      
+      if (existingStu) {
+        r.isExistingStudent = true;
+        r.existingStudentId = existingStu.id;
+        existingStudentMatches++;
+        
+        // Read existing student data
+        if (!r.field || r.field === "Belirtilmedi") {
+          r.field = existingStu.field || "";
+        }
+        // PRESERVE existing student days!
+        r.days = existingStu.days || r.days || "Pzt, Sal";
+        if (!r.class_name && existingStu.className) {
+          r.class_name = existingStu.className;
+        }
+      } else {
+        r.isExistingStudent = false;
+        r.days = r.days || "Pzt, Sal";
+      }
+
+      // Check existing business
+      const bizName = (r.business_name || "").trim();
+      let existingBiz = null;
+      if (bizName) {
+        existingBiz = skillState.businesses.find(b => (b.name || "").trim().toLowerCase() === bizName.toLowerCase());
+      }
+      if (!existingBiz && existingStu?.businessId) {
+        existingBiz = skillState.businesses.find(b => b.id === existingStu.businessId);
+        if (existingBiz && !bizName) {
+          r.business_name = existingBiz.name;
+        }
+      }
+
+      if (existingBiz) {
+        r.isExistingBusiness = true;
+        r.existingBusinessId = existingBiz.id;
+        existingBusinessMatches++;
+
+        // Coordinator for this business
+        const existingCoord = skillState.coordinators.find(c => c.businessId === existingBiz.id);
+        if (existingCoord) {
+          if (!r.coordinator_name || r.coordinator_name === "Atanmadı" || r.coordinator_name === "-") {
+            r.coordinator_name = existingCoord.teacher || "";
+          }
+          if (!r.coord_day && existingCoord.day) {
+            r.coord_day = dayToName(existingCoord.day);
+          }
+          if (!r.deputy && existingCoord.deputy) {
+            r.deputy = existingCoord.deputy;
+          }
+        }
+      } else {
+        r.isExistingBusiness = false;
+      }
+
+      if (!r.deputy) {
+        r.deputy = defaultDeputy;
+      }
+    });
+
     const uniqueStudents = new Set(parsedImportRecords.map(r => r.student_name).filter(Boolean));
     const uniqueBusinesses = new Set(parsedImportRecords.map(r => r.business_name).filter(Boolean));
     const uniqueTeachers = new Set(parsedImportRecords.map(r => r.coordinator_name).filter(Boolean));
     
     if (els.skillImportStats) {
       els.skillImportStats.innerHTML = `
-        <span>Öğrenci: <strong style="color:var(--accent); font-size: 0.9rem;">${uniqueStudents.size}</strong></span>
+        <span>Toplam: <strong style="color:var(--accent); font-size: 0.9rem;">${parsedImportRecords.length}</strong></span>
+        <span style="color: var(--line);">|</span>
+        <span>Sistemde Kayıtlı: <strong style="color:#10b981; font-size: 0.9rem;">${existingStudentMatches}</strong></span>
+        <span style="color: var(--line);">|</span>
+        <span>Yeni: <strong style="color:#3b82f6; font-size: 0.9rem;">${parsedImportRecords.length - existingStudentMatches}</strong></span>
         <span style="color: var(--line);">|</span>
         <span>İşletme: <strong style="color:var(--accent); font-size: 0.9rem;">${uniqueBusinesses.size}</strong></span>
         <span style="color: var(--line);">|</span>
@@ -667,9 +863,7 @@ async function analyzeImeImportFile(file) {
       `;
     }
     
-    // Render the interactive preview table using loaded lists and selections
     renderImportPreviewTable();
-    
     if (els.skillImportSaveBtn) els.skillImportSaveBtn.disabled = false;
     
   } catch (error) {
@@ -677,7 +871,7 @@ async function analyzeImeImportFile(file) {
     if (els.skillImportPreviewTable) {
       els.skillImportPreviewTable.innerHTML = `
         <tr>
-          <td colspan="6" style="text-align: center; padding: 20px; color: var(--danger);">
+          <td colspan="10" style="text-align: center; padding: 20px; color: var(--danger);">
             Hata: ${escapeHtml(error.message)}
           </td>
         </tr>
@@ -694,7 +888,6 @@ function saveImeImportedData(event) {
   if (activeImportTab === "sqlite") {
     if (!parsedImportSqliteData) return;
     
-    // Replace active profile state collections
     skillState.school = parsedImportSqliteData.school || skillState.school;
     skillState.schoolRecords = parsedImportSqliteData.schoolRecords || [];
     skillState.teacherPool = parsedImportSqliteData.teacherPool || [];
@@ -719,14 +912,14 @@ function saveImeImportedData(event) {
   let activeSchoolId = "";
   if (importSchoolType === "new") {
     activeSchoolId = uid("school");
-    const schoolTypeSelect = document.getElementById("skillImportTypeSelect");
-    const isLise = schoolTypeSelect ? schoolTypeSelect.value === "lise" : false;
+    const schoolTypeSelect = document.getElementById("skillImportSchoolType");
+    const isLise = schoolTypeSelect ? schoolTypeSelect.value === "mtal" : false;
     const newSchool = {
       id: activeSchoolId,
       name: importSchoolNewName,
       type: isLise ? "MTAL" : "MESEM",
       principal: "",
-      deputy: ""
+      deputy: document.getElementById("skillImportDeputyInput")?.value?.trim() || ""
     };
     skillState.schoolRecords.push(newSchool);
     if (!skillState.school || !skillState.school.id) {
@@ -741,16 +934,32 @@ function saveImeImportedData(event) {
         name: "Yeni Okul",
         type: "MESEM",
         principal: "",
-        deputy: ""
+        deputy: document.getElementById("skillImportDeputyInput")?.value?.trim() || ""
       };
       skillState.schoolRecords.push(newSchool);
       skillState.school = newSchool;
     }
   }
 
-  let addedCount = 0;
+  const deputyInput = document.getElementById("skillImportDeputyInput");
+  const currentDeputy = (deputyInput ? deputyInput.value.trim() : "") || (skillState.schoolRecords.find(s => s.id === activeSchoolId)?.deputy) || "";
+  
+  const currentSchool = skillState.schoolRecords.find(s => s.id === activeSchoolId);
+  if (currentSchool && currentDeputy) {
+    currentSchool.deputy = currentDeputy;
+  }
+  if (skillState.school && currentDeputy) {
+    skillState.school.deputy = currentDeputy;
+  }
+
+  let addedStudentCount = 0;
+  let updatedStudentCount = 0;
+  let addedBizCount = 0;
+  let addedCoordCount = 0;
+  let updatedCoordCount = 0;
   
   parsedImportRecords.forEach(rec => {
+    // 1. Business
     let bizName = (rec.business_name || "Belirtilmedi").trim();
     let biz = skillState.businesses.find(b => b.name.toLowerCase() === bizName.toLowerCase());
     if (!biz) {
@@ -762,13 +971,15 @@ function saveImeImportedData(event) {
         group: "1"
       };
       skillState.businesses.push(biz);
+      addedBizCount++;
     } else {
       biz.phone = biz.phone || rec.business_phone || "";
       biz.address = biz.address || rec.business_address || "";
     }
     
+    // 2. Teacher in Pool
     let teacherName = (rec.coordinator_name || "").trim().toUpperCase();
-    if (teacherName) {
+    if (teacherName && teacherName !== "ATANMADI" && teacherName !== "-") {
       let teacher = skillState.teacherPool.find(t => t.name.toLowerCase() === teacherName.toLowerCase());
       if (!teacher) {
         teacher = {
@@ -779,17 +990,17 @@ function saveImeImportedData(event) {
       }
     }
     
-    // Add selected Alan/Dal field to state fields list if not already present
+    // 3. Field / Dal
     let fieldVal = (rec.field || "Belirtilmedi").trim();
     if (fieldVal && fieldVal !== "Belirtilmedi") {
       const parts = fieldVal.split("/");
       const area = parts[0]?.trim() || "Belirtilmedi";
-      const branch = parts[1]?.trim() || "Belirtilmedi";
+      const branch = parts[1]?.trim() || "";
       
       if (!skillState.fields) skillState.fields = [];
       const fieldExists = skillState.fields.some(f => 
         f.area.toLowerCase() === area.toLowerCase() && 
-        f.branch.toLowerCase() === branch.toLowerCase()
+        (branch ? f.branch.toLowerCase() === branch.toLowerCase() : true)
       );
       if (!fieldExists) {
         skillState.fields.push({
@@ -800,14 +1011,14 @@ function saveImeImportedData(event) {
       }
     }
 
+    // 4. Student (PRESERVE DAYS AND DATA)
     let stuNo = (rec.student_no || "").trim();
     let stuName = (rec.student_name || "").trim();
     let student = skillState.students.find(s => 
-      (stuNo && s.no === stuNo) || 
-      (s.name.toLowerCase() === stuName.toLowerCase())
+      (stuNo && String(s.no || "").trim() === stuNo) || 
+      (stuName && s.name.toLowerCase() === stuName.toLowerCase())
     );
     
-    let days = rec.days || "Pzt, Sal";
     if (!student) {
       student = {
         id: uid("stu"),
@@ -816,37 +1027,47 @@ function saveImeImportedData(event) {
         className: rec.class_name || "12/A",
         field: fieldVal,
         businessId: biz.id,
-        days: days,
+        days: rec.days || "Pzt, Sal",
         active: true
       };
       skillState.students.push(student);
-      addedCount++;
+      addedStudentCount++;
     } else {
       student.no = stuNo || student.no;
       student.name = stuName || student.name;
       student.className = rec.class_name || student.className;
-      student.field = fieldVal;
+      student.field = fieldVal || student.field;
       student.businessId = biz.id;
-      student.days = days;
+      // Preserve existing days: only update if rec.days is explicitly set and modified
+      if (rec.days) {
+        student.days = rec.days;
+      }
+      updatedStudentCount++;
     }
     
-    if (teacherName) {
-      let coord = skillState.coordinators.find(c => 
-        c.teacher.toLowerCase() === teacherName.toLowerCase() && 
-        c.businessId === biz.id &&
-        c.schoolId === activeSchoolId
-      );
+    // 5. Coordinator - Business - Teacher - Day - Deputy Match
+    if (teacherName && teacherName !== "ATANMADI" && teacherName !== "-") {
+      let coord = skillState.coordinators.find(c => c.businessId === biz.id);
+      const dayNum = dayToNumber(rec.coord_day);
+      const coordDeputy = rec.deputy || currentDeputy || "";
+
       if (!coord) {
         coord = {
           id: uid("coord"),
           schoolId: activeSchoolId,
           teacher: teacherName,
           businessId: biz.id,
-          day: rec.coord_day || ""
+          deputy: coordDeputy,
+          day: dayNum || ""
         };
         skillState.coordinators.push(coord);
+        addedCoordCount++;
       } else {
-        coord.day = rec.coord_day || coord.day || "";
+        coord.teacher = teacherName;
+        coord.schoolId = activeSchoolId;
+        if (dayNum) coord.day = dayNum;
+        if (coordDeputy) coord.deputy = coordDeputy;
+        updatedCoordCount++;
       }
     }
   });
@@ -855,7 +1076,7 @@ function saveImeImportedData(event) {
   saveState({ sync: true });
   renderSkillModule();
   
-  showToast(`${addedCount} yeni öğrenci ve eşleştirmeleri sisteme aktarıldı.`, "success");
+  showToast(`${addedStudentCount} yeni öğrenci eklendi, ${updatedStudentCount} öğrenci ve koordinatör eşleştirmeleri güncellendi.`, "success");
   els.skillImportDialog?.close();
 }
 
@@ -881,6 +1102,15 @@ document.addEventListener("change", (e) => {
   }
 });
 
+document.getElementById("skillImportSchoolExistingSelect")?.addEventListener("change", (e) => {
+  const schoolId = e.target.value;
+  const selSchool = skillState.schoolRecords.find(s => s.id === schoolId);
+  const deputyInput = document.getElementById("skillImportDeputyInput");
+  if (deputyInput && selSchool && selSchool.deputy) {
+    deputyInput.value = selSchool.deputy;
+  }
+});
+
 document.getElementById("skillImportSchoolType")?.addEventListener("change", () => {
   renderImportPreviewTable();
 });
@@ -896,74 +1126,125 @@ document.getElementById("skillImportSelectAll")?.addEventListener("change", (e) 
   updateBulkActionsBar();
 });
 
+// Single-button Coordinator Deputy assignment to everyone
+document.getElementById("skillImportApplyDeputyAllBtn")?.addEventListener("click", () => {
+  const depVal = document.getElementById("skillImportDeputyInput")?.value?.trim();
+  if (!depVal) {
+    showToast("Lütfen atanacak müdür yardımcısı adını girin.", "warning");
+    return;
+  }
+  parsedImportRecords.forEach(r => r.deputy = depVal);
+  showToast(`Tüm kayıtlara "${depVal}" koordinatör müdür yardımcısı olarak atandı.`, "success");
+});
+
+// Single-button Coordinator Teacher assignment to all businesses
+document.getElementById("skillImportApplyTeacherAllBtn")?.addEventListener("click", () => {
+  const teacherVal = document.getElementById("skillImportAllTeacherInput")?.value?.trim().toUpperCase();
+  if (!teacherVal) {
+    showToast("Lütfen atanacak koordinatör öğretmeni seçin veya yazın.", "warning");
+    return;
+  }
+  parsedImportRecords.forEach(r => r.coordinator_name = teacherVal);
+  document.querySelectorAll(".import-teacher-input").forEach(inp => inp.value = teacherVal);
+  showToast(`Tüm işletmelere "${teacherVal}" koordinatör öğretmen olarak atandı.`, "success");
+});
+
+// Bulk apply to selected records
 document.getElementById("skillImportBulkApplyBtn")?.addEventListener("click", () => {
-  const bulkInput = document.getElementById("skillImportBulkFieldInput");
+  const bulkFieldInput = document.getElementById("skillImportBulkFieldInput");
+  const bulkTeacherInput = document.getElementById("skillImportBulkTeacherInput");
   const bulkDaySelect = document.getElementById("skillImportBulkDaySelect");
   
-  const bulkField = bulkInput ? bulkInput.value.trim() : "";
+  const bulkField = bulkFieldInput ? bulkFieldInput.value.trim() : "";
+  const bulkTeacher = bulkTeacherInput ? bulkTeacherInput.value.trim().toUpperCase() : "";
   const bulkDay = bulkDaySelect ? bulkDaySelect.value : "";
   
-  if (!bulkField && !bulkDay) {
-    showToast("Lütfen toplu atanacak alan/dal veya ziyaret günü seçin.", "warning");
+  if (!bulkField && !bulkTeacher && !bulkDay) {
+    showToast("Lütfen uygulanacak en az bir alan/dal, öğretmen veya ziyaret günü belirleyin.", "warning");
     return;
   }
   
-  let appliedFieldCount = 0;
-  let appliedDayCount = 0;
-  
+  let appliedCount = 0;
   parsedImportRecords.forEach((r, idx) => {
     if (r.selected) {
+      appliedCount++;
       if (bulkField) {
         r.field = bulkField;
-        const inputEl = document.querySelector(`.import-field-input[data-index="${idx}"]`);
-        if (inputEl) {
-          inputEl.value = bulkField;
-        }
-        appliedFieldCount++;
+        const fieldEl = document.querySelector(`.import-field-input[data-index="${idx}"]`);
+        if (fieldEl) fieldEl.value = bulkField;
       }
-      
+      if (bulkTeacher) {
+        r.coordinator_name = bulkTeacher;
+        parsedImportRecords.forEach((rec, rIdx) => {
+          if (rec.business_name === r.business_name) {
+            rec.coordinator_name = bulkTeacher;
+            const tEl = document.querySelector(`.import-teacher-input[data-index="${rIdx}"]`);
+            if (tEl) tEl.value = bulkTeacher;
+          }
+        });
+      }
       if (bulkDay) {
         r.coord_day = bulkDay;
-        const selectEl = document.querySelector(`.import-coord-day-select[data-index="${idx}"]`);
-        if (selectEl) {
-          selectEl.value = bulkDay;
-        }
-        appliedDayCount++;
-        
-        // Also sync day with other students of the same business (even if they are not selected)
         parsedImportRecords.forEach((rec, rIdx) => {
           if (rec.business_name === r.business_name) {
             rec.coord_day = bulkDay;
-            const subSelectEl = document.querySelector(`.import-coord-day-select[data-index="${rIdx}"]`);
-            if (subSelectEl) {
-              subSelectEl.value = bulkDay;
-            }
+            const dEl = document.querySelector(`.import-coord-day-select[data-index="${rIdx}"]`);
+            if (dEl) dEl.value = bulkDay;
           }
         });
       }
     }
   });
-  
-  let msg = [];
-  if (appliedFieldCount > 0) msg.push(`${appliedFieldCount} öğrenciye Alan/Dal`);
-  if (appliedDayCount > 0) msg.push(`${appliedDayCount} öğrenciye Ziyaret Günü`);
-  showToast(`${msg.join(" ve ")} toplu atandı.`, "success");
-  
+
+  showToast(`${appliedCount} seçili kayda ve işletmelerine bilgiler uygulandı.`, "success");
   parsedImportRecords.forEach(r => r.selected = false);
-  if (bulkInput) bulkInput.value = "";
+  if (bulkFieldInput) bulkFieldInput.value = "";
+  if (bulkTeacherInput) bulkTeacherInput.value = "";
   if (bulkDaySelect) bulkDaySelect.value = "";
   document.querySelectorAll(".import-row-checkbox").forEach(cb => cb.checked = false);
   const selectAllCheckbox = document.getElementById("skillImportSelectAll");
   if (selectAllCheckbox) selectAllCheckbox.checked = false;
-  
+  updateBulkActionsBar();
+});
+
+// Single-button Day assignment to selected businesses
+document.getElementById("skillImportBulkDayBtn")?.addEventListener("click", () => {
+  const bulkDaySelect = document.getElementById("skillImportBulkDaySelect");
+  const bulkDay = bulkDaySelect ? bulkDaySelect.value : "";
+  if (!bulkDay) {
+    showToast("Lütfen atanacak ziyaret gününü seçin.", "warning");
+    return;
+  }
+  let appliedCount = 0;
+  parsedImportRecords.forEach((r, idx) => {
+    if (r.selected) {
+      appliedCount++;
+      r.coord_day = bulkDay;
+      parsedImportRecords.forEach((rec, rIdx) => {
+        if (rec.business_name === r.business_name) {
+          rec.coord_day = bulkDay;
+          const dEl = document.querySelector(`.import-coord-day-select[data-index="${rIdx}"]`);
+          if (dEl) dEl.value = bulkDay;
+        }
+      });
+    }
+  });
+  showToast(`Seçilen işletmelere "${bulkDay}" ziyaret günü atandı.`, "success");
+  parsedImportRecords.forEach(r => r.selected = false);
+  if (bulkDaySelect) bulkDaySelect.value = "";
+  document.querySelectorAll(".import-row-checkbox").forEach(cb => cb.checked = false);
+  const selectAllCheckbox = document.getElementById("skillImportSelectAll");
+  if (selectAllCheckbox) selectAllCheckbox.checked = false;
   updateBulkActionsBar();
 });
 
 document.getElementById("skillImportBulkClearBtn")?.addEventListener("click", () => {
   parsedImportRecords.forEach(r => r.selected = false);
-  const bulkInput = document.getElementById("skillImportBulkFieldInput");
+  const bulkFieldInput = document.getElementById("skillImportBulkFieldInput");
+  const bulkTeacherInput = document.getElementById("skillImportBulkTeacherInput");
   const bulkDaySelect = document.getElementById("skillImportBulkDaySelect");
-  if (bulkInput) bulkInput.value = "";
+  if (bulkFieldInput) bulkFieldInput.value = "";
+  if (bulkTeacherInput) bulkTeacherInput.value = "";
   if (bulkDaySelect) bulkDaySelect.value = "";
   document.querySelectorAll(".import-row-checkbox").forEach(cb => cb.checked = false);
   const selectAllCheckbox = document.getElementById("skillImportSelectAll");
@@ -986,6 +1267,29 @@ document.getElementById("skillImportPreviewTable")?.addEventListener("change", (
       parsedImportRecords[idx].field = e.target.value;
     }
   }
+
+  if (e.target.classList.contains("import-days-input")) {
+    const idx = parseInt(e.target.dataset.index);
+    if (parsedImportRecords[idx]) {
+      parsedImportRecords[idx].days = e.target.value;
+    }
+  }
+  
+  if (e.target.classList.contains("import-teacher-input")) {
+    const idx = parseInt(e.target.dataset.index);
+    const selectedTeacher = e.target.value.trim().toUpperCase();
+    const currentRec = parsedImportRecords[idx];
+    if (currentRec) {
+      currentRec.coordinator_name = selectedTeacher;
+      parsedImportRecords.forEach((rec, rIdx) => {
+        if (rec.business_name === currentRec.business_name) {
+          rec.coordinator_name = selectedTeacher;
+          const tEl = document.querySelector(`.import-teacher-input[data-index="${rIdx}"]`);
+          if (tEl && tEl !== e.target) tEl.value = selectedTeacher;
+        }
+      });
+    }
+  }
   
   if (e.target.classList.contains("import-coord-day-select")) {
     const idx = parseInt(e.target.dataset.index);
@@ -993,14 +1297,11 @@ document.getElementById("skillImportPreviewTable")?.addEventListener("change", (
     const currentRec = parsedImportRecords[idx];
     if (currentRec) {
       currentRec.coord_day = selectedDay;
-      
       parsedImportRecords.forEach((rec, rIdx) => {
         if (rec.business_name === currentRec.business_name) {
           rec.coord_day = selectedDay;
           const selectEl = document.querySelector(`.import-coord-day-select[data-index="${rIdx}"]`);
-          if (selectEl) {
-            selectEl.value = selectedDay;
-          }
+          if (selectEl && selectEl !== e.target) selectEl.value = selectedDay;
         }
       });
     }
@@ -1010,8 +1311,24 @@ document.getElementById("skillImportPreviewTable")?.addEventListener("change", (
 document.getElementById("skillImportPreviewTable")?.addEventListener("input", (e) => {
   if (e.target.classList.contains("import-field-input")) {
     const idx = parseInt(e.target.dataset.index);
+    if (parsedImportRecords[idx]) parsedImportRecords[idx].field = e.target.value;
+  }
+  if (e.target.classList.contains("import-days-input")) {
+    const idx = parseInt(e.target.dataset.index);
+    if (parsedImportRecords[idx]) parsedImportRecords[idx].days = e.target.value;
+  }
+  if (e.target.classList.contains("import-teacher-input")) {
+    const idx = parseInt(e.target.dataset.index);
+    const val = e.target.value.trim().toUpperCase();
     if (parsedImportRecords[idx]) {
-      parsedImportRecords[idx].field = e.target.value;
+      parsedImportRecords[idx].coordinator_name = val;
+      parsedImportRecords.forEach((rec, rIdx) => {
+        if (rec.business_name === parsedImportRecords[idx].business_name) {
+          rec.coordinator_name = val;
+          const tEl = document.querySelector(`.import-teacher-input[data-index="${rIdx}"]`);
+          if (tEl && tEl !== e.target) tEl.value = val;
+        }
+      });
     }
   }
 });
@@ -1035,6 +1352,7 @@ document.getElementById("skillImportBulkFieldInput")?.addEventListener("focus", 
 document.getElementById("skillImportBulkFieldInput")?.addEventListener("click", (e) => {
   e.target.select();
 });
+
 
 if (els.skillImeProfileBtn) els.skillImeProfileBtn.addEventListener("click", openSkillImeProfileDialog);
 if (els.skillImeProfileCloseBtn) els.skillImeProfileCloseBtn.addEventListener("click", () => els.skillImeProfileDialog?.close());
