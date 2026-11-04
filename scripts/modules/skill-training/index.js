@@ -608,6 +608,24 @@ function renderImportPreviewTable() {
   const tableBody = document.getElementById("skillImportPreviewTable");
   if (!tableBody) return;
   
+  const sort = window.skillTableSort?.importPreview;
+  if (sort && sort.key) {
+    parsedImportRecords.sort((a, b) => {
+      let vA, vB;
+      if (sort.key === "coord_day") {
+        vA = dayToName(a.coord_day) || "";
+        vB = dayToName(b.coord_day) || "";
+      } else {
+        vA = a[sort.key];
+        vB = b[sort.key];
+      }
+      return (window.compareSkillValues || ((x, y, d) => String(x||'').localeCompare(String(y||''), 'tr-TR', {numeric:true}) * (d === 'asc' ? 1 : -1)))(vA, vB, sort.dir);
+    });
+  }
+  if (typeof window.updateSkillTableHeadIcons === "function") {
+    window.updateSkillTableHeadIcons("importPreview");
+  }
+  
   const schoolTypeSelect = document.getElementById("skillImportSchoolType");
   const schoolType = schoolTypeSelect ? schoolTypeSelect.value : "mesem";
   
@@ -688,6 +706,7 @@ function renderImportPreviewTable() {
   if (selectAllCheckbox) selectAllCheckbox.checked = false;
   updateBulkActionsBar();
 }
+window.renderImportPreviewTable = renderImportPreviewTable;
 
 async function analyzeImeImportFile(file) {
   if (!file) return;

@@ -9014,6 +9014,52 @@ body.skill-mode .skill-class-day-dialog .skill-day-picker button,
   margin-top: 2px !important;
 }
 
+/* Skill Table Sortable Columns */
+.skill-sort-col {
+  cursor: pointer !important;
+  user-select: none !important;
+  transition: color 0.15s ease, background-color 0.15s ease !important;
+}
+
+.skill-sort-col:hover {
+  color: var(--accent, #148177) !important;
+}
+
+.skill-data-table th.skill-sort-col:hover {
+  background-color: rgba(20, 129, 119, 0.08) !important;
+}
+
+.skill-grid-head .skill-sort-col:hover {
+  background-color: rgba(20, 129, 119, 0.08) !important;
+}
+
+.skill-sort-indicator {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-left: 4px !important;
+  font-size: 0.72rem !important;
+  line-height: 1 !important;
+  opacity: 0.35;
+  transition: opacity 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  vertical-align: middle;
+}
+
+.skill-sort-col:hover .skill-sort-indicator {
+  opacity: 0.8 !important;
+}
+
+.skill-sort-col.is-active {
+  color: var(--accent, #148177) !important;
+  font-weight: 900 !important;
+}
+
+.skill-sort-col.is-active .skill-sort-indicator {
+  opacity: 1 !important;
+  font-weight: 900 !important;
+  color: var(--accent, #148177) !important;
+}
+
 .skill-import-stats {
   margin-bottom: 12px;
 }

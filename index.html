@@ -31,7 +31,7 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg" />
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
-    <link rel="stylesheet" href="./styles.css?v=95" />
+    <link rel="stylesheet" href="./styles.css?v=96" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
     <link rel="stylesheet" href="./theme-overrides.css?v=125" />
   </head>
@@ -2009,7 +2009,16 @@
                 </div>
                 <table class="skill-data-table">
                   <thead>
-                    <tr><th><input type="checkbox" id="skillSchoolSelectAll" style="cursor: pointer;" /></th><th>No</th><th>Okul adı</th><th>İl</th><th>Tür</th><th>Yaz Tatili Başl.</th><th>Yaz Tatili Bit.</th><th>Müdür</th></tr>
+                    <tr>
+                      <th><input type="checkbox" id="skillSchoolSelectAll" style="cursor: pointer;" /></th>
+                      <th class="skill-sort-col" data-sort-table="schools" data-sort-key="index" title="Sıralamak için tıklayın">No <span class="skill-sort-indicator">⇅</span></th>
+                      <th class="skill-sort-col" data-sort-table="schools" data-sort-key="name" title="Sıralamak için tıklayın">Okul adı <span class="skill-sort-indicator">⇅</span></th>
+                      <th class="skill-sort-col" data-sort-table="schools" data-sort-key="city" title="Sıralamak için tıklayın">İl <span class="skill-sort-indicator">⇅</span></th>
+                      <th class="skill-sort-col" data-sort-table="schools" data-sort-key="schoolType" title="Sıralamak için tıklayın">Tür <span class="skill-sort-indicator">⇅</span></th>
+                      <th class="skill-sort-col" data-sort-table="schools" data-sort-key="summerStartDate" title="Sıralamak için tıklayın">Yaz Tatili Başl. <span class="skill-sort-indicator">⇅</span></th>
+                      <th class="skill-sort-col" data-sort-table="schools" data-sort-key="summerEndDate" title="Sıralamak için tıklayın">Yaz Tatili Bit. <span class="skill-sort-indicator">⇅</span></th>
+                      <th class="skill-sort-col" data-sort-table="schools" data-sort-key="principal" title="Sıralamak için tıklayın">Müdür <span class="skill-sort-indicator">⇅</span></th>
+                    </tr>
                   </thead>
                   <tbody id="skillSchoolTable"></tbody>
                 </table>
@@ -2036,7 +2045,11 @@
               </div>
               <table class="skill-data-table">
                 <thead>
-                  <tr><th><input type="checkbox" id="skillTeacherSelectAll" style="cursor: pointer;" /></th><th>No</th><th>Koordinatör öğretmen</th></tr>
+                  <tr>
+                    <th><input type="checkbox" id="skillTeacherSelectAll" style="cursor: pointer;" /></th>
+                    <th class="skill-sort-col" data-sort-table="teachers" data-sort-key="index" title="Sıralamak için tıklayın">No <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-sort-table="teachers" data-sort-key="name" title="Sıralamak için tıklayın">Koordinatör öğretmen <span class="skill-sort-indicator">⇅</span></th>
+                  </tr>
                 </thead>
                 <tbody id="skillTeacherTable"></tbody>
               </table>
@@ -2072,7 +2085,12 @@
           <div class="skill-panel skill-table-card">
             <table class="skill-data-table">
               <thead>
-                <tr><th><input type="checkbox" id="skillFieldSelectAll" style="cursor: pointer;" /></th><th>No</th><th>Alan</th><th>Dal</th></tr>
+                <tr>
+                  <th><input type="checkbox" id="skillFieldSelectAll" style="cursor: pointer;" /></th>
+                  <th class="skill-sort-col" data-sort-table="fields" data-sort-key="index" title="Sıralamak için tıklayın">No <span class="skill-sort-indicator">⇅</span></th>
+                  <th class="skill-sort-col" data-sort-table="fields" data-sort-key="area" title="Sıralamak için tıklayın">Alan <span class="skill-sort-indicator">⇅</span></th>
+                  <th class="skill-sort-col" data-sort-table="fields" data-sort-key="branch" title="Sıralamak için tıklayın">Dal <span class="skill-sort-indicator">⇅</span></th>
+                </tr>
               </thead>
               <tbody id="skillFieldTable"></tbody>
             </table>
@@ -2699,15 +2717,15 @@
                 <thead>
                   <tr>
                     <th style="width: 32px; text-align: center; padding: 4px;"><input type="checkbox" id="skillImportSelectAll" style="cursor: pointer; width: 15px; height: 15px; margin: 0; vertical-align: middle;" /></th>
-                    <th style="width: 70px; text-align: center; padding: 4px;">Durum</th>
-                    <th style="width: 75px; padding: 4px;">Öğrenci No</th>
-                    <th style="min-width: 130px; padding: 4px;">Ad Soyad</th>
-                    <th style="width: 65px; padding: 4px;">Sınıf</th>
-                    <th style="min-width: 170px; padding: 4px;">Alan/Dal</th>
-                    <th style="min-width: 160px; padding: 4px;">İşletme</th>
-                    <th style="min-width: 170px; padding: 4px;">Koordinatör Öğretmen</th>
-                    <th style="width: 110px; padding: 4px;">Ziyaret Günü</th>
-                    <th style="width: 85px; padding: 4px;" title="Öğrencinin Okul / Teorik Eğitim Günleri">Okul Günleri</th>
+                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="isExistingStudent" style="width: 70px; text-align: center; padding: 4px;" title="Sıralamak için tıklayın">Durum <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="student_no" style="width: 75px; padding: 4px;" title="Sıralamak için tıklayın">Öğrenci No <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="student_name" style="min-width: 130px; padding: 4px;" title="Sıralamak için tıklayın">Ad Soyad <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="class_name" style="width: 65px; padding: 4px;" title="Sıralamak için tıklayın">Sınıf <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="field" style="min-width: 170px; padding: 4px;" title="Sıralamak için tıklayın">Alan/Dal <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="business_name" style="min-width: 160px; padding: 4px;" title="Sıralamak için tıklayın">İşletme <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="coordinator_name" style="min-width: 170px; padding: 4px;" title="Sıralamak için tıklayın">Koordinatör Öğretmen <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="coord_day" style="width: 110px; padding: 4px;" title="Sıralamak için tıklayın">Ziyaret Günü <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="days" style="width: 85px; padding: 4px;" title="Öğrencinin Okul / Teorik Eğitim Günleri - Sıralamak için tıklayın">Okul Günleri <span class="skill-sort-indicator">⇅</span></th>
                   </tr>
                 </thead>
                 <tbody id="skillImportPreviewTable"></tbody>
@@ -5030,12 +5048,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./scripts/core/module-registry.js?v=1"></script>
-    <script src="./app.js?v=126"></script>
+    <script src="./app.js?v=127"></script>
     <script src="./scripts/modules/settings/index.js?v=8"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=9"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=17"></script>
     <script src="./scripts/modules/sorubank/index.js?v=8"></script>
-    <script src="./scripts/modules/skill-training/index.js?v=16"></script>
+    <script src="./scripts/modules/skill-training/index.js?v=17"></script>
     <script src="./scripts/modules/student-tracking/index.js?v=14"></script>
     <script src="./scripts/modules/system-admin/index.js?v=1"></script>
   </body>

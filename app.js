@@ -3478,19 +3478,42 @@ function renderSkillHolidays() {
   renderSkillHolidayYears();
   const year = getSkillHolidayYear();
   if (!els.skillHolidayStartDate?.value && !els.skillHolidayId?.value) clearSkillHolidayForm();
-  const rows = sortSkillHolidays(skillState.holidays.filter((holiday) => String(holiday.startDate || "").startsWith(`${year}-`)));
+  let rows = sortSkillHolidays(skillState.holidays.filter((holiday) => String(holiday.startDate || "").startsWith(`${year}-`)));
+  const sort = window.skillTableSort?.holidays;
+  if (sort && sort.key) {
+    rows.sort((a, b) => {
+      let vA, vB;
+      if (sort.key === "index") {
+        vA = skillState.holidays.indexOf(a);
+        vB = skillState.holidays.indexOf(b);
+      } else if (sort.key === "startDate") {
+        vA = a.startDate; vB = b.startDate;
+      } else if (sort.key === "endDate") {
+        vA = a.endDate || a.startDate; vB = b.endDate || b.startDate;
+      } else if (sort.key === "isSchoolBreak") {
+        vA = Boolean(a.isSchoolBreak); vB = Boolean(b.isSchoolBreak);
+      } else if (sort.key === "startPart") {
+        vA = a.startPart; vB = b.startPart;
+      } else if (sort.key === "endPart") {
+        vA = a.endPart; vB = b.endPart;
+      } else if (sort.key === "name") {
+        vA = a.name; vB = b.name;
+      }
+      return compareSkillValues(vA, vB, sort.dir);
+    });
+  }
   els.skillHolidayTable.innerHTML = rows.length ? `
     <table class="skill-data-table skill-holiday-table">
       <thead>
         <tr>
           <th>Seç</th>
-          <th>No</th>
-          <th>Başlangıç</th>
-          <th>Bitiş</th>
-          <th>Ara Tatil / Yarıyıl</th>
-          <th>Başlangıç Dilimi</th>
-          <th>Bitiş Dilimi</th>
-          <th>Açıklama</th>
+          <th class="skill-sort-col ${sort?.key === 'index' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="index" title="Sıralamak için tıklayın">No ${getSkillSortIcon("holidays", "index")}</th>
+          <th class="skill-sort-col ${sort?.key === 'startDate' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="startDate" title="Sıralamak için tıklayın">Başlangıç ${getSkillSortIcon("holidays", "startDate")}</th>
+          <th class="skill-sort-col ${sort?.key === 'endDate' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="endDate" title="Sıralamak için tıklayın">Bitiş ${getSkillSortIcon("holidays", "endDate")}</th>
+          <th class="skill-sort-col ${sort?.key === 'isSchoolBreak' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="isSchoolBreak" title="Sıralamak için tıklayın">Ara Tatil / Yarıyıl ${getSkillSortIcon("holidays", "isSchoolBreak")}</th>
+          <th class="skill-sort-col ${sort?.key === 'startPart' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="startPart" title="Sıralamak için tıklayın">Başlangıç Dilimi ${getSkillSortIcon("holidays", "startPart")}</th>
+          <th class="skill-sort-col ${sort?.key === 'endPart' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="endPart" title="Sıralamak için tıklayın">Bitiş Dilimi ${getSkillSortIcon("holidays", "endPart")}</th>
+          <th class="skill-sort-col ${sort?.key === 'name' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="name" title="Sıralamak için tıklayın">Açıklama ${getSkillSortIcon("holidays", "name")}</th>
         </tr>
       </thead>
       <tbody>
@@ -6380,7 +6403,32 @@ function selectedSkillIds(container, selector) {
 function renderSkillSchools() {
   if (!els.skillSchoolTable) return;
   ensureSkillCollections();
-  els.skillSchoolTable.innerHTML = skillState.schoolRecords.map((school, index) => {
+  const sort = window.skillTableSort?.schools;
+  let records = [...skillState.schoolRecords];
+  if (sort && sort.key) {
+    records.sort((a, b) => {
+      let vA, vB;
+      if (sort.key === "index") {
+        vA = skillState.schoolRecords.indexOf(a);
+        vB = skillState.schoolRecords.indexOf(b);
+      } else if (sort.key === "name") {
+        vA = a.name; vB = b.name;
+      } else if (sort.key === "city") {
+        vA = a.city; vB = b.city;
+      } else if (sort.key === "schoolType") {
+        vA = a.schoolType; vB = b.schoolType;
+      } else if (sort.key === "summerStartDate") {
+        vA = a.summerStartDate; vB = b.summerStartDate;
+      } else if (sort.key === "summerEndDate") {
+        vA = a.summerEndDate; vB = b.summerEndDate;
+      } else if (sort.key === "principal") {
+        vA = a.principal; vB = b.principal;
+      }
+      return compareSkillValues(vA, vB, sort.dir);
+    });
+  }
+  updateSkillTableHeadIcons("schools");
+  els.skillSchoolTable.innerHTML = records.map((school, index) => {
     const typeLabel = school.schoolType === "lise" ? "MTAL" : "MESEM";
     const startDateText = school.summerStartDate ? formatSkillDate(school.summerStartDate) : "-";
     const endDateText = school.summerEndDate ? formatSkillDate(school.summerEndDate) : "-";
@@ -6402,7 +6450,22 @@ function renderSkillSchools() {
 function renderSkillTeachers() {
   if (!els.skillTeacherTable) return;
   ensureSkillCollections();
-  els.skillTeacherTable.innerHTML = skillState.teacherPool.map((teacher, index) => `
+  const sort = window.skillTableSort?.teachers;
+  let teachers = [...skillState.teacherPool];
+  if (sort && sort.key) {
+    teachers.sort((a, b) => {
+      let vA, vB;
+      if (sort.key === "index") {
+        vA = skillState.teacherPool.indexOf(a);
+        vB = skillState.teacherPool.indexOf(b);
+      } else if (sort.key === "name") {
+        vA = a.name; vB = b.name;
+      }
+      return compareSkillValues(vA, vB, sort.dir);
+    });
+  }
+  updateSkillTableHeadIcons("teachers");
+  els.skillTeacherTable.innerHTML = teachers.map((teacher, index) => `
     <tr data-skill-edit-teacher="${teacher.id}">
       <td><input type="checkbox" value="${teacher.id}" data-skill-select-teacher /></td>
       <td>${index + 1}</td>
@@ -6414,7 +6477,24 @@ function renderSkillTeachers() {
 function renderSkillFields() {
   if (!els.skillFieldTable) return;
   ensureSkillCollections();
-  els.skillFieldTable.innerHTML = skillState.fields.map((field, index) => `
+  const sort = window.skillTableSort?.fields;
+  let fields = [...skillState.fields];
+  if (sort && sort.key) {
+    fields.sort((a, b) => {
+      let vA, vB;
+      if (sort.key === "index") {
+        vA = skillState.fields.indexOf(a);
+        vB = skillState.fields.indexOf(b);
+      } else if (sort.key === "area") {
+        vA = a.area; vB = b.area;
+      } else if (sort.key === "branch") {
+        vA = a.branch; vB = b.branch;
+      }
+      return compareSkillValues(vA, vB, sort.dir);
+    });
+  }
+  updateSkillTableHeadIcons("fields");
+  els.skillFieldTable.innerHTML = fields.map((field, index) => `
     <tr data-skill-edit-field="${field.id}">
       <td><input type="checkbox" value="${field.id}" data-skill-select-field /></td>
       <td>${index + 1}</td>
@@ -6633,6 +6713,129 @@ function renderSkillSelects() {
   }
 }
 
+// Universal Table Sorting for Skill Module (Beceri Eğitimi)
+const skillTableSort = {
+  businesses: { key: "", dir: "asc" },
+  students: { key: "", dir: "asc" },
+  coordinators: { key: "", dir: "asc" },
+  schools: { key: "", dir: "asc" },
+  teachers: { key: "", dir: "asc" },
+  fields: { key: "", dir: "asc" },
+  holidays: { key: "", dir: "asc" },
+  importPreview: { key: "", dir: "asc" }
+};
+window.skillTableSort = skillTableSort;
+
+function compareSkillValues(valA, valB, dir = "asc") {
+  if (valA === undefined || valA === null) valA = "";
+  if (valB === undefined || valB === null) valB = "";
+  
+  if (typeof valA === "boolean" || typeof valB === "boolean") {
+    const numA = valA ? 1 : 0;
+    const numB = valB ? 1 : 0;
+    return dir === "asc" ? numA - numB : numB - numA;
+  }
+  
+  const numA = Number(valA);
+  const numB = Number(valB);
+  if (!isNaN(numA) && !isNaN(numB) && valA !== "" && valB !== "" && typeof valA !== "boolean" && typeof valB !== "boolean") {
+    return dir === "asc" ? numA - numB : numB - numA;
+  }
+  
+  const strA = String(valA).trim();
+  const strB = String(valB).trim();
+  const res = strA.localeCompare(strB, "tr-TR", { numeric: true, sensitivity: "base" });
+  return dir === "asc" ? res : -res;
+}
+window.compareSkillValues = compareSkillValues;
+
+function getSkillSortIcon(tableKey, columnKey) {
+  const current = window.skillTableSort?.[tableKey];
+  const isActive = current && current.key === columnKey;
+  if (!isActive) {
+    return `<span class="skill-sort-indicator">⇅</span>`;
+  }
+  const arrow = current.dir === "asc" ? "▲" : "▼";
+  return `<span class="skill-sort-indicator is-active">${arrow}</span>`;
+}
+window.getSkillSortIcon = getSkillSortIcon;
+
+function toggleSkillTableSort(tableKey, columnKey) {
+  const current = window.skillTableSort?.[tableKey];
+  if (!current) return;
+  if (current.key === columnKey) {
+    current.dir = current.dir === "asc" ? "desc" : "asc";
+  } else {
+    current.key = columnKey;
+    current.dir = "asc";
+  }
+  
+  switch (tableKey) {
+    case "businesses":
+      renderSkillBusinesses();
+      break;
+    case "students":
+      renderSkillStudents();
+      break;
+    case "coordinators":
+      renderSkillCoordinators();
+      break;
+    case "schools":
+      renderSkillSchools();
+      break;
+    case "teachers":
+      renderSkillTeachers();
+      break;
+    case "fields":
+      renderSkillFields();
+      break;
+    case "holidays":
+      renderSkillHolidays();
+      break;
+    case "importPreview":
+      if (typeof window.renderImportPreviewTable === "function") {
+        window.renderImportPreviewTable();
+      }
+      break;
+  }
+}
+window.toggleSkillTableSort = toggleSkillTableSort;
+
+function updateSkillTableHeadIcons(tableKey) {
+  const sort = window.skillTableSort?.[tableKey];
+  if (!sort) return;
+  document.querySelectorAll(`.skill-sort-col[data-sort-table="${tableKey}"]`).forEach(th => {
+    const key = th.dataset.sortKey;
+    const indicator = th.querySelector(".skill-sort-indicator");
+    if (key === sort.key) {
+      th.classList.add("is-active");
+      if (indicator) {
+        indicator.textContent = sort.dir === "asc" ? "▲" : "▼";
+        indicator.classList.add("is-active");
+      }
+    } else {
+      th.classList.remove("is-active");
+      if (indicator) {
+        indicator.textContent = "⇅";
+        indicator.classList.remove("is-active");
+      }
+    }
+  });
+}
+window.updateSkillTableHeadIcons = updateSkillTableHeadIcons;
+
+// Global Delegated Click Listener for Table Headers
+document.addEventListener("click", (e) => {
+  if (e.target.closest("input[type='checkbox']")) return;
+  const sortCol = e.target.closest(".skill-sort-col");
+  if (!sortCol) return;
+  const tableKey = sortCol.dataset.sortTable;
+  const colKey = sortCol.dataset.sortKey;
+  if (tableKey && colKey) {
+    toggleSkillTableSort(tableKey, colKey);
+  }
+});
+
 function renderSkillStudents() {
   if (!els.skillStudentTable) return;
   const query = (els.skillStudentSearch?.value || "").toLocaleLowerCase("tr-TR");
@@ -6650,6 +6853,34 @@ function renderSkillStudents() {
     const matchesStatus = !statusFilter || (statusFilter === "active" ? student.active !== false : student.active === false);
     return matchesSearch && matchesClass && matchesBusiness && matchesStatus;
   });
+
+  const sort = window.skillTableSort?.students;
+  if (sort && sort.key) {
+    rows.sort((a, b) => {
+      let vA, vB;
+      if (sort.key === "index") {
+        vA = skillState.students.indexOf(a);
+        vB = skillState.students.indexOf(b);
+      } else if (sort.key === "active") {
+        vA = a.active !== false; vB = b.active !== false;
+      } else if (sort.key === "no") {
+        vA = a.no; vB = b.no;
+      } else if (sort.key === "name") {
+        vA = a.name; vB = b.name;
+      } else if (sort.key === "business") {
+        vA = getSkillBusiness(a.businessId)?.name || "";
+        vB = getSkillBusiness(b.businessId)?.name || "";
+      } else if (sort.key === "field") {
+        vA = a.field || ""; vB = b.field || "";
+      } else if (sort.key === "className") {
+        vA = a.className || ""; vB = b.className || "";
+      } else if (sort.key === "days") {
+        vA = a.days || ""; vB = b.days || "";
+      }
+      return compareSkillValues(vA, vB, sort.dir);
+    });
+  }
+
   const studentRows = rows.length ? rows.map((student, index) => {
     const business = getSkillBusiness(student.businessId);
     return `
@@ -6668,7 +6899,15 @@ function renderSkillStudents() {
   }).join("") : `<div class="empty-state">Öğrenci kaydı bulunamadı.</div>`;
   els.skillStudentTable.innerHTML = `
     <div class="skill-grid-row skill-grid-head skill-student-grid-row">
-      <span><input type="checkbox" id="skillStudentSelectAll" style="cursor: pointer;" /></span><span>No</span><span>Durum</span><span>Okul no</span><span>Ad soyad</span><span>İşletme</span><span>Alan / dal</span><span>Sınıf</span><span>Gün</span>
+      <span><input type="checkbox" id="skillStudentSelectAll" style="cursor: pointer;" /></span>
+      <span class="skill-sort-col ${sort?.key === 'index' ? 'is-active' : ''}" data-sort-table="students" data-sort-key="index" title="Sıralamak için tıklayın">No ${getSkillSortIcon("students", "index")}</span>
+      <span class="skill-sort-col ${sort?.key === 'active' ? 'is-active' : ''}" data-sort-table="students" data-sort-key="active" title="Sıralamak için tıklayın">Durum ${getSkillSortIcon("students", "active")}</span>
+      <span class="skill-sort-col ${sort?.key === 'no' ? 'is-active' : ''}" data-sort-table="students" data-sort-key="no" title="Sıralamak için tıklayın">Okul no ${getSkillSortIcon("students", "no")}</span>
+      <span class="skill-sort-col ${sort?.key === 'name' ? 'is-active' : ''}" data-sort-table="students" data-sort-key="name" title="Sıralamak için tıklayın">Ad soyad ${getSkillSortIcon("students", "name")}</span>
+      <span class="skill-sort-col ${sort?.key === 'business' ? 'is-active' : ''}" data-sort-table="students" data-sort-key="business" title="Sıralamak için tıklayın">İşletme ${getSkillSortIcon("students", "business")}</span>
+      <span class="skill-sort-col ${sort?.key === 'field' ? 'is-active' : ''}" data-sort-table="students" data-sort-key="field" title="Sıralamak için tıklayın">Alan / dal ${getSkillSortIcon("students", "field")}</span>
+      <span class="skill-sort-col ${sort?.key === 'className' ? 'is-active' : ''}" data-sort-table="students" data-sort-key="className" title="Sıralamak için tıklayın">Sınıf ${getSkillSortIcon("students", "className")}</span>
+      <span class="skill-sort-col ${sort?.key === 'days' ? 'is-active' : ''}" data-sort-table="students" data-sort-key="days" title="Sıralamak için tıklayın">Gün ${getSkillSortIcon("students", "days")}</span>
     </div>
     ${studentRows}
   `;
@@ -6677,7 +6916,29 @@ function renderSkillStudents() {
 
 function renderSkillBusinesses() {
   if (!els.skillBusinessTable) return;
-  const businessRows = skillState.businesses.length ? skillState.businesses.map((business, index) => `
+  const sort = window.skillTableSort?.businesses;
+  let businesses = [...skillState.businesses];
+  if (sort && sort.key) {
+    businesses.sort((a, b) => {
+      let vA, vB;
+      if (sort.key === "index") {
+        vA = skillState.businesses.indexOf(a);
+        vB = skillState.businesses.indexOf(b);
+      } else if (sort.key === "name") {
+        vA = a.name; vB = b.name;
+      } else if (sort.key === "phone") {
+        vA = a.phone; vB = b.phone;
+      } else if (sort.key === "group") {
+        vA = a.group === "2" ? "20 ve üzeri" : "20'den az";
+        vB = b.group === "2" ? "20 ve üzeri" : "20'den az";
+      } else if (sort.key === "address") {
+        vA = a.address; vB = b.address;
+      }
+      return compareSkillValues(vA, vB, sort.dir);
+    });
+  }
+
+  const businessRows = businesses.length ? businesses.map((business, index) => `
     <div class="skill-row skill-grid-row" data-skill-edit-business="${business.id}">
       <span><input type="checkbox" value="${business.id}" data-skill-select-business /></span>
       <span>${index + 1}</span>
@@ -6689,33 +6950,47 @@ function renderSkillBusinesses() {
   `).join("") : `<div class="empty-state">İşletme kaydı bulunamadı.</div>`;
   els.skillBusinessTable.innerHTML = `
     <div class="skill-grid-row skill-grid-head">
-      <span><input type="checkbox" id="skillBusinessSelectAll" style="cursor: pointer;" /></span><span>No</span><span>İşletme Adı</span><span>Telefon</span><span>Çalışan</span><span>Adres</span>
+      <span><input type="checkbox" id="skillBusinessSelectAll" style="cursor: pointer;" /></span>
+      <span class="skill-sort-col ${sort?.key === 'index' ? 'is-active' : ''}" data-sort-table="businesses" data-sort-key="index" title="Sıralamak için tıklayın">No ${getSkillSortIcon("businesses", "index")}</span>
+      <span class="skill-sort-col ${sort?.key === 'name' ? 'is-active' : ''}" data-sort-table="businesses" data-sort-key="name" title="Sıralamak için tıklayın">İşletme Adı ${getSkillSortIcon("businesses", "name")}</span>
+      <span class="skill-sort-col ${sort?.key === 'phone' ? 'is-active' : ''}" data-sort-table="businesses" data-sort-key="phone" title="Sıralamak için tıklayın">Telefon ${getSkillSortIcon("businesses", "phone")}</span>
+      <span class="skill-sort-col ${sort?.key === 'group' ? 'is-active' : ''}" data-sort-table="businesses" data-sort-key="group" title="Sıralamak için tıklayın">Çalışan ${getSkillSortIcon("businesses", "group")}</span>
+      <span class="skill-sort-col ${sort?.key === 'address' ? 'is-active' : ''}" data-sort-table="businesses" data-sort-key="address" title="Sıralamak için tıklayın">Adres ${getSkillSortIcon("businesses", "address")}</span>
     </div>
     ${businessRows}
   `;
-  return;
-  els.skillBusinessTable.innerHTML = skillState.businesses.length ? skillState.businesses.map((business) => {
-    const studentCount = skillState.students.filter((student) => student.businessId === business.id).length;
-    return `
-      <div class="skill-row">
-        <div>
-          <strong>${escapeHtml(business.name)}</strong>
-          <small>${escapeHtml(business.phone || "Telefon yok")} · ${business.group === "2" ? "20 ve üzeri çalışan" : "20'den az çalışan"} · ${studentCount} öğrenci</small>
-          <small>${escapeHtml(business.address || "Adres belirtilmedi")}</small>
-        </div>
-        <div class="skill-row-actions">
-          <button class="edit" type="button" data-skill-edit-business="${business.id}">Düzenle</button>
-          <button class="delete" type="button" data-skill-delete-business="${business.id}">Sil</button>
-        </div>
-      </div>
-    `;
-  }).join("") : `<div class="empty-state">İşletme kaydı bulunamadı.</div>`;
 }
 
 function renderSkillCoordinators() {
   if (!els.skillCoordinatorTable) return;
   ensureSkillCollections();
-  const coordinatorRows = skillState.coordinators.length ? skillState.coordinators.map((coordinator, index) => {
+  const sort = window.skillTableSort?.coordinators;
+  let coordinators = [...skillState.coordinators];
+  if (sort && sort.key) {
+    coordinators.sort((a, b) => {
+      let vA, vB;
+      if (sort.key === "index") {
+        vA = skillState.coordinators.indexOf(a);
+        vB = skillState.coordinators.indexOf(b);
+      } else if (sort.key === "school") {
+        const sA = skillState.schoolRecords.find((i) => i.id === a.schoolId);
+        const sB = skillState.schoolRecords.find((i) => i.id === b.schoolId);
+        vA = sA?.name || ""; vB = sB?.name || "";
+      } else if (sort.key === "business") {
+        vA = getSkillBusiness(a.businessId)?.name || "";
+        vB = getSkillBusiness(b.businessId)?.name || "";
+      } else if (sort.key === "teacher") {
+        vA = a.teacher || ""; vB = b.teacher || "";
+      } else if (sort.key === "deputy") {
+        vA = a.deputy || ""; vB = b.deputy || "";
+      } else if (sort.key === "day") {
+        vA = a.day || ""; vB = b.day || "";
+      }
+      return compareSkillValues(vA, vB, sort.dir);
+    });
+  }
+
+  const coordinatorRows = coordinators.length ? coordinators.map((coordinator, index) => {
     const business = getSkillBusiness(coordinator.businessId);
     const school = skillState.schoolRecords.find((item) => item.id === coordinator.schoolId) || skillState.schoolRecords[0];
     return `
@@ -6732,28 +7007,19 @@ function renderSkillCoordinators() {
   }).join("") : `<div class="empty-state">Koordinatör görevi bulunamadı.</div>`;
   els.skillCoordinatorTable.innerHTML = `
     <div class="skill-grid-row coordinator-grid-row skill-grid-head">
-      <span><input type="checkbox" id="skillCoordinatorSelectAll" style="cursor: pointer;" /></span><span>No</span><span>Okul</span><span>İşletme</span><span>Öğretmen</span><span>Müdür Yrd.</span><span>Gün</span>
+      <span><input type="checkbox" id="skillCoordinatorSelectAll" style="cursor: pointer;" /></span>
+      <span class="skill-sort-col ${sort?.key === 'index' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="index" title="Sıralamak için tıklayın">No ${getSkillSortIcon("coordinators", "index")}</span>
+      <span class="skill-sort-col ${sort?.key === 'school' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="school" title="Sıralamak için tıklayın">Okul ${getSkillSortIcon("coordinators", "school")}</span>
+      <span class="skill-sort-col ${sort?.key === 'business' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="business" title="Sıralamak için tıklayın">İşletme ${getSkillSortIcon("coordinators", "business")}</span>
+      <span class="skill-sort-col ${sort?.key === 'teacher' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="teacher" title="Sıralamak için tıklayın">Öğretmen ${getSkillSortIcon("coordinators", "teacher")}</span>
+      <span class="skill-sort-col ${sort?.key === 'deputy' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="deputy" title="Sıralamak için tıklayın">Müdür Yrd. ${getSkillSortIcon("coordinators", "deputy")}</span>
+      <span class="skill-sort-col ${sort?.key === 'day' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="day" title="Sıralamak için tıklayın">Gün ${getSkillSortIcon("coordinators", "day")}</span>
     </div>
     ${coordinatorRows}
   `;
   if (typeof updateSkillCoordinatorActionState === "function") {
     updateSkillCoordinatorActionState();
   }
-  return;
-  els.skillCoordinatorTable.innerHTML = skillState.coordinators.length ? skillState.coordinators.map((coordinator) => {
-    const business = getSkillBusiness(coordinator.businessId);
-    return `
-      <div class="skill-row">
-        <div>
-          <strong>${escapeHtml(coordinator.teacher)}</strong>
-          <small>${escapeHtml(business?.name || "İşletme yok")} · ${getSkillDayName(coordinator.day)}</small>
-        </div>
-        <div class="skill-row-actions">
-          <button class="delete" type="button" data-skill-delete-coordinator="${coordinator.id}">Sil</button>
-        </div>
-      </div>
-    `;
-  }).join("") : `<div class="empty-state">Koordinatör görevi bulunamadı.</div>`;
 }
 
 function clearSkillStudentForm() {
