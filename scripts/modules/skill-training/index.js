@@ -2529,3 +2529,33 @@ const skillTrainingModule = {
   }
 };
 window.AppModules.register("skill-training", skillTrainingModule);
+
+
+// Student filter reset button & visibility sync
+function syncSkillStudentFilterResetBtn() {
+  const resetBtn = document.getElementById("skillStudentFilterResetBtn");
+  if (!resetBtn) return;
+  const hasFilter = Boolean(
+    els.skillStudentSearch?.value?.trim() ||
+    els.skillStudentClassFilter?.value ||
+    els.skillStudentBusinessFilter?.value ||
+    els.skillStudentStatusFilter?.value
+  );
+  resetBtn.style.display = hasFilter ? "inline-flex" : "none";
+}
+
+["input", "change"].forEach(evt => {
+  els.skillStudentSearch?.addEventListener(evt, syncSkillStudentFilterResetBtn);
+  els.skillStudentClassFilter?.addEventListener(evt, syncSkillStudentFilterResetBtn);
+  els.skillStudentBusinessFilter?.addEventListener(evt, syncSkillStudentFilterResetBtn);
+  els.skillStudentStatusFilter?.addEventListener(evt, syncSkillStudentFilterResetBtn);
+});
+
+document.getElementById("skillStudentFilterResetBtn")?.addEventListener("click", () => {
+  if (els.skillStudentSearch) els.skillStudentSearch.value = "";
+  if (els.skillStudentClassFilter) els.skillStudentClassFilter.value = "";
+  if (els.skillStudentBusinessFilter) els.skillStudentBusinessFilter.value = "";
+  if (els.skillStudentStatusFilter) els.skillStudentStatusFilter.value = "";
+  syncSkillStudentFilterResetBtn();
+  renderSkillStudents();
+});

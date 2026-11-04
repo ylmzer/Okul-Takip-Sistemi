@@ -31,7 +31,7 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg" />
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
-    <link rel="stylesheet" href="./styles.css?v=96" />
+    <link rel="stylesheet" href="./styles.css?v=97" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
     <link rel="stylesheet" href="./theme-overrides.css?v=125" />
   </head>
@@ -1554,7 +1554,7 @@
 
         <section class="skill-view" data-skill-panel="students">
           <div class="skill-two-column">
-            <form class="skill-panel skill-form" id="skillStudentForm">
+            <form class="skill-panel skill-form skill-student-compact-form" id="skillStudentForm">
               <input id="skillStudentId" type="hidden" />
               <div class="panel-heading skill-form-title">
                 <div>
@@ -1562,28 +1562,29 @@
                   <h2>Kayıt ve eşleştirme</h2>
                 </div>
               </div>
-              <div class="skill-form-grid">
-                <label>
+              <!-- Row 1: Student Entry / Edit Fields + Form Save/Clear Actions -->
+              <div class="skill-form-grid skill-student-entry-grid">
+                <label class="stu-col-no">
                   <span>Okul no</span>
-                  <input id="skillStudentNo" type="number" min="0" />
+                  <input id="skillStudentNo" type="number" min="0" placeholder="No" />
                 </label>
-                <label>
+                <label class="stu-col-name">
                   <span>Ad soyad</span>
-                  <input id="skillStudentName" type="text" required />
+                  <input id="skillStudentName" type="text" placeholder="Öğrenci adı soyadı" required />
                 </label>
-                <label>
+                <label class="stu-col-class">
                   <span>Sınıf</span>
                   <input id="skillStudentClass" type="text" placeholder="Örn. 12/B" />
                 </label>
-                <label>
+                <label class="stu-col-field">
                   <span>Alan / dal</span>
-                  <input id="skillStudentField" type="text" placeholder="Seçmek veya yönetmek için tıklayın..." readonly style="cursor: pointer; outline: none; background: var(--surface); color: var(--ink);" />
+                  <input id="skillStudentField" type="text" placeholder="Alan / dal seçin..." readonly style="cursor: pointer; outline: none; background: var(--surface); color: var(--ink);" />
                 </label>
-                <label>
+                <label class="stu-col-business">
                   <span>İşletme</span>
                   <select id="skillStudentBusiness"></select>
                 </label>
-                <label>
+                <label class="stu-col-days">
                   <span>Okul günleri</span>
                   <input id="skillStudentDays" type="hidden" />
                   <div class="skill-day-picker" id="skillStudentDayPicker">
@@ -1594,35 +1595,33 @@
                     <button type="button" data-skill-student-day="Cum">Cum</button>
                   </div>
                 </label>
-                <label>
-                  <span>Ara</span>
-                  <input id="skillStudentSearch" type="search" placeholder="Öğrenci veya okul no ara" />
-                </label>
-                <label>
-                  <span>Şube filtresi</span>
-                  <select id="skillStudentClassFilter"></select>
-                </label>
-                <label>
-                  <span>İşletme filtresi</span>
-                  <select id="skillStudentBusinessFilter"></select>
-                </label>
-                <label>
-                  <span>Durum filtresi</span>
-                  <select id="skillStudentStatusFilter">
-                    <option value="">Tümü</option>
-                    <option value="active">Aktif</option>
-                    <option value="passive">Pasif</option>
-                  </select>
-                </label>
+                <div class="stu-col-form-actions">
+                  <button class="secondary-action" id="skillClearStudentBtn" type="button" title="Formu temizle">Yeni</button>
+                  <button class="primary-action" type="submit">Öğrenciyi kaydet</button>
+                </div>
               </div>
-              <div class="skill-inline-actions">
-                <button class="secondary-action" id="skillToggleStudentStatusBtn" type="button">Durum değiştir</button>
-                <button class="secondary-action" id="skillAssignClassDaysBtn" type="button">Şubeye gün ata</button>
-                <button class="secondary-action" id="skillActivateStudentBtn" type="button">Aktifleştir</button>
-                <button class="secondary-action" id="skillClearStudentBtn" type="button">Yeni</button>
-                <button class="danger-action" id="skillDeleteSelectedStudentBtn" type="button">Seçileni sil</button>
-                <button class="danger-action soft" id="skillDeleteAllStudentBtn" type="button">Tümünü sil</button>
-                <button class="primary-action" type="submit">Öğrenciyi kaydet</button>
+
+              <!-- Row 2: Unified Filter Bar (Left) & List Bulk Actions (Right) -->
+              <div class="skill-student-toolbar">
+                <div class="skill-student-filters-bar">
+                  <span class="skill-filter-badge" title="Listeyi filtrele">🔎 Filtre:</span>
+                  <input id="skillStudentSearch" type="search" placeholder="Öğrenci veya no ara..." aria-label="Öğrenci veya okul no ara" />
+                  <select id="skillStudentClassFilter" aria-label="Şube filtresi"></select>
+                  <select id="skillStudentBusinessFilter" aria-label="İşletme filtresi"></select>
+                  <select id="skillStudentStatusFilter" aria-label="Durum filtresi">
+                    <option value="">Durum: Tümü</option>
+                    <option value="active">Durum: Aktif</option>
+                    <option value="passive">Durum: Pasif</option>
+                  </select>
+                  <button class="secondary-action skill-filter-reset-btn" id="skillStudentFilterResetBtn" type="button" title="Filtreleri sıfırla" style="display: none;">✕ Temizle</button>
+                </div>
+                <div class="skill-inline-actions skill-student-bulk-actions">
+                  <button class="secondary-action" id="skillToggleStudentStatusBtn" type="button">Durum değiştir</button>
+                  <button class="secondary-action" id="skillAssignClassDaysBtn" type="button">Şubeye gün ata</button>
+                  <button class="secondary-action" id="skillActivateStudentBtn" type="button">Aktifleştir</button>
+                  <button class="danger-action" id="skillDeleteSelectedStudentBtn" type="button">Seçileni sil</button>
+                  <button class="danger-action soft" id="skillDeleteAllStudentBtn" type="button">Tümünü sil</button>
+                </div>
               </div>
             </form>
             <section class="skill-panel">
@@ -5053,7 +5052,7 @@
     <script src="./scripts/modules/course-tracking/index.js?v=9"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=17"></script>
     <script src="./scripts/modules/sorubank/index.js?v=8"></script>
-    <script src="./scripts/modules/skill-training/index.js?v=17"></script>
+    <script src="./scripts/modules/skill-training/index.js?v=18"></script>
     <script src="./scripts/modules/student-tracking/index.js?v=14"></script>
     <script src="./scripts/modules/system-admin/index.js?v=1"></script>
   </body>
