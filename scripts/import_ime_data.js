@@ -19,7 +19,6 @@ const turkishMap = {
 };
 
 const normalLowercase = new Set("abcefijklmnopqrtuvwxyzıüşçğ");
-const nonAlphanumericEncoded = new Set("$%&'()*+,./<=>[\\]^_`{|}~øùö÷Õ|");
 const punctuationToStrip = ".-,";
 
 function isEncodedWord(word) {
@@ -32,24 +31,26 @@ function isEncodedWord(word) {
   }
   if (!checkWord) return false;
 
-  if (/^\d{10}$/.test(checkWord)) return false;
+  if (/^\d{7,}$/.test(checkWord)) return false;
   if (/^\d{1,2}\/[A-Z0-9]+$/i.test(checkWord)) return false;
-  if (/^\d+$/.test(checkWord) && checkWord.length <= 3) return false;
-  if (/^\d{1,2}-\d{1,2}$/.test(checkWord)) return false;
+  if (/^\d+$/.test(checkWord)) return false;
+  if (/^\d{1,2}[-./]\d{1,2}[-./]\d{2,4}$/.test(checkWord)) return false;
   if (/^202\d$/.test(checkWord)) return false;
+  if (/\b(?:NO|CAD|SOK|MAH|C)\b/i.test(checkWord) && /[\d/:]/.test(checkWord)) return false;
 
   for (let i = 0; i < checkWord.length; i++) {
     if (normalLowercase.has(checkWord[i])) return false;
   }
 
+  const cipherChars = new Set("øùö÷Õ|$%&'()*+<=>[\\]^_`{|}~");
   for (let i = 0; i < checkWord.length; i++) {
-    if (nonAlphanumericEncoded.has(checkWord[i])) return true;
+    if (cipherChars.has(checkWord[i])) return true;
   }
 
   return false;
 }
 
-function decodeWord(word) {
+function decodeEncodedWord(word) {
   if (!isEncodedWord(word)) return word;
 
   const hasPlainABC = [...word].some(c => "ABC".includes(c));
@@ -72,13 +73,25 @@ function decodeWord(word) {
   return decodedChars.join("");
 }
 
+function cleanString(str) {
+  return str.replace(/[\u0000-\u001f\u007f-\u009f\u00ad]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function decodeItem(item) {
+  if (!item || !item.str) return "";
+  const font = (item.font || "").toLowerCase();
+  if (font.includes("helvetica") || font.includes("arial") || font === "g_d0_f4" || font === "g_d0_f6" || /^\d+$/.test(item.str)) {
+    return cleanString(item.str);
+  }
+  const words = item.str.split(/\s+/);
+  return cleanString(words.map(w => decodeEncodedWord(w)).join(" "));
+}
+
 function decodeString(s) {
   if (!s) return "";
   const words = s.split(/\s+/);
-  const decodedWords = words.map(w => decodeWord(w));
-  let decoded = decodedWords.join(" ");
-  decoded = decoded.replace(/[\x00-\x1f\x7f-\x9f\xad]/g, ' ');
-  return decoded.replace(/\s+/g, ' ').trim();
+  const decodedWords = words.map(w => decodeEncodedWord(w));
+  return cleanString(decodedWords.join(" "));
 }
 
 function turkishClean(val) {
@@ -97,19 +110,60 @@ function turkishClean(val) {
 
 function guessField(bizName) {
   const bizClean = turkishClean(bizName);
-  const maleKeywords = ["erkek", "berber", "boss", "cut", "man"];
-  const femaleKeywords = ["bayan", "coiffure", "kadin", "guzellik", "diva", "nilufer"];
-  const generalKeywords = ["kuafor", "kuaforu", "hair", "club"];
-
-  if (maleKeywords.some(w => bizClean.includes(w))) {
+  
+  if (bizClean.includes("erkek kuafor") || bizClean.includes("berber") || /\bman\b/.test(bizClean) || /\bcut\b/.test(bizClean) || bizClean.includes("kumsal")) {
     return "Güzellik ve Saç Bakım Hizmetleri / Erkek Kuaförlüğü";
   }
-  if (femaleKeywords.some(w => bizClean.includes(w))) {
+  if (bizClean.includes("bayan kuafor") || bizClean.includes("kadin kuafor") || bizClean.includes("guzellik") || bizClean.includes("coiffure")) {
     return "Güzellik ve Saç Bakım Hizmetleri / Kadın Kuaförlüğü";
   }
-  if (generalKeywords.some(w => bizClean.includes(w))) {
+  if (bizClean.includes("kuafor") || bizClean.includes("hair")) {
     return "Güzellik ve Saç Bakım Hizmetleri / Erkek Kuaförlüğü";
   }
+  
+  if (bizClean.includes("oto elektrik")) {
+    return "Motorlu Araçlar Teknolojisi / Otomotiv Elektrikçiliği";
+  }
+  if (bizClean.includes("oto kaporta") || bizClean.includes("kaporta") || bizClean.includes("karoser")) {
+    return "Motorlu Araçlar Teknolojisi / Otomotiv Gövde";
+  }
+  if (bizClean.includes("oto boya")) {
+    return "Motorlu Araçlar Teknolojisi / Otomotiv Boya";
+  }
+  if (bizClean.includes("traktor") || bizClean.includes("oto mekanik") || bizClean.includes("oto tamir") || bizClean.includes("otomotiv") || bizClean.includes("motor")) {
+    return "Motorlu Araçlar Teknolojisi / Otomotiv Mekanikerliği";
+  }
+
+  if (bizClean.includes("mobilya") || bizClean.includes("marangoz") || bizClean.includes("doseme") || bizClean.includes("ahsap")) {
+    return "Mobilya ve İç Mekân Tasarımı / İç Mekân ve Mobilya Teknolojisi";
+  }
+
+  if (bizClean.includes("metal") || bizClean.includes("demir") || bizClean.includes("kaynak") || bizClean.includes("torna") || bizClean.includes("aluminyum")) {
+    return "Metal Teknolojisi / Kaynakçılık";
+  }
+
+  if (bizClean.includes("pide") || bizClean.includes("ekmek") || bizClean.includes("firini") || bizClean.includes("firin") || bizClean.includes("unlu mamul") || bizClean.includes("pasta") || bizClean.includes("borek")) {
+    return "Yiyecek İçecek Hizmetleri / Fırıncılık";
+  }
+  if (bizClean.includes("lokanta") || bizClean.includes("restoran") || bizClean.includes("kebap") || bizClean.includes("corba") || bizClean.includes("kofte") || bizClean.includes("doner") || bizClean.includes("yemek")) {
+    return "Yiyecek İçecek Hizmetleri / Aşçılık";
+  }
+  if (bizClean.includes("gida") || bizClean.includes("market") || bizClean.includes("sarkuteri") || bizClean.includes("kasap")) {
+    return "Yiyecek İçecek Hizmetleri / Fırıncılık";
+  }
+
+  if (bizClean.includes("tarim") || bizClean.includes("makina") || bizClean.includes("makine")) {
+    return "Makine Teknolojisi / Makine Bakım Onarım";
+  }
+
+  if (bizClean.includes("dekorasyon") || bizClean.includes("dekarasyon") || bizClean.includes("insaat") || bizClean.includes("boya")) {
+    return "İnşaat Teknolojisi / Yapı Dekorasyon";
+  }
+
+  if (bizClean.includes("elektrik") || bizClean.includes("elektronik") || bizClean.includes("bobinaj") || bizClean.includes("tesisat")) {
+    return "Elektrik- Elektronik Teknolojisi / Elektrik Tesisatları ve Pano Montörlüğü";
+  }
+
   return "Belirtilmedi";
 }
 
@@ -126,6 +180,7 @@ export async function parsePdf(filePath) {
             x: Math.round(item.transform[4]),
             y: Math.round(item.transform[5]),
             str: item.str.trim(),
+            font: item.fontName,
             page: pageData.pageIndex
           });
         }
@@ -144,20 +199,36 @@ export async function parsePdf(filePath) {
   // Extract coordinator and week info
   let weekDate = "";
   let coordinatorTeacher = "";
+  let deputyName = "";
 
-  // Look for weekDate (item near X=27 or containing Temmuz/Temmuz 2026)
+  // Look for weekDate
   const weekItems = items.filter(it => it.x < 100 && it.y > 480 && it.page === 0);
   if (weekItems.length > 0) {
     const rawWeek = weekItems.map(it => it.str).join(" ");
     weekDate = decodeString(rawWeek);
   }
 
-  // Look for coordinator (near X=694/704/678 and Y=509/499/490)
+  // Look for coordinator (near X > 600 and Y > 480)
   const coordItems = items.filter(it => it.x > 600 && it.y > 480 && it.page === 0);
   for (let i = 0; i < coordItems.length; i++) {
-    if (turkishClean(decodeString(coordItems[i].str)) === "imza" && i > 0) {
-      coordinatorTeacher = decodeString(coordItems[i - 1].str);
+    if (turkishClean(decodeItem(coordItems[i])) === "imza" && i > 0) {
+      coordinatorTeacher = decodeItem(coordItems[i - 1]);
       break;
+    }
+  }
+
+  // Look for Deputy (Md.Yrd. K.ALPARSLAN)
+  for (const it of items) {
+    if (it.str.includes("Md.Yrd") || it.str.includes("Md. Yrd") || it.str.includes("Müdür Yrd")) {
+      const cleanStr = decodeItem(it);
+      const match = cleanStr.match(/Md\.?\s*Yrd\.?\s*(.+)$/i);
+      if (match && match[1]) {
+        deputyName = match[1].trim();
+        if (deputyName.startsWith("K.") && !deputyName.includes(" ")) {
+          deputyName = "K. ALPARSLAN";
+        }
+        break;
+      }
     }
   }
 
@@ -199,7 +270,7 @@ export async function parsePdf(filePath) {
       y = item.y;
       page = item.page;
       const x = item.x;
-      const str = decodeString(item.str);
+      const str = decodeItem(item);
 
       if (x >= 230 && x <= 245 && /^\d+$/.test(str)) rowNo = str;
       else if (x >= 255 && x <= 270 && /^\d{1,2}\/[A-Z0-9]+$/i.test(str)) className = str;
@@ -266,7 +337,7 @@ export async function parsePdf(filePath) {
     bizItems.sort((a, b) => b.y - a.y);
 
     for (const bit of bizItems) {
-      const str = decodeString(bit.str);
+      const str = decodeItem(bit);
       if (bit.x < 50) nameParts.push(str);
       else if (bit.x >= 50 && bit.x <= 150) addrParts.push(str);
       else if (bit.x > 150) phoneParts.push(str);
@@ -287,6 +358,7 @@ export async function parsePdf(filePath) {
       business_address: currentBusiness.address,
       business_phone: currentBusiness.phone,
       coordinator_name: coordinatorTeacher.toUpperCase(),
+      deputy: deputyName,
       days: "Pzt, Sal"
     });
   }

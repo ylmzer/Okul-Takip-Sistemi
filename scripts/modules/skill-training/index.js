@@ -764,10 +764,19 @@ async function analyzeImeImportFile(file) {
 
     const currentSchoolId = (importSchoolType === "existing" ? importSchoolExistingId : "") || (skillState.schoolRecords[0] ? skillState.schoolRecords[0].id : "");
     const targetSchool = skillState.schoolRecords.find(s => s.id === currentSchoolId) || skillState.schoolRecords[0] || skillState.school;
-    const defaultDeputy = document.getElementById("skillImportDeputyInput")?.value?.trim() || targetSchool?.deputy || "";
+    
+    const fileDeputy = parsedImportRecords.find(r => r.deputy)?.deputy || "";
+    const fileTeacher = parsedImportRecords.find(r => r.coordinator_name)?.coordinator_name || "";
+    
+    const defaultDeputy = fileDeputy || document.getElementById("skillImportDeputyInput")?.value?.trim() || targetSchool?.deputy || "";
     const deputyInput = document.getElementById("skillImportDeputyInput");
     if (deputyInput && defaultDeputy) {
       deputyInput.value = defaultDeputy;
+    }
+
+    if (fileTeacher) {
+      const allTeacherInput = document.getElementById("skillImportAllTeacherInput");
+      if (allTeacherInput) allTeacherInput.value = fileTeacher;
     }
 
     let existingStudentMatches = 0;
