@@ -119,9 +119,9 @@ def classify_row_parts(parts, known_teachers=None):
         record["field"] = remaining[0]
         remaining.remove(remaining[0])
         
-    # Default days if student is found but days is empty
+    # Keep days empty unless explicitly found in the row
     if record["student_name"] and not record["days"]:
-        record["days"] = "Pzt, Sal"
+        record["days"] = ""
         
     return record
 
@@ -299,7 +299,7 @@ def parse_excel(file_path, known_teachers=None):
                     "business_address": current_biz_addr,
                     "business_phone": current_biz_phone,
                     "coordinator_name": coordinator_teacher,
-                    "days": "Pzt, Sal"
+                    "days": ""
                 })
         
         return records
@@ -350,7 +350,7 @@ def parse_excel(file_path, known_teachers=None):
                 "business_address": "",
                 "business_phone": "",
                 "coordinator_name": row_cells[col_mapping['coordinator_name']] if 'coordinator_name' in col_mapping else "",
-                "days": "Pzt, Sal"
+                "days": ""
             }
             for c_idx, val in enumerate(row_cells):
                 if c_idx not in col_mapping.values() and val:
@@ -723,7 +723,7 @@ def parse_pdf(file_path, known_teachers=None):
             "business_address": current_business["address"],
             "business_phone": current_business["phone"],
             "coordinator_name": coordinator_teacher.upper() if coordinator_teacher else "",
-            "days": "Pzt, Sal"
+            "days": ""
         })
         
     return records

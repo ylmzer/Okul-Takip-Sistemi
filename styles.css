@@ -18402,8 +18402,8 @@ body.skill-mode .skill-row.skill-business-grid-row {
 body.skill-mode .coordinator-grid-row,
 body.skill-mode .skill-grid-head.coordinator-grid-row,
 body.skill-mode .skill-row.coordinator-grid-row {
-  grid-template-columns: 38px 54px minmax(150px, 1fr) minmax(200px, 1.3fr) minmax(140px, 0.95fr) minmax(125px, 0.85fr) 96px !important;
-  min-width: 803px !important;
+  grid-template-columns: 38px 54px minmax(185px, 1.25fr) minmax(210px, 1.45fr) minmax(140px, 0.95fr) minmax(125px, 0.85fr) 96px !important;
+  min-width: 848px !important;
 }
 
 /* HTML Data Table (.skill-data-table) Hizalama ve Sabit Başlık Düzeltmesi */

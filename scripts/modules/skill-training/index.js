@@ -671,7 +671,7 @@ function renderImportPreviewTable() {
     daySelectHtml += `</select>`;
 
     let stuDaysInputHtml = `
-      <input class="import-days-input" type="text" data-index="${idx}" value="${escapeHtml(r.days || '')}" placeholder="Pzt, Sal" title="Öğrencinin Okul / Teorik Eğitim Günleri" style="padding: 2px 6px !important; border-radius: 4px !important; border: 1px solid var(--line) !important; background: var(--surface) !important; color: var(--ink) !important; width: 100% !important; font-size: 0.75rem !important; height: 24px !important; outline: none !important; box-sizing: border-box !important; margin: 0 !important;" />
+      <input class="import-days-input" type="text" data-index="${idx}" value="${escapeHtml(r.days || '')}" placeholder="-" title="Öğrencinin Okul / Teorik Eğitim Günleri" style="padding: 2px 6px !important; border-radius: 4px !important; border: 1px solid var(--line) !important; background: var(--surface) !important; color: var(--ink) !important; width: 100% !important; font-size: 0.75rem !important; height: 24px !important; outline: none !important; box-sizing: border-box !important; margin: 0 !important;" />
     `;
 
     const statusBadge = r.isExistingStudent
@@ -811,13 +811,13 @@ async function analyzeImeImportFile(file) {
           r.field = existingStu.field || "";
         }
         // PRESERVE existing student days!
-        r.days = existingStu.days || r.days || "Pzt, Sal";
+        r.days = existingStu.days || r.days || "";
         if (!r.class_name && existingStu.className) {
           r.class_name = existingStu.className;
         }
       } else {
         r.isExistingStudent = false;
-        r.days = r.days || "Pzt, Sal";
+        r.days = r.days || "";
       }
 
       // Check existing business
@@ -1042,7 +1042,7 @@ function saveImeImportedData(event) {
         className: rec.class_name || "12/A",
         field: fieldVal,
         businessId: biz.id,
-        days: rec.days || "Pzt, Sal",
+        days: rec.days || "",
         active: true
       };
       skillState.students.push(student);
@@ -1053,8 +1053,8 @@ function saveImeImportedData(event) {
       student.className = rec.class_name || student.className;
       student.field = fieldVal || student.field;
       student.businessId = biz.id;
-      // Preserve existing days: only update if rec.days is explicitly set and modified
-      if (rec.days) {
+      // Preserve existing days: update from import preview value if defined
+      if (rec.days !== undefined) {
         student.days = rec.days;
       }
       updatedStudentCount++;

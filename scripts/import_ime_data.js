@@ -359,7 +359,7 @@ export async function parsePdf(filePath) {
       business_phone: currentBusiness.phone,
       coordinator_name: coordinatorTeacher.toUpperCase(),
       deputy: deputyName,
-      days: "Pzt, Sal"
+      days: ""
     });
   }
 
@@ -497,7 +497,7 @@ export async function parseExcel(filePath) {
           business_address: currentBizAddr,
           business_phone: currentBizPhone,
           coordinator_name: coordinatorTeacher,
-          days: "Pzt, Sal"
+          days: ""
         });
       }
     }

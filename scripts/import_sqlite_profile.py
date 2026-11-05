@@ -10,7 +10,7 @@ if sys.platform.startswith('win'):
 
 def parse_days(gunler):
     if not gunler:
-        return "Pzt, Sal"
+        return ""
     # The old program stored the opposite (internship days).
     # We need the school days, which is the complement in 1-5 (Pzt, Sal, Çar, Per, Cum)
     all_weekdays = ['1', '2', '3', '4', '5']
@@ -20,7 +20,7 @@ def parse_days(gunler):
     mapping = {'1': 'Pzt', '2': 'Sal', '3': 'Çar', '4': 'Per', '5': 'Cum', '6': 'Cmt', '7': 'Paz'}
     days = [mapping[d] for d in complement_digits]
     if not days:
-        return "Pzt, Sal"
+        return ""
     return ", ".join(days)
 
 def clean_string(val):

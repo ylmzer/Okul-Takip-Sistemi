@@ -320,7 +320,7 @@ const initialSkillState = {
       className: "12/A",
       field: "Muhasebe ve Finansman",
       businessId: "biz-1",
-      days: "Pzt, Sal"
+      days: ""
     },
     {
       id: "stu-2",
@@ -329,7 +329,7 @@ const initialSkillState = {
       className: "12/B",
       field: "Muhasebe ve Finansman",
       businessId: "biz-2",
-      days: "Çar, Per"
+      days: ""
     }
   ],
   coordinators: [
@@ -6989,8 +6989,7 @@ function renderSkillCoordinators() {
     if (dayFilter && dayFilter !== "none" && String(coordinator.day || "") !== dayFilter) return false;
     if (searchQuery) {
       const business = getSkillBusiness(coordinator.businessId);
-      const school = skillState.schoolRecords.find((item) => item.id === coordinator.schoolId) || skillState.schoolRecords[0];
-      const hay = [business?.name, coordinator.teacher, coordinator.deputy, school?.name, getSkillDayName(coordinator.day)].join(" ").toLocaleLowerCase("tr-TR");
+      const hay = [business?.name, business?.address, coordinator.teacher, coordinator.deputy, getSkillDayName(coordinator.day)].join(" ").toLocaleLowerCase("tr-TR");
       if (!hay.includes(searchQuery)) return false;
     }
     return true;
@@ -7001,13 +7000,12 @@ function renderSkillCoordinators() {
       if (sort.key === "index") {
         vA = skillState.coordinators.indexOf(a);
         vB = skillState.coordinators.indexOf(b);
-      } else if (sort.key === "school") {
-        const sA = skillState.schoolRecords.find((i) => i.id === a.schoolId);
-        const sB = skillState.schoolRecords.find((i) => i.id === b.schoolId);
-        vA = sA?.name || ""; vB = sB?.name || "";
       } else if (sort.key === "business") {
         vA = getSkillBusiness(a.businessId)?.name || "";
         vB = getSkillBusiness(b.businessId)?.name || "";
+      } else if (sort.key === "address") {
+        vA = getSkillBusiness(a.businessId)?.address || "";
+        vB = getSkillBusiness(b.businessId)?.address || "";
       } else if (sort.key === "teacher") {
         vA = a.teacher || ""; vB = b.teacher || "";
       } else if (sort.key === "deputy") {
@@ -7021,13 +7019,12 @@ function renderSkillCoordinators() {
 
   const coordinatorRows = coordinators.length ? coordinators.map((coordinator, index) => {
     const business = getSkillBusiness(coordinator.businessId);
-    const school = skillState.schoolRecords.find((item) => item.id === coordinator.schoolId) || skillState.schoolRecords[0];
     return `
       <div class="skill-row skill-grid-row coordinator-grid-row" data-skill-edit-coordinator="${coordinator.id}">
         <span><input type="checkbox" value="${coordinator.id}" data-skill-select-coordinator /></span>
         <span>${index + 1}</span>
-        <span>${escapeHtml(school?.name || "Okul yok")}</span>
         <strong>${escapeHtml(business?.name || "İşletme yok")}</strong>
+        <small>${escapeHtml(business?.address || "Adres belirtilmedi")}</small>
         <span>${escapeHtml(coordinator.teacher || "-")}</span>
         <span>${escapeHtml(coordinator.deputy || "-")}</span>
         <span>${getSkillDayName(coordinator.day)}</span>
@@ -7038,8 +7035,8 @@ function renderSkillCoordinators() {
     <div class="skill-grid-row coordinator-grid-row skill-grid-head">
       <span><input type="checkbox" id="skillCoordinatorSelectAll" style="cursor: pointer;" /></span>
       <span class="skill-sort-col ${sort?.key === 'index' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="index" title="Sıralamak için tıklayın">No ${getSkillSortIcon("coordinators", "index")}</span>
-      <span class="skill-sort-col ${sort?.key === 'school' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="school" title="Sıralamak için tıklayın">Okul ${getSkillSortIcon("coordinators", "school")}</span>
       <span class="skill-sort-col ${sort?.key === 'business' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="business" title="Sıralamak için tıklayın">İşletme ${getSkillSortIcon("coordinators", "business")}</span>
+      <span class="skill-sort-col ${sort?.key === 'address' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="address" title="Sıralamak için tıklayın">İşletme Adresi ${getSkillSortIcon("coordinators", "address")}</span>
       <span class="skill-sort-col ${sort?.key === 'teacher' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="teacher" title="Sıralamak için tıklayın">Öğretmen ${getSkillSortIcon("coordinators", "teacher")}</span>
       <span class="skill-sort-col ${sort?.key === 'deputy' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="deputy" title="Sıralamak için tıklayın">Müdür Yrd. ${getSkillSortIcon("coordinators", "deputy")}</span>
       <span class="skill-sort-col ${sort?.key === 'day' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="day" title="Sıralamak için tıklayın">Gün ${getSkillSortIcon("coordinators", "day")}</span>
