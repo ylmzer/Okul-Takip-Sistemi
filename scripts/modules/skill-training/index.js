@@ -2258,7 +2258,7 @@ function initStudentAlanDalDialog() {
             area: area,
             branch: branch
           });
-          saveSkillProfileStore();
+          saveSkillState();
         }
       }
 
@@ -2303,7 +2303,7 @@ function initStudentAlanDalDialog() {
         field.branch = newBranch;
         const newLabel = getSkillFieldLabel(field);
 
-        saveSkillProfileStore();
+        saveSkillState();
 
         if (oldLabel !== newLabel) {
           let updatedCount = 0;
@@ -2321,7 +2321,7 @@ function initStudentAlanDalDialog() {
           });
           
           if (updatedCount > 0) {
-            saveSkillProfileStore();
+            saveSkillState();
             renderSkillModule();
           }
           showToast(`Alan/Dal güncellendi ve ${updatedCount} kayda uygulandı.`);
@@ -2360,7 +2360,7 @@ function initStudentAlanDalDialog() {
           }
         });
 
-        saveSkillProfileStore();
+        saveSkillState();
         if (clearedCount > 0) {
           renderSkillModule();
         }
@@ -2403,7 +2403,7 @@ function initStudentAlanDalDialog() {
         branch: branchVal
       });
 
-      saveSkillProfileStore();
+      saveSkillState();
       
       if (newAreaInput) newAreaInput.value = "";
       if (newBranchInput) newBranchInput.value = "";
@@ -2498,7 +2498,7 @@ function initCoordinatorBulkActions() {
       });
 
       if (updatedCount > 0) {
-        saveSkillProfileStore();
+        saveSkillState();
         renderSkillModule();
         showToast(`${updatedCount} koordinatör görevi seçilen bilgilerle toplu olarak güncellendi.`);
       }

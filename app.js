@@ -1261,8 +1261,8 @@ function loadSkillProfileStore() {
       return !hasSchools && !hasTeachers && !hasStudents && !hasBusinesses;
     };
 
-    // If the active store is empty or missing, try to restore from any non-empty profile store in localStorage
-    if (isStoreEmpty(store)) {
+    // If the active store is missing (never saved for this user), try to migrate from any non-empty profile store in localStorage
+    if (!savedProfiles && isStoreEmpty(store)) {
       const prefix = `${SKILL_PROFILES_KEY}:`;
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -1317,7 +1317,22 @@ function getActiveSkillProfileState() {
 }
 
 function saveSkillProfileStore() {
-  localStorage.setItem(getSkillProfilesStorageKey(), JSON.stringify(skillProfileStore));
+  const activeProfile = getActiveSkillProfile();
+  if (activeProfile && skillState) {
+    activeProfile.state = skillState;
+    activeProfile.updatedAt = new Date().toISOString();
+  }
+  const scopedKey = getSkillProfilesStorageKey();
+  localStorage.setItem(scopedKey, JSON.stringify(skillProfileStore));
+  if (localSession?.id) {
+    const prefix = `${SKILL_PROFILES_KEY}:`;
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (k && k !== scopedKey && (k === SKILL_PROFILES_KEY || k === SKILL_STORAGE_KEY || k.startsWith(prefix))) {
+        localStorage.removeItem(k);
+      }
+    }
+  }
   scheduleAutoBackupSnapshot("skill-profile-change");
 }
 
@@ -2215,7 +2230,12 @@ function updateLocalProfile(event) {
 
 function renderSkillImeProfiles(selectedId = getActiveSkillProfile()?.id) {
   if (!els.skillImeProfileList) return;
+  const activeProfile = getActiveSkillProfile();
+  if (activeProfile && skillState) {
+    activeProfile.state = skillState;
+  }
   skillProfileStore = normalizeSkillProfileStore(skillProfileStore);
+  skillState = getActiveSkillProfileState();
   const activeId = getActiveSkillProfile()?.id;
   els.skillImeProfileList.innerHTML = skillProfileStore.profiles.map((profile) => {
     const stateValue = normalizeSkillStateShape(profile.state);
@@ -2255,7 +2275,7 @@ function switchSkillImeProfile(profileId) {
   saveSkillState();
   skillProfileStore.activeProfileId = profileId;
   skillState = getActiveSkillProfileState();
-  saveSkillProfileStore();
+  saveSkillState();
   renderSkillModule();
   renderSkillImeProfiles(profileId);
 }
@@ -2278,7 +2298,7 @@ function saveSkillImeProfile(event) {
       skillState.schoolType = schoolType;
       profile.state = skillState;
     }
-    saveSkillProfileStore();
+    saveSkillState();
     renderSkillModule();
     renderSkillImeProfiles(id);
     showToast("İME profili güncellendi.");
@@ -2289,7 +2309,7 @@ function saveSkillImeProfile(event) {
   skillProfileStore.profiles.push(profile);
   skillProfileStore.activeProfileId = profile.id;
   skillState = getActiveSkillProfileState();
-  saveSkillProfileStore();
+  saveSkillState();
   renderSkillModule();
   renderSkillImeProfiles(profile.id);
   showToast("Yeni İME profili oluşturuldu.");
@@ -2312,7 +2332,7 @@ async function deleteSkillImeProfile() {
     skillProfileStore.activeProfileId = skillProfileStore.profiles[0].id;
     skillState = getActiveSkillProfileState();
   }
-  saveSkillProfileStore();
+  saveSkillState();
   renderSkillModule();
   renderSkillImeProfiles();
   showToast("İME profili silindi.");
@@ -2646,10 +2666,10 @@ function finalizeCloudInitialization() {
 }
 
 async function scheduleCloudSave() {
-  // Buluttan veri indirilirken veya bulut başlatılırken push yapma - race condition engeller
-  if (isSyncingFromCloud || !isCloudInitialized) return;
+  // Buluttan veri indirilirken push yapma - race condition engeller
+  if (isSyncingFromCloud) return;
   localStorage.setItem("sorubank:cloud-local-write", new Date().toISOString());
-  if (!cloudState.client || !cloudState.session) return;
+  if (!isCloudInitialized || !cloudState.client || !cloudState.session) return;
 
   if (isPushing) {
     hasPendingPush = true;
@@ -2660,7 +2680,7 @@ async function scheduleCloudSave() {
   while (true) {
     hasPendingPush = false;
     try {
-      await pushCloudState({ silent: true });
+      await pushCloudState({ silent: true, throwOnError: true });
     } catch (err) {
       console.error("Cloud save failed:", err);
       showToast("Değişiklikler buluta kaydedilemedi. İnternet bağlantınızı kontrol edin.", "error");
@@ -2722,15 +2742,32 @@ async function checkAndSyncCloudBackground(options = {}) {
     );
 
     if (error) throw error;
+    const localWriteAt = localStorage.getItem("sorubank:cloud-local-write") || "";
     if (!data) {
+      if (localWriteAt) {
+        await pushCloudState({ silent: true });
+      }
       if (overlay) overlay.setAttribute("hidden", "true");
       return;
     }
 
     const remoteUpdatedAt = data.updated_at;
     const localLastSync = localStorage.getItem("sorubank:cloud-last-sync") || "";
+    const remoteTime = remoteUpdatedAt ? Date.parse(remoteUpdatedAt) : 0;
+    const localSyncTime = localLastSync ? Date.parse(localLastSync) : 0;
+    const localWriteTime = localWriteAt ? Date.parse(localWriteAt) : 0;
 
-    if (remoteUpdatedAt && remoteUpdatedAt !== localLastSync) {
+    // Eğer yerelde buluta henüz gönderilmemiş daha yeni bir değişiklik varsa, buluttaki eski veriyi çekip yereli ezme; yereli buluta gönder!
+    if (localWriteTime && (!remoteTime || localWriteTime >= remoteTime - 1000)) {
+      console.log("Newer local write detected. Pushing local state to cloud instead of overwriting...");
+      await pushCloudState({ silent: true });
+      if (overlay) overlay.setAttribute("hidden", "true");
+      return;
+    }
+
+    const isRemoteNewer = remoteUpdatedAt && (!localSyncTime || Math.abs(remoteTime - localSyncTime) > 1000) && remoteTime > localSyncTime;
+
+    if (isRemoteNewer) {
       console.log("Newer remote state detected. Syncing background...");
       const { data: remoteStateData, error: readError } = await withTimeout(
         cloudState.client
@@ -2757,7 +2794,10 @@ async function checkAndSyncCloudBackground(options = {}) {
         }
       }
     } else {
-      cloudState.lastSyncAt = localLastSync;
+      if (remoteUpdatedAt && localLastSync !== remoteUpdatedAt) {
+        localStorage.setItem("sorubank:cloud-last-sync", remoteUpdatedAt);
+      }
+      cloudState.lastSyncAt = remoteUpdatedAt || localLastSync;
       renderCloudStatus();
     }
     // Başarılı bittiğinde loading ekranını gizle
@@ -3070,24 +3110,38 @@ async function pushCloudState(options = {}) {
   if (!cloudState.client || !userId) return;
   cloudState.syncing = true;
   renderCloudStatus();
+  const pushStartedAt = new Date().toISOString();
   try {
+    // Ensure latest in-memory skillState is flushed into skillProfileStore before collecting backup storage
+    const activeProfile = getActiveSkillProfile();
+    if (activeProfile && skillState) {
+      activeProfile.state = skillState;
+      localStorage.setItem(getSkillProfilesStorageKey(), JSON.stringify(skillProfileStore));
+    }
     const payload = {
       user_id: userId,
       state: createBackupPackage(Object.keys(BACKUP_MODULES)),
-      updated_at: new Date().toISOString()
+      updated_at: pushStartedAt
     };
-    const { error } = await cloudState.client
+    const { data: upsertedRows, error } = await cloudState.client
       .from("sorubank_cloud_states")
-      .upsert(payload, { onConflict: "user_id" });
+      .upsert(payload, { onConflict: "user_id" })
+      .select("updated_at")
+      .maybeSingle();
     if (error) throw error;
-    cloudState.lastSyncAt = payload.updated_at;
-    localStorage.setItem("sorubank:cloud-last-sync", payload.updated_at);
-    localStorage.removeItem("sorubank:cloud-local-write");
+    const syncedTimestamp = upsertedRows?.updated_at || payload.updated_at;
+    cloudState.lastSyncAt = syncedTimestamp;
+    localStorage.setItem("sorubank:cloud-last-sync", syncedTimestamp);
+    const currentLocalWrite = localStorage.getItem("sorubank:cloud-local-write");
+    if (!hasPendingPush && (!currentLocalWrite || Date.parse(currentLocalWrite) <= Date.parse(pushStartedAt))) {
+      localStorage.removeItem("sorubank:cloud-local-write");
+    }
     cloudState.lastError = "";
     if (!options.silent) showToast("Veriler buluta gönderildi.");
   } catch (error) {
     cloudState.lastError = `Buluta kaydedilemedi: ${error.message}`;
     if (!options.silent) showToast(cloudState.lastError, "error");
+    if (options.throwOnError) throw error;
   } finally {
     cloudState.syncing = false;
     renderCloudStatus();
@@ -7205,26 +7259,31 @@ function clearSkillCoordinatorForm() {
 
 function deleteSelectedSkillBusinesses() {
   const ids = selectedSkillIds(els.skillBusinessTable, "[data-skill-select-business]");
-  if (!ids.length) return showToast("Silmek icin isletme secin.");
-  const hasStudents = skillState.students.some((student) => ids.includes(student.businessId));
-  if (hasStudents) return showToast("Secili isletmeye bagli ogrenci var. Once ogrencileri tasiyin.", "warning");
+  if (!ids.length) return showToast("Silmek için işletme seçin.", "warning");
+  skillState.students.forEach((student) => {
+    if (ids.includes(student.businessId)) {
+      student.businessId = "";
+    }
+  });
   skillState.businesses = skillState.businesses.filter((business) => !ids.includes(business.id));
   skillState.coordinators = skillState.coordinators.filter((coordinator) => !ids.includes(coordinator.businessId));
   saveSkillState();
   clearSkillBusinessForm();
   renderSkillModule();
+  showToast("Seçili işletme kayıtları silindi.");
 }
 
 function deleteAllSkillBusinesses() {
-  if (skillState.students.some((student) => student.businessId)) {
-    showToast("Ogrenci bagli isletmeler toplu silinemez.", "warning");
-    return;
-  }
+  if (!skillState.businesses.length) return showToast("Silinecek işletme kaydı yok.", "warning");
+  skillState.students.forEach((student) => {
+    student.businessId = "";
+  });
   skillState.businesses = [];
   skillState.coordinators = [];
   saveSkillState();
   clearSkillBusinessForm();
   renderSkillModule();
+  showToast("Tüm işletme kayıtları silindi.");
 }
 
 function deleteSelectedSkillStudents() {
@@ -7463,11 +7522,11 @@ function handleSkillTableClick(event) {
   }
 
   if (deleteBusinessId) {
-    const hasStudents = skillState.students.some((student) => student.businessId === deleteBusinessId);
-    if (hasStudents) {
-      showToast("Bu işletmeye bağlı öğrenci var. Önce öğrencileri başka işletmeye taşıyın.", "warning");
-      return;
-    }
+    skillState.students.forEach((student) => {
+      if (student.businessId === deleteBusinessId) {
+        student.businessId = "";
+      }
+    });
     skillState.businesses = skillState.businesses.filter((business) => business.id !== deleteBusinessId);
     skillState.coordinators = skillState.coordinators.filter((coordinator) => coordinator.businessId !== deleteBusinessId);
     saveSkillState();
