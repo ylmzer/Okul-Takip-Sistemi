@@ -820,11 +820,20 @@ async function analyzeImeImportFile(file) {
         r.days = r.days || "";
       }
 
-      // Check existing business
+      // Check existing business (match by normalized name OR phone number, ignoring address differences)
+      if (typeof window.deduplicateSkillBusinesses === "function") {
+        window.deduplicateSkillBusinesses(skillState);
+      }
       const bizName = (r.business_name || "").trim();
+      const bizPhone = (r.business_phone || "").trim();
+      if (r.business_address && typeof window.cleanSkillBusinessAddress === "function") {
+        r.business_address = window.cleanSkillBusinessAddress(r.business_address);
+      }
       let existingBiz = null;
-      if (bizName) {
-        existingBiz = skillState.businesses.find(b => (b.name || "").trim().toLowerCase() === bizName.toLowerCase());
+      if (bizName || bizPhone) {
+        existingBiz = typeof window.findMatchingSkillBusiness === "function"
+          ? window.findMatchingSkillBusiness(skillState.businesses, bizName, bizPhone)
+          : skillState.businesses.find(b => (b.name || "").trim().toLowerCase() === bizName.toLowerCase());
       }
       if (!existingBiz && existingStu?.businessId) {
         existingBiz = skillState.businesses.find(b => b.id === existingStu.businessId);
@@ -836,6 +845,8 @@ async function analyzeImeImportFile(file) {
       if (existingBiz) {
         r.isExistingBusiness = true;
         r.existingBusinessId = existingBiz.id;
+        r.business_name = existingBiz.name || r.business_name;
+        r.business_phone = existingBiz.phone || r.business_phone;
         existingBusinessMatches++;
 
         // Coordinator for this business
@@ -912,8 +923,11 @@ function saveImeImportedData(event) {
     skillState.coordinators = parsedImportSqliteData.coordinators || [];
     skillState.holidays = parsedImportSqliteData.holidays || [];
     skillState.absenceRecords = parsedImportSqliteData.absenceRecords || {};
+    if (typeof window.deduplicateSkillBusinesses === "function") {
+      window.deduplicateSkillBusinesses(skillState);
+    }
     
-    saveSkillProfileStore();
+    saveSkillState();
     saveState({ sync: true });
     renderSkillModule();
     
@@ -974,22 +988,33 @@ function saveImeImportedData(event) {
   let updatedCoordCount = 0;
   
   parsedImportRecords.forEach(rec => {
-    // 1. Business
+    // 1. Business (match by normalized name OR phone number; never duplicate due to address differences)
     let bizName = (rec.business_name || "Belirtilmedi").trim();
-    let biz = skillState.businesses.find(b => b.name.toLowerCase() === bizName.toLowerCase());
+    let bizPhone = (rec.business_phone || "").trim();
+    let bizAddr = typeof window.cleanSkillBusinessAddress === "function"
+      ? window.cleanSkillBusinessAddress(rec.business_address || "")
+      : (rec.business_address || "").trim();
+
+    let biz = (rec.existingBusinessId && skillState.businesses.find(b => b.id === rec.existingBusinessId))
+      || (typeof window.findMatchingSkillBusiness === "function"
+        ? window.findMatchingSkillBusiness(skillState.businesses, bizName, bizPhone)
+        : skillState.businesses.find(b => b.name.toLowerCase() === bizName.toLowerCase()));
+
     if (!biz) {
       biz = {
         id: uid("biz"),
         name: bizName,
-        phone: rec.business_phone || "",
-        address: rec.business_address || "",
+        phone: bizPhone,
+        address: bizAddr,
         group: "1"
       };
       skillState.businesses.push(biz);
       addedBizCount++;
     } else {
-      biz.phone = biz.phone || rec.business_phone || "";
-      biz.address = biz.address || rec.business_address || "";
+      biz.phone = biz.phone || bizPhone || "";
+      biz.address = typeof window.chooseBetterSkillAddress === "function"
+        ? window.chooseBetterSkillAddress(biz.address, bizAddr)
+        : (biz.address || bizAddr || "");
     }
     
     // 2. Teacher in Pool
@@ -1087,7 +1112,10 @@ function saveImeImportedData(event) {
     }
   });
   
-  saveSkillProfileStore();
+  if (typeof window.deduplicateSkillBusinesses === "function") {
+    window.deduplicateSkillBusinesses(skillState);
+  }
+  saveSkillState();
   saveState({ sync: true });
   renderSkillModule();
   

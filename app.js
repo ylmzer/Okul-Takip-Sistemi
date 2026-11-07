@@ -1160,6 +1160,166 @@ function getSkillSchoolTypeLabel(value = getActiveSkillSchoolType()) {
   return normalizeSkillSchoolType(value) === "lise" ? "Meslek Lisesi" : "Mesem";
 }
 
+function normalizeSkillPhone(phone = "") {
+  const digits = String(phone || "").replace(/\D/g, "");
+  if (!digits) return "";
+  if (digits.length === 11 && digits.startsWith("0")) return digits.slice(1);
+  if (digits.length === 12 && digits.startsWith("90")) return digits.slice(2);
+  return digits.length >= 7 ? digits : "";
+}
+
+function normalizeSkillBusinessNameKeys(name = "") {
+  const ascii = String(name || "")
+    .trim()
+    .toLocaleLowerCase("tr-TR")
+    .replace(/\u0307/g, "")
+    .replace(/ı/g, "i")
+    .replace(/ğ/g, "g")
+    .replace(/ü/g, "u")
+    .replace(/ş/g, "s")
+    .replace(/ö/g, "o")
+    .replace(/ç/g, "c")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!ascii || ascii === "belirtilmedi" || ascii === "isletme yok" || ascii === "bilinmeyen isletme") {
+    return { compact: "", sortedWords: "", wordCount: 0 };
+  }
+  const words = ascii.split(" ").filter(Boolean);
+  const compact = words.join("");
+  const sortedWords = [...words].sort().join(" ");
+  return { compact, sortedWords, wordCount: words.length };
+}
+
+function cleanSkillBusinessAddress(address = "") {
+  let s = String(address || "").trim();
+  if (!s) return "";
+  s = s
+    .replace(/\bCADKNOWRPLA\b/gi, "CAD.NO:53/A")
+    .replace(/\bCADKNOWSR\b/gi, "CAD.NO:65")
+    .replace(/\bMAHKKARAYOLU\b/gi, "MAH. KARAYOLU")
+    .replace(/\bMAHK\b/gi, "MAH.")
+    .replace(/\/KUYUC\s+AK\b/gi, "/KUYUCAK")
+    .replace(/\s+/g, " ")
+    .trim();
+  return s;
+}
+
+function isCorruptedSkillAddress(address = "") {
+  return /KNOW|MAHK|\bC\s+NO\s+PAMUK/i.test(String(address || ""));
+}
+
+function chooseBetterSkillAddress(existingAddr = "", incomingAddr = "") {
+  const cleanA = cleanSkillBusinessAddress(existingAddr);
+  const cleanB = cleanSkillBusinessAddress(incomingAddr);
+  if (!cleanA) return cleanB;
+  if (!cleanB) return cleanA;
+  const badA = isCorruptedSkillAddress(existingAddr) && !isCorruptedSkillAddress(incomingAddr);
+  const badB = isCorruptedSkillAddress(incomingAddr) && !isCorruptedSkillAddress(existingAddr);
+  if (badA) return cleanB;
+  if (badB) return cleanA;
+  return cleanB.length > cleanA.length ? cleanB : cleanA;
+}
+
+function chooseBetterSkillBusinessName(nameA = "", nameB = "") {
+  const a = String(nameA || "").trim();
+  const b = String(nameB || "").trim();
+  if (!a || a === "Belirtilmedi") return b;
+  if (!b || b === "Belirtilmedi") return a;
+  if (a.includes("-") && !b.includes("-")) return a;
+  if (b.includes("-") && !a.includes("-")) return b;
+  return a;
+}
+
+function areSameSkillBusiness(nameA, phoneA, nameB, phoneB) {
+  const pA = normalizeSkillPhone(phoneA);
+  const pB = normalizeSkillPhone(phoneB);
+  if (pA && pB && pA === pB) {
+    return true;
+  }
+  const kA = normalizeSkillBusinessNameKeys(nameA);
+  const kB = normalizeSkillBusinessNameKeys(nameB);
+  if (kA.compact && kB.compact) {
+    if (kA.compact === kB.compact) return true;
+    if (kA.wordCount >= 2 && kB.wordCount >= 2 && kA.sortedWords === kB.sortedWords) return true;
+  }
+  return false;
+}
+
+function findMatchingSkillBusiness(businesses = [], candidateName = "", candidatePhone = "", excludeId = "") {
+  if (!Array.isArray(businesses)) return null;
+  return businesses.find((b) => {
+    if (!b || (excludeId && b.id === excludeId)) return false;
+    return areSameSkillBusiness(b.name, b.phone, candidateName, candidatePhone);
+  }) || null;
+}
+
+function deduplicateSkillBusinesses(targetState = skillState) {
+  if (!targetState || !Array.isArray(targetState.businesses)) return false;
+  const keptBusinesses = [];
+  const idRemap = new Map();
+  let changed = false;
+
+  targetState.businesses.forEach((biz) => {
+    if (!biz) return;
+    const cleanedAddr = cleanSkillBusinessAddress(biz.address);
+    if (cleanedAddr !== (biz.address || "")) {
+      biz.address = cleanedAddr;
+      changed = true;
+    }
+    const existing = findMatchingSkillBusiness(keptBusinesses, biz.name, biz.phone);
+    if (!existing) {
+      keptBusinesses.push(biz);
+    } else {
+      changed = true;
+      idRemap.set(biz.id, existing.id);
+      existing.name = chooseBetterSkillBusinessName(existing.name, biz.name);
+      existing.phone = existing.phone || biz.phone || "";
+      existing.address = chooseBetterSkillAddress(existing.address, biz.address);
+      if (biz.group === "2") existing.group = "2";
+    }
+  });
+
+  if (idRemap.size > 0) {
+    targetState.businesses = keptBusinesses;
+    if (Array.isArray(targetState.students)) {
+      targetState.students.forEach((stu) => {
+        if (stu && idRemap.has(stu.businessId)) {
+          stu.businessId = idRemap.get(stu.businessId);
+        }
+      });
+    }
+    if (Array.isArray(targetState.coordinators)) {
+      const mergedCoordinators = [];
+      targetState.coordinators.forEach((coord) => {
+        if (!coord) return;
+        if (idRemap.has(coord.businessId)) {
+          coord.businessId = idRemap.get(coord.businessId);
+        }
+        const existingCoord = mergedCoordinators.find((c) => c.businessId === coord.businessId);
+        if (!existingCoord) {
+          mergedCoordinators.push(coord);
+        } else {
+          if (!existingCoord.teacher && coord.teacher) existingCoord.teacher = coord.teacher;
+          if (!existingCoord.deputy && coord.deputy) existingCoord.deputy = coord.deputy;
+          if (!existingCoord.day && coord.day) existingCoord.day = coord.day;
+        }
+      });
+      targetState.coordinators = mergedCoordinators;
+    }
+  }
+  return changed;
+}
+
+window.normalizeSkillPhone = normalizeSkillPhone;
+window.normalizeSkillBusinessNameKeys = normalizeSkillBusinessNameKeys;
+window.cleanSkillBusinessAddress = cleanSkillBusinessAddress;
+window.chooseBetterSkillAddress = chooseBetterSkillAddress;
+window.chooseBetterSkillBusinessName = chooseBetterSkillBusinessName;
+window.areSameSkillBusiness = areSameSkillBusiness;
+window.findMatchingSkillBusiness = findMatchingSkillBusiness;
+window.deduplicateSkillBusinesses = deduplicateSkillBusinesses;
+
 function normalizeSkillStateShape(value = {}) {
   const nextState = {
     ...structuredClone(initialSkillState),
@@ -1177,6 +1337,7 @@ function normalizeSkillStateShape(value = {}) {
   if (!nextState.absenceRecords || Array.isArray(nextState.absenceRecords)) nextState.absenceRecords = {};
   if (!Array.isArray(nextState.reports)) nextState.reports = [];
   nextState.students = nextState.students.map((student) => ({ ...student, active: student.active !== false }));
+  deduplicateSkillBusinesses(nextState);
   return nextState;
 }
 
@@ -1355,6 +1516,9 @@ function ensureSkillCollections() {
   if (!skillState.wageManualAbsences || Array.isArray(skillState.wageManualAbsences)) skillState.wageManualAbsences = {};
   if (!skillState.absenceRecords || Array.isArray(skillState.absenceRecords)) skillState.absenceRecords = {};
   if (!Array.isArray(skillState.reports)) skillState.reports = [];
+  if (deduplicateSkillBusinesses(skillState)) {
+    saveSkillState();
+  }
 }
 
 
@@ -7169,21 +7333,29 @@ function saveSkillStudent(event) {
 
 function saveSkillBusiness(event) {
   event.preventDefault();
-  const id = els.skillBusinessId.value || uid("biz");
-  const nextBusiness = {
-    id,
-    name: els.skillBusinessName.value.trim(),
-    phone: els.skillBusinessPhone.value.trim(),
-    group: els.skillBusinessGroup.value,
-    address: els.skillBusinessAddress.value.trim()
-  };
-  if (!nextBusiness.name) {
+  const explicitId = els.skillBusinessId.value.trim();
+  const nameVal = els.skillBusinessName.value.trim();
+  const phoneVal = els.skillBusinessPhone.value.trim();
+  const addressVal = cleanSkillBusinessAddress(els.skillBusinessAddress.value.trim());
+  if (!nameVal) {
     showToast("İşletme adı boş bırakılamaz.", "warning");
     return;
   }
+  const matchedExisting = !explicitId
+    ? findMatchingSkillBusiness(skillState.businesses, nameVal, phoneVal)
+    : null;
+  const id = explicitId || matchedExisting?.id || uid("biz");
+  const nextBusiness = {
+    id,
+    name: nameVal,
+    phone: phoneVal || matchedExisting?.phone || "",
+    group: els.skillBusinessGroup.value,
+    address: addressVal || matchedExisting?.address || ""
+  };
   const index = skillState.businesses.findIndex((business) => business.id === id);
   if (index >= 0) skillState.businesses[index] = nextBusiness;
   else skillState.businesses.push(nextBusiness);
+  deduplicateSkillBusinesses(skillState);
   saveSkillState();
   clearSkillBusinessForm();
   renderSkillModule();
