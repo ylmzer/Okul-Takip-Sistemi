@@ -5,21 +5,74 @@ const require = createRequire(import.meta.url);
 const pdf = require('pdf-parse');
 const XLSX = require('xlsx');
 
-// Turkish character mapping
+// Turkish character mapping for custom PDF fonts (g_d0_f1, g_d0_f2, g_d0_f3, g_d0_f5)
 const turkishMap = {
   'ø': 'İ',
   'ù': 'Ş',
   'h': 'Ü',
   'g': 'Ö',
   'ö': 'Ğ',
-  '÷': 'Ğ',
+  '÷': 'ğ',
   'd': 'Ç',
-  '|': 'Ö',
-  'Õ': 'I'
+  'o': 'ç',
+  '|': 'ö',
+  'Õ': 'ı',
+  'ú': 'ş'
 };
 
 const normalLowercase = new Set("abcefijklmnopqrtuvwxyzıüşçğ");
 const punctuationToStrip = ".-,";
+
+function isCipherFont(fontName = "", str = "") {
+  const f = String(fontName || "").toLowerCase();
+  if (f === "g_d0_f1" || f === "g_d0_f2" || f === "g_d0_f3" || f === "g_d0_f5") {
+    return true;
+  }
+  if (f.includes("helvetica") || f.includes("arial") || f === "g_d0_f4" || f === "g_d0_f6") {
+    return false;
+  }
+  // Fallback heuristic if font name differs in another PDF generator
+  return /[\u0003\u000f-\u001eøù÷Õ]/.test(str);
+}
+
+function decodeCipherString(rawStr = "") {
+  if (!rawStr) return "";
+  // Determine if the string is predominantly uppercase (no lowercase cipher codes 68..93)
+  let hasLowerCipher = false;
+  for (let i = 0; i < rawStr.length; i++) {
+    const code = rawStr.charCodeAt(i);
+    if ((code >= 68 && code <= 93) || rawStr[i] === '÷' || rawStr[i] === 'o' || rawStr[i] === '|' || rawStr[i] === 'ú') {
+      hasLowerCipher = true;
+      break;
+    }
+  }
+
+  const out = [];
+  for (let i = 0; i < rawStr.length; i++) {
+    const c = rawStr[i];
+    const val = c.charCodeAt(0);
+    if (val === 3) {
+      out.push(' ');
+    } else if (c === ' ') {
+      // In cipher fonts where space is \u0003, ASCII 32 (32+29=61) is used for 'ü'
+      out.push(hasLowerCipher ? 'ü' : ' ');
+    } else if (c === 'Õ') {
+      out.push(hasLowerCipher ? 'ı' : 'I');
+    } else if (turkishMap[c]) {
+      const mapped = turkishMap[c];
+      out.push(!hasLowerCipher ? mapped.toLocaleUpperCase('tr-TR') : mapped);
+    } else if (val >= 11 && val <= 61) {
+      out.push(String.fromCharCode(val + 29));
+    } else if (val >= 68 && val <= 93) {
+      out.push(String.fromCharCode(val + 29));
+    } else if (val < 32) {
+      out.push(' ');
+    } else {
+      out.push(c);
+    }
+  }
+  return cleanString(out.join(""));
+}
 
 function isEncodedWord(word) {
   let checkWord = word;
@@ -52,25 +105,7 @@ function isEncodedWord(word) {
 
 function decodeEncodedWord(word) {
   if (!isEncodedWord(word)) return word;
-
-  const hasPlainABC = [...word].some(c => "ABC".includes(c));
-  const decodedChars = [];
-  for (let i = 0; i < word.length; i++) {
-    const c = word[i];
-    if (turkishMap[c]) {
-      decodedChars.push(turkishMap[c]);
-    } else {
-      const val = c.charCodeAt(0);
-      if (val >= 36 && val <= 61) {
-        decodedChars.push(String.fromCharCode(val + 29));
-      } else if (val >= 68 && val <= 93 && !hasPlainABC) {
-        decodedChars.push(String.fromCharCode(val - 3));
-      } else {
-        decodedChars.push(c);
-      }
-    }
-  }
-  return decodedChars.join("");
+  return decodeCipherString(word);
 }
 
 function cleanString(str) {
@@ -79,12 +114,10 @@ function cleanString(str) {
 
 function decodeItem(item) {
   if (!item || !item.str) return "";
-  const font = (item.font || "").toLowerCase();
-  if (font.includes("helvetica") || font.includes("arial") || font === "g_d0_f4" || font === "g_d0_f6" || /^\d+$/.test(item.str)) {
-    return cleanString(item.str);
+  if (isCipherFont(item.font, item.str)) {
+    return decodeCipherString(item.str);
   }
-  const words = item.str.split(/\s+/);
-  return cleanString(words.map(w => decodeEncodedWord(w)).join(" "));
+  return cleanString(item.str);
 }
 
 function decodeString(s) {
@@ -175,11 +208,11 @@ export async function parsePdf(filePath) {
     pagerender: function(pageData) {
       return pageData.getTextContent().then(textContent => {
         for (let item of textContent.items) {
-          if (!item.str.trim()) continue;
+          if (!item.str || !item.str.replace(/\u0003/g, "").trim()) continue;
           items.push({
             x: Math.round(item.transform[4]),
             y: Math.round(item.transform[5]),
-            str: item.str.trim(),
+            str: item.str,
             font: item.fontName,
             page: pageData.pageIndex
           });
@@ -232,8 +265,8 @@ export async function parsePdf(filePath) {
     }
   }
 
-  // Filter out header items for row grouping (all data rows are at Y < 420)
-  const dataItems = items.filter(it => it.y < 420);
+  // Filter out header and footer items for row grouping
+  const dataItems = items.filter(it => it.y > 45 && (it.page === 0 ? it.y < 400 : it.y < 450));
 
   // Group items into rows
   const rows = [];
@@ -324,6 +357,7 @@ export async function parsePdf(filePath) {
     const page = sRow.page;
     const bizItems = items.filter(it => {
       if (it.page !== page) return false;
+      if (it.y <= 45 || (page === 0 ? it.y >= 400 : it.y >= 450)) return false;
       if (it.y < lowerLimit || it.y > upperLimit) return false;
       return it.x < 220; // Business columns are X=10, 81, 169
     });
@@ -343,9 +377,25 @@ export async function parsePdf(filePath) {
       else if (bit.x > 150) phoneParts.push(str);
     }
 
-    const name = nameParts.length > 0 ? nameParts.join(" ") : "Belirtilmedi";
-    const address = addrParts.length > 0 ? addrParts.join(" ") : "";
-    const phone = phoneParts.length > 0 ? phoneParts.join(" ") : "";
+    const joinCellLines = (parts) => {
+      if (!parts || parts.length === 0) return "";
+      let out = parts[0];
+      for (let i = 1; i < parts.length; i++) {
+        const prev = out;
+        const curr = parts[i];
+        // Handle mid-word cell wrap (e.g. "CAD.HORSUNLU/KUYUC" + "AK" -> "CAD.HORSUNLU/KUYUCAK")
+        if (/\/[A-ZÇĞİÖŞÜ]{3,}$/i.test(prev) && /^[A-ZÇĞİÖŞÜ]{1,3}$/i.test(curr)) {
+          out = prev + curr;
+        } else {
+          out = prev + " " + curr;
+        }
+      }
+      return out.replace(/\s+/g, " ").trim();
+    };
+
+    const name = nameParts.length > 0 ? joinCellLines(nameParts) : "Belirtilmedi";
+    const address = addrParts.length > 0 ? joinCellLines(addrParts) : "";
+    const phone = phoneParts.length > 0 ? phoneParts.join(" ").trim() : "";
 
     currentBusiness = { name, address, phone };
 
