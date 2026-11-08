@@ -6751,7 +6751,16 @@ function renderSkillSchools() {
   if (!els.skillSchoolTable) return;
   ensureSkillCollections();
   const sort = window.skillTableSort?.schools;
-  let records = [...skillState.schoolRecords];
+  const searchQuery = (document.getElementById("skillSchoolSearch")?.value || "").trim().toLocaleLowerCase("tr-TR");
+  const typeFilter = document.getElementById("skillSchoolTypeFilter")?.value || "";
+  let records = skillState.schoolRecords.filter((school) => {
+    if (typeFilter && (school.schoolType || "mesem") !== typeFilter) return false;
+    if (searchQuery) {
+      const hay = [school.name, school.city, school.principal, school.deputy].join(" ").toLocaleLowerCase("tr-TR");
+      if (!hay.includes(searchQuery)) return false;
+    }
+    return true;
+  });
   if (sort && sort.key) {
     records.sort((a, b) => {
       let vA, vB;
@@ -6781,24 +6790,42 @@ function renderSkillSchools() {
     const endDateText = school.summerEndDate ? formatSkillDate(school.summerEndDate) : "-";
     return `
       <tr data-skill-edit-school="${school.id}">
-        <td><input type="checkbox" value="${school.id}" data-skill-select-school /></td>
-        <td>${index + 1}</td>
-        <td>${escapeHtml(school.name || "Okul adı yok")}</td>
+        <td style="text-align: center;"><input type="checkbox" value="${school.id}" data-skill-select-school /></td>
+        <td style="text-align: center;">${index + 1}</td>
+        <td><strong>${escapeHtml(school.name || "Okul adı yok")}</strong></td>
         <td>${escapeHtml(school.city || "-")}</td>
-        <td>${typeLabel}</td>
+        <td><span class="skill-badge-soft" style="padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; background: rgba(56, 189, 248, 0.12); color: #38bdf8;">${typeLabel}</span></td>
         <td>${startDateText}</td>
         <td>${endDateText}</td>
         <td>${escapeHtml(school.principal || "-")}</td>
+        <td style="text-align: center;">
+          <span class="skill-row-actions" style="justify-content: center; gap: 6px;">
+            <button type="button" class="skill-row-btn skill-btn-edit" data-skill-edit-school-btn="${school.id}" title="Okulu Düzenle">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+            <button type="button" class="skill-row-btn skill-btn-delete" data-skill-delete-school-btn="${school.id}" title="Okulu Sil">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+          </span>
+        </td>
       </tr>
     `;
-  }).join("") || `<tr><td colspan="8">Okul kaydı yok.</td></tr>`;
+  }).join("") || `<tr><td colspan="9" class="empty-state">Okul kaydı bulunamadı.</td></tr>`;
+  updateSkillSchoolActionState();
 }
 
 function renderSkillTeachers() {
   if (!els.skillTeacherTable) return;
   ensureSkillCollections();
   const sort = window.skillTableSort?.teachers;
-  let teachers = [...skillState.teacherPool];
+  const searchQuery = (document.getElementById("skillTeacherSearch")?.value || "").trim().toLocaleLowerCase("tr-TR");
+  let teachers = skillState.teacherPool.filter((teacher) => {
+    if (searchQuery) {
+      const hay = (teacher.name || "").toLocaleLowerCase("tr-TR");
+      if (!hay.includes(searchQuery)) return false;
+    }
+    return true;
+  });
   if (sort && sort.key) {
     teachers.sort((a, b) => {
       let vA, vB;
@@ -6814,12 +6841,157 @@ function renderSkillTeachers() {
   updateSkillTableHeadIcons("teachers");
   els.skillTeacherTable.innerHTML = teachers.map((teacher, index) => `
     <tr data-skill-edit-teacher="${teacher.id}">
-      <td><input type="checkbox" value="${teacher.id}" data-skill-select-teacher /></td>
-      <td>${index + 1}</td>
-      <td>${escapeHtml(teacher.name || "Öğretmen adı yok")}</td>
+      <td style="text-align: center;"><input type="checkbox" value="${teacher.id}" data-skill-select-teacher /></td>
+      <td style="text-align: center;">${index + 1}</td>
+      <td><strong>${escapeHtml(teacher.name || "Öğretmen adı yok")}</strong></td>
+      <td style="text-align: center;">
+        <span class="skill-row-actions" style="justify-content: center; gap: 6px;">
+          <button type="button" class="skill-row-btn skill-btn-edit" data-skill-edit-teacher-btn="${teacher.id}" title="Öğretmeni Düzenle">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          </button>
+          <button type="button" class="skill-row-btn skill-btn-delete" data-skill-delete-teacher-btn="${teacher.id}" title="Öğretmeni Sil">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          </button>
+        </span>
+      </td>
     </tr>
-  `).join("") || `<tr><td colspan="3">Koordinatör öğretmen kaydı yok.</td></tr>`;
+  `).join("") || `<tr><td colspan="4" class="empty-state">Koordinatör öğretmen kaydı bulunamadı.</td></tr>`;
+  updateSkillTeacherActionState();
 }
+
+function openSkillSchoolDrawer(schoolOrId = null) {
+  const drawer = document.getElementById("skillSchoolDrawer");
+  const backdrop = document.getElementById("skillSchoolDrawerBackdrop");
+  const title = document.getElementById("skillSchoolDrawerTitle");
+  if (!drawer) return;
+  const school = typeof schoolOrId === "string"
+    ? skillState.schoolRecords.find((s) => s.id === schoolOrId)
+    : schoolOrId;
+
+  if (school) {
+    if (title) title.textContent = "Okul Kaydını Düzenle";
+    if (els.skillSchoolId) els.skillSchoolId.value = school.id;
+    if (els.skillSchoolName) els.skillSchoolName.value = school.name || "";
+    if (els.skillSchoolCity) els.skillSchoolCity.value = school.city || "";
+    if (els.skillSchoolPrincipal) els.skillSchoolPrincipal.value = school.principal || "";
+    if (els.skillSchoolDeputy) els.skillSchoolDeputy.value = school.deputy || "";
+    if (els.skillSchoolType) els.skillSchoolType.value = school.schoolType || "mesem";
+    if (els.skillSchoolSummerStart) els.skillSchoolSummerStart.value = school.summerStartDate || "";
+    if (els.skillSchoolSummerEnd) els.skillSchoolSummerEnd.value = school.summerEndDate || "";
+  } else {
+    if (title) title.textContent = "Yeni Okul Kaydı";
+    clearSkillSchoolForm();
+  }
+  drawer.classList.add("is-open");
+  if (backdrop) backdrop.classList.add("is-open");
+  drawer.setAttribute("aria-hidden", "false");
+}
+
+function closeSkillSchoolDrawer() {
+  const drawer = document.getElementById("skillSchoolDrawer");
+  const backdrop = document.getElementById("skillSchoolDrawerBackdrop");
+  if (drawer) {
+    drawer.classList.remove("is-open");
+    drawer.setAttribute("aria-hidden", "true");
+  }
+  if (backdrop) {
+    backdrop.classList.remove("is-open");
+  }
+}
+window.openSkillSchoolDrawer = openSkillSchoolDrawer;
+window.closeSkillSchoolDrawer = closeSkillSchoolDrawer;
+
+function updateSkillSchoolActionState() {
+  const ids = selectedSkillIds(els.skillSchoolTable, "[data-skill-select-school]");
+  const bulkBar = document.getElementById("skillSchoolBulkBar");
+  const countBadge = document.getElementById("skillSchoolSelectedCount");
+  const totalBadge = document.getElementById("skillSchoolCountBadge");
+
+  if (totalBadge) {
+    totalBadge.textContent = `${skillState.schoolRecords.length} Okul`;
+  }
+
+  if (bulkBar) {
+    if (ids.length > 0) {
+      bulkBar.classList.add("is-visible");
+      if (countBadge) countBadge.textContent = ids.length;
+    } else {
+      bulkBar.classList.remove("is-visible");
+    }
+  }
+
+  if (els.skillSchoolTable) {
+    els.skillSchoolTable.querySelectorAll("tr").forEach((row) => {
+      const cb = row.querySelector("input[type='checkbox']");
+      row.classList.toggle("is-selected", !!cb?.checked);
+    });
+  }
+}
+window.updateSkillSchoolActionState = updateSkillSchoolActionState;
+
+function openSkillTeacherDrawer(teacherOrId = null) {
+  const drawer = document.getElementById("skillTeacherDrawer");
+  const backdrop = document.getElementById("skillTeacherDrawerBackdrop");
+  const title = document.getElementById("skillTeacherDrawerTitle");
+  if (!drawer) return;
+  const teacher = typeof teacherOrId === "string"
+    ? skillState.teacherPool.find((t) => t.id === teacherOrId)
+    : teacherOrId;
+
+  if (teacher) {
+    if (title) title.textContent = "Öğretmeni Düzenle";
+    if (els.skillTeacherId) els.skillTeacherId.value = teacher.id;
+    if (els.skillTeacherName) els.skillTeacherName.value = teacher.name || "";
+  } else {
+    if (title) title.textContent = "Yeni Öğretmen Kaydı";
+    clearSkillTeacherForm();
+  }
+  drawer.classList.add("is-open");
+  if (backdrop) backdrop.classList.add("is-open");
+  drawer.setAttribute("aria-hidden", "false");
+}
+
+function closeSkillTeacherDrawer() {
+  const drawer = document.getElementById("skillTeacherDrawer");
+  const backdrop = document.getElementById("skillTeacherDrawerBackdrop");
+  if (drawer) {
+    drawer.classList.remove("is-open");
+    drawer.setAttribute("aria-hidden", "true");
+  }
+  if (backdrop) {
+    backdrop.classList.remove("is-open");
+  }
+}
+window.openSkillTeacherDrawer = openSkillTeacherDrawer;
+window.closeSkillTeacherDrawer = closeSkillTeacherDrawer;
+
+function updateSkillTeacherActionState() {
+  const ids = selectedSkillIds(els.skillTeacherTable, "[data-skill-select-teacher]");
+  const bulkBar = document.getElementById("skillTeacherBulkBar");
+  const countBadge = document.getElementById("skillTeacherSelectedCount");
+  const totalBadge = document.getElementById("skillTeacherCountBadge");
+
+  if (totalBadge) {
+    totalBadge.textContent = `${skillState.teacherPool.length} Öğretmen`;
+  }
+
+  if (bulkBar) {
+    if (ids.length > 0) {
+      bulkBar.classList.add("is-visible");
+      if (countBadge) countBadge.textContent = ids.length;
+    } else {
+      bulkBar.classList.remove("is-visible");
+    }
+  }
+
+  if (els.skillTeacherTable) {
+    els.skillTeacherTable.querySelectorAll("tr").forEach((row) => {
+      const cb = row.querySelector("input[type='checkbox']");
+      row.classList.toggle("is-selected", !!cb?.checked);
+    });
+  }
+}
+window.updateSkillTeacherActionState = updateSkillTeacherActionState;
 
 function renderSkillFields() {
   if (!els.skillFieldTable) return;
@@ -6876,7 +7048,8 @@ function clearSkillFieldForm() {
   els.skillFieldBranch.value = "";
 }
 
-function saveSkillSchool() {
+function saveSkillSchool(e) {
+  if (e && typeof e.preventDefault === "function") e.preventDefault();
   ensureSkillCollections();
   const name = els.skillSchoolName.value.trim();
   if (!name) return showToast("Okul adı girin.");
@@ -6897,11 +7070,13 @@ function saveSkillSchool() {
   skillState.school.name = name;
   saveSkillState();
   clearSkillSchoolForm();
+  closeSkillSchoolDrawer();
   renderSkillModule();
   showToast("Okul kaydedildi.");
 }
 
-function saveSkillTeacher() {
+function saveSkillTeacher(e) {
+  if (e && typeof e.preventDefault === "function") e.preventDefault();
   ensureSkillCollections();
   const name = els.skillTeacherName.value.trim();
   if (!name) return showToast("Koordinatör öğretmen adı girin.");
@@ -6918,6 +7093,7 @@ function saveSkillTeacher() {
   }
   saveSkillState();
   clearSkillTeacherForm();
+  closeSkillTeacherDrawer();
   renderSkillModule();
   showToast("Koordinatör öğretmen kaydedildi.");
 }
@@ -6979,35 +7155,60 @@ function deleteAllSkillFields() {
 function handleSkillManagedTables(event) {
   const checkbox = event.target.closest("input[type='checkbox']");
   if (checkbox) return;
+
+  const deleteSchoolBtn = event.target.closest("[data-skill-delete-school-btn]");
+  if (deleteSchoolBtn) {
+    const id = deleteSchoolBtn.dataset.skillDeleteSchoolBtn;
+    if (confirm("Bu okulu silmek istediğinize emin misiniz?")) {
+      skillState.schoolRecords = skillState.schoolRecords.filter((s) => s.id !== id);
+      skillState.coordinators = skillState.coordinators.filter((c) => c.schoolId !== id);
+      if (!skillState.schoolRecords.length) skillState.school.name = "Okul bilgisi girilmedi";
+      saveSkillState();
+      renderSkillSchools();
+      showToast("Okul silindi.");
+    }
+    return;
+  }
+
+  const editSchoolBtn = event.target.closest("[data-skill-edit-school-btn]");
   const schoolRow = event.target.closest("[data-skill-edit-school]");
-  if (schoolRow) {
-    const school = skillState.schoolRecords.find((item) => item.id === schoolRow.dataset.skillEditSchool);
-    if (!school) return;
-    els.skillSchoolId.value = school.id;
-    els.skillSchoolName.value = school.name || "";
-    els.skillSchoolCity.value = school.city || "";
-    els.skillSchoolPrincipal.value = school.principal || "";
-    els.skillSchoolDeputy.value = school.deputy || "";
-    if (els.skillSchoolType) els.skillSchoolType.value = school.schoolType || "mesem";
-    if (els.skillSchoolSummerStart) els.skillSchoolSummerStart.value = school.summerStartDate || "";
-    if (els.skillSchoolSummerEnd) els.skillSchoolSummerEnd.value = school.summerEndDate || "";
+  if (editSchoolBtn || schoolRow) {
+    const id = editSchoolBtn?.dataset.skillEditSchoolBtn || schoolRow?.dataset.skillEditSchool;
+    openSkillSchoolDrawer(id);
     return;
   }
+
+  const deleteTeacherBtn = event.target.closest("[data-skill-delete-teacher-btn]");
+  if (deleteTeacherBtn) {
+    const id = deleteTeacherBtn.dataset.skillDeleteTeacherBtn;
+    const teacher = skillState.teacherPool.find((t) => t.id === id);
+    if (confirm(`"${teacher?.name || 'Bu öğretmeni'}" silmek istediğinize emin misiniz?`)) {
+      skillState.teacherPool = skillState.teacherPool.filter((t) => t.id !== id);
+      if (teacher?.name) {
+        skillState.coordinators = skillState.coordinators.filter((c) => c.teacher !== teacher.name);
+      }
+      saveSkillState();
+      renderSkillTeachers();
+      showToast("Öğretmen silindi.");
+    }
+    return;
+  }
+
+  const editTeacherBtn = event.target.closest("[data-skill-edit-teacher-btn]");
   const teacherRow = event.target.closest("[data-skill-edit-teacher]");
-  if (teacherRow) {
-    const teacher = skillState.teacherPool.find((item) => item.id === teacherRow.dataset.skillEditTeacher);
-    if (!teacher) return;
-    els.skillTeacherId.value = teacher.id;
-    els.skillTeacherName.value = teacher.name || "";
+  if (editTeacherBtn || teacherRow) {
+    const id = editTeacherBtn?.dataset.skillEditTeacherBtn || teacherRow?.dataset.skillEditTeacher;
+    openSkillTeacherDrawer(id);
     return;
   }
+
   const fieldRow = event.target.closest("[data-skill-edit-field]");
   if (fieldRow) {
     const field = skillState.fields.find((item) => item.id === fieldRow.dataset.skillEditField);
     if (!field) return;
-    els.skillFieldId.value = field.id;
-    els.skillFieldArea.value = field.area || "";
-    els.skillFieldBranch.value = field.branch || "";
+    if (els.skillFieldId) els.skillFieldId.value = field.id;
+    if (els.skillFieldArea) els.skillFieldArea.value = field.area || "";
+    if (els.skillFieldBranch) els.skillFieldBranch.value = field.branch || "";
   }
 }
 

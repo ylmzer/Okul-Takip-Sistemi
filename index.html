@@ -31,7 +31,7 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg" />
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
-    <link rel="stylesheet" href="./styles.css?v=102" />
+    <link rel="stylesheet" href="./styles.css?v=103" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
     <link rel="stylesheet" href="./theme-overrides.css?v=130" />
   </head>
@@ -2059,108 +2059,194 @@
 
         <section class="skill-view" data-skill-panel="school">
           <div class="skill-school-grid">
-            <section class="skill-panel skill-form skill-compact-mgmt-form">
-              <div class="panel-heading skill-form-title">
-                <div>
-                  <p class="eyebrow">Okul bilgileri</p>
-                  <h2>Okul ve yönetici kaydı</h2>
-                </div>
-              </div>
-              <input id="skillSchoolId" type="hidden" />
-              <div class="skill-form-grid skill-school-entry-grid">
-                <label class="school-col-name">
-                  <span>Okul adı</span>
-                  <input id="skillSchoolName" type="text" placeholder="Okul adı" />
-                </label>
-                <label class="school-col-city">
-                  <span>İl</span>
-                  <input id="skillSchoolCity" type="text" placeholder="İl" />
-                </label>
-                <label class="school-col-type">
-                  <span>Okul türü</span>
-                  <select id="skillSchoolType">
+            <!-- Sol Sütun: Okul Bilgileri -->
+            <div class="skill-mgmt-layout skill-school-layout">
+              <!-- Tek Satır Kompakt Filtre ve Yeni Okul Butonu -->
+              <div class="skill-mgmt-filter-bar">
+                <div class="skill-student-filters-bar">
+                  <div class="skill-search-input-wrap">
+                    <span class="skill-search-icon">🔍</span>
+                    <input id="skillSchoolSearch" type="search" placeholder="Okul veya il ara..." aria-label="Okul ara" />
+                  </div>
+                  <select id="skillSchoolTypeFilter" aria-label="Okul türü filtresi">
+                    <option value="">Tüm türler</option>
                     <option value="mesem">MESEM</option>
                     <option value="lise">MTAL</option>
                   </select>
-                </label>
-                <label class="school-col-principal">
-                  <span>Okul müdürü</span>
-                  <input id="skillSchoolPrincipal" type="text" placeholder="Ad soyad" />
-                </label>
-                <label class="school-col-deputy">
-                  <span>Koordinatör md. yrd.</span>
-                  <input id="skillSchoolDeputy" type="text" placeholder="Ad soyad" />
-                </label>
-                <label class="school-col-summer-start">
-                  <span>Yaz tatili başl.</span>
-                  <input id="skillSchoolSummerStart" type="date" />
-                </label>
-                <label class="school-col-summer-end">
-                  <span>Yaz tatili bit.</span>
-                  <input id="skillSchoolSummerEnd" type="date" />
-                </label>
-                <div class="stu-col-form-actions school-col-actions">
-                  <button class="secondary-action" id="skillNewSchoolBtn" type="button">Yeni</button>
-                  <button class="danger-action" id="skillDeleteSchoolBtn" type="button">Seçileni sil</button>
-                  <button class="primary-action" id="skillSaveSchoolBtn" type="button">Kaydet</button>
+                  <button class="secondary-action skill-filter-reset-btn" id="skillSchoolFilterResetBtn" type="button" title="Filtreleri sıfırla" style="display: none;">✕</button>
+                  <span class="skill-mgmt-badge" id="skillSchoolCountBadge">0 Okul</span>
+                </div>
+                <div class="skill-mgmt-top-actions">
+                  <button type="button" class="primary-action skill-btn-primary" id="skillOpenSchoolDrawerBtn">
+                    <span class="skill-btn-icon">+</span> Yeni Okul
+                  </button>
                 </div>
               </div>
-              <div class="skill-panel skill-table-card">
-                <div class="skill-table-head">
-                  <div>
-                    <p class="eyebrow">Okullar</p>
-                    <h2>Tanımlı okul listesi</h2>
-                  </div>
+
+              <!-- Bağlamsal Toplu İşlem Çubuğu (Yalnızca seçim varsa görünür) -->
+              <div class="skill-student-bulk-bar" id="skillSchoolBulkBar">
+                <div class="skill-bulk-selection-info">
+                  <span class="skill-bulk-badge" id="skillSchoolSelectedCount">0</span>
+                  <span>okul seçildi</span>
                 </div>
+                <div class="skill-inline-actions skill-student-bulk-actions">
+                  <button class="danger-action" id="skillDeleteSchoolBtn" type="button">Seçileni sil</button>
+                  <button class="secondary-action soft" id="skillSchoolClearSelectionBtn" type="button" title="Seçimleri kaldır">✕ Seçimi Kaldır</button>
+                </div>
+              </div>
+
+              <!-- Tablo Paneli -->
+              <section class="skill-panel skill-table-card">
                 <table class="skill-data-table">
                   <thead>
                     <tr>
-                      <th><input type="checkbox" id="skillSchoolSelectAll" style="cursor: pointer;" /></th>
-                      <th class="skill-sort-col" data-sort-table="schools" data-sort-key="index" title="Sıralamak için tıklayın">No <span class="skill-sort-indicator">⇅</span></th>
+                      <th style="width: 36px; text-align: center;"><input type="checkbox" id="skillSchoolSelectAll" style="cursor: pointer;" title="Tümünü Seç" /></th>
+                      <th style="width: 44px; text-align: center;" class="skill-sort-col" data-sort-table="schools" data-sort-key="index" title="Sıralamak için tıklayın">No <span class="skill-sort-indicator">⇅</span></th>
                       <th class="skill-sort-col" data-sort-table="schools" data-sort-key="name" title="Sıralamak için tıklayın">Okul adı <span class="skill-sort-indicator">⇅</span></th>
-                      <th class="skill-sort-col" data-sort-table="schools" data-sort-key="city" title="Sıralamak için tıklayın">İl <span class="skill-sort-indicator">⇅</span></th>
-                      <th class="skill-sort-col" data-sort-table="schools" data-sort-key="schoolType" title="Sıralamak için tıklayın">Tür <span class="skill-sort-indicator">⇅</span></th>
-                      <th class="skill-sort-col" data-sort-table="schools" data-sort-key="summerStartDate" title="Sıralamak için tıklayın">Yaz Tatili Başl. <span class="skill-sort-indicator">⇅</span></th>
-                      <th class="skill-sort-col" data-sort-table="schools" data-sort-key="summerEndDate" title="Sıralamak için tıklayın">Yaz Tatili Bit. <span class="skill-sort-indicator">⇅</span></th>
+                      <th style="width: 80px;" class="skill-sort-col" data-sort-table="schools" data-sort-key="city" title="Sıralamak için tıklayın">İl <span class="skill-sort-indicator">⇅</span></th>
+                      <th style="width: 72px;" class="skill-sort-col" data-sort-table="schools" data-sort-key="schoolType" title="Sıralamak için tıklayın">Tür <span class="skill-sort-indicator">⇅</span></th>
+                      <th style="width: 95px;" class="skill-sort-col" data-sort-table="schools" data-sort-key="summerStartDate" title="Sıralamak için tıklayın">Yaz Tat. Başl. <span class="skill-sort-indicator">⇅</span></th>
+                      <th style="width: 95px;" class="skill-sort-col" data-sort-table="schools" data-sort-key="summerEndDate" title="Sıralamak için tıklayın">Yaz Tat. Bit. <span class="skill-sort-indicator">⇅</span></th>
                       <th class="skill-sort-col" data-sort-table="schools" data-sort-key="principal" title="Sıralamak için tıklayın">Müdür <span class="skill-sort-indicator">⇅</span></th>
+                      <th class="skill-th-actions" style="width: 70px; text-align: center;">İşlem</th>
                     </tr>
                   </thead>
                   <tbody id="skillSchoolTable"></tbody>
                 </table>
-              </div>
-            </section>
-            <section class="skill-panel skill-form skill-compact-mgmt-form">
-              <div class="panel-heading skill-form-title">
-                <div>
-                  <p class="eyebrow">Koordinatörler</p>
-                  <h2>Koordinatör öğretmenler</h2>
+              </section>
+
+              <!-- Slide-over Drawer (Yeni Okul Ekle / Düzenle) -->
+              <div class="skill-drawer-backdrop" id="skillSchoolDrawerBackdrop"></div>
+              <aside class="skill-slide-drawer" id="skillSchoolDrawer" aria-hidden="true">
+                <form class="skill-form skill-student-drawer-form" id="skillSchoolForm">
+                  <input id="skillSchoolId" type="hidden" />
+                  <div class="skill-drawer-header">
+                    <div>
+                      <h3 class="skill-drawer-title" id="skillSchoolDrawerTitle">Yeni Okul Kaydı</h3>
+                      <p class="skill-drawer-sub">Okul ve yönetici bilgilerini girin</p>
+                    </div>
+                    <button type="button" class="skill-drawer-close" id="skillCloseSchoolDrawerBtn" aria-label="Kapat">✕</button>
+                  </div>
+                  <div class="skill-drawer-body">
+                    <label>
+                      <span>Okul adı *</span>
+                      <input id="skillSchoolName" type="text" placeholder="Örn: Nazilli Mesleki Eğitim Merkezi" required />
+                    </label>
+                    <div class="skill-drawer-grid-two">
+                      <label>
+                        <span>İl</span>
+                        <input id="skillSchoolCity" type="text" placeholder="Örn: Aydın" />
+                      </label>
+                      <label>
+                        <span>Okul türü</span>
+                        <select id="skillSchoolType">
+                          <option value="mesem">MESEM</option>
+                          <option value="lise">MTAL</option>
+                        </select>
+                      </label>
+                    </div>
+                    <div class="skill-drawer-grid-two">
+                      <label>
+                        <span>Okul müdürü</span>
+                        <input id="skillSchoolPrincipal" type="text" placeholder="Ad soyad" />
+                      </label>
+                      <label>
+                        <span>Koordinatör md. yrd.</span>
+                        <input id="skillSchoolDeputy" type="text" placeholder="Ad soyad" />
+                      </label>
+                    </div>
+                    <div class="skill-drawer-grid-two">
+                      <label>
+                        <span>Yaz tatili başl.</span>
+                        <input id="skillSchoolSummerStart" type="date" />
+                      </label>
+                      <label>
+                        <span>Yaz tatili bit.</span>
+                        <input id="skillSchoolSummerEnd" type="date" />
+                      </label>
+                    </div>
+                  </div>
+                  <div class="skill-drawer-footer">
+                    <button class="secondary-action" id="skillNewSchoolBtn" type="button" title="Formu temizle">Yeni</button>
+                    <button class="secondary-action" id="skillCancelSchoolDrawerBtn" type="button">İptal</button>
+                    <button class="primary-action" id="skillSaveSchoolBtn" type="button">Okulu kaydet</button>
+                  </div>
+                </form>
+              </aside>
+            </div>
+
+            <!-- Sağ Sütun: Koordinatör Öğretmenler -->
+            <div class="skill-mgmt-layout skill-teacher-layout">
+              <!-- Tek Satır Kompakt Filtre ve Yeni Öğretmen Butonu -->
+              <div class="skill-mgmt-filter-bar">
+                <div class="skill-student-filters-bar">
+                  <div class="skill-search-input-wrap">
+                    <span class="skill-search-icon">🔍</span>
+                    <input id="skillTeacherSearch" type="search" placeholder="Öğretmen ara..." aria-label="Öğretmen ara" />
+                  </div>
+                  <button class="secondary-action skill-filter-reset-btn" id="skillTeacherFilterResetBtn" type="button" title="Filtreleri sıfırla" style="display: none;">✕</button>
+                  <span class="skill-mgmt-badge" id="skillTeacherCountBadge">0 Öğretmen</span>
+                </div>
+                <div class="skill-mgmt-top-actions">
+                  <button type="button" class="primary-action skill-btn-primary" id="skillOpenTeacherDrawerBtn">
+                    <span class="skill-btn-icon">+</span> Yeni Öğretmen
+                  </button>
                 </div>
               </div>
-              <input id="skillTeacherId" type="hidden" />
-              <div class="skill-form-grid skill-teacher-entry-grid">
-                <label class="teacher-col-name">
-                  <span>Koordinatör öğretmen</span>
-                  <input id="skillTeacherName" type="text" placeholder="Ad soyad" />
-                </label>
-                <div class="stu-col-form-actions">
-                  <button class="secondary-action" id="skillNewTeacherBtn" type="button">Yeni</button>
+
+              <!-- Bağlamsal Toplu İşlem Çubuğu (Yalnızca seçim varsa görünür) -->
+              <div class="skill-student-bulk-bar" id="skillTeacherBulkBar">
+                <div class="skill-bulk-selection-info">
+                  <span class="skill-bulk-badge" id="skillTeacherSelectedCount">0</span>
+                  <span>öğretmen seçildi</span>
+                </div>
+                <div class="skill-inline-actions skill-student-bulk-actions">
                   <button class="danger-action" id="skillDeleteTeacherBtn" type="button">Seçileni sil</button>
-                  <button class="primary-action" id="skillSaveTeacherBtn" type="button">Kaydet</button>
+                  <button class="secondary-action soft" id="skillTeacherClearSelectionBtn" type="button" title="Seçimleri kaldır">✕ Seçimi Kaldır</button>
                 </div>
               </div>
-              <div class="skill-panel skill-table-card">
+
+              <!-- Tablo Paneli -->
+              <section class="skill-panel skill-table-card">
                 <table class="skill-data-table">
                   <thead>
                     <tr>
-                      <th><input type="checkbox" id="skillTeacherSelectAll" style="cursor: pointer;" /></th>
-                      <th class="skill-sort-col" data-sort-table="teachers" data-sort-key="index" title="Sıralamak için tıklayın">No <span class="skill-sort-indicator">⇅</span></th>
+                      <th style="width: 36px; text-align: center;"><input type="checkbox" id="skillTeacherSelectAll" style="cursor: pointer;" title="Tümünü Seç" /></th>
+                      <th style="width: 44px; text-align: center;" class="skill-sort-col" data-sort-table="teachers" data-sort-key="index" title="Sıralamak için tıklayın">No <span class="skill-sort-indicator">⇅</span></th>
                       <th class="skill-sort-col" data-sort-table="teachers" data-sort-key="name" title="Sıralamak için tıklayın">Koordinatör öğretmen <span class="skill-sort-indicator">⇅</span></th>
+                      <th class="skill-th-actions" style="width: 70px; text-align: center;">İşlem</th>
                     </tr>
                   </thead>
                   <tbody id="skillTeacherTable"></tbody>
                 </table>
-              </div>
-            </section>
+              </section>
+
+              <!-- Slide-over Drawer (Yeni Öğretmen Ekle / Düzenle) -->
+              <div class="skill-drawer-backdrop" id="skillTeacherDrawerBackdrop"></div>
+              <aside class="skill-slide-drawer" id="skillTeacherDrawer" aria-hidden="true">
+                <form class="skill-form skill-student-drawer-form" id="skillTeacherForm">
+                  <input id="skillTeacherId" type="hidden" />
+                  <div class="skill-drawer-header">
+                    <div>
+                      <h3 class="skill-drawer-title" id="skillTeacherDrawerTitle">Yeni Öğretmen Kaydı</h3>
+                      <p class="skill-drawer-sub">Koordinatör öğretmen ad soyadını girin</p>
+                    </div>
+                    <button type="button" class="skill-drawer-close" id="skillCloseTeacherDrawerBtn" aria-label="Kapat">✕</button>
+                  </div>
+                  <div class="skill-drawer-body">
+                    <label>
+                      <span>Koordinatör öğretmen adı soyadı *</span>
+                      <input id="skillTeacherName" type="text" placeholder="Örn: YILMAZ ER" required />
+                    </label>
+                  </div>
+                  <div class="skill-drawer-footer">
+                    <button class="secondary-action" id="skillNewTeacherBtn" type="button" title="Formu temizle">Yeni</button>
+                    <button class="secondary-action" id="skillCancelTeacherDrawerBtn" type="button">İptal</button>
+                    <button class="primary-action" id="skillSaveTeacherBtn" type="button">Öğretmeni kaydet</button>
+                  </div>
+                </form>
+              </aside>
+            </div>
           </div>
         </section>
         <section class="skill-view" data-skill-panel="fields">
@@ -5182,12 +5268,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./scripts/core/module-registry.js?v=1"></script>
-    <script src="./app.js?v=138"></script>
+    <script src="./app.js?v=139"></script>
     <script src="./scripts/modules/settings/index.js?v=8"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=9"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=17"></script>
     <script src="./scripts/modules/sorubank/index.js?v=8"></script>
-    <script src="./scripts/modules/skill-training/index.js?v=24"></script>
+    <script src="./scripts/modules/skill-training/index.js?v=25"></script>
     <script src="./scripts/modules/student-tracking/index.js?v=14"></script>
     <script src="./scripts/modules/system-admin/index.js?v=1"></script>
   </body>

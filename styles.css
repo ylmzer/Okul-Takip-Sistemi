@@ -7959,7 +7959,9 @@ body.skill-mode .skill-view[data-skill-panel="students"] .skill-student-filters-
 body.skill-mode .skill-view[data-skill-panel="students"] #skillStudentSearch,
 body.skill-mode .skill-view[data-skill-panel="businesses"] #skillBusinessSearch,
 body.skill-mode .skill-view[data-skill-panel="coordinators"] #skillCoordinatorSearch,
-body.skill-mode .skill-view[data-skill-panel="holidays"] #skillHolidaySearch {
+body.skill-mode .skill-view[data-skill-panel="holidays"] #skillHolidaySearch,
+body.skill-mode .skill-view[data-skill-panel="school"] #skillSchoolSearch,
+body.skill-mode .skill-view[data-skill-panel="school"] #skillTeacherSearch {
   padding-left: 32px !important;
   flex: 1.2 1 135px !important;
 }

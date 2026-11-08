@@ -2061,6 +2061,58 @@ if (clearHolidaySelectionBtn) {
   });
 }
 
+// 5. Okul Drawer & Seçim
+const openSchoolDrawerBtn = document.getElementById("skillOpenSchoolDrawerBtn");
+const closeSchoolDrawerBtn = document.getElementById("skillCloseSchoolDrawerBtn");
+const cancelSchoolDrawerBtn = document.getElementById("skillCancelSchoolDrawerBtn");
+const schoolDrawerBackdrop = document.getElementById("skillSchoolDrawerBackdrop");
+const clearSchoolSelectionBtn = document.getElementById("skillSchoolClearSelectionBtn");
+
+if (openSchoolDrawerBtn) openSchoolDrawerBtn.addEventListener("click", () => window.openSkillSchoolDrawer?.(null));
+if (closeSchoolDrawerBtn) closeSchoolDrawerBtn.addEventListener("click", () => window.closeSkillSchoolDrawer?.());
+if (cancelSchoolDrawerBtn) cancelSchoolDrawerBtn.addEventListener("click", () => window.closeSkillSchoolDrawer?.());
+if (schoolDrawerBackdrop) schoolDrawerBackdrop.addEventListener("click", () => window.closeSkillSchoolDrawer?.());
+if (clearSchoolSelectionBtn) {
+  clearSchoolSelectionBtn.addEventListener("click", () => {
+    if (els.skillSchoolTable) {
+      const selectAll = document.getElementById("skillSchoolSelectAll");
+      if (selectAll) selectAll.checked = false;
+      els.skillSchoolTable.querySelectorAll("[data-skill-select-school]").forEach((cb) => cb.checked = false);
+    }
+    updateSkillSchoolActionState?.();
+  });
+}
+document.getElementById("skillSchoolForm")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  saveSkillSchool?.(e);
+});
+
+// 6. Öğretmen Drawer & Seçim
+const openTeacherDrawerBtn = document.getElementById("skillOpenTeacherDrawerBtn");
+const closeTeacherDrawerBtn = document.getElementById("skillCloseTeacherDrawerBtn");
+const cancelTeacherDrawerBtn = document.getElementById("skillCancelTeacherDrawerBtn");
+const teacherDrawerBackdrop = document.getElementById("skillTeacherDrawerBackdrop");
+const clearTeacherSelectionBtn = document.getElementById("skillTeacherClearSelectionBtn");
+
+if (openTeacherDrawerBtn) openTeacherDrawerBtn.addEventListener("click", () => window.openSkillTeacherDrawer?.(null));
+if (closeTeacherDrawerBtn) closeTeacherDrawerBtn.addEventListener("click", () => window.closeSkillTeacherDrawer?.());
+if (cancelTeacherDrawerBtn) cancelTeacherDrawerBtn.addEventListener("click", () => window.closeSkillTeacherDrawer?.());
+if (teacherDrawerBackdrop) teacherDrawerBackdrop.addEventListener("click", () => window.closeSkillTeacherDrawer?.());
+if (clearTeacherSelectionBtn) {
+  clearTeacherSelectionBtn.addEventListener("click", () => {
+    if (els.skillTeacherTable) {
+      const selectAll = document.getElementById("skillTeacherSelectAll");
+      if (selectAll) selectAll.checked = false;
+      els.skillTeacherTable.querySelectorAll("[data-skill-select-teacher]").forEach((cb) => cb.checked = false);
+    }
+    updateSkillTeacherActionState?.();
+  });
+}
+document.getElementById("skillTeacherForm")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  saveSkillTeacher?.(e);
+});
+
 // ESC tuşuyla açık olan drawer'ı kapat
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
@@ -2068,6 +2120,8 @@ document.addEventListener("keydown", (e) => {
     window.closeSkillBusinessDrawer?.();
     window.closeSkillCoordinatorDrawer?.();
     window.closeSkillHolidayDrawer?.();
+    window.closeSkillSchoolDrawer?.();
+    window.closeSkillTeacherDrawer?.();
   }
 });
 if (els.skillToggleStudentStatusBtn) els.skillToggleStudentStatusBtn.addEventListener("click", toggleSelectedSkillStudentStatus);
@@ -2671,7 +2725,7 @@ document.getElementById("skillStudentFilterResetBtn")?.addEventListener("click",
   renderSkillStudents();
 });
 
-// Business, Coordinator & Holiday filter bar events & reset buttons
+// Business, Coordinator, Holiday, School & Teacher filter bar events & reset buttons
 function syncSkillMgmtFilterBars() {
   const bizReset = document.getElementById("skillBusinessFilterResetBtn");
   if (bizReset) {
@@ -2696,6 +2750,21 @@ function syncSkillMgmtFilterBars() {
     const hasHol = Boolean(document.getElementById("skillHolidaySearch")?.value?.trim());
     holReset.style.display = hasHol ? "inline-flex" : "none";
   }
+
+  const schoolReset = document.getElementById("skillSchoolFilterResetBtn");
+  if (schoolReset) {
+    const hasSchool = Boolean(
+      document.getElementById("skillSchoolSearch")?.value?.trim() ||
+      document.getElementById("skillSchoolTypeFilter")?.value
+    );
+    schoolReset.style.display = hasSchool ? "inline-flex" : "none";
+  }
+
+  const teacherReset = document.getElementById("skillTeacherFilterResetBtn");
+  if (teacherReset) {
+    const hasTeacher = Boolean(document.getElementById("skillTeacherSearch")?.value?.trim());
+    teacherReset.style.display = hasTeacher ? "inline-flex" : "none";
+  }
 }
 
 ["input", "change"].forEach((evt) => {
@@ -2718,6 +2787,18 @@ function syncSkillMgmtFilterBars() {
   document.getElementById("skillHolidaySearch")?.addEventListener(evt, () => {
     syncSkillMgmtFilterBars();
     renderSkillHolidays?.();
+  });
+  document.getElementById("skillSchoolSearch")?.addEventListener(evt, () => {
+    syncSkillMgmtFilterBars();
+    renderSkillSchools?.();
+  });
+  document.getElementById("skillSchoolTypeFilter")?.addEventListener(evt, () => {
+    syncSkillMgmtFilterBars();
+    renderSkillSchools?.();
+  });
+  document.getElementById("skillTeacherSearch")?.addEventListener(evt, () => {
+    syncSkillMgmtFilterBars();
+    renderSkillTeachers?.();
   });
 });
 
@@ -2744,5 +2825,21 @@ document.getElementById("skillHolidayFilterResetBtn")?.addEventListener("click",
   if (s) s.value = "";
   syncSkillMgmtFilterBars();
   renderSkillHolidays?.();
+});
+
+document.getElementById("skillSchoolFilterResetBtn")?.addEventListener("click", () => {
+  const s = document.getElementById("skillSchoolSearch");
+  const t = document.getElementById("skillSchoolTypeFilter");
+  if (s) s.value = "";
+  if (t) t.value = "";
+  syncSkillMgmtFilterBars();
+  renderSkillSchools?.();
+});
+
+document.getElementById("skillTeacherFilterResetBtn")?.addEventListener("click", () => {
+  const s = document.getElementById("skillTeacherSearch");
+  if (s) s.value = "";
+  syncSkillMgmtFilterBars();
+  renderSkillTeachers?.();
 });
 
