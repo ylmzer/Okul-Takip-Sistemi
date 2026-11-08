@@ -33,7 +33,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=100" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=126" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=127" />
   </head>
   <body class="auth-mode">
     <script>
@@ -1554,23 +1554,7 @@
 
         <section class="skill-view" data-skill-panel="students">
           <div class="skill-mgmt-layout skill-students-layout">
-            <!-- Modern Başlık & Eylem Çubuğu -->
-            <div class="skill-mgmt-top-bar">
-              <div class="skill-mgmt-heading">
-                <div class="skill-mgmt-title-group">
-                  <h2>Öğrenciler</h2>
-                  <span class="skill-mgmt-badge" id="skillStudentCountBadge">0 Kayıt</span>
-                </div>
-                <p class="skill-mgmt-subtext">İşletme eşleşmeleri, okul günleri ve durum yönetimi</p>
-              </div>
-              <div class="skill-mgmt-top-actions">
-                <button type="button" class="primary-action skill-btn-primary" id="skillOpenStudentDrawerBtn">
-                  <span class="skill-btn-icon">+</span> Yeni Öğrenci Ekle
-                </button>
-              </div>
-            </div>
-
-            <!-- Akıllı Filtre Çubuğu (Tek ve ferah satır) -->
+            <!-- Süper Kompakt Tek Satır Filtre ve Aksiyon Barı -->
             <div class="skill-mgmt-filter-bar">
               <div class="skill-student-filters-bar">
                 <div class="skill-search-input-wrap">
@@ -1584,12 +1568,18 @@
                   <option value="active">Durum: Aktif</option>
                   <option value="passive">Durum: Pasif</option>
                 </select>
-                <button class="secondary-action skill-filter-reset-btn" id="skillStudentFilterResetBtn" type="button" title="Filtreleri sıfırla" style="display: none;">✕ Temizle</button>
+                <button class="secondary-action skill-filter-reset-btn" id="skillStudentFilterResetBtn" type="button" title="Filtreleri sıfırla" style="display: none;">✕</button>
+                <span class="skill-mgmt-badge" id="skillStudentCountBadge">0 Kayıt</span>
+              </div>
+              <div class="skill-mgmt-top-actions">
+                <button type="button" class="primary-action skill-btn-primary" id="skillOpenStudentDrawerBtn">
+                  <span class="skill-btn-icon">+</span> Yeni Öğrenci
+                </button>
               </div>
             </div>
 
             <!-- Bağlamsal Toplu İşlem Çubuğu (Tabloda checkbox seçilince açılır) -->
-            <div class="skill-student-bulk-bar" id="skillStudentBulkBar" style="display: none;">
+            <div class="skill-student-bulk-bar" id="skillStudentBulkBar">
               <div class="skill-bulk-selection-info">
                 <span class="skill-bulk-badge" id="skillStudentSelectedCount">0</span>
                 <span>öğrenci seçildi</span>
@@ -5112,7 +5102,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./scripts/core/module-registry.js?v=1"></script>
-    <script src="./app.js?v=132"></script>
+    <script src="./app.js?v=133"></script>
     <script src="./scripts/modules/settings/index.js?v=8"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=9"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=17"></script>

@@ -7537,10 +7537,10 @@ function updateSkillStudentActionState() {
 
   if (bulkBar) {
     if (ids.length > 0) {
-      bulkBar.style.display = "flex";
+      bulkBar.classList.add("is-visible");
       if (countBadge) countBadge.textContent = ids.length;
     } else {
-      bulkBar.style.display = "none";
+      bulkBar.classList.remove("is-visible");
     }
   }
 
