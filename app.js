@@ -6413,7 +6413,7 @@ function buildAbsenceReportHtml() {
             print-color-adjust: exact !important;
           }
           th.date-head.muted-day {
-            background-color: #cbd5e1 !important;
+            background-color: #e5e7eb !important;
             background-image: none !important;
             border-bottom: 2px solid #000 !important;
           }
@@ -6512,7 +6512,7 @@ function buildAbsenceReportHtml() {
             letter-spacing: -0.05px;
           }
           .absence-report-card.is-half.is-condensed th.date-head.muted-day {
-            background-color: #cbd5e1 !important;
+            background-color: #e5e7eb !important;
             background-image: none !important;
             border-bottom: 2px solid #000 !important;
           }
