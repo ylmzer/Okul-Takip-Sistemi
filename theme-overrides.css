@@ -9261,26 +9261,77 @@ body.skill-mode .skill-student-grid-row.skill-row.is-selected {
   background: rgba(16, 185, 129, 0.1) !important;
 }
 
-/* Gün Rozetleri - Belirgin ve Göze Çarpan */
+/* Gün Rozetleri - Belirgin, Renk Kodlu ve Ortalı */
+body.skill-mode .skill-td-day {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
 body.skill-mode .skill-day-pill {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  padding: 2px 8px !important;
+  padding: 2px 7px !important;
+  min-width: 32px !important;
   border-radius: 6px !important;
   font-size: 0.77rem !important;
   font-weight: 700 !important;
-  background: rgba(16, 185, 129, 0.22) !important;
-  border: 1px solid rgba(16, 185, 129, 0.6) !important;
-  color: #6ee7b7 !important;
   white-space: nowrap !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Pazartesi: Mavi / Açık Mavi */
+body.skill-mode .skill-day-pill.day-pzt {
+  background: rgba(14, 165, 233, 0.18) !important;
+  border: 1px solid rgba(56, 189, 248, 0.6) !important;
+  color: #38bdf8 !important;
+}
+
+/* Salı: Mor / Eflatun */
+body.skill-mode .skill-day-pill.day-sal {
+  background: rgba(168, 85, 247, 0.18) !important;
+  border: 1px solid rgba(192, 132, 252, 0.6) !important;
+  color: #c084fc !important;
+}
+
+/* Çarşamba: Canlı Kehribar / Turuncu-Sarı */
+body.skill-mode .skill-day-pill.day-car {
+  background: rgba(245, 158, 11, 0.2) !important;
+  border: 1px solid rgba(251, 191, 36, 0.65) !important;
+  color: #fbbf24 !important;
+}
+
+/* Perşembe: Zümrüt Yeşili */
+body.skill-mode .skill-day-pill.day-per {
+  background: rgba(16, 185, 129, 0.2) !important;
+  border: 1px solid rgba(52, 211, 153, 0.65) !important;
+  color: #34d399 !important;
+}
+
+/* Cuma: Pembe / Gül Kurusu */
+body.skill-mode .skill-day-pill.day-cum {
+  background: rgba(236, 72, 153, 0.2) !important;
+  border: 1px solid rgba(244, 114, 182, 0.65) !important;
+  color: #f472b6 !important;
+}
+
+/* Varsayılan / Diğer */
+body.skill-mode .skill-day-pill.day-default {
+  background: rgba(99, 102, 241, 0.2) !important;
+  border: 1px solid rgba(129, 140, 248, 0.65) !important;
+  color: #a5b4fc !important;
 }
 
 body.skill-mode .skill-day-empty {
   color: #64748b !important;
   font-weight: 600 !important;
   opacity: 0.6 !important;
+  display: inline-block !important;
+  text-align: center !important;
 }
 
 /* Belirgin İşlem Butonları (Düzenle ve Sil) */

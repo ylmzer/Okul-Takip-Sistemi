@@ -7062,6 +7062,25 @@ document.addEventListener("click", (e) => {
   }
 });
 
+function formatSkillDayPills(daysStr) {
+  if (!daysStr || !daysStr.trim() || daysStr.trim() === "-") {
+    return `<span class="skill-day-empty">—</span>`;
+  }
+  const parts = daysStr.split(",").map(d => d.trim()).filter(Boolean);
+  if (!parts.length) return `<span class="skill-day-empty">—</span>`;
+
+  return parts.map(day => {
+    const dLower = day.toLocaleLowerCase("tr-TR");
+    let colorClass = "day-default";
+    if (dLower.includes("pzt") || dLower.includes("pazartesi")) colorClass = "day-pzt";
+    else if (dLower.includes("sal")) colorClass = "day-sal";
+    else if (dLower.includes("çar") || dLower.includes("car") || dLower.includes("carsamba")) colorClass = "day-car";
+    else if (dLower.includes("per") || dLower.includes("persembe")) colorClass = "day-per";
+    else if (dLower.includes("cum") || dLower.includes("cuma")) colorClass = "day-cum";
+    return `<span class="skill-day-pill ${colorClass}">${escapeHtml(day)}</span>`;
+  }).join(" ");
+}
+
 function renderSkillStudents() {
   if (!els.skillStudentTable) return;
   const query = (els.skillStudentSearch?.value || "").toLocaleLowerCase("tr-TR");
@@ -7119,7 +7138,7 @@ function renderSkillStudents() {
         <span>${escapeHtml(business?.name || "İşletme yok")}</span>
         <span>${escapeHtml(student.field || "Alan / dal yok")}</span>
         <span>${escapeHtml(student.className || "-")}</span>
-        <span>${student.days ? `<span class="skill-day-pill">${escapeHtml(student.days)}</span>` : `<span class="skill-day-empty">—</span>`}</span>
+        <span class="skill-td-day">${formatSkillDayPills(student.days)}</span>
         <span class="skill-row-actions" style="justify-content: center; gap: 6px;">
           <button type="button" class="skill-row-btn skill-btn-edit" data-skill-edit-student="${student.id}" title="Öğrenciyi Düzenle">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -7141,7 +7160,7 @@ function renderSkillStudents() {
       <span class="skill-sort-col ${sort?.key === 'business' ? 'is-active' : ''}" data-sort-table="students" data-sort-key="business" title="Sıralamak için tıklayın">İşletme ${getSkillSortIcon("students", "business")}</span>
       <span class="skill-sort-col ${sort?.key === 'field' ? 'is-active' : ''}" data-sort-table="students" data-sort-key="field" title="Sıralamak için tıklayın">Alan / dal ${getSkillSortIcon("students", "field")}</span>
       <span class="skill-sort-col ${sort?.key === 'className' ? 'is-active' : ''}" data-sort-table="students" data-sort-key="className" title="Sıralamak için tıklayın">Sınıf ${getSkillSortIcon("students", "className")}</span>
-      <span class="skill-sort-col ${sort?.key === 'days' ? 'is-active' : ''}" data-sort-table="students" data-sort-key="days" title="Sıralamak için tıklayın">Gün ${getSkillSortIcon("students", "days")}</span>
+      <span class="skill-sort-col ${sort?.key === 'days' ? 'is-active' : ''}" style="justify-content: center; text-align: center;" data-sort-table="students" data-sort-key="days" title="Sıralamak için tıklayın">Gün ${getSkillSortIcon("students", "days")}</span>
       <span class="skill-th-actions" style="justify-content: center; text-align: center;">İşlem</span>
     </div>
     ${studentRows}
