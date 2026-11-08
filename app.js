@@ -3732,33 +3732,110 @@ function renderSkillHolidays() {
     <table class="skill-data-table skill-holiday-table">
       <thead>
         <tr>
-          <th><input type="checkbox" id="skillHolidaySelectAll" style="cursor: pointer;" title="Tümünü Seç" /></th>
-          <th class="skill-sort-col ${sort?.key === 'index' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="index" title="Sıralamak için tıklayın">No ${getSkillSortIcon("holidays", "index")}</th>
+          <th style="width: 38px;"><input type="checkbox" id="skillHolidaySelectAll" style="cursor: pointer;" title="Tümünü Seç" /></th>
+          <th style="width: 48px;" class="skill-sort-col ${sort?.key === 'index' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="index" title="Sıralamak için tıklayın">No ${getSkillSortIcon("holidays", "index")}</th>
           <th class="skill-sort-col ${sort?.key === 'startDate' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="startDate" title="Sıralamak için tıklayın">Başlangıç ${getSkillSortIcon("holidays", "startDate")}</th>
           <th class="skill-sort-col ${sort?.key === 'endDate' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="endDate" title="Sıralamak için tıklayın">Bitiş ${getSkillSortIcon("holidays", "endDate")}</th>
           <th class="skill-sort-col ${sort?.key === 'isSchoolBreak' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="isSchoolBreak" title="Sıralamak için tıklayın">Ara Tatil / Yarıyıl ${getSkillSortIcon("holidays", "isSchoolBreak")}</th>
           <th class="skill-sort-col ${sort?.key === 'startPart' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="startPart" title="Sıralamak için tıklayın">Başlangıç Dilimi ${getSkillSortIcon("holidays", "startPart")}</th>
           <th class="skill-sort-col ${sort?.key === 'endPart' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="endPart" title="Sıralamak için tıklayın">Bitiş Dilimi ${getSkillSortIcon("holidays", "endPart")}</th>
           <th class="skill-sort-col ${sort?.key === 'name' ? 'is-active' : ''}" data-sort-table="holidays" data-sort-key="name" title="Sıralamak için tıklayın">Açıklama ${getSkillSortIcon("holidays", "name")}</th>
+          <th class="skill-th-actions" style="width: 72px; text-align: center;">İşlem</th>
         </tr>
       </thead>
       <tbody>
         ${rows.map((holiday, index) => `
           <tr data-skill-edit-holiday="${holiday.id}">
-            <td><input type="checkbox" value="${holiday.id}" data-skill-select-holiday /></td>
-            <td>${index + 1}</td>
+            <td style="text-align: center;"><input type="checkbox" value="${holiday.id}" data-skill-select-holiday /></td>
+            <td style="text-align: center;">${index + 1}</td>
             <td>${escapeHtml(formatSkillDate(holiday.startDate))}</td>
             <td>${escapeHtml(formatSkillDate(holiday.endDate || holiday.startDate))}</td>
-            <td><input type="checkbox" ${holiday.isSchoolBreak ? "checked" : ""} disabled /></td>
+            <td style="text-align: center;"><input type="checkbox" ${holiday.isSchoolBreak ? "checked" : ""} disabled /></td>
             <td>${escapeHtml(getSkillHolidayPartLabel(holiday.startPart))}</td>
             <td>${escapeHtml(getSkillHolidayPartLabel(holiday.endPart))}</td>
             <td>${escapeHtml(holiday.name || "-")}</td>
+            <td style="text-align: center;">
+              <span class="skill-row-actions" style="justify-content: center; gap: 6px;">
+                <button type="button" class="skill-row-btn skill-btn-edit" data-skill-edit-holiday-btn="${holiday.id}" title="Tatili Düzenle">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                </button>
+                <button type="button" class="skill-row-btn skill-btn-delete" data-skill-delete-holiday-btn="${holiday.id}" title="Tatili Sil">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                </button>
+              </span>
+            </td>
           </tr>
         `).join("")}
       </tbody>
     </table>
   ` : `<div class="empty-state">Bu yıl için tatil kaydı yok. Otomatik çekebilir veya manuel ekleyebilirsiniz.</div>`;
+  updateSkillHolidayActionState();
 }
+
+function openSkillHolidayDrawer(holidayOrId = null) {
+  const drawer = document.getElementById("skillHolidayDrawer");
+  const backdrop = document.getElementById("skillHolidayDrawerBackdrop");
+  const title = document.getElementById("skillHolidayDrawerTitle");
+  if (!drawer) return;
+  const holiday = typeof holidayOrId === "string"
+    ? skillState.holidays.find((item) => item.id === holidayOrId)
+    : holidayOrId;
+
+  if (holiday) {
+    if (title) title.textContent = "Tatil Kaydını Düzenle";
+    editSkillHoliday(holiday.id);
+  } else {
+    if (title) title.textContent = "Yeni Tatil Kaydı";
+    clearSkillHolidayForm();
+  }
+  drawer.classList.add("is-open");
+  if (backdrop) backdrop.classList.add("is-open");
+  drawer.setAttribute("aria-hidden", "false");
+}
+
+function closeSkillHolidayDrawer() {
+  const drawer = document.getElementById("skillHolidayDrawer");
+  const backdrop = document.getElementById("skillHolidayDrawerBackdrop");
+  if (drawer) {
+    drawer.classList.remove("is-open");
+    drawer.setAttribute("aria-hidden", "true");
+  }
+  if (backdrop) {
+    backdrop.classList.remove("is-open");
+  }
+}
+window.openSkillHolidayDrawer = openSkillHolidayDrawer;
+window.closeSkillHolidayDrawer = closeSkillHolidayDrawer;
+
+function updateSkillHolidayActionState() {
+  const ids = selectedSkillIds(els.skillHolidayTable, "[data-skill-select-holiday]");
+  const bulkBar = document.getElementById("skillHolidayBulkBar");
+  const countBadge = document.getElementById("skillHolidaySelectedCount");
+  const totalBadge = document.getElementById("skillHolidayCountBadge");
+
+  if (totalBadge) {
+    const year = getSkillHolidayYear();
+    const curYearCount = skillState.holidays.filter((h) => String(h.startDate || "").startsWith(`${year}-`)).length;
+    totalBadge.textContent = `${curYearCount} Tatil`;
+  }
+
+  if (bulkBar) {
+    if (ids.length > 0) {
+      bulkBar.classList.add("is-visible");
+      if (countBadge) countBadge.textContent = ids.length;
+    } else {
+      bulkBar.classList.remove("is-visible");
+    }
+  }
+
+  if (els.skillHolidayTable) {
+    els.skillHolidayTable.querySelectorAll("tbody tr").forEach((row) => {
+      const cb = row.querySelector("input[type='checkbox']");
+      row.classList.toggle("is-selected", !!cb?.checked);
+    });
+  }
+}
+window.updateSkillHolidayActionState = updateSkillHolidayActionState;
 
 function saveSkillHoliday(event) {
   event.preventDefault();
@@ -3782,6 +3859,7 @@ function saveSkillHoliday(event) {
   else skillState.holidays.push(nextHoliday);
   saveSkillState();
   clearSkillHolidayForm();
+  closeSkillHolidayDrawer();
   renderSkillModule();
   showToast("Tatil kaydı kaydedildi.");
 }
@@ -3813,8 +3891,26 @@ function editSkillHoliday(id) {
 
 function handleSkillHolidayTableClick(event) {
   if (event.target.closest("input[type='checkbox']")) return;
+  const editBtn = event.target.closest("[data-skill-edit-holiday-btn]");
+  if (editBtn) {
+    openSkillHolidayDrawer(editBtn.dataset.skillEditHolidayBtn);
+    return;
+  }
+  const deleteBtn = event.target.closest("[data-skill-delete-holiday-btn]");
+  if (deleteBtn) {
+    const id = deleteBtn.dataset.skillDeleteHolidayBtn;
+    if (confirm("Bu tatil kaydını silmek istediğinize emin misiniz?")) {
+      skillState.holidays = skillState.holidays.filter((holiday) => holiday.id !== id);
+      saveSkillState();
+      renderSkillHolidays();
+      showToast("Tatil kaydı silindi.");
+    }
+    return;
+  }
   const row = event.target.closest("[data-skill-edit-holiday]");
-  if (row) editSkillHoliday(row.dataset.skillEditHoliday);
+  if (row) {
+    openSkillHolidayDrawer(row.dataset.skillEditHoliday);
+  }
 }
 
 function deleteSelectedSkillHolidays() {
@@ -7209,6 +7305,14 @@ function renderSkillBusinesses() {
       <span>${escapeHtml(business.phone || "-")}</span>
       <span>${business.group === "2" ? "20 ve üzeri" : "20'den az"}</span>
       <small>${escapeHtml(business.address || "Adres belirtilmedi")}</small>
+      <span class="skill-row-actions" style="justify-content: center; gap: 6px;">
+        <button type="button" class="skill-row-btn skill-btn-edit" data-skill-edit-business="${business.id}" title="İşletmeyi Düzenle">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+        </button>
+        <button type="button" class="skill-row-btn skill-btn-delete" data-skill-delete-business="${business.id}" title="İşletmeyi Sil">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+        </button>
+      </span>
     </div>
   `).join("") : `<div class="empty-state">İşletme kaydı bulunamadı.</div>`;
   els.skillBusinessTable.innerHTML = `
@@ -7219,9 +7323,11 @@ function renderSkillBusinesses() {
       <span class="skill-sort-col ${sort?.key === 'phone' ? 'is-active' : ''}" data-sort-table="businesses" data-sort-key="phone" title="Sıralamak için tıklayın">Telefon ${getSkillSortIcon("businesses", "phone")}</span>
       <span class="skill-sort-col ${sort?.key === 'group' ? 'is-active' : ''}" data-sort-table="businesses" data-sort-key="group" title="Sıralamak için tıklayın">Çalışan ${getSkillSortIcon("businesses", "group")}</span>
       <span class="skill-sort-col ${sort?.key === 'address' ? 'is-active' : ''}" data-sort-table="businesses" data-sort-key="address" title="Sıralamak için tıklayın">Adres ${getSkillSortIcon("businesses", "address")}</span>
+      <span class="skill-th-actions" style="justify-content: center; text-align: center;">İşlem</span>
     </div>
     ${businessRows}
   `;
+  updateSkillBusinessActionState();
 }
 
 function renderSkillCoordinators() {
@@ -7273,7 +7379,15 @@ function renderSkillCoordinators() {
         <small>${escapeHtml(business?.address || "Adres belirtilmedi")}</small>
         <span>${escapeHtml(coordinator.teacher || "-")}</span>
         <span>${escapeHtml(coordinator.deputy || "-")}</span>
-        <span>${getSkillDayName(coordinator.day)}</span>
+        <span class="skill-td-day">${formatSkillDayPills(getSkillDayName(coordinator.day))}</span>
+        <span class="skill-row-actions" style="justify-content: center; gap: 6px;">
+          <button type="button" class="skill-row-btn skill-btn-edit" data-skill-edit-coordinator="${coordinator.id}" title="Görevi Düzenle">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          </button>
+          <button type="button" class="skill-row-btn skill-btn-delete" data-skill-delete-coordinator="${coordinator.id}" title="Görevi Sil">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          </button>
+        </span>
       </div>
     `;
   }).join("") : `<div class="empty-state">Koordinatör görevi bulunamadı.</div>`;
@@ -7285,13 +7399,12 @@ function renderSkillCoordinators() {
       <span class="skill-sort-col ${sort?.key === 'address' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="address" title="Sıralamak için tıklayın">İşletme Adresi ${getSkillSortIcon("coordinators", "address")}</span>
       <span class="skill-sort-col ${sort?.key === 'teacher' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="teacher" title="Sıralamak için tıklayın">Öğretmen ${getSkillSortIcon("coordinators", "teacher")}</span>
       <span class="skill-sort-col ${sort?.key === 'deputy' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="deputy" title="Sıralamak için tıklayın">Müdür Yrd. ${getSkillSortIcon("coordinators", "deputy")}</span>
-      <span class="skill-sort-col ${sort?.key === 'day' ? 'is-active' : ''}" data-sort-table="coordinators" data-sort-key="day" title="Sıralamak için tıklayın">Gün ${getSkillSortIcon("coordinators", "day")}</span>
+      <span class="skill-sort-col ${sort?.key === 'day' ? 'is-active' : ''}" style="justify-content: center; text-align: center;" data-sort-table="coordinators" data-sort-key="day" title="Sıralamak için tıklayın">Gün ${getSkillSortIcon("coordinators", "day")}</span>
+      <span class="skill-th-actions" style="justify-content: center; text-align: center;">İşlem</span>
     </div>
     ${coordinatorRows}
   `;
-  if (typeof updateSkillCoordinatorActionState === "function") {
-    updateSkillCoordinatorActionState();
-  }
+  updateSkillCoordinatorActionState();
 }
 
 function openSkillStudentDrawer(student = null) {
@@ -7342,12 +7455,147 @@ function clearSkillStudentForm() {
 }
 
 function clearSkillBusinessForm() {
-  els.skillBusinessId.value = "";
-  els.skillBusinessName.value = "";
-  els.skillBusinessPhone.value = "";
-  els.skillBusinessGroup.value = "1";
-  els.skillBusinessAddress.value = "";
+  if (els.skillBusinessId) els.skillBusinessId.value = "";
+  if (els.skillBusinessName) els.skillBusinessName.value = "";
+  if (els.skillBusinessPhone) els.skillBusinessPhone.value = "";
+  if (els.skillBusinessGroup) els.skillBusinessGroup.value = "1";
+  if (els.skillBusinessAddress) els.skillBusinessAddress.value = "";
 }
+
+function openSkillBusinessDrawer(business = null) {
+  const drawer = document.getElementById("skillBusinessDrawer");
+  const backdrop = document.getElementById("skillBusinessDrawerBackdrop");
+  const title = document.getElementById("skillBusinessDrawerTitle");
+  if (!drawer) return;
+  if (business) {
+    if (title) title.textContent = "İşletmeyi Düzenle";
+    if (els.skillBusinessId) els.skillBusinessId.value = business.id;
+    if (els.skillBusinessName) els.skillBusinessName.value = business.name || "";
+    if (els.skillBusinessPhone) els.skillBusinessPhone.value = business.phone || "";
+    if (els.skillBusinessGroup) els.skillBusinessGroup.value = business.group || "1";
+    if (els.skillBusinessAddress) els.skillBusinessAddress.value = business.address || "";
+  } else {
+    if (title) title.textContent = "Yeni İşletme Ekle";
+    clearSkillBusinessForm();
+  }
+  drawer.classList.add("is-open");
+  if (backdrop) backdrop.classList.add("is-open");
+  drawer.setAttribute("aria-hidden", "false");
+}
+
+function closeSkillBusinessDrawer() {
+  const drawer = document.getElementById("skillBusinessDrawer");
+  const backdrop = document.getElementById("skillBusinessDrawerBackdrop");
+  if (drawer) {
+    drawer.classList.remove("is-open");
+    drawer.setAttribute("aria-hidden", "true");
+  }
+  if (backdrop) {
+    backdrop.classList.remove("is-open");
+  }
+}
+window.openSkillBusinessDrawer = openSkillBusinessDrawer;
+window.closeSkillBusinessDrawer = closeSkillBusinessDrawer;
+
+function updateSkillBusinessActionState() {
+  const ids = selectedSkillIds(els.skillBusinessTable, "[data-skill-select-business]");
+  const bulkBar = document.getElementById("skillBusinessBulkBar");
+  const countBadge = document.getElementById("skillBusinessSelectedCount");
+  const totalBadge = document.getElementById("skillBusinessCountBadge");
+
+  if (totalBadge) {
+    totalBadge.textContent = `${skillState.businesses.length} Kayıt`;
+  }
+
+  if (bulkBar) {
+    if (ids.length > 0) {
+      bulkBar.classList.add("is-visible");
+      if (countBadge) countBadge.textContent = ids.length;
+    } else {
+      bulkBar.classList.remove("is-visible");
+    }
+  }
+
+  if (els.skillBusinessTable) {
+    els.skillBusinessTable.querySelectorAll(".skill-business-grid-row.skill-row").forEach((row) => {
+      const cb = row.querySelector("input[type='checkbox']");
+      row.classList.toggle("is-selected", !!cb?.checked);
+    });
+  }
+}
+window.updateSkillBusinessActionState = updateSkillBusinessActionState;
+
+function openSkillCoordinatorDrawer(coordinator = null) {
+  const drawer = document.getElementById("skillCoordinatorDrawer");
+  const backdrop = document.getElementById("skillCoordinatorDrawerBackdrop");
+  const title = document.getElementById("skillCoordinatorDrawerTitle");
+  if (!drawer) return;
+  if (coordinator) {
+    if (title) title.textContent = "Koordinatör Görevini Düzenle";
+    if (els.skillCoordinatorId) els.skillCoordinatorId.value = coordinator.id;
+    if (els.skillCoordinatorSchool) els.skillCoordinatorSchool.value = coordinator.schoolId || (skillState.schoolRecords?.[0]?.id || "");
+    if (els.skillCoordinatorTeacher) els.skillCoordinatorTeacher.value = coordinator.teacher || "";
+    if (els.skillCoordinatorDeputy) els.skillCoordinatorDeputy.value = coordinator.deputy || "";
+    if (els.skillCoordinatorBusiness) els.skillCoordinatorBusiness.value = coordinator.businessId || "";
+    if (els.skillCoordinatorDay) els.skillCoordinatorDay.value = coordinator.day || "";
+  } else {
+    if (title) title.textContent = "Yeni Koordinatör Görevi Ekle";
+    clearSkillCoordinatorForm();
+  }
+  drawer.classList.add("is-open");
+  if (backdrop) backdrop.classList.add("is-open");
+  drawer.setAttribute("aria-hidden", "false");
+}
+
+function closeSkillCoordinatorDrawer() {
+  const drawer = document.getElementById("skillCoordinatorDrawer");
+  const backdrop = document.getElementById("skillCoordinatorDrawerBackdrop");
+  if (drawer) {
+    drawer.classList.remove("is-open");
+    drawer.setAttribute("aria-hidden", "true");
+  }
+  if (backdrop) {
+    backdrop.classList.remove("is-open");
+  }
+}
+window.openSkillCoordinatorDrawer = openSkillCoordinatorDrawer;
+window.closeSkillCoordinatorDrawer = closeSkillCoordinatorDrawer;
+
+function updateSkillCoordinatorActionState() {
+  const ids = selectedSkillIds(els.skillCoordinatorTable, "[data-skill-select-coordinator]");
+  const bulkBar = document.getElementById("skillCoordinatorBulkBar");
+  const countBadge = document.getElementById("skillCoordinatorSelectedCount");
+  const totalBadge = document.getElementById("skillCoordinatorCountBadge");
+  const applyBtn = document.getElementById("skillCoordinatorBulkApplyBtn");
+
+  if (totalBadge) {
+    totalBadge.textContent = `${skillState.coordinators.length} Görev`;
+  }
+
+  if (bulkBar) {
+    if (ids.length > 0) {
+      bulkBar.classList.add("is-visible");
+      if (countBadge) countBadge.textContent = ids.length;
+    } else {
+      bulkBar.classList.remove("is-visible");
+    }
+  }
+
+  if (applyBtn) {
+    applyBtn.style.display = ids.length > 0 ? "inline-flex" : "none";
+    if (ids.length > 0) {
+      applyBtn.textContent = `Seçilenlere Uygula (${ids.length})`;
+    }
+  }
+
+  if (els.skillCoordinatorTable) {
+    els.skillCoordinatorTable.querySelectorAll(".coordinator-grid-row.skill-row").forEach((row) => {
+      const cb = row.querySelector("input[type='checkbox']");
+      row.classList.toggle("is-selected", !!cb?.checked);
+    });
+  }
+}
+window.updateSkillCoordinatorActionState = updateSkillCoordinatorActionState;
 
 function saveSkillStudent(event) {
   event.preventDefault();
@@ -7424,6 +7672,7 @@ function saveSkillBusiness(event) {
   deduplicateSkillBusinesses(skillState);
   saveSkillState();
   clearSkillBusinessForm();
+  closeSkillBusinessDrawer();
   renderSkillModule();
   showToast("İşletme kaydı güncellendi.");
 }
@@ -7449,28 +7698,10 @@ function saveSkillCoordinator(event) {
   if (nextIndex >= 0) skillState.coordinators[nextIndex] = nextCoordinator;
   else skillState.coordinators.push(nextCoordinator);
   clearSkillCoordinatorForm();
+  closeSkillCoordinatorDrawer();
   saveSkillState();
   renderSkillModule();
   showToast("Koordinatör görevi kaydedildi.");
-  return;
-  const teacher = els.skillCoordinatorTeacher.value.trim();
-  const businessId = els.skillCoordinatorBusiness.value;
-  if (!teacher || !businessId) {
-    showToast("Öğretmen ve işletme seçimi gerekli.", "warning");
-    return;
-  }
-  skillState.coordinators.push({
-    id: uid("coord"),
-    teacher,
-    businessId,
-    day: els.skillCoordinatorDay.value
-  });
-  els.skillCoordinatorTeacher.value = "";
-  els.skillCoordinatorBusiness.value = "";
-  els.skillCoordinatorDay.value = "";
-  saveSkillState();
-  renderSkillModule();
-  showToast("Koordinatör görevi eklendi.");
 }
 
 function clearSkillCoordinatorForm() {
@@ -7729,14 +7960,21 @@ function handleSkillTableClick(event) {
   const studentRow = event.target.closest("[data-skill-edit-student]");
   const businessRow = event.target.closest("[data-skill-edit-business]");
   const coordinatorRow = event.target.closest("[data-skill-edit-coordinator]");
+
   const deleteStudentBtn = event.target.closest("[data-skill-delete-student]");
   const deleteStudentId = deleteStudentBtn?.dataset.skillDeleteStudent;
   const editStudentBtn = event.target.closest("[data-skill-edit-student]");
-  const editStudentId = editStudentBtn?.dataset.skillEditStudent;
-  const editBusinessId = event.target.dataset.skillEditBusiness || businessRow?.dataset.skillEditBusiness;
-  const deleteBusinessId = event.target.dataset.skillDeleteBusiness;
-  const editCoordinatorId = event.target.dataset.skillEditCoordinator || coordinatorRow?.dataset.skillEditCoordinator;
-  const deleteCoordinatorId = event.target.dataset.skillDeleteCoordinator;
+  const editStudentId = editStudentBtn?.dataset.skillEditStudent || studentRow?.dataset.skillEditStudent;
+
+  const deleteBusinessBtn = event.target.closest("[data-skill-delete-business]");
+  const deleteBusinessId = deleteBusinessBtn?.dataset.skillDeleteBusiness;
+  const editBusinessBtn = event.target.closest("[data-skill-edit-business]");
+  const editBusinessId = editBusinessBtn?.dataset.skillEditBusiness || businessRow?.dataset.skillEditBusiness;
+
+  const deleteCoordinatorBtn = event.target.closest("[data-skill-delete-coordinator]");
+  const deleteCoordinatorId = deleteCoordinatorBtn?.dataset.skillDeleteCoordinator;
+  const editCoordinatorBtn = event.target.closest("[data-skill-edit-coordinator]");
+  const editCoordinatorId = editCoordinatorBtn?.dataset.skillEditCoordinator || coordinatorRow?.dataset.skillEditCoordinator;
 
   if (deleteStudentId) {
     if (confirm("Bu öğrenci kaydını silmek istediğinize emin misiniz?")) {
@@ -7744,6 +7982,32 @@ function handleSkillTableClick(event) {
       saveSkillState();
       renderSkillModule();
       showToast("Öğrenci silindi.");
+    }
+    return;
+  }
+
+  if (deleteBusinessId) {
+    if (confirm("Bu işletme kaydını silmek istediğinize emin misiniz?")) {
+      skillState.students.forEach((student) => {
+        if (student.businessId === deleteBusinessId) {
+          student.businessId = "";
+        }
+      });
+      skillState.businesses = skillState.businesses.filter((business) => business.id !== deleteBusinessId);
+      skillState.coordinators = skillState.coordinators.filter((coordinator) => coordinator.businessId !== deleteBusinessId);
+      saveSkillState();
+      renderSkillModule();
+      showToast("İşletme silindi.");
+    }
+    return;
+  }
+
+  if (deleteCoordinatorId) {
+    if (confirm("Bu koordinatör görevini silmek istediğinize emin misiniz?")) {
+      skillState.coordinators = skillState.coordinators.filter((coordinator) => coordinator.id !== deleteCoordinatorId);
+      saveSkillState();
+      renderSkillModule();
+      showToast("Koordinatör görevi silindi.");
     }
     return;
   }
@@ -7760,11 +8024,7 @@ function handleSkillTableClick(event) {
     const business = skillState.businesses.find((item) => item.id === editBusinessId);
     if (!business) return;
     setSkillView("businesses");
-    els.skillBusinessId.value = business.id;
-    els.skillBusinessName.value = business.name || "";
-    els.skillBusinessPhone.value = business.phone || "";
-    els.skillBusinessGroup.value = business.group || "1";
-    els.skillBusinessAddress.value = business.address || "";
+    openSkillBusinessDrawer(business);
     return;
   }
 
@@ -7772,42 +8032,8 @@ function handleSkillTableClick(event) {
     const coordinator = skillState.coordinators.find((item) => item.id === editCoordinatorId);
     if (!coordinator) return;
     setSkillView("coordinators");
-    if (els.skillCoordinatorId) els.skillCoordinatorId.value = coordinator.id;
-    if (els.skillCoordinatorSchool) els.skillCoordinatorSchool.value = coordinator.schoolId || "";
-    els.skillCoordinatorTeacher.value = coordinator.teacher || "";
-    if (els.skillCoordinatorDeputy) els.skillCoordinatorDeputy.value = coordinator.deputy || "";
-    els.skillCoordinatorBusiness.value = coordinator.businessId || "";
-    els.skillCoordinatorDay.value = coordinator.day || "";
+    openSkillCoordinatorDrawer(coordinator);
     return;
-  }
-
-  if (deleteStudentId) {
-    skillState.students = skillState.students.filter((student) => student.id !== deleteStudentId);
-    saveSkillState();
-    renderSkillModule();
-    showToast("Öğrenci silindi.");
-    return;
-  }
-
-  if (deleteBusinessId) {
-    skillState.students.forEach((student) => {
-      if (student.businessId === deleteBusinessId) {
-        student.businessId = "";
-      }
-    });
-    skillState.businesses = skillState.businesses.filter((business) => business.id !== deleteBusinessId);
-    skillState.coordinators = skillState.coordinators.filter((coordinator) => coordinator.businessId !== deleteBusinessId);
-    saveSkillState();
-    renderSkillModule();
-    showToast("İşletme silindi.");
-    return;
-  }
-
-  if (deleteCoordinatorId) {
-    skillState.coordinators = skillState.coordinators.filter((coordinator) => coordinator.id !== deleteCoordinatorId);
-    saveSkillState();
-    renderSkillModule();
-    showToast("Koordinatör görevi silindi.");
   }
 }
 

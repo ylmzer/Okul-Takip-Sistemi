@@ -9051,16 +9051,16 @@ body.dark-mode .admin-audit-desc {
 }
 
 /* ==========================================================================
-   YENİ ÖĞRENCİLER EKRANI - MODERN & ULTRA KOMPAKT TASARIM
+   VERİ YÖNETİMİ TÜM SAYFALAR - MODERN & ULTRA KOMPAKT TASARIM
    ========================================================================== */
-body.skill-mode .skill-view[data-skill-panel="students"] .skill-students-layout {
+body.skill-mode .skill-mgmt-layout {
   display: flex !important;
   flex-direction: column !important;
   gap: 4px !important;
   width: 100% !important;
 }
 
-/* 1. Tek Satır Kompakt Filtre ve Yeni Öğrenci Barı */
+/* 1. Tek Satır Kompakt Filtre ve Ekleme Barı */
 body.skill-mode .skill-mgmt-filter-bar {
   display: flex !important;
   align-items: center !important;
@@ -9102,8 +9102,7 @@ body.skill-mode .skill-search-input-wrap .skill-search-icon {
   z-index: 2 !important;
 }
 
-body.skill-mode .skill-view[data-skill-panel="students"] .skill-search-input-wrap input,
-body.skill-mode .skill-search-input-wrap input#skillStudentSearch {
+body.skill-mode .skill-search-input-wrap input {
   width: 100% !important;
   padding-left: 32px !important;
   padding-right: 8px !important;

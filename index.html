@@ -31,9 +31,9 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg" />
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
-    <link rel="stylesheet" href="./styles.css?v=101" />
+    <link rel="stylesheet" href="./styles.css?v=102" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=129" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=130" />
   </head>
   <body class="auth-mode">
     <script>
@@ -1657,143 +1657,187 @@
         </section>
 
         <section class="skill-view" data-skill-panel="businesses">
-          <div class="skill-two-column">
-            <form class="skill-panel skill-form skill-compact-mgmt-form" id="skillBusinessForm">
-              <input id="skillBusinessId" type="hidden" />
-              <!-- Satır 1: Veri Giriş Alanları + Kaydet/Yeni -->
-              <div class="skill-form-grid skill-biz-entry-grid">
-                <label class="biz-name-label">
-                  <span>İşletme adı</span>
-                  <input id="skillBusinessName" type="text" placeholder="İşletme adı" required />
-                </label>
-                <label class="biz-phone-label">
-                  <span>Telefon</span>
-                  <input id="skillBusinessPhone" type="text" placeholder="05xx..." />
-                </label>
-                <label class="biz-group-label">
-                  <span>Çalışan sayısı</span>
-                  <select id="skillBusinessGroup">
-                    <option value="1">20'den az</option>
-                    <option value="2">20 ve üzeri</option>
-                  </select>
-                </label>
-                <label class="biz-address-label">
-                  <span>Adres</span>
-                  <input id="skillBusinessAddress" type="text" placeholder="İşletme adresi" />
-                </label>
-                <div class="stu-col-form-actions">
-                  <button class="secondary-action" id="skillClearBusinessBtn" type="button">Yeni</button>
-                  <button class="primary-action" type="submit">Kaydet</button>
-                </div>
-              </div>
-              <!-- Satır 2: Birleşik Filtre Çubuğu (Sol) + Toplu İşlem Butonları (Sağ) -->
-              <div class="skill-student-toolbar">
-                <div class="skill-student-filters-bar">
-                  <span class="skill-filter-badge" title="Listeyi filtrele">🔍 Filtre:</span>
+          <div class="skill-mgmt-layout skill-businesses-layout">
+            <!-- Süper Kompakt Tek Satır Filtre ve Aksiyon Barı -->
+            <div class="skill-mgmt-filter-bar">
+              <div class="skill-student-filters-bar">
+                <div class="skill-search-input-wrap">
+                  <span class="skill-search-icon">🔍</span>
                   <input id="skillBusinessSearch" type="search" placeholder="İşletme adı, telefon veya adres ara..." aria-label="İşletme ara" />
-                  <select id="skillBusinessGroupFilter" aria-label="Çalışan sayısı filtresi">
-                    <option value="">Tüm çalışan grupları</option>
-                    <option value="1">20'den az</option>
-                    <option value="2">20 ve üzeri</option>
-                  </select>
-                  <button class="ghost-action skill-filter-reset-btn" id="skillBusinessFilterResetBtn" type="button" title="Filtreleri sıfırla" style="display: none;">✕ Temizle</button>
                 </div>
-                <div class="skill-student-bulk-actions">
-                  <button class="danger-action" id="skillDeleteSelectedBusinessBtn" type="button">Seçileni sil</button>
-                  <button class="danger-action soft" id="skillDeleteAllBusinessBtn" type="button">Tümünü sil</button>
-                </div>
+                <select id="skillBusinessGroupFilter" aria-label="Çalışan sayısı filtresi">
+                  <option value="">Tüm çalışan grupları</option>
+                  <option value="1">20'den az</option>
+                  <option value="2">20 ve üzeri</option>
+                </select>
+                <button class="secondary-action skill-filter-reset-btn" id="skillBusinessFilterResetBtn" type="button" title="Filtreleri sıfırla" style="display: none;">✕</button>
+                <span class="skill-mgmt-badge" id="skillBusinessCountBadge">0 Kayıt</span>
               </div>
-            </form>
-            <section class="skill-panel">
-              <div class="skill-table-head">
-                <div>
-                  <p class="eyebrow">Liste</p>
-                  <h2>İşletmeler</h2>
-                </div>
+              <div class="skill-mgmt-top-actions">
+                <button type="button" class="primary-action skill-btn-primary" id="skillOpenBusinessDrawerBtn">
+                  <span class="skill-btn-icon">+</span> Yeni İşletme
+                </button>
               </div>
+            </div>
+
+            <!-- Bağlamsal Toplu İşlem Çubuğu (Yalnızca seçim varsa görünür) -->
+            <div class="skill-student-bulk-bar" id="skillBusinessBulkBar">
+              <div class="skill-bulk-selection-info">
+                <span class="skill-bulk-badge" id="skillBusinessSelectedCount">0</span>
+                <span>işletme seçildi</span>
+              </div>
+              <div class="skill-inline-actions skill-student-bulk-actions">
+                <button class="danger-action" id="skillDeleteSelectedBusinessBtn" type="button">Seçileni sil</button>
+                <button class="danger-action soft" id="skillDeleteAllBusinessBtn" type="button">Tümünü sil</button>
+                <button class="secondary-action soft" id="skillBusinessClearSelectionBtn" type="button" title="Seçimleri kaldır">✕ Seçimi Kaldır</button>
+              </div>
+            </div>
+
+            <!-- Tablo Paneli (Genişletilmiş tam alan) -->
+            <section class="skill-panel skill-table-card">
               <div class="skill-table" id="skillBusinessTable"></div>
             </section>
+
+            <!-- Slide-over Drawer (Yeni İşletme Ekle / Düzenle) -->
+            <div class="skill-drawer-backdrop" id="skillBusinessDrawerBackdrop"></div>
+            <aside class="skill-slide-drawer" id="skillBusinessDrawer" aria-hidden="true">
+              <form class="skill-form skill-student-drawer-form" id="skillBusinessForm">
+                <input id="skillBusinessId" type="hidden" />
+                <div class="skill-drawer-header">
+                  <div>
+                    <h3 class="skill-drawer-title" id="skillBusinessDrawerTitle">Yeni İşletme Ekle</h3>
+                    <p class="skill-drawer-sub">İşletme bilgilerini girip kaydedin</p>
+                  </div>
+                  <button type="button" class="skill-drawer-close" id="skillCloseBusinessDrawerBtn" aria-label="Kapat">✕</button>
+                </div>
+                <div class="skill-drawer-body">
+                  <label>
+                    <span>İşletme adı *</span>
+                    <input id="skillBusinessName" type="text" placeholder="İşletme adı" required />
+                  </label>
+                  <div class="skill-drawer-grid-two">
+                    <label>
+                      <span>Telefon</span>
+                      <input id="skillBusinessPhone" type="text" placeholder="05xx..." />
+                    </label>
+                    <label>
+                      <span>Çalışan sayısı</span>
+                      <select id="skillBusinessGroup">
+                        <option value="1">20'den az</option>
+                        <option value="2">20 ve üzeri</option>
+                      </select>
+                    </label>
+                  </div>
+                  <label>
+                    <span>Adres</span>
+                    <input id="skillBusinessAddress" type="text" placeholder="İşletme adresi" />
+                  </label>
+                </div>
+                <div class="skill-drawer-footer">
+                  <button class="secondary-action" id="skillClearBusinessBtn" type="button" title="Formu temizle">Yeni</button>
+                  <button class="secondary-action" id="skillCancelBusinessDrawerBtn" type="button">İptal</button>
+                  <button class="primary-action" type="submit" id="skillSaveBusinessBtn">İşletmeyi kaydet</button>
+                </div>
+              </form>
+            </aside>
           </div>
         </section>
 
         <section class="skill-view" data-skill-panel="coordinators">
-          <div class="skill-two-column">
-            <form class="skill-panel skill-form skill-compact-mgmt-form" id="skillCoordinatorForm">
-              <input id="skillCoordinatorId" type="hidden" />
-              <div class="panel-heading skill-form-title">
-                <div>
-                  <p class="eyebrow">Koordinatör</p>
-                  <h2>Görev tanımı</h2>
-                </div>
-              </div>
-              <!-- Satır 1: Görev Giriş Alanları + Kaydet/Yeni -->
-              <div class="skill-form-grid skill-coord-entry-grid">
-                <label class="coord-col-school">
-                  <span>Okul</span>
-                  <select id="skillCoordinatorSchool"></select>
-                </label>
-                <label class="coord-col-teacher">
-                  <span>Öğretmen</span>
-                  <select id="skillCoordinatorTeacher" required></select>
-                </label>
-                <label class="coord-col-deputy">
-                  <span>Müdür yrd.</span>
-                  <select id="skillCoordinatorDeputy"></select>
-                </label>
-                <label class="coord-col-business">
-                  <span>İşletme</span>
-                  <select id="skillCoordinatorBusiness"></select>
-                </label>
-                <label class="coord-col-day">
-                  <span>Gün</span>
-                  <select id="skillCoordinatorDay">
-                    <option value="">Belirtilmedi</option>
-                    <option value="1">Pazartesi</option>
-                    <option value="2">Salı</option>
-                    <option value="3">Çarşamba</option>
-                    <option value="4">Perşembe</option>
-                    <option value="5">Cuma</option>
-                  </select>
-                </label>
-                <div class="stu-col-form-actions">
-                  <button class="secondary-action" id="skillClearCoordinatorBtn" type="button">Yeni</button>
-                  <button class="primary-action" type="submit">Kaydet</button>
-                </div>
-              </div>
-              <!-- Satır 2: Birleşik Filtre Çubuğu (Sol) + Toplu İşlem Butonları (Sağ) -->
-              <div class="skill-student-toolbar">
-                <div class="skill-student-filters-bar">
-                  <span class="skill-filter-badge" title="Görev listesini filtrele">🔍 Filtre:</span>
+          <div class="skill-mgmt-layout skill-coordinators-layout">
+            <!-- Süper Kompakt Tek Satır Filtre ve Aksiyon Barı -->
+            <div class="skill-mgmt-filter-bar">
+              <div class="skill-student-filters-bar">
+                <div class="skill-search-input-wrap">
+                  <span class="skill-search-icon">🔍</span>
                   <input id="skillCoordinatorSearch" type="search" placeholder="İşletme, adres, öğretmen veya md. yrd. ara..." aria-label="Koordinatör görevi ara" />
-                  <select id="skillCoordinatorDayFilter" aria-label="Gün filtresi">
-                    <option value="">Tüm günler</option>
-                    <option value="1">Pazartesi</option>
-                    <option value="2">Salı</option>
-                    <option value="3">Çarşamba</option>
-                    <option value="4">Perşembe</option>
-                    <option value="5">Cuma</option>
-                    <option value="none">Belirtilmedi</option>
-                  </select>
-                  <button class="ghost-action skill-filter-reset-btn" id="skillCoordinatorFilterResetBtn" type="button" title="Filtreleri sıfırla" style="display: none;">✕ Temizle</button>
                 </div>
-                <div class="skill-student-bulk-actions">
-                  <button class="primary-action soft" id="skillCoordinatorBulkApplyBtn" type="button" style="display: none; background: rgba(45, 212, 191, 0.12); color: var(--accent-strong); border: 1px solid rgba(45, 212, 191, 0.25); font-weight: 800;">Seçilenlere Uygula</button>
-                  <button class="danger-action" id="skillDeleteSelectedCoordinatorBtn" type="button">Seçileni sil</button>
-                  <button class="danger-action soft" id="skillDeleteAllCoordinatorBtn" type="button">Tümünü sil</button>
-                </div>
+                <select id="skillCoordinatorDayFilter" aria-label="Gün filtresi">
+                  <option value="">Tüm günler</option>
+                  <option value="1">Pazartesi</option>
+                  <option value="2">Salı</option>
+                  <option value="3">Çarşamba</option>
+                  <option value="4">Perşembe</option>
+                  <option value="5">Cuma</option>
+                  <option value="none">Belirtilmedi</option>
+                </select>
+                <button class="secondary-action skill-filter-reset-btn" id="skillCoordinatorFilterResetBtn" type="button" title="Filtreleri sıfırla" style="display: none;">✕</button>
+                <span class="skill-mgmt-badge" id="skillCoordinatorCountBadge">0 Kayıt</span>
               </div>
-            </form>
+              <div class="skill-mgmt-top-actions">
+                <button type="button" class="primary-action skill-btn-primary" id="skillOpenCoordinatorDrawerBtn">
+                  <span class="skill-btn-icon">+</span> Yeni Görev
+                </button>
+              </div>
+            </div>
 
-            <section class="skill-panel">
-              <div class="skill-table-head">
-                <div>
-                  <p class="eyebrow">Liste</p>
-                  <h2>Koordinatör görevleri</h2>
-                </div>
+            <!-- Bağlamsal Toplu İşlem Çubuğu (Yalnızca seçim varsa görünür) -->
+            <div class="skill-student-bulk-bar" id="skillCoordinatorBulkBar">
+              <div class="skill-bulk-selection-info">
+                <span class="skill-bulk-badge" id="skillCoordinatorSelectedCount">0</span>
+                <span>görev seçildi</span>
               </div>
-              
+              <div class="skill-inline-actions skill-student-bulk-actions">
+                <button class="primary-action soft" id="skillCoordinatorBulkApplyBtn" type="button" style="display: none; background: rgba(45, 212, 191, 0.12); color: var(--accent-strong); border: 1px solid rgba(45, 212, 191, 0.25); font-weight: 800;">Seçilenlere Uygula</button>
+                <button class="danger-action" id="skillDeleteSelectedCoordinatorBtn" type="button">Seçileni sil</button>
+                <button class="danger-action soft" id="skillDeleteAllCoordinatorBtn" type="button">Tümünü sil</button>
+                <button class="secondary-action soft" id="skillCoordinatorClearSelectionBtn" type="button" title="Seçimleri kaldır">✕ Seçimi Kaldır</button>
+              </div>
+            </div>
+
+            <!-- Tablo Paneli (Genişletilmiş tam alan) -->
+            <section class="skill-panel skill-table-card">
               <div class="skill-table" id="skillCoordinatorTable"></div>
             </section>
+
+            <!-- Slide-over Drawer (Yeni Görev Ekle / Düzenle) -->
+            <div class="skill-drawer-backdrop" id="skillCoordinatorDrawerBackdrop"></div>
+            <aside class="skill-slide-drawer" id="skillCoordinatorDrawer" aria-hidden="true">
+              <form class="skill-form skill-student-drawer-form" id="skillCoordinatorForm">
+                <input id="skillCoordinatorId" type="hidden" />
+                <div class="skill-drawer-header">
+                  <div>
+                    <h3 class="skill-drawer-title" id="skillCoordinatorDrawerTitle">Yeni Görev Tanımı</h3>
+                    <p class="skill-drawer-sub">Koordinatörlük bilgilerini girip kaydedin</p>
+                  </div>
+                  <button type="button" class="skill-drawer-close" id="skillCloseCoordinatorDrawerBtn" aria-label="Kapat">✕</button>
+                </div>
+                <div class="skill-drawer-body">
+                  <label>
+                    <span>Okul</span>
+                    <select id="skillCoordinatorSchool"></select>
+                  </label>
+                  <label>
+                    <span>Öğretmen *</span>
+                    <select id="skillCoordinatorTeacher" required></select>
+                  </label>
+                  <label>
+                    <span>Müdür yrd.</span>
+                    <select id="skillCoordinatorDeputy"></select>
+                  </label>
+                  <label>
+                    <span>İşletme *</span>
+                    <select id="skillCoordinatorBusiness"></select>
+                  </label>
+                  <label>
+                    <span>Gün</span>
+                    <select id="skillCoordinatorDay">
+                      <option value="">Belirtilmedi</option>
+                      <option value="1">Pazartesi</option>
+                      <option value="2">Salı</option>
+                      <option value="3">Çarşamba</option>
+                      <option value="4">Perşembe</option>
+                      <option value="5">Cuma</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="skill-drawer-footer">
+                  <button class="secondary-action" id="skillClearCoordinatorBtn" type="button" title="Formu temizle">Yeni</button>
+                  <button class="secondary-action" id="skillCancelCoordinatorDrawerBtn" type="button">İptal</button>
+                  <button class="primary-action" type="submit" id="skillSaveCoordinatorBtn">Görevi kaydet</button>
+                </div>
+              </form>
+            </aside>
           </div>
         </section>
 
@@ -2160,66 +2204,102 @@
           </div>
         </section>
         <section class="skill-view" data-skill-panel="holidays">
-          <div class="skill-holiday-layout">
-            <form class="skill-panel skill-form skill-holiday-form skill-compact-mgmt-form" id="skillHolidayForm">
-              <input id="skillHolidayId" type="hidden" />
-              <!-- Satır 1: Tatil Giriş Alanları + Yeni/Kaydet -->
-              <div class="skill-form-grid skill-holiday-entry-grid">
-                <label class="hol-col-start">
-                  <span>Başlangıç</span>
-                  <input id="skillHolidayStartDate" type="date" />
-                </label>
-                <label class="hol-col-start-part">
-                  <span>Başlangıç dilimi</span>
-                  <select id="skillHolidayStartPart">
-                    <option value="full">Tam gün</option>
-                    <option value="pm">Öğleden sonra</option>
-                    <option value="am">Öğleden önce</option>
-                  </select>
-                </label>
-                <label class="hol-col-end">
-                  <span>Bitiş</span>
-                  <input id="skillHolidayEndDate" type="date" />
-                </label>
-                <label class="hol-col-end-part">
-                  <span>Bitiş dilimi</span>
-                  <select id="skillHolidayEndPart">
-                    <option value="full">Tam gün</option>
-                    <option value="pm">Öğleden sonra</option>
-                    <option value="am">Öğleden önce</option>
-                  </select>
-                </label>
-                <label class="hol-col-desc">
-                  <span>Açıklama</span>
-                  <input id="skillHolidayName" type="text" placeholder="Tatil adı" />
-                </label>
-                <label class="skill-checkbox-line skill-holiday-break hol-col-break">
-                  <input id="skillHolidaySchoolBreak" type="checkbox" />
-                  <span>Ara tatil / yarıyıl</span>
-                </label>
-                <div class="stu-col-form-actions">
-                  <button class="secondary-action" id="skillClearHolidayBtn" type="button">Yeni</button>
-                  <button class="primary-action" type="submit">Kaydet</button>
-                </div>
-              </div>
-              <!-- Satır 2: Yıl & Otomatik Çek & Arama Çubuğu (Sol) + Toplu Silme Butonları (Sağ) -->
-              <div class="skill-student-toolbar">
-                <div class="skill-student-filters-bar">
-                  <span class="skill-filter-badge" title="Tatil yılı ve filtre">📅 Yıl:</span>
-                  <select id="skillHolidayYear" aria-label="Tatil yılı"></select>
-                  <button class="secondary-action skill-holiday-auto-btn" id="skillAutoHolidayBtn" type="button">⚡ Otomatik Çek</button>
+          <div class="skill-mgmt-layout skill-holidays-layout">
+            <!-- Süper Kompakt Tek Satır Filtre ve Aksiyon Barı -->
+            <div class="skill-mgmt-filter-bar">
+              <div class="skill-student-filters-bar">
+                <span class="skill-filter-badge" title="Tatil yılı">📅 Yıl:</span>
+                <select id="skillHolidayYear" aria-label="Tatil yılı"></select>
+                <button class="secondary-action skill-holiday-auto-btn" id="skillAutoHolidayBtn" type="button">⚡ Otomatik Çek</button>
+                <div class="skill-search-input-wrap">
+                  <span class="skill-search-icon">🔍</span>
                   <input id="skillHolidaySearch" type="search" placeholder="Tatil açıklaması ara..." aria-label="Tatil ara" />
-                  <button class="ghost-action skill-filter-reset-btn" id="skillHolidayFilterResetBtn" type="button" title="Aramayı temizle" style="display: none;">✕ Temizle</button>
                 </div>
-                <div class="skill-student-bulk-actions">
-                  <button class="danger-action" id="skillDeleteSelectedHolidayBtn" type="button">Seçileni sil</button>
-                  <button class="danger-action soft" id="skillDeleteAllHolidayBtn" type="button">Tümünü sil</button>
-                </div>
+                <button class="secondary-action skill-filter-reset-btn" id="skillHolidayFilterResetBtn" type="button" title="Aramayı temizle" style="display: none;">✕</button>
+                <span class="skill-mgmt-badge" id="skillHolidayCountBadge">0 Tatil</span>
               </div>
-            </form>
-            <section class="skill-panel">
+              <div class="skill-mgmt-top-actions">
+                <button type="button" class="primary-action skill-btn-primary" id="skillOpenHolidayDrawerBtn">
+                  <span class="skill-btn-icon">+</span> Yeni Tatil Ekle
+                </button>
+              </div>
+            </div>
+
+            <!-- Bağlamsal Toplu İşlem Çubuğu (Yalnızca seçim varsa görünür) -->
+            <div class="skill-student-bulk-bar" id="skillHolidayBulkBar">
+              <div class="skill-bulk-selection-info">
+                <span class="skill-bulk-badge" id="skillHolidaySelectedCount">0</span>
+                <span>tatil seçildi</span>
+              </div>
+              <div class="skill-inline-actions skill-student-bulk-actions">
+                <button class="danger-action" id="skillDeleteSelectedHolidayBtn" type="button">Seçileni sil</button>
+                <button class="danger-action soft" id="skillDeleteAllHolidayBtn" type="button">Tümünü sil</button>
+                <button class="secondary-action soft" id="skillHolidayClearSelectionBtn" type="button" title="Seçimleri kaldır">✕ Seçimi Kaldır</button>
+              </div>
+            </div>
+
+            <!-- Tablo Paneli (Genişletilmiş tam alan) -->
+            <section class="skill-panel skill-table-card">
               <div class="skill-table" id="skillHolidayTable"></div>
             </section>
+
+            <!-- Slide-over Drawer (Yeni Tatil Ekle / Düzenle) -->
+            <div class="skill-drawer-backdrop" id="skillHolidayDrawerBackdrop"></div>
+            <aside class="skill-slide-drawer" id="skillHolidayDrawer" aria-hidden="true">
+              <form class="skill-form skill-student-drawer-form" id="skillHolidayForm">
+                <input id="skillHolidayId" type="hidden" />
+                <div class="skill-drawer-header">
+                  <div>
+                    <h3 class="skill-drawer-title" id="skillHolidayDrawerTitle">Yeni Tatil Kaydı</h3>
+                    <p class="skill-drawer-sub">Tatil tarihlerini ve detaylarını girin</p>
+                  </div>
+                  <button type="button" class="skill-drawer-close" id="skillCloseHolidayDrawerBtn" aria-label="Kapat">✕</button>
+                </div>
+                <div class="skill-drawer-body">
+                  <div class="skill-drawer-grid-two">
+                    <label>
+                      <span>Başlangıç tarihi *</span>
+                      <input id="skillHolidayStartDate" type="date" required />
+                    </label>
+                    <label>
+                      <span>Başlangıç dilimi</span>
+                      <select id="skillHolidayStartPart">
+                        <option value="full">Tam gün</option>
+                        <option value="pm">Öğleden sonra</option>
+                        <option value="am">Öğleden önce</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="skill-drawer-grid-two">
+                    <label>
+                      <span>Bitiş tarihi *</span>
+                      <input id="skillHolidayEndDate" type="date" required />
+                    </label>
+                    <label>
+                      <span>Bitiş dilimi</span>
+                      <select id="skillHolidayEndPart">
+                        <option value="full">Tam gün</option>
+                        <option value="pm">Öğleden sonra</option>
+                        <option value="am">Öğleden önce</option>
+                      </select>
+                    </label>
+                  </div>
+                  <label>
+                    <span>Tatil Açıklaması *</span>
+                    <input id="skillHolidayName" type="text" placeholder="Örn: 29 Ekim Cumhuriyet Bayramı" required />
+                  </label>
+                  <label class="skill-checkbox-line skill-holiday-break" style="margin-top: 6px;">
+                    <input id="skillHolidaySchoolBreak" type="checkbox" />
+                    <span>Ara tatil / yarıyıl tatili</span>
+                  </label>
+                </div>
+                <div class="skill-drawer-footer">
+                  <button class="secondary-action" id="skillClearHolidayBtn" type="button" title="Formu temizle">Yeni</button>
+                  <button class="secondary-action" id="skillCancelHolidayDrawerBtn" type="button">İptal</button>
+                  <button class="primary-action" type="submit" id="skillSaveHolidayBtn">Tatili kaydet</button>
+                </div>
+              </form>
+            </aside>
           </div>
         </section>
       </main>
@@ -5102,12 +5182,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./scripts/core/module-registry.js?v=1"></script>
-    <script src="./app.js?v=135"></script>
+    <script src="./app.js?v=136"></script>
     <script src="./scripts/modules/settings/index.js?v=8"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=9"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=17"></script>
     <script src="./scripts/modules/sorubank/index.js?v=8"></script>
-    <script src="./scripts/modules/skill-training/index.js?v=23"></script>
+    <script src="./scripts/modules/skill-training/index.js?v=24"></script>
     <script src="./scripts/modules/student-tracking/index.js?v=14"></script>
     <script src="./scripts/modules/system-admin/index.js?v=1"></script>
   </body>

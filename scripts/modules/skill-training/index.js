@@ -1972,60 +1972,102 @@ els.skillBusinessForm.addEventListener("submit", saveSkillBusiness);
 els.skillCoordinatorForm.addEventListener("submit", saveSkillCoordinator);
 els.skillClearStudentBtn.addEventListener("click", clearSkillStudentForm);
 
+// --- Slide-over Drawer & Selection Bar Event Listeners ---
+// 1. Öğrenci Drawer & Seçim
 const openStudentDrawerBtn = document.getElementById("skillOpenStudentDrawerBtn");
 const closeStudentDrawerBtn = document.getElementById("skillCloseStudentDrawerBtn");
 const cancelStudentDrawerBtn = document.getElementById("skillCancelStudentDrawerBtn");
 const studentDrawerBackdrop = document.getElementById("skillStudentDrawerBackdrop");
 const clearStudentSelectionBtn = document.getElementById("skillStudentClearSelectionBtn");
 
-if (openStudentDrawerBtn) {
-  openStudentDrawerBtn.addEventListener("click", () => {
-    if (typeof window.openSkillStudentDrawer === "function") {
-      window.openSkillStudentDrawer(null);
-    }
-  });
-}
-if (closeStudentDrawerBtn) {
-  closeStudentDrawerBtn.addEventListener("click", () => {
-    if (typeof window.closeSkillStudentDrawer === "function") {
-      window.closeSkillStudentDrawer();
-    }
-  });
-}
-if (cancelStudentDrawerBtn) {
-  cancelStudentDrawerBtn.addEventListener("click", () => {
-    if (typeof window.closeSkillStudentDrawer === "function") {
-      window.closeSkillStudentDrawer();
-    }
-  });
-}
-if (studentDrawerBackdrop) {
-  studentDrawerBackdrop.addEventListener("click", () => {
-    if (typeof window.closeSkillStudentDrawer === "function") {
-      window.closeSkillStudentDrawer();
-    }
-  });
-}
+if (openStudentDrawerBtn) openStudentDrawerBtn.addEventListener("click", () => window.openSkillStudentDrawer?.(null));
+if (closeStudentDrawerBtn) closeStudentDrawerBtn.addEventListener("click", () => window.closeSkillStudentDrawer?.());
+if (cancelStudentDrawerBtn) cancelStudentDrawerBtn.addEventListener("click", () => window.closeSkillStudentDrawer?.());
+if (studentDrawerBackdrop) studentDrawerBackdrop.addEventListener("click", () => window.closeSkillStudentDrawer?.());
 if (clearStudentSelectionBtn) {
   clearStudentSelectionBtn.addEventListener("click", () => {
     if (els.skillStudentTable) {
       const selectAll = els.skillStudentTable.querySelector("#skillStudentSelectAll");
       if (selectAll) selectAll.checked = false;
-      els.skillStudentTable.querySelectorAll("[data-skill-select-student]").forEach((cb) => {
-        cb.checked = false;
-      });
+      els.skillStudentTable.querySelectorAll("[data-skill-select-student]").forEach((cb) => cb.checked = false);
     }
-    updateSkillStudentActionState();
+    updateSkillStudentActionState?.();
   });
 }
+
+// 2. İşletme Drawer & Seçim
+const openBusinessDrawerBtn = document.getElementById("skillOpenBusinessDrawerBtn");
+const closeBusinessDrawerBtn = document.getElementById("skillCloseBusinessDrawerBtn");
+const cancelBusinessDrawerBtn = document.getElementById("skillCancelBusinessDrawerBtn");
+const businessDrawerBackdrop = document.getElementById("skillBusinessDrawerBackdrop");
+const clearBusinessSelectionBtn = document.getElementById("skillBusinessClearSelectionBtn");
+
+if (openBusinessDrawerBtn) openBusinessDrawerBtn.addEventListener("click", () => window.openSkillBusinessDrawer?.(null));
+if (closeBusinessDrawerBtn) closeBusinessDrawerBtn.addEventListener("click", () => window.closeSkillBusinessDrawer?.());
+if (cancelBusinessDrawerBtn) cancelBusinessDrawerBtn.addEventListener("click", () => window.closeSkillBusinessDrawer?.());
+if (businessDrawerBackdrop) businessDrawerBackdrop.addEventListener("click", () => window.closeSkillBusinessDrawer?.());
+if (clearBusinessSelectionBtn) {
+  clearBusinessSelectionBtn.addEventListener("click", () => {
+    if (els.skillBusinessTable) {
+      const selectAll = els.skillBusinessTable.querySelector("#skillBusinessSelectAll");
+      if (selectAll) selectAll.checked = false;
+      els.skillBusinessTable.querySelectorAll("[data-skill-select-business]").forEach((cb) => cb.checked = false);
+    }
+    updateSkillBusinessActionState?.();
+  });
+}
+
+// 3. Koordinatör Drawer & Seçim
+const openCoordinatorDrawerBtn = document.getElementById("skillOpenCoordinatorDrawerBtn");
+const closeCoordinatorDrawerBtn = document.getElementById("skillCloseCoordinatorDrawerBtn");
+const cancelCoordinatorDrawerBtn = document.getElementById("skillCancelCoordinatorDrawerBtn");
+const coordinatorDrawerBackdrop = document.getElementById("skillCoordinatorDrawerBackdrop");
+const clearCoordinatorSelectionBtn = document.getElementById("skillCoordinatorClearSelectionBtn");
+
+if (openCoordinatorDrawerBtn) openCoordinatorDrawerBtn.addEventListener("click", () => window.openSkillCoordinatorDrawer?.(null));
+if (closeCoordinatorDrawerBtn) closeCoordinatorDrawerBtn.addEventListener("click", () => window.closeSkillCoordinatorDrawer?.());
+if (cancelCoordinatorDrawerBtn) cancelCoordinatorDrawerBtn.addEventListener("click", () => window.closeSkillCoordinatorDrawer?.());
+if (coordinatorDrawerBackdrop) coordinatorDrawerBackdrop.addEventListener("click", () => window.closeSkillCoordinatorDrawer?.());
+if (clearCoordinatorSelectionBtn) {
+  clearCoordinatorSelectionBtn.addEventListener("click", () => {
+    if (els.skillCoordinatorTable) {
+      const selectAll = els.skillCoordinatorTable.querySelector("#skillCoordinatorSelectAll");
+      if (selectAll) selectAll.checked = false;
+      els.skillCoordinatorTable.querySelectorAll("[data-skill-select-coordinator]").forEach((cb) => cb.checked = false);
+    }
+    updateSkillCoordinatorActionState?.();
+  });
+}
+
+// 4. Tatil Drawer & Seçim
+const openHolidayDrawerBtn = document.getElementById("skillOpenHolidayDrawerBtn");
+const closeHolidayDrawerBtn = document.getElementById("skillCloseHolidayDrawerBtn");
+const cancelHolidayDrawerBtn = document.getElementById("skillCancelHolidayDrawerBtn");
+const holidayDrawerBackdrop = document.getElementById("skillHolidayDrawerBackdrop");
+const clearHolidaySelectionBtn = document.getElementById("skillHolidayClearSelectionBtn");
+
+if (openHolidayDrawerBtn) openHolidayDrawerBtn.addEventListener("click", () => window.openSkillHolidayDrawer?.(null));
+if (closeHolidayDrawerBtn) closeHolidayDrawerBtn.addEventListener("click", () => window.closeSkillHolidayDrawer?.());
+if (cancelHolidayDrawerBtn) cancelHolidayDrawerBtn.addEventListener("click", () => window.closeSkillHolidayDrawer?.());
+if (holidayDrawerBackdrop) holidayDrawerBackdrop.addEventListener("click", () => window.closeSkillHolidayDrawer?.());
+if (clearHolidaySelectionBtn) {
+  clearHolidaySelectionBtn.addEventListener("click", () => {
+    if (els.skillHolidayTable) {
+      const selectAll = els.skillHolidayTable.querySelector("#skillHolidaySelectAll");
+      if (selectAll) selectAll.checked = false;
+      els.skillHolidayTable.querySelectorAll("[data-skill-select-holiday]").forEach((cb) => cb.checked = false);
+    }
+    updateSkillHolidayActionState?.();
+  });
+}
+
+// ESC tuşuyla açık olan drawer'ı kapat
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
-    const drawer = document.getElementById("skillStudentDrawer");
-    if (drawer && drawer.classList.contains("is-open")) {
-      if (typeof window.closeSkillStudentDrawer === "function") {
-        window.closeSkillStudentDrawer();
-      }
-    }
+    window.closeSkillStudentDrawer?.();
+    window.closeSkillBusinessDrawer?.();
+    window.closeSkillCoordinatorDrawer?.();
+    window.closeSkillHolidayDrawer?.();
   }
 });
 if (els.skillToggleStudentStatusBtn) els.skillToggleStudentStatusBtn.addEventListener("click", toggleSelectedSkillStudentStatus);
@@ -2536,22 +2578,6 @@ document.addEventListener("change", (e) => {
     updateSkillHolidayActionState?.();
   }
 });
-
-window.updateSkillCoordinatorActionState = updateSkillCoordinatorActionState;
-function updateSkillCoordinatorActionState() {
-  const applyBtn = document.getElementById("skillCoordinatorBulkApplyBtn");
-  if (!applyBtn) return;
-
-  const selectedCheckboxes = els.skillCoordinatorTable ? els.skillCoordinatorTable.querySelectorAll("[data-skill-select-coordinator]:checked") : [];
-  const count = selectedCheckboxes.length;
-
-  if (count === 0) {
-    applyBtn.style.display = "none";
-  } else {
-    applyBtn.style.display = "inline-flex";
-    applyBtn.textContent = `Seçilenlere Uygula (${count})`;
-  }
-}
 
 function initCoordinatorBulkActions() {
   const applyBtn = document.getElementById("skillCoordinatorBulkApplyBtn");

@@ -7956,7 +7956,10 @@ body.skill-mode .skill-view[data-skill-panel="students"] .skill-student-filters-
   min-width: 0 !important;
 }
 
-body.skill-mode .skill-view[data-skill-panel="students"] #skillStudentSearch {
+body.skill-mode .skill-view[data-skill-panel="students"] #skillStudentSearch,
+body.skill-mode .skill-view[data-skill-panel="businesses"] #skillBusinessSearch,
+body.skill-mode .skill-view[data-skill-panel="coordinators"] #skillCoordinatorSearch,
+body.skill-mode .skill-view[data-skill-panel="holidays"] #skillHolidaySearch {
   padding-left: 32px !important;
   flex: 1.2 1 135px !important;
 }
@@ -18401,20 +18404,35 @@ body.skill-mode .skill-student-grid-row > *:nth-child(10) {
   text-align: center !important;
 }
 
-/* İşletmeler Grid Sütun Şablonu */
+/* İşletmeler Grid Sütun Şablonu (7 Sütun: Seç, No, İşletme Adı, Telefon, Çalışan, Adres, İşlem) */
 body.skill-mode .skill-business-grid-row,
 body.skill-mode .skill-grid-head.skill-business-grid-row,
 body.skill-mode .skill-row.skill-business-grid-row {
-  grid-template-columns: 38px 54px minmax(200px, 1.4fr) 125px 115px minmax(220px, 1.6fr) !important;
-  min-width: 752px !important;
+  grid-template-columns: 38px 48px minmax(180px, 1.4fr) 120px 110px minmax(200px, 1.6fr) 72px !important;
+  min-width: 770px !important;
 }
 
-/* Koordinatör Görevleri Grid Sütun Şablonu */
+body.skill-mode .skill-business-grid-row > *:nth-child(7) {
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+/* Koordinatör Görevleri Grid Sütun Şablonu (8 Sütun: Seç, No, İşletme, Adres, Öğretmen, Md. Yrd., Gün, İşlem) */
 body.skill-mode .coordinator-grid-row,
 body.skill-mode .skill-grid-head.coordinator-grid-row,
 body.skill-mode .skill-row.coordinator-grid-row {
-  grid-template-columns: 38px 54px minmax(185px, 1.25fr) minmax(210px, 1.45fr) minmax(140px, 0.95fr) minmax(125px, 0.85fr) 96px !important;
-  min-width: 848px !important;
+  grid-template-columns: 38px 48px minmax(170px, 1.2fr) minmax(190px, 1.4fr) minmax(130px, 0.95fr) minmax(120px, 0.85fr) 88px 72px !important;
+  min-width: 860px !important;
+}
+
+body.skill-mode .coordinator-grid-row > *:nth-child(7) {
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+body.skill-mode .coordinator-grid-row > *:nth-child(8) {
+  justify-content: center !important;
+  text-align: center !important;
 }
 
 /* HTML Data Table (.skill-data-table) Hizalama ve Sabit Başlık Düzeltmesi */
