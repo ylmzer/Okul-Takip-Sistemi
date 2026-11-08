@@ -8806,10 +8806,6 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-precheck small {
   font-size: 0.82rem;
 }
 
-body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row {
-  grid-template-columns: 42px minmax(0, 1fr);
-  min-height: 40px;
-}
 
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row > input,
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-filter-bottom input,
@@ -9445,29 +9441,6 @@ body.skill-mode .skill-view[data-skill-panel="reports"] #skillReportPreviewBtn:h
   box-shadow: 0 6px 16px rgba(15, 118, 110, 0.3) !important;
 }
 
-/* Compact business selection rows */
-body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row {
-  grid-template-columns: 34px minmax(0, 1fr) !important;
-  min-height: 32px !important;
-  padding-right: 6px !important;
-}
-
-body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row > input {
-  width: 14px !important;
-  height: 14px !important;
-}
-
-body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row > span {
-  padding: 4px 8px !important;
-}
-
-body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row strong {
-  font-size: 0.82rem !important;
-}
-
-body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row small {
-  font-size: 0.72rem !important;
-}
 
 /* Devamsızlık İşleme Paneli Styles */
 .skill-absence-dialog {
@@ -18778,46 +18751,41 @@ body.skill-mode .skill-inline-search button:hover {
   color: #f1f5f9 !important;
 }
 
-/* Alt Aksiyon Çubuğu (Tümünü Seç, Hızlı Butonlar, Rozetler) */
-body.skill-mode .skill-report-filter-bottom {
+/* Alt Aksiyon Çubuğu (Tümünü Seç, Hızlı Butonlar, İstatistikler - Hepsi Tek Sırada / Aynı Hizada) */
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-filter-bottom {
   display: flex !important;
   align-items: center !important;
-  justify-content: space-between !important;
+  justify-content: flex-start !important;
   gap: 8px !important;
   padding-top: 8px !important;
-  border-top: 1px solid rgba(51, 65, 85, 0.35) !important;
-  flex-wrap: wrap !important;
+  margin-top: 4px !important;
+  border-top: 1px solid rgba(51, 65, 85, 0.45) !important;
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+  overflow-x: auto !important;
 }
 
-body.skill-mode .skill-report-selection-actions {
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
+body.skill-mode .skill-report-filter-spacer {
+  flex: 1 1 auto !important;
 }
 
 body.skill-mode .skill-quick-select-btn {
-  background: rgba(30, 41, 59, 0.6) !important;
-  border: 1px solid rgba(51, 65, 85, 0.6) !important;
+  background: rgba(30, 41, 59, 0.75) !important;
+  border: 1px solid rgba(51, 65, 85, 0.7) !important;
   color: #cbd5e1 !important;
   border-radius: 6px !important;
-  padding: 4px 9px !important;
+  padding: 4px 8px !important;
   font-size: 0.74rem !important;
   font-weight: 600 !important;
   cursor: pointer !important;
   transition: all 0.15s ease !important;
+  white-space: nowrap !important;
 }
 
 body.skill-mode .skill-quick-select-btn:hover {
-  background: rgba(56, 189, 248, 0.15) !important;
+  background: rgba(56, 189, 248, 0.18) !important;
   border-color: #38bdf8 !important;
   color: #38bdf8 !important;
-}
-
-body.skill-mode .skill-report-counts-wrap {
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  flex-wrap: wrap !important;
 }
 
 body.skill-mode .skill-report-badge-pill {
@@ -18828,132 +18796,117 @@ body.skill-mode .skill-report-badge-pill {
   border-radius: 6px !important;
   font-size: 0.75rem !important;
   font-weight: 700 !important;
-  background: rgba(30, 41, 59, 0.8) !important;
-  border: 1px solid rgba(51, 65, 85, 0.5) !important;
+  background: #0b1118 !important;
+  border: 1px solid rgba(51, 65, 85, 0.6) !important;
   color: #cbd5e1 !important;
+  white-space: nowrap !important;
 }
 
 body.skill-mode .skill-report-badge-pill.badge-business {
-  border-color: rgba(14, 165, 233, 0.3) !important;
+  border-color: rgba(14, 165, 233, 0.4) !important;
   color: #38bdf8 !important;
 }
 
 body.skill-mode .skill-report-badge-pill.badge-student {
-  border-color: rgba(16, 185, 129, 0.3) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
   color: #34d399 !important;
 }
 
-/* İşletme Seçim Kartları (Modern List Yapısı) */
-body.skill-mode .skill-assignment-table {
+/* İşletme Seçim Kartları (Temiz, Düzenli Koyu Tema Listesi) */
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-table {
   display: flex !important;
   flex-direction: column !important;
-  gap: 6px !important;
-  max-height: 580px !important;
+  gap: 5px !important;
+  max-height: 560px !important;
   overflow-y: auto !important;
   background: transparent !important;
-  padding-right: 4px !important;
+  padding: 2px 4px 2px 0 !important;
+  border: none !important;
 }
 
-body.skill-mode .skill-assignment-row {
-  display: flex !important;
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row {
+  display: grid !important;
+  grid-template-columns: 24px minmax(0, 1fr) auto !important;
   align-items: center !important;
-  gap: 12px !important;
+  gap: 10px !important;
   background: #111a26 !important;
-  border: 1px solid rgba(51, 65, 85, 0.45) !important;
-  border-radius: 10px !important;
-  padding: 10px 14px !important;
+  border: 1px solid rgba(51, 65, 85, 0.5) !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
   cursor: pointer !important;
-  transition: all 0.15s ease !important;
-  min-height: auto !important;
+  min-height: 48px !important;
+  box-sizing: border-box !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease !important;
 }
 
-body.skill-mode .skill-assignment-row:hover {
-  background: rgba(30, 41, 59, 0.65) !important;
-  border-color: rgba(56, 189, 248, 0.4) !important;
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row:hover {
+  background: rgba(30, 41, 59, 0.7) !important;
+  border-color: rgba(56, 189, 248, 0.45) !important;
 }
 
-body.skill-mode .skill-assignment-row.is-selected {
-  background: rgba(16, 185, 129, 0.1) !important;
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row.is-selected {
+  background: rgba(16, 185, 129, 0.12) !important;
   border-color: #10b981 !important;
 }
 
-body.skill-mode .skill-assignment-cb-wrap {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-body.skill-mode .skill-assignment-cb-wrap input[type="checkbox"] {
-  width: 17px !important;
-  height: 17px !important;
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row input[type="checkbox"] {
+  width: 16px !important;
+  height: 16px !important;
+  margin: 0 !important;
   cursor: pointer !important;
   accent-color: #10b981 !important;
+  justify-self: center !important;
 }
 
-body.skill-mode .skill-assignment-content {
-  flex: 1 !important;
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-main {
   display: flex !important;
   flex-direction: column !important;
-  gap: 4px !important;
+  gap: 2px !important;
+  min-width: 0 !important;
 }
 
-body.skill-mode .skill-assignment-header {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 8px !important;
-}
-
-body.skill-mode .skill-assignment-name {
-  font-size: 0.9rem !important;
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-name {
+  font-size: 0.88rem !important;
   font-weight: 700 !important;
-  color: #f8fafc !important;
+  color: #f1f5f9 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.25 !important;
 }
 
-body.skill-mode .skill-assignment-row.is-selected .skill-assignment-name {
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row.is-selected .skill-assignment-name {
   color: #34d399 !important;
 }
 
-body.skill-mode .skill-assignment-badge {
-  font-size: 0.72rem !important;
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-sub {
+  font-size: 0.75rem !important;
+  font-weight: 500 !important;
+  color: #94a3b8 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.2 !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-badge {
+  font-size: 0.73rem !important;
   font-weight: 700 !important;
-  padding: 2px 7px !important;
-  border-radius: 4px !important;
+  padding: 3px 8px !important;
+  border-radius: 6px !important;
   white-space: nowrap !important;
 }
 
-body.skill-mode .skill-assignment-badge.has-students {
-  background: rgba(16, 185, 129, 0.18) !important;
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-badge.has-students {
+  background: rgba(16, 185, 129, 0.16) !important;
   color: #34d399 !important;
-  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
 }
 
-body.skill-mode .skill-assignment-badge.no-students {
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-badge.no-students {
   background: rgba(100, 116, 139, 0.15) !important;
   color: #94a3b8 !important;
   border: 1px solid rgba(100, 116, 139, 0.25) !important;
-}
-
-body.skill-mode .skill-assignment-meta {
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-  font-size: 0.76rem !important;
-  color: #94a3b8 !important;
-}
-
-body.skill-mode .skill-meta-item .meta-val {
-  color: #e2e8f0 !important;
-  font-weight: 600 !important;
-}
-
-body.skill-mode .skill-meta-pill {
-  background: rgba(56, 189, 248, 0.12) !important;
-  color: #38bdf8 !important;
-  padding: 1px 6px !important;
-  border-radius: 4px !important;
-  font-size: 0.72rem !important;
-  font-weight: 700 !important;
 }
 
 /* Sağ Panel - Rapor Parametreleri */

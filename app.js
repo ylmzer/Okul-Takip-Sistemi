@@ -4145,26 +4145,14 @@ function renderSkillReportAssignments() {
     const studentCount = students.length;
     return `
       <label class="skill-assignment-row ${isChecked ? "is-selected" : ""}" data-skill-report-business-row="${business.id}">
-        <div class="skill-assignment-cb-wrap">
-          <input type="checkbox" value="${business.id}" data-skill-report-business ${isChecked ? "checked" : ""} />
+        <input type="checkbox" value="${business.id}" data-skill-report-business ${isChecked ? "checked" : ""} />
+        <div class="skill-assignment-main">
+          <strong class="skill-assignment-name">${escapeHtml(business.name)}</strong>
+          <span class="skill-assignment-sub">${studentCount} öğrenci · Koordinatör: ${escapeHtml(coordinator?.teacher || "Atanmadı")}${coordinator?.day ? ` (${escapeHtml(coordinator.day)})` : ""}</span>
         </div>
-        <div class="skill-assignment-content">
-          <div class="skill-assignment-header">
-            <strong class="skill-assignment-name">${escapeHtml(business.name)}</strong>
-            <span class="skill-assignment-badge ${studentCount > 0 ? "has-students" : "no-students"}">
-              ${studentCount > 0 ? `👥 ${studentCount} Öğrenci` : "Öğrenci Yok"}
-            </span>
-          </div>
-          <div class="skill-assignment-meta">
-            <span class="skill-meta-item">
-              <span class="meta-label">👨‍🏫 Koordinatör:</span>
-              <span class="meta-val">${escapeHtml(coordinator?.teacher || "Atanmadı")}</span>
-            </span>
-            ${coordinator?.day ? `
-              <span class="skill-meta-pill">${escapeHtml(coordinator.day)}</span>
-            ` : ""}
-          </div>
-        </div>
+        <span class="skill-assignment-badge ${studentCount > 0 ? "has-students" : "no-students"}">
+          ${studentCount > 0 ? `👥 ${studentCount} Öğrenci` : "Boş"}
+        </span>
       </label>
     `;
   }).join("") : `<div class="empty-state">Kriterlere uygun işletme kaydı bulunamadı.</div>`;
