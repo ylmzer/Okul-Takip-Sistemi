@@ -18824,38 +18824,59 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-table 
   border: none !important;
 }
 
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-card,
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row {
-  display: grid !important;
-  grid-template-columns: 24px minmax(0, 1fr) auto !important;
-  align-items: center !important;
-  gap: 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
   background: #111a26 !important;
   border: 1px solid rgba(51, 65, 85, 0.5) !important;
   border-radius: 8px !important;
-  padding: 8px 12px !important;
-  cursor: pointer !important;
-  min-height: 48px !important;
+  padding: 0 !important;
+  cursor: default !important;
   box-sizing: border-box !important;
+  overflow: hidden !important;
   transition: background-color 0.15s ease, border-color 0.15s ease !important;
 }
 
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-card:hover,
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row:hover {
   background: rgba(30, 41, 59, 0.7) !important;
   border-color: rgba(56, 189, 248, 0.45) !important;
 }
 
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-card.is-selected,
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row.is-selected {
   background: rgba(16, 185, 129, 0.12) !important;
   border-color: #10b981 !important;
 }
 
-body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row input[type="checkbox"] {
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-header-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 8px 12px !important;
+  gap: 10px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-check-label {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+  cursor: pointer !important;
+  margin: 0 !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-check-label input[type="checkbox"] {
   width: 16px !important;
   height: 16px !important;
   margin: 0 !important;
   cursor: pointer !important;
   accent-color: #10b981 !important;
-  justify-self: center !important;
+  flex-shrink: 0 !important;
 }
 
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-main {
@@ -18875,6 +18896,7 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-name {
   line-height: 1.25 !important;
 }
 
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-card.is-selected .skill-assignment-name,
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-row.is-selected .skill-assignment-name {
   color: #34d399 !important;
 }
@@ -18892,9 +18914,14 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-sub {
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-badge {
   font-size: 0.73rem !important;
   font-weight: 700 !important;
-  padding: 3px 8px !important;
+  padding: 4px 9px !important;
   border-radius: 6px !important;
   white-space: nowrap !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  flex-shrink: 0 !important;
+  user-select: none !important;
 }
 
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-badge.has-students {
@@ -18903,10 +18930,86 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-badge.
   border: 1px solid rgba(16, 185, 129, 0.35) !important;
 }
 
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-badge.has-students:hover,
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-badge.has-students.is-open {
+  background: #059669 !important;
+  color: #ffffff !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 1px 6px rgba(16, 185, 129, 0.4) !important;
+}
+
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-badge.no-students {
   background: rgba(100, 116, 139, 0.15) !important;
-  color: #94a3b8 !important;
+  color: #64748b !important;
   border: 1px solid rgba(100, 116, 139, 0.25) !important;
+  cursor: default !important;
+}
+
+/* Öğrenci Çekmecesi / Listesi */
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-business-students-drawer {
+  background: #0a1017 !important;
+  border-top: 1px solid rgba(51, 65, 85, 0.5) !important;
+  padding: 8px 12px 10px 12px !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-students-title {
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  color: #64748b !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  margin-bottom: 6px !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-students-chips {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-student-chip {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 6px 8px !important;
+  background: #111a26 !important;
+  border: 1px solid rgba(51, 65, 85, 0.45) !important;
+  border-radius: 6px !important;
+  padding: 4px 8px !important;
+  font-size: 0.76rem !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .stu-badge-no {
+  background: rgba(56, 189, 248, 0.15) !important;
+  color: #38bdf8 !important;
+  padding: 1px 6px !important;
+  border-radius: 4px !important;
+  font-weight: 700 !important;
+  font-size: 0.72rem !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .stu-badge-name {
+  color: #f1f5f9 !important;
+  font-weight: 600 !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .stu-badge-class,
+body.skill-mode .skill-view[data-skill-panel="reports"] .stu-badge-field {
+  background: rgba(148, 163, 184, 0.12) !important;
+  color: #cbd5e1 !important;
+  padding: 1px 6px !important;
+  border-radius: 4px !important;
+  font-size: 0.72rem !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .stu-badge-days {
+  margin-left: auto !important;
+  background: rgba(234, 179, 8, 0.12) !important;
+  color: #facc15 !important;
+  padding: 1px 6px !important;
+  border-radius: 4px !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
 }
 
 /* Sağ Panel - Rapor Parametreleri */
@@ -18933,20 +19036,33 @@ body.skill-mode .skill-segment-item {
   text-align: center !important;
   cursor: pointer !important;
   margin: 0 !important;
+  position: relative !important;
 }
 
 body.skill-mode .skill-segment-item input {
-  display: none !important;
+  position: absolute !important;
+  opacity: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  pointer-events: none !important;
 }
 
 body.skill-mode .skill-segment-item span {
-  display: block !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   padding: 6px 4px !important;
   border-radius: 6px !important;
   font-size: 0.78rem !important;
   font-weight: 600 !important;
   color: #94a3b8 !important;
   transition: all 0.15s ease !important;
+  user-select: none !important;
+}
+
+body.skill-mode .skill-segment-item:hover span {
+  color: #f1f5f9 !important;
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 
 body.skill-mode .skill-segment-item:has(input:checked) span,
@@ -18957,10 +19073,24 @@ body.skill-mode .skill-segment-item input:checked + span {
 }
 
 /* Otomatik Doldurma Chipleri */
+body.skill-mode .skill-report-symbol-options {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  margin-top: 2px !important;
+}
+
+body.skill-mode .skill-report-symbol-options .skill-symbol-title {
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  color: #94a3b8 !important;
+  white-space: nowrap !important;
+}
+
 body.skill-mode .skill-symbol-chips {
   display: flex !important;
   gap: 8px !important;
-  margin-top: 4px !important;
 }
 
 body.skill-mode .skill-chip-checkbox {
@@ -18973,16 +19103,32 @@ body.skill-mode .skill-chip-checkbox {
   padding: 4px 8px !important;
   cursor: pointer !important;
   margin: 0 !important;
+  transition: all 0.15s ease !important;
+  user-select: none !important;
+}
+
+body.skill-mode .skill-chip-checkbox:hover {
+  border-color: rgba(56, 189, 248, 0.45) !important;
 }
 
 body.skill-mode .skill-chip-checkbox input {
   accent-color: #10b981 !important;
   margin: 0 !important;
+  width: 15px !important;
+  height: 15px !important;
+  cursor: pointer !important;
 }
 
 body.skill-mode .skill-chip-checkbox .chip-label {
   font-size: 0.76rem !important;
   color: #cbd5e1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+}
+
+body.skill-mode .skill-chip-checkbox .chip-label strong {
+  color: #38bdf8 !important;
 }
 
 /* Sağ Panel Aksiyon Butonları */

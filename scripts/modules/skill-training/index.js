@@ -1935,7 +1935,25 @@ if (els.skillReportSelectAll) {
     runSkillReportPrecheck();
   });
 }
-if (els.skillReportAssignmentList) els.skillReportAssignmentList.addEventListener("change", runSkillReportPrecheck);
+if (els.skillReportAssignmentList) {
+  els.skillReportAssignmentList.addEventListener("change", runSkillReportPrecheck);
+  els.skillReportAssignmentList.addEventListener("click", (e) => {
+    const toggleBtn = e.target.closest("[data-skill-toggle-students]");
+    if (!toggleBtn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const businessId = toggleBtn.getAttribute("data-skill-toggle-students");
+    const drawer = document.getElementById(`skillBusinessStudents_${businessId}`);
+    if (!drawer) return;
+    const isHidden = drawer.style.display === "none" || !drawer.style.display;
+    drawer.style.display = isHidden ? "block" : "none";
+    toggleBtn.classList.toggle("is-open", isHidden);
+    const countMatch = toggleBtn.textContent.match(/\d+/);
+    const count = countMatch ? countMatch[0] : "";
+    const arrow = isHidden ? "▴" : "▾";
+    toggleBtn.textContent = count ? `👥 ${count} Öğrenci ${arrow}` : `Öğrenciler ${arrow}`;
+  });
+}
 document.getElementById("skillReportDirectPrintBtn")?.addEventListener("click", () => {
   previewSkillAbsenceReport();
   setTimeout(() => {
@@ -1961,8 +1979,26 @@ if (els.skillReportNextMonthBtn) els.skillReportNextMonthBtn.addEventListener("c
 document.querySelectorAll('input[name="skillReportRange"]').forEach((input) => {
   input.addEventListener("change", syncSkillReportRange);
 });
-if (els.skillReportStartDate) els.skillReportStartDate.addEventListener("change", runSkillReportPrecheck);
-if (els.skillReportEndDate) els.skillReportEndDate.addEventListener("change", runSkillReportPrecheck);
+if (els.skillReportStartDate) {
+  els.skillReportStartDate.addEventListener("change", () => {
+    const customRadio = document.querySelector('input[name="skillReportRange"][value="custom"]');
+    if (customRadio && !customRadio.checked) customRadio.checked = true;
+    runSkillReportPrecheck();
+  });
+}
+if (els.skillReportEndDate) {
+  els.skillReportEndDate.addEventListener("change", () => {
+    const customRadio = document.querySelector('input[name="skillReportRange"][value="custom"]');
+    if (customRadio && !customRadio.checked) customRadio.checked = true;
+    runSkillReportPrecheck();
+  });
+}
+if (els.skillReportBusinessSymbolEnabled) {
+  els.skillReportBusinessSymbolEnabled.addEventListener("change", runSkillReportPrecheck);
+}
+if (els.skillReportSchoolSymbolEnabled) {
+  els.skillReportSchoolSymbolEnabled.addEventListener("change", runSkillReportPrecheck);
+}
 if (els.skillReportPerPage) els.skillReportPerPage.addEventListener("change", runSkillReportPrecheck);
 if (els.skillMonthlyAutoFill) els.skillMonthlyAutoFill.addEventListener("change", runSkillReportPrecheck);
 if (els.skillMonthlyMasterCert) els.skillMonthlyMasterCert.addEventListener("change", runSkillReportPrecheck);

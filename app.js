@@ -4144,16 +4144,36 @@ function renderSkillReportAssignments() {
     const isChecked = prevChecked.has(business.id);
     const studentCount = students.length;
     return `
-      <label class="skill-assignment-row ${isChecked ? "is-selected" : ""}" data-skill-report-business-row="${business.id}">
-        <input type="checkbox" value="${business.id}" data-skill-report-business ${isChecked ? "checked" : ""} />
-        <div class="skill-assignment-main">
-          <strong class="skill-assignment-name">${escapeHtml(business.name)}</strong>
-          <span class="skill-assignment-sub">${studentCount} öğrenci · Koordinatör: ${escapeHtml(coordinator?.teacher || "Atanmadı")}${coordinator?.day ? ` (${escapeHtml(coordinator.day)})` : ""}</span>
+      <div class="skill-assignment-card skill-assignment-row ${isChecked ? "is-selected" : ""}" data-skill-report-business-row="${business.id}">
+        <div class="skill-assignment-header-row">
+          <label class="skill-assignment-check-label">
+            <input type="checkbox" value="${business.id}" data-skill-report-business ${isChecked ? "checked" : ""} />
+            <div class="skill-assignment-main">
+              <strong class="skill-assignment-name">${escapeHtml(business.name)}</strong>
+              <span class="skill-assignment-sub">Koordinatör: ${escapeHtml(coordinator?.teacher || "Atanmadı")}${coordinator?.day ? ` (${escapeHtml(coordinator.day)})` : ""}</span>
+            </div>
+          </label>
+          <button type="button" class="skill-assignment-badge ${studentCount > 0 ? "has-students" : "no-students"}" data-skill-toggle-students="${business.id}" title="${studentCount > 0 ? "Öğrencileri göster / gizle" : "Kayıtlı öğrenci yok"}">
+            ${studentCount > 0 ? `👥 ${studentCount} Öğrenci ▾` : "Boş"}
+          </button>
         </div>
-        <span class="skill-assignment-badge ${studentCount > 0 ? "has-students" : "no-students"}">
-          ${studentCount > 0 ? `👥 ${studentCount} Öğrenci` : "Boş"}
-        </span>
-      </label>
+        ${studentCount > 0 ? `
+          <div class="skill-business-students-drawer" id="skillBusinessStudents_${business.id}" style="display: none;">
+            <div class="skill-students-title">İşletmedeki Öğrenciler (${studentCount}):</div>
+            <div class="skill-students-chips">
+              ${students.map((s) => `
+                <div class="skill-student-chip">
+                  <span class="stu-badge-no">#${escapeHtml(s.no || "-")}</span>
+                  <span class="stu-badge-name">${escapeHtml(s.name || "Öğrenci")}</span>
+                  ${s.className ? `<span class="stu-badge-class">${escapeHtml(s.className)}</span>` : ""}
+                  ${s.field ? `<span class="stu-badge-field">${escapeHtml(s.field)}</span>` : ""}
+                  ${s.days ? `<span class="stu-badge-days" title="Okul Günleri">📅 ${escapeHtml(s.days)}</span>` : ""}
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        ` : ""}
+      </div>
     `;
   }).join("") : `<div class="empty-state">Kriterlere uygun işletme kaydı bulunamadı.</div>`;
 
@@ -4234,7 +4254,10 @@ function getCheckedSkillReportRange() {
 
 function setCheckedSkillReportRange(value) {
   const input = document.querySelector(`input[name="skillReportRange"][value="${value}"]`);
-  if (input) input.checked = true;
+  if (input && !input.checked) {
+    input.checked = true;
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }
 }
 
 function setSkillReportDateInputsEnabled(enabled) {
@@ -4254,18 +4277,31 @@ function getSkillWeekRange(date = new Date()) {
 function syncSkillReportRange() {
   const range = getCheckedSkillReportRange();
   if (range === "week") {
-    const week = getSkillWeekRange();
+    const today = new Date();
+    const week = getSkillWeekRange(today);
     if (els.skillReportStartDate) els.skillReportStartDate.value = week.startDate;
     if (els.skillReportEndDate) els.skillReportEndDate.value = week.endDate;
+    const weekMonth = week.startDate.slice(0, 7);
+    if (els.skillReportMonthSelect) {
+      if (![...els.skillReportMonthSelect.options].some((option) => option.value === weekMonth)) {
+        els.skillReportMonthSelect.add(new Option(today.toLocaleDateString("tr-TR", { month: "long", year: "numeric" }), weekMonth));
+      }
+      els.skillReportMonthSelect.value = weekMonth;
+      skillReportMonth = weekMonth;
+    }
     setSkillReportDateInputsEnabled(false);
   } else if (range === "month") {
-    const today = new Date();
-    skillReportMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
-    if (els.skillReportMonthSelect) {
-      if (![...els.skillReportMonthSelect.options].some((option) => option.value === skillReportMonth)) {
-        els.skillReportMonthSelect.add(new Option(today.toLocaleDateString("tr-TR", { month: "long", year: "numeric" }), skillReportMonth));
+    if (els.skillReportMonthSelect?.value) {
+      skillReportMonth = els.skillReportMonthSelect.value;
+    } else {
+      const today = new Date();
+      skillReportMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+      if (els.skillReportMonthSelect) {
+        if (![...els.skillReportMonthSelect.options].some((option) => option.value === skillReportMonth)) {
+          els.skillReportMonthSelect.add(new Option(today.toLocaleDateString("tr-TR", { month: "long", year: "numeric" }), skillReportMonth));
+        }
+        els.skillReportMonthSelect.value = skillReportMonth;
       }
-      els.skillReportMonthSelect.value = skillReportMonth;
     }
     syncSkillReportMonthDates();
     setSkillReportDateInputsEnabled(false);
@@ -4620,9 +4656,11 @@ function setSkillReportType(type) {
   }
   if (els.skillAbsenceEntryBtn) {
     els.skillAbsenceEntryBtn.hidden = activeSkillReportType !== "absence";
+    els.skillAbsenceEntryBtn.style.display = activeSkillReportType === "absence" ? "" : "none";
   }
   if (els.skillReportSymbolOptions) {
     els.skillReportSymbolOptions.hidden = activeSkillReportType !== "absence";
+    els.skillReportSymbolOptions.style.display = activeSkillReportType === "absence" ? "" : "none";
   }
   if (els.skillMonthlyOptions) {
     els.skillMonthlyOptions.hidden = activeSkillReportType !== "monthly";
