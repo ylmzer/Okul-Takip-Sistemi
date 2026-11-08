@@ -991,6 +991,7 @@ const els = {
   skillDeleteSelectedHolidayBtn: document.querySelector("#skillDeleteSelectedHolidayBtn"),
   skillDeleteAllHolidayBtn: document.querySelector("#skillDeleteAllHolidayBtn"),
   skillHolidayTable: document.querySelector("#skillHolidayTable"),
+  skillReportSchoolFilter: document.querySelector("#skillReportSchoolFilter"),
   skillReportCoordinatorFilter: document.querySelector("#skillReportCoordinatorFilter"),
   skillReportSearch: document.querySelector("#skillReportSearch"),
   skillReportSelectAll: document.querySelector("#skillReportSelectAll"),
@@ -4105,44 +4106,100 @@ function renderSkillReportAssignments() {
   if (!els.skillReportAssignmentList) return;
   renderSkillReportControls();
   const query = (els.skillReportSearch?.value || "").toLocaleLowerCase("tr-TR");
+  const selectedSchool = els.skillReportSchoolFilter?.value || "";
   const teacherFilter = els.skillReportCoordinatorFilter?.value || "";
   const includeEmpty = Boolean(els.skillReportIncludeEmpty?.checked);
+
+  // Preserve previously selected checkboxes
+  const prevChecked = new Set(
+    Array.from(els.skillReportAssignmentList.querySelectorAll("[data-skill-report-business]:checked")).map((cb) => cb.value)
+  );
+
   const rows = skillState.businesses.filter((business) => {
     const students = skillState.students.filter((student) => student.businessId === business.id);
     const coordinator = skillState.coordinators.find((item) => item.businessId === business.id);
+    const teacher = skillState.teacherPool.find((t) => t.name === coordinator?.teacher);
+    const businessSchoolId = coordinator?.schoolId || teacher?.schoolId || (skillState.schoolRecords.length === 1 ? skillState.schoolRecords[0].id : "");
+
+    const matchesSchool = !selectedSchool || businessSchoolId === selectedSchool;
     const matchesEmpty = includeEmpty || students.length > 0;
     const matchesTeacher = !teacherFilter || coordinator?.teacher === teacherFilter;
     const matchesQuery = [business.name, coordinator?.teacher, ...students.map((student) => student.name)]
       .join(" ")
       .toLocaleLowerCase("tr-TR")
       .includes(query);
-    return matchesEmpty && matchesTeacher && matchesQuery;
+    return matchesSchool && matchesEmpty && matchesTeacher && matchesQuery;
   });
+
   if (els.skillReportBusinessCount) els.skillReportBusinessCount.textContent = rows.length;
   if (els.skillReportStudentCount) {
     els.skillReportStudentCount.textContent = rows.reduce((total, business) => (
       total + skillState.students.filter((student) => student.businessId === business.id).length
     ), 0);
   }
+
   els.skillReportAssignmentList.innerHTML = rows.length ? rows.map((business) => {
     const students = skillState.students.filter((student) => student.businessId === business.id);
     const coordinator = skillState.coordinators.find((item) => item.businessId === business.id);
+    const isChecked = prevChecked.has(business.id);
+    const studentCount = students.length;
     return `
-      <label class="skill-assignment-row" data-skill-report-business-row="${business.id}">
-        <input type="checkbox" value="${business.id}" data-skill-report-business />
-        <span>
-          <strong>${escapeHtml(business.name)}</strong>
-          <small>${students.length} öğrenci · Koordinatör: ${escapeHtml(coordinator?.teacher || "Atanmadı")}</small>
-        </span>
+      <label class="skill-assignment-row ${isChecked ? "is-selected" : ""}" data-skill-report-business-row="${business.id}">
+        <div class="skill-assignment-cb-wrap">
+          <input type="checkbox" value="${business.id}" data-skill-report-business ${isChecked ? "checked" : ""} />
+        </div>
+        <div class="skill-assignment-content">
+          <div class="skill-assignment-header">
+            <strong class="skill-assignment-name">${escapeHtml(business.name)}</strong>
+            <span class="skill-assignment-badge ${studentCount > 0 ? "has-students" : "no-students"}">
+              ${studentCount > 0 ? `👥 ${studentCount} Öğrenci` : "Öğrenci Yok"}
+            </span>
+          </div>
+          <div class="skill-assignment-meta">
+            <span class="skill-meta-item">
+              <span class="meta-label">👨‍🏫 Koordinatör:</span>
+              <span class="meta-val">${escapeHtml(coordinator?.teacher || "Atanmadı")}</span>
+            </span>
+            ${coordinator?.day ? `
+              <span class="skill-meta-pill">${escapeHtml(coordinator.day)}</span>
+            ` : ""}
+          </div>
+        </div>
       </label>
     `;
-  }).join("") : `<div class="empty-state">İşletme kaydı bulunamadı.</div>`;
+  }).join("") : `<div class="empty-state">Kriterlere uygun işletme kaydı bulunamadı.</div>`;
+
+  runSkillReportPrecheck();
 }
 
 function renderSkillReportControls() {
+  if (els.skillReportSchoolFilter) {
+    const curSchool = els.skillReportSchoolFilter.value;
+    els.skillReportSchoolFilter.innerHTML = [
+      `<option value="">Tüm Okullar</option>`,
+      ...skillState.schoolRecords.map((s) => `<option value="${s.id}">${escapeHtml(s.name)}</option>`)
+    ].join("");
+    if (curSchool !== undefined && curSchool !== "" && skillState.schoolRecords.some((s) => s.id === curSchool)) {
+      els.skillReportSchoolFilter.value = curSchool;
+    } else if (window.activeSchoolId && skillState.schoolRecords.some((s) => s.id === window.activeSchoolId)) {
+      els.skillReportSchoolFilter.value = window.activeSchoolId;
+    } else {
+      els.skillReportSchoolFilter.value = curSchool || "";
+    }
+  }
+
   if (els.skillReportCoordinatorFilter) {
     const current = els.skillReportCoordinatorFilter.value || "";
-    const teachers = [...new Set(skillState.coordinators.map((item) => item.teacher).filter(Boolean))].sort((a, b) => a.localeCompare(b, "tr-TR"));
+    const selectedSchool = els.skillReportSchoolFilter?.value || "";
+    let filteredCoordinators = skillState.coordinators;
+    if (selectedSchool) {
+      filteredCoordinators = skillState.coordinators.filter((c) => {
+        if (c.schoolId) return c.schoolId === selectedSchool;
+        const teacher = skillState.teacherPool.find((t) => t.name === c.teacher);
+        return !teacher?.schoolId || teacher.schoolId === selectedSchool;
+      });
+    }
+    const teachers = [...new Set(filteredCoordinators.map((item) => item.teacher).filter(Boolean))].sort((a, b) => a.localeCompare(b, "tr-TR"));
     els.skillReportCoordinatorFilter.innerHTML = [`<option value="">Tümü</option>`, ...teachers.map((teacher) => `<option value="${escapeHtml(teacher)}">${escapeHtml(teacher)}</option>`)].join("");
     els.skillReportCoordinatorFilter.value = teachers.includes(current) ? current : "";
   }
@@ -4427,11 +4484,21 @@ function isMutedReportDate(date) {
 }
 
 function getSkillDeputyForReport(coordinator) {
+  const selectedSchoolId = els.skillReportSchoolFilter?.value;
+  if (selectedSchoolId) {
+    const s = skillState.schoolRecords.find((school) => school.id === selectedSchoolId);
+    if (s?.deputy) return s.deputy;
+  }
   const coordinatorSchool = skillState.schoolRecords.find((school) => school.id === coordinator?.schoolId);
   return coordinatorSchool?.deputy || skillState.schoolRecords?.[0]?.deputy || coordinator?.deputy || skillState.school?.deputy || "Müdür Yardımcısı";
 }
 
 function getSkillSchoolForReport(coordinator) {
+  const selectedSchoolId = els.skillReportSchoolFilter?.value;
+  if (selectedSchoolId) {
+    const s = skillState.schoolRecords.find((school) => school.id === selectedSchoolId);
+    if (s) return s;
+  }
   return skillState.schoolRecords.find((school) => school.id === coordinator?.schoolId) || skillState.schoolRecords?.[0] || skillState.school;
 }
 
@@ -4461,6 +4528,19 @@ function runSkillReportPrecheck() {
   const ids = ["grades", "wage", "absence", "daily", "monthly"].includes(activeSkillReportType) ? getFlexibleReportBusinessIds() : getSelectedReportBusinessIds();
   const { startDate, endDate } = getReportDateRange();
   const studentCount = skillState.students.filter((student) => ids.includes(student.businessId)).length;
+
+  // Keep row styles in sync with checked state
+  els.skillReportAssignmentList?.querySelectorAll(".skill-assignment-row").forEach((row) => {
+    const cb = row.querySelector("input[type='checkbox']");
+    row.classList.toggle("is-selected", Boolean(cb?.checked));
+  });
+
+  // Update preview button text with dynamic live badge
+  if (els.skillReportPreviewBtn) {
+    const countText = ids.length > 0 ? `(${ids.length} İşletme / ${studentCount} Öğrenci)` : `(Tüm İşletmeler)`;
+    els.skillReportPreviewBtn.innerHTML = `👁️ Rapor Önizleme <small style="font-size: 0.78rem; opacity: 0.9; margin-left: 4px;">${countText}</small>`;
+  }
+
   if (els.skillReportPrecheckText) {
     if (activeSkillReportType === "daily") {
       const entryCount = getDailyGuidanceEntries(ids, startDate, endDate).length;

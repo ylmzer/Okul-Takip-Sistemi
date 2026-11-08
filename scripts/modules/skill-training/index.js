@@ -1891,6 +1891,40 @@ if (els.skillDeleteSelectedHolidayBtn) els.skillDeleteSelectedHolidayBtn.addEven
 if (els.skillDeleteAllHolidayBtn) els.skillDeleteAllHolidayBtn.addEventListener("click", deleteAllSkillHolidays);
 if (els.skillHolidayTable) els.skillHolidayTable.addEventListener("click", handleSkillHolidayTableClick);
 if (els.skillReportCoordinatorFilter) els.skillReportCoordinatorFilter.addEventListener("change", renderSkillReportAssignments);
+const schoolReportFilter = document.getElementById("skillReportSchoolFilter");
+if (schoolReportFilter) {
+  schoolReportFilter.addEventListener("change", () => {
+    renderSkillReportControls();
+    renderSkillReportAssignments();
+  });
+}
+document.getElementById("skillReportSearchClearBtn")?.addEventListener("click", () => {
+  if (els.skillReportSearch) els.skillReportSearch.value = "";
+  renderSkillReportAssignments();
+});
+document.getElementById("skillReportSelectWithStudentsBtn")?.addEventListener("click", () => {
+  els.skillReportAssignmentList?.querySelectorAll(".skill-assignment-row").forEach((row) => {
+    const cb = row.querySelector("input[type='checkbox']");
+    const hasBadge = row.querySelector(".has-students");
+    if (cb) {
+      cb.checked = Boolean(hasBadge);
+      row.classList.toggle("is-selected", Boolean(hasBadge));
+    }
+  });
+  if (els.skillReportSelectAll) els.skillReportSelectAll.checked = false;
+  runSkillReportPrecheck();
+});
+document.getElementById("skillReportClearSelectionBtn")?.addEventListener("click", () => {
+  els.skillReportAssignmentList?.querySelectorAll(".skill-assignment-row").forEach((row) => {
+    const cb = row.querySelector("input[type='checkbox']");
+    if (cb) {
+      cb.checked = false;
+      row.classList.remove("is-selected");
+    }
+  });
+  if (els.skillReportSelectAll) els.skillReportSelectAll.checked = false;
+  runSkillReportPrecheck();
+});
 if (els.skillReportSearch) els.skillReportSearch.addEventListener("input", renderSkillReportAssignments);
 if (els.skillReportIncludeEmpty) els.skillReportIncludeEmpty.addEventListener("change", renderSkillReportAssignments);
 if (els.skillReportSelectAll) {
@@ -1902,6 +1936,12 @@ if (els.skillReportSelectAll) {
   });
 }
 if (els.skillReportAssignmentList) els.skillReportAssignmentList.addEventListener("change", runSkillReportPrecheck);
+document.getElementById("skillReportDirectPrintBtn")?.addEventListener("click", () => {
+  previewSkillAbsenceReport();
+  setTimeout(() => {
+    printSkillAbsenceReport();
+  }, 400);
+});
 els.skillReportTabs?.forEach((button) => {
   button.addEventListener("click", () => setSkillReportType(button.dataset.skillReportTab));
 });
