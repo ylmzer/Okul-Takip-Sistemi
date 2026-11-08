@@ -7119,10 +7119,14 @@ function renderSkillStudents() {
         <span>${escapeHtml(business?.name || "İşletme yok")}</span>
         <span>${escapeHtml(student.field || "Alan / dal yok")}</span>
         <span>${escapeHtml(student.className || "-")}</span>
-        <span>${escapeHtml(student.days || "-")}</span>
-        <span class="skill-row-actions" style="justify-content: center; gap: 4px;">
-          <button type="button" class="skill-action-icon-btn skill-edit-icon-btn" data-skill-edit-student="${student.id}" title="Düzenle">✏️</button>
-          <button type="button" class="skill-action-icon-btn skill-delete-icon-btn" data-skill-delete-student="${student.id}" title="Sil">🗑️</button>
+        <span>${student.days ? `<span class="skill-day-pill">${escapeHtml(student.days)}</span>` : `<span class="skill-day-empty">—</span>`}</span>
+        <span class="skill-row-actions" style="justify-content: center; gap: 6px;">
+          <button type="button" class="skill-row-btn skill-btn-edit" data-skill-edit-student="${student.id}" title="Öğrenciyi Düzenle">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          </button>
+          <button type="button" class="skill-row-btn skill-btn-delete" data-skill-delete-student="${student.id}" title="Öğrenciyi Sil">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          </button>
         </span>
       </div>
     `;
@@ -7706,8 +7710,10 @@ function handleSkillTableClick(event) {
   const studentRow = event.target.closest("[data-skill-edit-student]");
   const businessRow = event.target.closest("[data-skill-edit-business]");
   const coordinatorRow = event.target.closest("[data-skill-edit-coordinator]");
-  const editStudentId = event.target.dataset.skillEditStudent || studentRow?.dataset.skillEditStudent;
-  const deleteStudentId = event.target.dataset.skillDeleteStudent;
+  const deleteStudentBtn = event.target.closest("[data-skill-delete-student]");
+  const deleteStudentId = deleteStudentBtn?.dataset.skillDeleteStudent;
+  const editStudentBtn = event.target.closest("[data-skill-edit-student]");
+  const editStudentId = editStudentBtn?.dataset.skillEditStudent;
   const editBusinessId = event.target.dataset.skillEditBusiness || businessRow?.dataset.skillEditBusiness;
   const deleteBusinessId = event.target.dataset.skillDeleteBusiness;
   const editCoordinatorId = event.target.dataset.skillEditCoordinator || coordinatorRow?.dataset.skillEditCoordinator;

@@ -7957,6 +7957,7 @@ body.skill-mode .skill-view[data-skill-panel="students"] .skill-student-filters-
 }
 
 body.skill-mode .skill-view[data-skill-panel="students"] #skillStudentSearch {
+  padding-left: 32px !important;
   flex: 1.2 1 135px !important;
 }
 

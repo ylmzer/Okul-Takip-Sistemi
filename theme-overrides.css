@@ -9087,23 +9087,26 @@ body.skill-mode .skill-mgmt-filter-bar .skill-student-filters-bar {
 
 body.skill-mode .skill-search-input-wrap {
   position: relative !important;
-  flex: 1.2 1 160px !important;
-  min-width: 130px !important;
+  flex: 1.2 1 170px !important;
+  min-width: 140px !important;
 }
 
 body.skill-mode .skill-search-input-wrap .skill-search-icon {
   position: absolute !important;
-  left: 8px !important;
+  left: 9px !important;
   top: 50% !important;
   transform: translateY(-50%) !important;
-  font-size: 0.74rem !important;
+  font-size: 0.78rem !important;
   pointer-events: none !important;
-  opacity: 0.6 !important;
+  opacity: 0.75 !important;
+  z-index: 2 !important;
 }
 
-body.skill-mode .skill-search-input-wrap input {
+body.skill-mode .skill-view[data-skill-panel="students"] .skill-search-input-wrap input,
+body.skill-mode .skill-search-input-wrap input#skillStudentSearch {
   width: 100% !important;
-  padding-left: 26px !important;
+  padding-left: 32px !important;
+  padding-right: 8px !important;
   height: 29px !important;
   min-height: 29px !important;
   background: #141f2d !important;
@@ -9258,26 +9261,81 @@ body.skill-mode .skill-student-grid-row.skill-row.is-selected {
   background: rgba(16, 185, 129, 0.1) !important;
 }
 
-body.skill-mode .skill-action-icon-btn {
-  background: transparent !important;
-  border: none !important;
-  cursor: pointer !important;
-  padding: 4px 6px !important;
+/* Gün Rozetleri - Belirgin ve Göze Çarpan */
+body.skill-mode .skill-day-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 2px 8px !important;
   border-radius: 6px !important;
-  font-size: 0.88rem !important;
-  line-height: 1 !important;
-  opacity: 0.7 !important;
+  font-size: 0.77rem !important;
+  font-weight: 700 !important;
+  background: rgba(16, 185, 129, 0.22) !important;
+  border: 1px solid rgba(16, 185, 129, 0.6) !important;
+  color: #6ee7b7 !important;
+  white-space: nowrap !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
+}
+
+body.skill-mode .skill-day-empty {
+  color: #64748b !important;
+  font-weight: 600 !important;
+  opacity: 0.6 !important;
+}
+
+/* Belirgin İşlem Butonları (Düzenle ve Sil) */
+body.skill-mode .skill-row-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+
+body.skill-mode .skill-row-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 27px !important;
+  height: 27px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  border: 1px solid transparent !important;
   transition: all 0.15s ease !important;
+  padding: 0 !important;
 }
 
-body.skill-mode .skill-action-icon-btn:hover {
-  opacity: 1 !important;
-  transform: scale(1.18) !important;
-  background: rgba(255, 255, 255, 0.1) !important;
+body.skill-mode .skill-row-btn svg {
+  pointer-events: none !important;
 }
 
-body.skill-mode .skill-delete-icon-btn:hover {
-  background: rgba(244, 63, 94, 0.2) !important;
+/* Düzenle Butonu: Belirgin açık mavi/cyan tonu */
+body.skill-mode .skill-btn-edit {
+  background: rgba(14, 165, 233, 0.18) !important;
+  border-color: rgba(56, 189, 248, 0.55) !important;
+  color: #38bdf8 !important;
+}
+
+body.skill-mode .skill-btn-edit:hover {
+  background: #0284c7 !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
+  transform: scale(1.12) !important;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.45) !important;
+}
+
+/* Sil Butonu: Belirgin kırmızı/rose tonu */
+body.skill-mode .skill-btn-delete {
+  background: rgba(244, 63, 94, 0.18) !important;
+  border-color: rgba(251, 113, 133, 0.55) !important;
+  color: #fb7185 !important;
+}
+
+body.skill-mode .skill-btn-delete:hover {
+  background: #e11d48 !important;
+  border-color: #e11d48 !important;
+  color: #ffffff !important;
+  transform: scale(1.12) !important;
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.45) !important;
 }
 
 /* 5. Slide-over Drawer (Öğrenci Ekle / Düzenle Çekmecesi) */
