@@ -1971,6 +1971,63 @@ els.skillStudentForm.addEventListener("submit", saveSkillStudent);
 els.skillBusinessForm.addEventListener("submit", saveSkillBusiness);
 els.skillCoordinatorForm.addEventListener("submit", saveSkillCoordinator);
 els.skillClearStudentBtn.addEventListener("click", clearSkillStudentForm);
+
+const openStudentDrawerBtn = document.getElementById("skillOpenStudentDrawerBtn");
+const closeStudentDrawerBtn = document.getElementById("skillCloseStudentDrawerBtn");
+const cancelStudentDrawerBtn = document.getElementById("skillCancelStudentDrawerBtn");
+const studentDrawerBackdrop = document.getElementById("skillStudentDrawerBackdrop");
+const clearStudentSelectionBtn = document.getElementById("skillStudentClearSelectionBtn");
+
+if (openStudentDrawerBtn) {
+  openStudentDrawerBtn.addEventListener("click", () => {
+    if (typeof window.openSkillStudentDrawer === "function") {
+      window.openSkillStudentDrawer(null);
+    }
+  });
+}
+if (closeStudentDrawerBtn) {
+  closeStudentDrawerBtn.addEventListener("click", () => {
+    if (typeof window.closeSkillStudentDrawer === "function") {
+      window.closeSkillStudentDrawer();
+    }
+  });
+}
+if (cancelStudentDrawerBtn) {
+  cancelStudentDrawerBtn.addEventListener("click", () => {
+    if (typeof window.closeSkillStudentDrawer === "function") {
+      window.closeSkillStudentDrawer();
+    }
+  });
+}
+if (studentDrawerBackdrop) {
+  studentDrawerBackdrop.addEventListener("click", () => {
+    if (typeof window.closeSkillStudentDrawer === "function") {
+      window.closeSkillStudentDrawer();
+    }
+  });
+}
+if (clearStudentSelectionBtn) {
+  clearStudentSelectionBtn.addEventListener("click", () => {
+    if (els.skillStudentTable) {
+      const selectAll = els.skillStudentTable.querySelector("#skillStudentSelectAll");
+      if (selectAll) selectAll.checked = false;
+      els.skillStudentTable.querySelectorAll("[data-skill-select-student]").forEach((cb) => {
+        cb.checked = false;
+      });
+    }
+    updateSkillStudentActionState();
+  });
+}
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    const drawer = document.getElementById("skillStudentDrawer");
+    if (drawer && drawer.classList.contains("is-open")) {
+      if (typeof window.closeSkillStudentDrawer === "function") {
+        window.closeSkillStudentDrawer();
+      }
+    }
+  }
+});
 if (els.skillToggleStudentStatusBtn) els.skillToggleStudentStatusBtn.addEventListener("click", toggleSelectedSkillStudentStatus);
 if (els.skillActivateStudentBtn) els.skillActivateStudentBtn.addEventListener("click", () => setSelectedSkillStudentStatus(true));
 if (els.skillDeleteSelectedStudentBtn) els.skillDeleteSelectedStudentBtn.addEventListener("click", deleteSelectedSkillStudents);

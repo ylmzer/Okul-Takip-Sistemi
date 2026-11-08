@@ -7120,6 +7120,10 @@ function renderSkillStudents() {
         <span>${escapeHtml(student.field || "Alan / dal yok")}</span>
         <span>${escapeHtml(student.className || "-")}</span>
         <span>${escapeHtml(student.days || "-")}</span>
+        <span class="skill-row-actions" style="justify-content: center; gap: 4px;">
+          <button type="button" class="skill-action-icon-btn skill-edit-icon-btn" data-skill-edit-student="${student.id}" title="Düzenle">✏️</button>
+          <button type="button" class="skill-action-icon-btn skill-delete-icon-btn" data-skill-delete-student="${student.id}" title="Sil">🗑️</button>
+        </span>
       </div>
     `;
   }).join("") : `<div class="empty-state">Öğrenci kaydı bulunamadı.</div>`;
@@ -7134,6 +7138,7 @@ function renderSkillStudents() {
       <span class="skill-sort-col ${sort?.key === 'field' ? 'is-active' : ''}" data-sort-table="students" data-sort-key="field" title="Sıralamak için tıklayın">Alan / dal ${getSkillSortIcon("students", "field")}</span>
       <span class="skill-sort-col ${sort?.key === 'className' ? 'is-active' : ''}" data-sort-table="students" data-sort-key="className" title="Sıralamak için tıklayın">Sınıf ${getSkillSortIcon("students", "className")}</span>
       <span class="skill-sort-col ${sort?.key === 'days' ? 'is-active' : ''}" data-sort-table="students" data-sort-key="days" title="Sıralamak için tıklayın">Gün ${getSkillSortIcon("students", "days")}</span>
+      <span class="skill-th-actions" style="justify-content: center; text-align: center;">İşlem</span>
     </div>
     ${studentRows}
   `;
@@ -7266,13 +7271,50 @@ function renderSkillCoordinators() {
   }
 }
 
+function openSkillStudentDrawer(student = null) {
+  const drawer = document.getElementById("skillStudentDrawer");
+  const backdrop = document.getElementById("skillStudentDrawerBackdrop");
+  const title = document.getElementById("skillStudentDrawerTitle");
+  if (!drawer) return;
+  if (student) {
+    if (title) title.textContent = "Öğrenciyi Düzenle";
+    if (els.skillStudentId) els.skillStudentId.value = student.id;
+    if (els.skillStudentNo) els.skillStudentNo.value = student.no || "";
+    if (els.skillStudentName) els.skillStudentName.value = student.name || "";
+    if (els.skillStudentClass) els.skillStudentClass.value = student.className || "";
+    if (els.skillStudentField) els.skillStudentField.value = student.field || "";
+    if (els.skillStudentBusiness) els.skillStudentBusiness.value = student.businessId || "";
+    setSkillStudentDays(student.days || "");
+  } else {
+    if (title) title.textContent = "Yeni Öğrenci Ekle";
+    clearSkillStudentForm();
+  }
+  drawer.classList.add("is-open");
+  if (backdrop) backdrop.classList.add("is-open");
+  drawer.setAttribute("aria-hidden", "false");
+}
+
+function closeSkillStudentDrawer() {
+  const drawer = document.getElementById("skillStudentDrawer");
+  const backdrop = document.getElementById("skillStudentDrawerBackdrop");
+  if (drawer) {
+    drawer.classList.remove("is-open");
+    drawer.setAttribute("aria-hidden", "true");
+  }
+  if (backdrop) {
+    backdrop.classList.remove("is-open");
+  }
+}
+window.openSkillStudentDrawer = openSkillStudentDrawer;
+window.closeSkillStudentDrawer = closeSkillStudentDrawer;
+
 function clearSkillStudentForm() {
-  els.skillStudentId.value = "";
-  els.skillStudentNo.value = "";
-  els.skillStudentName.value = "";
-  els.skillStudentClass.value = "";
-  els.skillStudentField.value = "";
-  els.skillStudentBusiness.value = "";
+  if (els.skillStudentId) els.skillStudentId.value = "";
+  if (els.skillStudentNo) els.skillStudentNo.value = "";
+  if (els.skillStudentName) els.skillStudentName.value = "";
+  if (els.skillStudentClass) els.skillStudentClass.value = "";
+  if (els.skillStudentField) els.skillStudentField.value = "";
+  if (els.skillStudentBusiness) els.skillStudentBusiness.value = "";
   setSkillStudentDays("");
 }
 
@@ -7327,6 +7369,7 @@ function saveSkillStudent(event) {
   else skillState.students.push(nextStudent);
   saveSkillState();
   clearSkillStudentForm();
+  closeSkillStudentDrawer();
   renderSkillModule();
   showToast("Öğrenci kaydı güncellendi.");
 }
@@ -7483,8 +7526,32 @@ function getStudentStatusTargetIds() {
 }
 
 function updateSkillStudentActionState() {
-  if (!els.skillActivateStudentBtn) return;
   const ids = selectedSkillIds(els.skillStudentTable, "[data-skill-select-student]");
+  const bulkBar = document.getElementById("skillStudentBulkBar");
+  const countBadge = document.getElementById("skillStudentSelectedCount");
+  const totalBadge = document.getElementById("skillStudentCountBadge");
+
+  if (totalBadge) {
+    totalBadge.textContent = `${skillState.students.length} Kayıt`;
+  }
+
+  if (bulkBar) {
+    if (ids.length > 0) {
+      bulkBar.style.display = "flex";
+      if (countBadge) countBadge.textContent = ids.length;
+    } else {
+      bulkBar.style.display = "none";
+    }
+  }
+
+  if (els.skillStudentTable) {
+    els.skillStudentTable.querySelectorAll(".skill-student-grid-row.skill-row").forEach((row) => {
+      const cb = row.querySelector("input[type='checkbox']");
+      row.classList.toggle("is-selected", !!cb?.checked);
+    });
+  }
+
+  if (!els.skillActivateStudentBtn) return;
   const hasPassive = ids.some((id) => skillState.students.find((student) => student.id === id)?.active === false);
   els.skillActivateStudentBtn.disabled = !hasPassive;
   els.skillActivateStudentBtn.classList.toggle("is-disabled", !hasPassive);
@@ -7646,17 +7713,21 @@ function handleSkillTableClick(event) {
   const editCoordinatorId = event.target.dataset.skillEditCoordinator || coordinatorRow?.dataset.skillEditCoordinator;
   const deleteCoordinatorId = event.target.dataset.skillDeleteCoordinator;
 
+  if (deleteStudentId) {
+    if (confirm("Bu öğrenci kaydını silmek istediğinize emin misiniz?")) {
+      skillState.students = skillState.students.filter((student) => student.id !== deleteStudentId);
+      saveSkillState();
+      renderSkillModule();
+      showToast("Öğrenci silindi.");
+    }
+    return;
+  }
+
   if (editStudentId) {
     const student = skillState.students.find((item) => item.id === editStudentId);
     if (!student) return;
     setSkillView("students");
-    els.skillStudentId.value = student.id;
-    els.skillStudentNo.value = student.no || "";
-    els.skillStudentName.value = student.name || "";
-    els.skillStudentClass.value = student.className || "";
-    els.skillStudentField.value = student.field || "";
-    els.skillStudentBusiness.value = student.businessId || "";
-    setSkillStudentDays(student.days || "");
+    openSkillStudentDrawer(student);
     return;
   }
 

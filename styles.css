@@ -18376,18 +18376,23 @@ body.skill-mode .skill-grid-head > *:nth-child(2) {
   padding: 0 4px !important;
 }
 
-/* Öğrenciler Grid Sütun Şablonu */
+/* Öğrenciler Grid Sütun Şablonu (10 Sütun: Seç, Sıra, Durum, Okul no, Ad soyad, İşletme, Alan/dal, Sınıf, Gün, İşlem) */
 body.skill-mode .skill-student-grid-row,
 body.skill-mode .skill-grid-head.skill-student-grid-row,
 body.skill-mode .skill-row.skill-student-grid-row {
-  grid-template-columns: 38px 54px 68px 82px minmax(150px, 1.15fr) minmax(170px, 1.35fr) minmax(150px, 1.1fr) 72px 84px !important;
-  min-width: 870px !important;
+  grid-template-columns: 38px 48px 54px 76px minmax(140px, 1.15fr) minmax(160px, 1.35fr) minmax(140px, 1.1fr) 68px 80px 72px !important;
+  min-width: 890px !important;
 }
 
 body.skill-mode .skill-student-grid-row > *:nth-child(3) {
   justify-content: center !important;
   text-align: center !important;
   padding: 0 4px !important;
+}
+
+body.skill-mode .skill-student-grid-row > *:nth-child(10) {
+  justify-content: center !important;
+  text-align: center !important;
 }
 
 /* İşletmeler Grid Sütun Şablonu */
