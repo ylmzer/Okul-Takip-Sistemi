@@ -31,7 +31,7 @@
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg" />
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
-    <link rel="stylesheet" href="./styles.css?v=103" />
+    <link rel="stylesheet" href="./styles.css?v=104" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
     <link rel="stylesheet" href="./theme-overrides.css?v=130" />
   </head>
@@ -2059,14 +2059,24 @@
 
         <section class="skill-view" data-skill-panel="school">
           <div class="skill-school-grid">
-            <!-- Sol Sütun: Okul Bilgileri -->
+            <!-- Üst Bölüm: Okul Bilgileri (Tam Genişlik) -->
             <div class="skill-mgmt-layout skill-school-layout">
+              <div class="skill-mgmt-section-header">
+                <div class="skill-mgmt-section-title-wrap">
+                  <span class="skill-mgmt-section-icon">🏫</span>
+                  <div>
+                    <h3 class="skill-mgmt-section-title">Okul ve Kurum Bilgileri</h3>
+                    <p class="skill-mgmt-section-sub">Okul kayıtlarını yönetin. Öğretmenlerini görüntülemek için aşağıdaki tablodan bir okul satırına tıklayabilirsiniz.</p>
+                  </div>
+                </div>
+              </div>
+
               <!-- Tek Satır Kompakt Filtre ve Yeni Okul Butonu -->
               <div class="skill-mgmt-filter-bar">
                 <div class="skill-student-filters-bar">
                   <div class="skill-search-input-wrap">
                     <span class="skill-search-icon">🔍</span>
-                    <input id="skillSchoolSearch" type="search" placeholder="Okul veya il ara..." aria-label="Okul ara" />
+                    <input id="skillSchoolSearch" type="search" placeholder="Okul adı veya il ara..." aria-label="Okul ara" />
                   </div>
                   <select id="skillSchoolTypeFilter" aria-label="Okul türü filtresi">
                     <option value="">Tüm türler</option>
@@ -2105,9 +2115,10 @@
                       <th class="skill-sort-col" data-sort-table="schools" data-sort-key="name" title="Sıralamak için tıklayın">Okul adı <span class="skill-sort-indicator">⇅</span></th>
                       <th style="width: 80px;" class="skill-sort-col" data-sort-table="schools" data-sort-key="city" title="Sıralamak için tıklayın">İl <span class="skill-sort-indicator">⇅</span></th>
                       <th style="width: 72px;" class="skill-sort-col" data-sort-table="schools" data-sort-key="schoolType" title="Sıralamak için tıklayın">Tür <span class="skill-sort-indicator">⇅</span></th>
-                      <th style="width: 95px;" class="skill-sort-col" data-sort-table="schools" data-sort-key="summerStartDate" title="Sıralamak için tıklayın">Yaz Tat. Başl. <span class="skill-sort-indicator">⇅</span></th>
-                      <th style="width: 95px;" class="skill-sort-col" data-sort-table="schools" data-sort-key="summerEndDate" title="Sıralamak için tıklayın">Yaz Tat. Bit. <span class="skill-sort-indicator">⇅</span></th>
-                      <th class="skill-sort-col" data-sort-table="schools" data-sort-key="principal" title="Sıralamak için tıklayın">Müdür <span class="skill-sort-indicator">⇅</span></th>
+                      <th style="width: 100px;" class="skill-sort-col" data-sort-table="schools" data-sort-key="summerStartDate" title="Sıralamak için tıklayın">Yaz Tat. Başl. <span class="skill-sort-indicator">⇅</span></th>
+                      <th style="width: 100px;" class="skill-sort-col" data-sort-table="schools" data-sort-key="summerEndDate" title="Sıralamak için tıklayın">Yaz Tat. Bit. <span class="skill-sort-indicator">⇅</span></th>
+                      <th class="skill-sort-col" data-sort-table="schools" data-sort-key="principal" title="Sıralamak için tıklayın">Okul Müdürü <span class="skill-sort-indicator">⇅</span></th>
+                      <th class="skill-sort-col" data-sort-table="schools" data-sort-key="deputy" title="Sıralamak için tıklayın">Koord. Md. Yrd. <span class="skill-sort-indicator">⇅</span></th>
                       <th class="skill-th-actions" style="width: 70px; text-align: center;">İşlem</th>
                     </tr>
                   </thead>
@@ -2175,8 +2186,18 @@
               </aside>
             </div>
 
-            <!-- Sağ Sütun: Koordinatör Öğretmenler -->
-            <div class="skill-mgmt-layout skill-teacher-layout">
+            <!-- Alt Bölüm: Koordinatör Öğretmenler (Tam Genişlik) -->
+            <div class="skill-mgmt-layout skill-teacher-layout" style="margin-top: 10px;">
+              <div class="skill-mgmt-section-header">
+                <div class="skill-mgmt-section-title-wrap">
+                  <span class="skill-mgmt-section-icon">👨‍🏫</span>
+                  <div>
+                    <h3 class="skill-mgmt-section-title" id="skillTeacherSectionTitle">Koordinatör Öğretmenler</h3>
+                    <p class="skill-mgmt-section-sub" id="skillTeacherSectionSub">Seçili okula ait öğretmen kadrosunu yönetin</p>
+                  </div>
+                </div>
+              </div>
+
               <!-- Tek Satır Kompakt Filtre ve Yeni Öğretmen Butonu -->
               <div class="skill-mgmt-filter-bar">
                 <div class="skill-student-filters-bar">
@@ -2184,12 +2205,15 @@
                     <span class="skill-search-icon">🔍</span>
                     <input id="skillTeacherSearch" type="search" placeholder="Öğretmen ara..." aria-label="Öğretmen ara" />
                   </div>
+                  <select id="skillTeacherSchoolFilter" aria-label="Okula göre öğretmen filtrele" style="min-width: 170px;">
+                    <option value="">Tüm Okullar</option>
+                  </select>
                   <button class="secondary-action skill-filter-reset-btn" id="skillTeacherFilterResetBtn" type="button" title="Filtreleri sıfırla" style="display: none;">✕</button>
                   <span class="skill-mgmt-badge" id="skillTeacherCountBadge">0 Öğretmen</span>
                 </div>
                 <div class="skill-mgmt-top-actions">
                   <button type="button" class="primary-action skill-btn-primary" id="skillOpenTeacherDrawerBtn">
-                    <span class="skill-btn-icon">+</span> Yeni Öğretmen
+                    <span class="skill-btn-icon">+</span> Yeni Öğretmen Ekle
                   </button>
                 </div>
               </div>
@@ -2213,7 +2237,8 @@
                     <tr>
                       <th style="width: 36px; text-align: center;"><input type="checkbox" id="skillTeacherSelectAll" style="cursor: pointer;" title="Tümünü Seç" /></th>
                       <th style="width: 44px; text-align: center;" class="skill-sort-col" data-sort-table="teachers" data-sort-key="index" title="Sıralamak için tıklayın">No <span class="skill-sort-indicator">⇅</span></th>
-                      <th class="skill-sort-col" data-sort-table="teachers" data-sort-key="name" title="Sıralamak için tıklayın">Koordinatör öğretmen <span class="skill-sort-indicator">⇅</span></th>
+                      <th class="skill-sort-col" data-sort-table="teachers" data-sort-key="name" title="Sıralamak için tıklayın">Koordinatör Öğretmen Adı Soyadı <span class="skill-sort-indicator">⇅</span></th>
+                      <th class="skill-sort-col" data-sort-table="teachers" data-sort-key="school" title="Sıralamak için tıklayın">Bağlı Olduğu Okul <span class="skill-sort-indicator">⇅</span></th>
                       <th class="skill-th-actions" style="width: 70px; text-align: center;">İşlem</th>
                     </tr>
                   </thead>
@@ -2229,7 +2254,7 @@
                   <div class="skill-drawer-header">
                     <div>
                       <h3 class="skill-drawer-title" id="skillTeacherDrawerTitle">Yeni Öğretmen Kaydı</h3>
-                      <p class="skill-drawer-sub">Koordinatör öğretmen ad soyadını girin</p>
+                      <p class="skill-drawer-sub">Koordinatör öğretmen ad soyadını ve okulunu belirleyin</p>
                     </div>
                     <button type="button" class="skill-drawer-close" id="skillCloseTeacherDrawerBtn" aria-label="Kapat">✕</button>
                   </div>
@@ -2237,6 +2262,12 @@
                     <label>
                       <span>Koordinatör öğretmen adı soyadı *</span>
                       <input id="skillTeacherName" type="text" placeholder="Örn: YILMAZ ER" required />
+                    </label>
+                    <label style="margin-top: 8px;">
+                      <span>Bağlı Olduğu Okul</span>
+                      <select id="skillTeacherSchool">
+                        <option value="">Genel / Okul Belirtilmedi</option>
+                      </select>
                     </label>
                   </div>
                   <div class="skill-drawer-footer">
@@ -5268,12 +5299,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./scripts/core/module-registry.js?v=1"></script>
-    <script src="./app.js?v=139"></script>
+    <script src="./app.js?v=140"></script>
     <script src="./scripts/modules/settings/index.js?v=8"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=9"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=17"></script>
     <script src="./scripts/modules/sorubank/index.js?v=8"></script>
-    <script src="./scripts/modules/skill-training/index.js?v=25"></script>
+    <script src="./scripts/modules/skill-training/index.js?v=26"></script>
     <script src="./scripts/modules/student-tracking/index.js?v=14"></script>
     <script src="./scripts/modules/system-admin/index.js?v=1"></script>
   </body>

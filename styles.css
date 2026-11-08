@@ -18243,12 +18243,57 @@ body.skill-mode #skillCoordinatorDayFilter {
   flex: 0 1 150px !important;
 }
 
-/* Okul & Koordinatörler */
+/* Okul & Koordinatörler (Alt Alta Master-Detail Düzeni) */
 body.skill-mode .skill-view[data-skill-panel="school"] .skill-school-grid {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.85fr) !important;
-  gap: 10px !important;
-  align-items: start !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  width: 100% !important;
+}
+
+body.skill-mode .skill-mgmt-section-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 4px 6px !important;
+  margin-bottom: 2px !important;
+}
+
+body.skill-mode .skill-mgmt-section-title-wrap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+body.skill-mode .skill-mgmt-section-icon {
+  font-size: 1.15rem !important;
+}
+
+body.skill-mode .skill-mgmt-section-title {
+  margin: 0 !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  color: #f1f5f9 !important;
+}
+
+body.skill-mode .skill-mgmt-section-sub {
+  margin: 1px 0 0 0 !important;
+  font-size: 0.74rem !important;
+  color: #94a3b8 !important;
+}
+
+body.skill-mode #skillSchoolTable tr {
+  cursor: pointer !important;
+  transition: background-color 0.15s ease, border-left-color 0.15s ease !important;
+}
+
+body.skill-mode #skillSchoolTable tr.is-active-school {
+  background: rgba(16, 185, 129, 0.1) !important;
+  border-left: 3px solid #10b981 !important;
+}
+
+body.skill-mode #skillSchoolTable tr.is-active-school td strong {
+  color: #34d399 !important;
 }
 
 body.skill-mode .skill-view[data-skill-panel="school"] .skill-school-entry-grid {

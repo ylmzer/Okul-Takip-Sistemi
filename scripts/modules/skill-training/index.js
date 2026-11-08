@@ -2762,7 +2762,10 @@ function syncSkillMgmtFilterBars() {
 
   const teacherReset = document.getElementById("skillTeacherFilterResetBtn");
   if (teacherReset) {
-    const hasTeacher = Boolean(document.getElementById("skillTeacherSearch")?.value?.trim());
+    const hasTeacher = Boolean(
+      document.getElementById("skillTeacherSearch")?.value?.trim() ||
+      document.getElementById("skillTeacherSchoolFilter")?.value
+    );
     teacherReset.style.display = hasTeacher ? "inline-flex" : "none";
   }
 }
@@ -2798,6 +2801,12 @@ function syncSkillMgmtFilterBars() {
   });
   document.getElementById("skillTeacherSearch")?.addEventListener(evt, () => {
     syncSkillMgmtFilterBars();
+    renderSkillTeachers?.();
+  });
+  document.getElementById("skillTeacherSchoolFilter")?.addEventListener(evt, () => {
+    window.activeSchoolId = document.getElementById("skillTeacherSchoolFilter")?.value || "";
+    syncSkillMgmtFilterBars();
+    renderSkillSchools?.();
     renderSkillTeachers?.();
   });
 });
@@ -2838,8 +2847,12 @@ document.getElementById("skillSchoolFilterResetBtn")?.addEventListener("click", 
 
 document.getElementById("skillTeacherFilterResetBtn")?.addEventListener("click", () => {
   const s = document.getElementById("skillTeacherSearch");
+  const f = document.getElementById("skillTeacherSchoolFilter");
   if (s) s.value = "";
+  if (f) f.value = "";
+  window.activeSchoolId = "";
   syncSkillMgmtFilterBars();
+  renderSkillSchools?.();
   renderSkillTeachers?.();
 });
 

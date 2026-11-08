@@ -6747,9 +6747,42 @@ function selectedSkillIds(container, selector) {
   return Array.from(container.querySelectorAll(`${selector}:checked`)).map((input) => input.value);
 }
 
+function syncTeacherSchoolOptions() {
+  const filterSelect = document.getElementById("skillTeacherSchoolFilter");
+  const drawerSelect = document.getElementById("skillTeacherSchool");
+  const optionsHtml = [
+    `<option value="">Tüm Okullar</option>`,
+    ...skillState.schoolRecords.map((s) => `<option value="${s.id}">${escapeHtml(s.name)}</option>`)
+  ].join("");
+
+  if (filterSelect) {
+    const curVal = filterSelect.value;
+    filterSelect.innerHTML = optionsHtml;
+    if (window.activeSchoolId && skillState.schoolRecords.some((s) => s.id === window.activeSchoolId)) {
+      filterSelect.value = curVal !== undefined && curVal !== "" ? curVal : window.activeSchoolId;
+    } else {
+      filterSelect.value = curVal || "";
+    }
+  }
+
+  if (drawerSelect) {
+    drawerSelect.innerHTML = [
+      `<option value="">Genel / Okul Belirtilmedi</option>`,
+      ...skillState.schoolRecords.map((s) => `<option value="${s.id}">${escapeHtml(s.name)}</option>`)
+    ].join("");
+  }
+}
+
 function renderSkillSchools() {
   if (!els.skillSchoolTable) return;
   ensureSkillCollections();
+
+  if (!window.activeSchoolId && skillState.schoolRecords.length > 0) {
+    window.activeSchoolId = skillState.schoolRecords[0].id;
+  }
+
+  syncTeacherSchoolOptions();
+
   const sort = window.skillTableSort?.schools;
   const searchQuery = (document.getElementById("skillSchoolSearch")?.value || "").trim().toLocaleLowerCase("tr-TR");
   const typeFilter = document.getElementById("skillSchoolTypeFilter")?.value || "";
@@ -6779,6 +6812,8 @@ function renderSkillSchools() {
         vA = a.summerEndDate; vB = b.summerEndDate;
       } else if (sort.key === "principal") {
         vA = a.principal; vB = b.principal;
+      } else if (sort.key === "deputy") {
+        vA = a.deputy; vB = b.deputy;
       }
       return compareSkillValues(vA, vB, sort.dir);
     });
@@ -6788,16 +6823,21 @@ function renderSkillSchools() {
     const typeLabel = school.schoolType === "lise" ? "MTAL" : "MESEM";
     const startDateText = school.summerStartDate ? formatSkillDate(school.summerStartDate) : "-";
     const endDateText = school.summerEndDate ? formatSkillDate(school.summerEndDate) : "-";
+    const isActive = school.id === window.activeSchoolId;
     return `
-      <tr data-skill-edit-school="${school.id}">
+      <tr data-skill-edit-school="${school.id}" class="${isActive ? "is-active-school" : ""}" title="Bu okulun öğretmenlerini altta listelemek için tıklayın">
         <td style="text-align: center;"><input type="checkbox" value="${school.id}" data-skill-select-school /></td>
         <td style="text-align: center;">${index + 1}</td>
-        <td><strong>${escapeHtml(school.name || "Okul adı yok")}</strong></td>
+        <td>
+          <strong>${escapeHtml(school.name || "Okul adı yok")}</strong>
+          ${isActive ? '<span style="margin-left: 6px; font-size: 0.72rem; padding: 1px 5px; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #34d399; font-weight: 700;">Aktif</span>' : ''}
+        </td>
         <td>${escapeHtml(school.city || "-")}</td>
         <td><span class="skill-badge-soft" style="padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; background: rgba(56, 189, 248, 0.12); color: #38bdf8;">${typeLabel}</span></td>
         <td>${startDateText}</td>
         <td>${endDateText}</td>
         <td>${escapeHtml(school.principal || "-")}</td>
+        <td>${escapeHtml(school.deputy || "-")}</td>
         <td style="text-align: center;">
           <span class="skill-row-actions" style="justify-content: center; gap: 6px;">
             <button type="button" class="skill-row-btn skill-btn-edit" data-skill-edit-school-btn="${school.id}" title="Okulu Düzenle">
@@ -6810,7 +6850,7 @@ function renderSkillSchools() {
         </td>
       </tr>
     `;
-  }).join("") || `<tr><td colspan="9" class="empty-state">Okul kaydı bulunamadı.</td></tr>`;
+  }).join("") || `<tr><td colspan="10" class="empty-state">Okul kaydı bulunamadı.</td></tr>`;
   updateSkillSchoolActionState();
 }
 
@@ -6819,7 +6859,29 @@ function renderSkillTeachers() {
   ensureSkillCollections();
   const sort = window.skillTableSort?.teachers;
   const searchQuery = (document.getElementById("skillTeacherSearch")?.value || "").trim().toLocaleLowerCase("tr-TR");
+  const schoolFilter = document.getElementById("skillTeacherSchoolFilter")?.value || "";
+
+  // Update section title & sub based on school filter
+  const activeSchool = skillState.schoolRecords.find((s) => s.id === schoolFilter);
+  const sectionTitle = document.getElementById("skillTeacherSectionTitle");
+  const sectionSub = document.getElementById("skillTeacherSectionSub");
+  if (sectionTitle) {
+    sectionTitle.textContent = activeSchool ? `${activeSchool.name} - Koordinatör Öğretmenleri` : "Koordinatör Öğretmenler";
+  }
+  if (sectionSub) {
+    sectionSub.textContent = activeSchool 
+      ? `Bu okula kayıtlı koordinatör öğretmenler listeleniyor. Okul değiştirmek için yukarıdan başka bir okula tıklayabilir veya filtreyi kullanabilirsiniz.`
+      : `Tüm okulların koordinatör öğretmenleri listeleniyor.`;
+  }
+
   let teachers = skillState.teacherPool.filter((teacher) => {
+    if (schoolFilter) {
+      if (teacher.schoolId && teacher.schoolId !== schoolFilter) return false;
+      // If teacher has no schoolId assigned yet, but there is only 1 school in schoolRecords:
+      if (!teacher.schoolId && skillState.schoolRecords.length > 1 && schoolFilter !== skillState.schoolRecords[0].id) {
+        return false;
+      }
+    }
     if (searchQuery) {
       const hay = (teacher.name || "").toLocaleLowerCase("tr-TR");
       if (!hay.includes(searchQuery)) return false;
@@ -6834,28 +6896,37 @@ function renderSkillTeachers() {
         vB = skillState.teacherPool.indexOf(b);
       } else if (sort.key === "name") {
         vA = a.name; vB = b.name;
+      } else if (sort.key === "school") {
+        const sA = skillState.schoolRecords.find((s) => s.id === a.schoolId)?.name || "";
+        const sB = skillState.schoolRecords.find((s) => s.id === b.schoolId)?.name || "";
+        vA = sA; vB = sB;
       }
       return compareSkillValues(vA, vB, sort.dir);
     });
   }
   updateSkillTableHeadIcons("teachers");
-  els.skillTeacherTable.innerHTML = teachers.map((teacher, index) => `
-    <tr data-skill-edit-teacher="${teacher.id}">
-      <td style="text-align: center;"><input type="checkbox" value="${teacher.id}" data-skill-select-teacher /></td>
-      <td style="text-align: center;">${index + 1}</td>
-      <td><strong>${escapeHtml(teacher.name || "Öğretmen adı yok")}</strong></td>
-      <td style="text-align: center;">
-        <span class="skill-row-actions" style="justify-content: center; gap: 6px;">
-          <button type="button" class="skill-row-btn skill-btn-edit" data-skill-edit-teacher-btn="${teacher.id}" title="Öğretmeni Düzenle">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-          </button>
-          <button type="button" class="skill-row-btn skill-btn-delete" data-skill-delete-teacher-btn="${teacher.id}" title="Öğretmeni Sil">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-          </button>
-        </span>
-      </td>
-    </tr>
-  `).join("") || `<tr><td colspan="4" class="empty-state">Koordinatör öğretmen kaydı bulunamadı.</td></tr>`;
+  els.skillTeacherTable.innerHTML = teachers.map((teacher, index) => {
+    const teacherSchool = skillState.schoolRecords.find((s) => s.id === teacher.schoolId) || (skillState.schoolRecords.length === 1 ? skillState.schoolRecords[0] : null);
+    const schoolLabel = teacherSchool ? escapeHtml(teacherSchool.name) : `<span style="opacity: 0.6; color: #94a3b8;">Genel / Belirtilmedi</span>`;
+    return `
+      <tr data-skill-edit-teacher="${teacher.id}">
+        <td style="text-align: center;"><input type="checkbox" value="${teacher.id}" data-skill-select-teacher /></td>
+        <td style="text-align: center;">${index + 1}</td>
+        <td><strong>${escapeHtml(teacher.name || "Öğretmen adı yok")}</strong></td>
+        <td>${schoolLabel}</td>
+        <td style="text-align: center;">
+          <span class="skill-row-actions" style="justify-content: center; gap: 6px;">
+            <button type="button" class="skill-row-btn skill-btn-edit" data-skill-edit-teacher-btn="${teacher.id}" title="Öğretmeni Düzenle">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+            <button type="button" class="skill-row-btn skill-btn-delete" data-skill-delete-teacher-btn="${teacher.id}" title="Öğretmeni Sil">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+          </span>
+        </td>
+      </tr>
+    `;
+  }).join("") || `<tr><td colspan="5" class="empty-state">Bu okul için kayıtlı koordinatör öğretmen bulunamadı.</td></tr>`;
   updateSkillTeacherActionState();
 }
 
@@ -6933,6 +7004,7 @@ function openSkillTeacherDrawer(teacherOrId = null) {
   const drawer = document.getElementById("skillTeacherDrawer");
   const backdrop = document.getElementById("skillTeacherDrawerBackdrop");
   const title = document.getElementById("skillTeacherDrawerTitle");
+  const schoolSelect = document.getElementById("skillTeacherSchool");
   if (!drawer) return;
   const teacher = typeof teacherOrId === "string"
     ? skillState.teacherPool.find((t) => t.id === teacherOrId)
@@ -6942,9 +7014,14 @@ function openSkillTeacherDrawer(teacherOrId = null) {
     if (title) title.textContent = "Öğretmeni Düzenle";
     if (els.skillTeacherId) els.skillTeacherId.value = teacher.id;
     if (els.skillTeacherName) els.skillTeacherName.value = teacher.name || "";
+    if (schoolSelect) schoolSelect.value = teacher.schoolId || "";
   } else {
     if (title) title.textContent = "Yeni Öğretmen Kaydı";
     clearSkillTeacherForm();
+    const activeFilter = document.getElementById("skillTeacherSchoolFilter")?.value || window.activeSchoolId || "";
+    if (schoolSelect && activeFilter) {
+      schoolSelect.value = activeFilter;
+    }
   }
   drawer.classList.add("is-open");
   if (backdrop) backdrop.classList.add("is-open");
@@ -6972,7 +7049,11 @@ function updateSkillTeacherActionState() {
   const totalBadge = document.getElementById("skillTeacherCountBadge");
 
   if (totalBadge) {
-    totalBadge.textContent = `${skillState.teacherPool.length} Öğretmen`;
+    const schoolFilter = document.getElementById("skillTeacherSchoolFilter")?.value || "";
+    const activeCount = schoolFilter 
+      ? skillState.teacherPool.filter(t => !t.schoolId || t.schoolId === schoolFilter).length
+      : skillState.teacherPool.length;
+    totalBadge.textContent = `${activeCount} Öğretmen`;
   }
 
   if (bulkBar) {
@@ -7039,6 +7120,11 @@ function clearSkillTeacherForm() {
   if (!els.skillTeacherId) return;
   els.skillTeacherId.value = "";
   els.skillTeacherName.value = "";
+  const schoolSelect = document.getElementById("skillTeacherSchool");
+  if (schoolSelect) {
+    const activeFilter = document.getElementById("skillTeacherSchoolFilter")?.value || window.activeSchoolId || "";
+    schoolSelect.value = activeFilter;
+  }
 }
 
 function clearSkillFieldForm() {
@@ -7081,8 +7167,9 @@ function saveSkillTeacher(e) {
   const name = els.skillTeacherName.value.trim();
   if (!name) return showToast("Koordinatör öğretmen adı girin.");
   const id = els.skillTeacherId.value || uid("teacher");
+  const schoolId = document.getElementById("skillTeacherSchool")?.value || "";
   const previousTeacher = skillState.teacherPool.find((teacher) => teacher.id === id);
-  const nextTeacher = { id, name };
+  const nextTeacher = { id, name, ...(schoolId ? { schoolId } : {}) };
   const index = skillState.teacherPool.findIndex((teacher) => teacher.id === id);
   if (index >= 0) skillState.teacherPool[index] = nextTeacher;
   else skillState.teacherPool.push(nextTeacher);
@@ -7162,19 +7249,35 @@ function handleSkillManagedTables(event) {
     if (confirm("Bu okulu silmek istediğinize emin misiniz?")) {
       skillState.schoolRecords = skillState.schoolRecords.filter((s) => s.id !== id);
       skillState.coordinators = skillState.coordinators.filter((c) => c.schoolId !== id);
+      if (window.activeSchoolId === id) {
+        window.activeSchoolId = skillState.schoolRecords[0]?.id || "";
+      }
       if (!skillState.schoolRecords.length) skillState.school.name = "Okul bilgisi girilmedi";
       saveSkillState();
       renderSkillSchools();
+      renderSkillTeachers();
       showToast("Okul silindi.");
     }
     return;
   }
 
   const editSchoolBtn = event.target.closest("[data-skill-edit-school-btn]");
-  const schoolRow = event.target.closest("[data-skill-edit-school]");
-  if (editSchoolBtn || schoolRow) {
-    const id = editSchoolBtn?.dataset.skillEditSchoolBtn || schoolRow?.dataset.skillEditSchool;
+  if (editSchoolBtn) {
+    const id = editSchoolBtn.dataset.skillEditSchoolBtn;
     openSkillSchoolDrawer(id);
+    return;
+  }
+
+  const schoolRow = event.target.closest("[data-skill-edit-school]");
+  if (schoolRow) {
+    const id = schoolRow.dataset.skillEditSchool;
+    window.activeSchoolId = id;
+    const filterSelect = document.getElementById("skillTeacherSchoolFilter");
+    if (filterSelect) {
+      filterSelect.value = id;
+    }
+    renderSkillSchools();
+    renderSkillTeachers();
     return;
   }
 
