@@ -6401,9 +6401,25 @@ function buildAbsenceReportHtml() {
           .day-col { padding-left: 0; padding-right: 0; }
           .symbol-cell { font-size: 8px; font-weight: normal; padding-left: 0; padding-right: 0; }
           .muted-day {
-            background: #e2e8f0 !important;
+            background-color: #f1f5f9 !important;
+            background-image: repeating-linear-gradient(
+              -45deg,
+              #64748b,
+              #64748b 1.2px,
+              #ffffff 1.2px,
+              #ffffff 4.5px
+            ) !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+          }
+          th.date-head.muted-day {
+            background-color: #cbd5e1 !important;
+            background-image: none !important;
+            border-bottom: 2px solid #000 !important;
+          }
+          th.date-head.muted-day span {
+            font-weight: 800 !important;
+            color: #000 !important;
           }
           .total-cell { padding-left: 0; padding-right: 0; }
           .total-head { font-size: 6.8px; line-height: 1.05; white-space: normal; word-break: break-word; }
@@ -6494,6 +6510,15 @@ function buildAbsenceReportHtml() {
             font-size: 9.5px;
             font-weight: normal;
             letter-spacing: -0.05px;
+          }
+          .absence-report-card.is-half.is-condensed th.date-head.muted-day {
+            background-color: #cbd5e1 !important;
+            background-image: none !important;
+            border-bottom: 2px solid #000 !important;
+          }
+          .absence-report-card.is-half.is-condensed th.date-head.muted-day span {
+            font-weight: 800 !important;
+            color: #000 !important;
           }
           .absence-report-card.is-half.is-condensed .day-col { }
           .absence-report-card.is-half.is-condensed .symbol-cell { font-size: 6.5px; }
