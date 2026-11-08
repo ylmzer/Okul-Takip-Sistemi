@@ -9367,10 +9367,9 @@ body.skill-mode .skill-btn-edit {
 
 body.skill-mode .skill-btn-edit:hover {
   background: #0284c7 !important;
-  border-color: #0284c7 !important;
+  border-color: #38bdf8 !important;
   color: #ffffff !important;
-  transform: scale(1.12) !important;
-  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.45) !important;
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.45) !important;
 }
 
 /* Sil Butonu: Belirgin kırmızı/rose tonu */
@@ -9382,10 +9381,9 @@ body.skill-mode .skill-btn-delete {
 
 body.skill-mode .skill-btn-delete:hover {
   background: #e11d48 !important;
-  border-color: #e11d48 !important;
+  border-color: #fb7185 !important;
   color: #ffffff !important;
-  transform: scale(1.12) !important;
-  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.45) !important;
+  box-shadow: 0 0 6px rgba(225, 29, 72, 0.45) !important;
 }
 
 /* 5. Slide-over Drawer (Öğrenci Ekle / Düzenle Çekmecesi) */

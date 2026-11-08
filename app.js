@@ -6861,17 +6861,11 @@ function renderSkillTeachers() {
   const searchQuery = (document.getElementById("skillTeacherSearch")?.value || "").trim().toLocaleLowerCase("tr-TR");
   const schoolFilter = document.getElementById("skillTeacherSchoolFilter")?.value || "";
 
-  // Update section title & sub based on school filter
+  // Update section title based on school filter
   const activeSchool = skillState.schoolRecords.find((s) => s.id === schoolFilter);
   const sectionTitle = document.getElementById("skillTeacherSectionTitle");
-  const sectionSub = document.getElementById("skillTeacherSectionSub");
   if (sectionTitle) {
     sectionTitle.textContent = activeSchool ? `${activeSchool.name} - Koordinatör Öğretmenleri` : "Koordinatör Öğretmenler";
-  }
-  if (sectionSub) {
-    sectionSub.textContent = activeSchool 
-      ? `Bu okula kayıtlı koordinatör öğretmenler listeleniyor. Okul değiştirmek için yukarıdan başka bir okula tıklayabilir veya filtreyi kullanabilirsiniz.`
-      : `Tüm okulların koordinatör öğretmenleri listeleniyor.`;
   }
 
   let teachers = skillState.teacherPool.filter((teacher) => {

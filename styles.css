@@ -18255,7 +18255,7 @@ body.skill-mode .skill-mgmt-section-header {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  padding: 4px 6px !important;
+  padding: 2px 4px !important;
   margin-bottom: 2px !important;
 }
 
@@ -18267,6 +18267,7 @@ body.skill-mode .skill-mgmt-section-title-wrap {
 
 body.skill-mode .skill-mgmt-section-icon {
   font-size: 1.15rem !important;
+  line-height: 1 !important;
 }
 
 body.skill-mode .skill-mgmt-section-title {
@@ -18274,12 +18275,26 @@ body.skill-mode .skill-mgmt-section-title {
   font-size: 0.95rem !important;
   font-weight: 700 !important;
   color: #f1f5f9 !important;
+  line-height: 1.2 !important;
 }
 
 body.skill-mode .skill-mgmt-section-sub {
-  margin: 1px 0 0 0 !important;
-  font-size: 0.74rem !important;
-  color: #94a3b8 !important;
+  display: none !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="school"] .skill-panel.skill-table-card {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  max-height: none !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="school"] .skill-th-actions,
+body.skill-mode .skill-view[data-skill-panel="school"] .skill-data-table td:last-child {
+  width: 84px !important;
+  min-width: 84px !important;
+  max-width: 84px !important;
+  padding: 0 4px !important;
+  text-align: center !important;
 }
 
 body.skill-mode #skillSchoolTable tr {
@@ -18487,7 +18502,7 @@ body.skill-mode .skill-table-card {
   margin-top: 8px !important;
   padding: 0 !important;
   overflow-x: auto !important;
-  overflow-y: auto !important;
+  overflow-y: hidden !important;
   border-radius: 8px !important;
 }
 
