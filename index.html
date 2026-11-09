@@ -33,7 +33,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=116" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=140" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=141" />
   </head>
   <body class="auth-mode">
     <script>
@@ -5129,12 +5129,13 @@
     
     <!-- Bulut Veri Yükleme ve Kaydetme Bildirimleri -->
     <div id="cloudLoadingOverlay" class="cloud-loading-overlay" hidden>
-      <div class="cloud-loading-content" style="display: flex; align-items: center; gap: 12px; text-align: left;">
+      <div class="cloud-loading-content" style="display: flex; align-items: center; gap: 12px; text-align: left; width: 100%;">
         <div id="cloudLoadingSpinner" class="cloud-spinner" style="flex-shrink: 0;"></div>
-        <div style="display: flex; flex-direction: column; gap: 2px;">
+        <div style="display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto; min-width: 0;">
           <strong id="cloudLoadingTitle" style="font-size: 0.85rem; font-weight: 700;">Veriler buluttan yükleniyor...</strong>
           <p id="cloudLoadingDesc" style="margin: 0; font-size: 0.78rem; opacity: 0.85;">Lütfen bekleyin, güncel veriler alınıyor.</p>
         </div>
+        <button type="button" class="toast-close" onclick="document.getElementById('cloudLoadingOverlay').setAttribute('hidden', 'true')" aria-label="Kapat" title="Kapat" style="margin-left: auto; flex: 0 0 auto;">&times;</button>
         <div id="cloudLoadingError" style="display: none; margin-top: 16px; text-align: center; width: 100%;">
           <p style="color: #ef4444; font-weight: 600; margin: 0 0 12px 0; font-size: 0.8rem;">İnternet bağlantısı veya bulut sunucusu yanıt vermiyor.</p>
           <button type="button" onclick="window.location.reload()" style="background: #2dd4bf; color: #0f172a; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 8px rgba(45, 212, 191, 0.3); font-size: 0.78rem;">Tekrar Dene</button>
