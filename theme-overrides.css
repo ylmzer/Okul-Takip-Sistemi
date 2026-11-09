@@ -2972,15 +2972,49 @@ body.dark-mode .course-meta-settings-card .settings-status-badge {
 }
 
 /* --- Global Toast Bildirimleri (Koyu Tema) --- */
+.toast-stack {
+  position: fixed !important;
+  top: 20px !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translateX(-50%) !important;
+  z-index: 999999 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: auto !important;
+  max-width: min(520px, calc(100vw - 32px)) !important;
+  pointer-events: none !important;
+}
+
 body.dark-mode .toast {
-  background: #0f172a !important;
+  background: #111b27 !important;
   border-color: rgba(255, 255, 255, 0.12) !important;
-  color: #cbd5e1 !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+  border-left: 4px solid #14b8a6 !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-mode .toast:hover {
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.65) !important;
 }
 
 body.dark-mode .toast strong {
   color: #5eead4 !important;
+}
+
+body.dark-mode .toast span {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .toast.is-success {
+  border-left-color: #34d399 !important;
+}
+
+body.dark-mode .toast.is-success strong {
+  color: #34d399 !important;
 }
 
 body.dark-mode .toast.is-error {
@@ -2997,6 +3031,15 @@ body.dark-mode .toast.is-warning {
 
 body.dark-mode .toast.is-warning strong {
   color: #fbbf24 !important;
+}
+
+body.dark-mode .toast .toast-close {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .toast .toast-close:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
 }
 
 /* --- Kurs Takibi Diyalog ve Öğrenci Kartı Öğeleri Koyu Tema --- */

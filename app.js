@@ -9122,12 +9122,40 @@ function showToast(message, type = "info", title = "") {
   }
 
   const toast = document.createElement("div");
-  toast.className = `toast${type === "error" ? " is-error" : ""}${type === "warning" ? " is-warning" : ""}`;
-  const fallbackTitle = type === "error" ? "İşlem tamamlanamadı" : type === "warning" ? "Dikkat" : "Bilgi";
-  toast.innerHTML = `<strong>${escapeHtml(title || fallbackTitle)}</strong><span>${escapeHtml(message)}</span>`;
+  toast.className = `toast${type === "error" ? " is-error" : ""}${type === "warning" ? " is-warning" : ""}${type === "success" ? " is-success" : ""}`;
+  const fallbackTitle = type === "error" ? "İşlem tamamlanamadı" : type === "warning" ? "Dikkat" : type === "success" ? "Başarılı" : "Bilgi";
+  toast.title = "Kapatmak için tıklayın";
+  toast.setAttribute("role", "status");
+
+  toast.innerHTML = `
+    <div class="toast-body">
+      <strong>${escapeHtml(title || fallbackTitle)}</strong>
+      <span>${escapeHtml(message)}</span>
+    </div>
+    <button type="button" class="toast-close" aria-label="Kapat" title="Kapat">&times;</button>
+  `;
+
+  let dismissed = false;
+  const dismissToast = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (dismissed) return;
+    dismissed = true;
+    toast.classList.add("toast-leaving");
+    setTimeout(() => {
+      try { toast.remove(); } catch (_) {}
+    }, 180);
+  };
+
+  toast.addEventListener("click", dismissToast);
+  const closeBtn = toast.querySelector(".toast-close");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", dismissToast);
+  }
+
   els.toastStack.append(toast);
-  window.setTimeout(() => toast.remove(), type === "error" ? 7000 : 4200);
+  window.setTimeout(dismissToast, type === "error" ? 6000 : 3800);
 }
+window.showToast = showToast;
 
 function appConfirm(message, options = {}) {
   if (!els.confirmDialog) return Promise.resolve(window.confirm(message));
