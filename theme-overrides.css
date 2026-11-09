@@ -9242,22 +9242,21 @@ body.skill-mode .skill-student-bulk-actions button {
   border-radius: 6px !important;
 }
 
-/* 4. Tablo ve Satır İçi Aksiyonlar */
+/* 4. Tablo ve Satır İçi Aksiyonlar (Diğer tüm panellerle birebir aynı renk şablonu) */
 body.skill-mode .skill-view[data-skill-panel="students"] .skill-panel.skill-table-card {
-  margin: 0 !important;
+  margin-top: 8px !important;
   padding: 0 !important;
-  border-radius: 12px !important;
-  overflow: hidden !important;
-  border: 1px solid rgba(51, 65, 85, 0.45) !important;
-  background: #111a26 !important;
+  border-radius: 8px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
 }
 
-body.skill-mode .skill-student-grid-row.skill-row:hover {
-  background: rgba(30, 41, 59, 0.45) !important;
+body.dark-mode.skill-mode .skill-student-grid-row.skill-row:hover {
+  background: rgba(15, 118, 110, 0.15) !important;
 }
 
-body.skill-mode .skill-student-grid-row.skill-row.is-selected {
-  background: rgba(16, 185, 129, 0.1) !important;
+body.dark-mode.skill-mode .skill-student-grid-row.skill-row.is-selected {
+  background: rgba(15, 118, 110, 0.22) !important;
 }
 
 /* Gün Rozetleri - Belirgin, Renk Kodlu ve Ortalı */
