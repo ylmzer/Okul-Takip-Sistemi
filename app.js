@@ -4001,6 +4001,7 @@ function renderSkillModule() {
   renderSkillCoordinators();
   renderSkillHolidays();
   renderSkillAlerts();
+  renderSkillWeeklySchedule();
   renderSkillReportAssignments();
   setSkillView(skillState.activeView || "dashboard");
 }
@@ -4012,35 +4013,78 @@ function renderSkillStats() {
   const coordinatorCount = skillState.teacherPool?.length || skillState.coordinators.length;
   const fieldCount = skillState.fields?.length || new Set(skillState.students.map((student) => student.field).filter(Boolean)).size;
   const passiveStudents = skillState.students.filter((student) => student.active === false).length;
-  const nextHoliday = getNextSkillHoliday() || { name: "Tatil kaydı yok", startDate: "" };
+  const nextHoliday = getNextSkillHoliday();
+
+  let holidaySub = "Tarih girilmedi";
+  if (nextHoliday && nextHoliday.startDate) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const hDate = new Date(nextHoliday.startDate + "T00:00:00");
+    const diffDays = Math.ceil((hDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    let daysBadge = "";
+    if (diffDays === 0) daysBadge = "Bugün";
+    else if (diffDays === 1) daysBadge = "Yarın";
+    else if (diffDays > 1) daysBadge = `${diffDays} gün kaldı`;
+    holidaySub = `${formatSkillDate(nextHoliday.startDate)}${daysBadge ? ` · ${daysBadge}` : ""}`;
+  }
+
   els.skillStatGrid.innerHTML = `
-    <div class="skill-stat-card">
-      <span>Toplam Öğrenci</span>
-      <strong>${activeStudents}</strong>
+    <div class="skill-stat-card stat-student" onclick="setSkillView('students')" title="Öğrenciler listesine git">
+      <div class="stat-card-top">
+        <span class="stat-label">Toplam Öğrenci</span>
+        <span class="stat-icon-pill icon-student">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+      </div>
+      <strong class="stat-value">${activeStudents}</strong>
       <div class="stat-dot-row">
         <small class="stat-dot">${activeStudents} aktif</small>
-        <small class="stat-dot is-passive">${passiveStudents} aktif olmayan</small>
+        ${passiveStudents > 0 ? `<small class="stat-dot is-passive">${passiveStudents} pasif</small>` : `<small class="stat-dot is-good">0 pasif</small>`}
       </div>
     </div>
-    <div class="skill-stat-card">
-      <span>Toplam İşletme</span>
-      <strong>${businessCount}</strong>
-      <small>Aktif işletme</small>
+
+    <div class="skill-stat-card stat-business" onclick="setSkillView('businesses')" title="İşletmeler listesine git">
+      <div class="stat-card-top">
+        <span class="stat-label">Toplam İşletme</span>
+        <span class="stat-icon-pill icon-business">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="22" x2="9" y2="12"/><line x1="15" y1="12" x2="15" y2="22"/><line x1="9" y1="12" x2="15" y2="12"/></svg>
+        </span>
+      </div>
+      <strong class="stat-value">${businessCount}</strong>
+      <small class="stat-sub">Kayıtlı aktif işletme</small>
     </div>
-    <div class="skill-stat-card">
-      <span>Alan / Dal</span>
-      <strong>${fieldCount}</strong>
-      <small>Tanımlı alan / dal</small>
+
+    <div class="skill-stat-card stat-field" onclick="setSkillView('fields')" title="Alan / Dal listesine git">
+      <div class="stat-card-top">
+        <span class="stat-label">Alan / Dal</span>
+        <span class="stat-icon-pill icon-field">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        </span>
+      </div>
+      <strong class="stat-value">${fieldCount}</strong>
+      <small class="stat-sub">Tanımlı alan / dal</small>
     </div>
-    <div class="skill-stat-card">
-      <span>Koordinatör</span>
-      <strong>${coordinatorCount}</strong>
-      <small>Aktif koordinatör öğretmen</small>
+
+    <div class="skill-stat-card stat-coord" onclick="setSkillView('coordinators')" title="Koordinatör görevlerine git">
+      <div class="stat-card-top">
+        <span class="stat-label">Koordinatör</span>
+        <span class="stat-icon-pill icon-coord">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </span>
+      </div>
+      <strong class="stat-value">${coordinatorCount}</strong>
+      <small class="stat-sub">Görevli öğretmen</small>
     </div>
-    <div class="skill-stat-card skill-holiday-card">
-      <span>Yaklaşan Resmi Tatil</span>
-      <h3>${escapeHtml(nextHoliday.name)}</h3>
-      <small>${escapeHtml(getSkillHolidayDisplayDate(nextHoliday) || "Tarih girilmedi")}</small>
+
+    <div class="skill-stat-card stat-holiday" onclick="setSkillView('holidays')" title="Resmi Tatiller takvimine git">
+      <div class="stat-card-top">
+        <span class="stat-label">Yaklaşan Resmi Tatil</span>
+        <span class="stat-icon-pill icon-holiday">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </span>
+      </div>
+      <h3 class="stat-holiday-title" title="${escapeHtml(nextHoliday?.name || "Tatil kaydı yok")}">${escapeHtml(nextHoliday?.name || "Tatil kaydı yok")}</h3>
+      <small class="stat-sub">${holidaySub}</small>
     </div>
   `;
   if (els.skillYearBadge) els.skillYearBadge.textContent = skillState.school.year || "2025-2026";
@@ -4056,42 +4100,41 @@ function renderSkillAlerts() {
 
   if (studentsWithoutBusiness) {
     alerts.push({
-      title: "Öğrenci Eşleştirme Kontrolü",
-      text: `${studentsWithoutBusiness} öğrencinin işletme eşleştirmesi eksik.`,
+      title: "Öğrenci Eşleştirme Eksik",
+      text: `${studentsWithoutBusiness} öğrenci henüz bir işletmeye atanmamış.`,
       buttonText: "Öğrenciler",
       target: "students"
     });
   }
   if (coordinatorsWithoutDay) {
     alerts.push({
-      title: "Koordinatör Görev Kontrolü",
-      text: `${coordinatorsWithoutDay} koordinatör görevinde gün atanmamış.`,
+      title: "Rehberlik Günü Eksik",
+      text: `${coordinatorsWithoutDay} koordinatör görevinde gün seçimi yapılmamış.`,
       buttonText: "Koordinatörler",
       target: "coordinators"
     });
   }
   if (!skillState.businesses.length) {
     alerts.push({
-      title: "İşletme Listesi Kontrolü",
-      text: "İşletme listesi boş. Önce işletme ekleyin.",
+      title: "İşletme Listesi Boş",
+      text: "Henüz kayıtlı işletme bulunmuyor. Yeni işletme ekleyin.",
       buttonText: "İşletmeler",
       target: "businesses"
     });
   }
 
-  // Resmi Tatil alertleri
   if (nextHoliday) {
     alerts.push({
       title: "Yaklaşan Resmi Tatil",
-      text: `${getSkillHolidayDisplayDate(nextHoliday)} tarihinde ${nextHoliday.name} var. Görev ve rapor tarihlerini kontrol edin.`,
-      buttonText: "Resmi Tatiller",
+      text: `${formatSkillDate(nextHoliday.startDate)} tarihinde ${nextHoliday.name} var. Rehberlik ve devamsızlıkları planlayın.`,
+      buttonText: "Tatiller",
       target: "holidays"
     });
   } else if (!skillState.holidays || !skillState.holidays.length) {
     alerts.push({
-      title: "Resmi Tatil Takvimi",
-      text: "Resmi tatil kaydı yok. Bu yılı otomatik çekerek takvimi oluşturun.",
-      buttonText: "Resmi Tatiller",
+      title: "Resmi Tatil Takvimi Boş",
+      text: "Resmi tatil kaydı bulunmuyor. Yıl takvimini otomatik çekebilirsiniz.",
+      buttonText: "Tatiller",
       target: "holidays"
     });
   }
@@ -4099,23 +4142,105 @@ function renderSkillAlerts() {
   const alertCountEl = document.getElementById("skillAlertCount");
   if (alertCountEl) {
     alertCountEl.textContent = `${alerts.length} bildirim`;
+    alertCountEl.classList.toggle("is-empty", alerts.length === 0);
+  }
+
+  if (!alerts.length) {
+    els.skillAlertList.innerHTML = `
+      <div class="skill-alert-empty-box">
+        <div class="skill-alert-empty-icon">✓</div>
+        <div class="skill-alert-empty-content">
+          <strong>Her Şey Yolunda</strong>
+          <p>Tüm öğrenciler işletmelere atandı, koordinatör günleri tanımlandı ve sistemde bekleyen acil işlem bulunmuyor.</p>
+        </div>
+        <button type="button" class="skill-alert-empty-btn" onclick="setSkillView('reports')">Rapor Al ➔</button>
+      </div>
+    `;
+    return;
   }
 
   els.skillAlertList.innerHTML = alerts.map((alert) => `
     <div class="skill-alert">
-      <span aria-hidden="true">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="display: block;">
-          <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+      <span class="skill-alert-bullet" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
       </span>
-      <div>
+      <div class="skill-alert-body">
         <strong>${escapeHtml(alert.title)}</strong>
         <small>${escapeHtml(alert.text)}</small>
       </div>
-      <button data-skill-view-target="${escapeHtml(alert.target)}" type="button">${escapeHtml(alert.buttonText)}</button>
+      <button data-skill-view-target="${escapeHtml(alert.target)}" type="button">${escapeHtml(alert.buttonText)} ➔</button>
     </div>
   `).join("");
 }
+
+function renderSkillWeeklySchedule() {
+  const container = document.getElementById("skillWeeklyScheduleList");
+  if (!container) return;
+
+  const daysConfig = [
+    { key: "1", label: "Pazartesi", short: "Pzt", pillClass: "day-pzt", color: "#38bdf8" },
+    { key: "2", label: "Salı", short: "Sal", pillClass: "day-sal", color: "#c084fc" },
+    { key: "3", label: "Çarşamba", short: "Çar", pillClass: "day-car", color: "#fbbf24" },
+    { key: "4", label: "Perşembe", short: "Per", pillClass: "day-per", color: "#34d399" },
+    { key: "5", label: "Cuma", short: "Cum", pillClass: "day-cum", color: "#f472b6" }
+  ];
+
+  const totalAssigned = skillState.coordinators.length;
+  const badgeEl = document.getElementById("skillScheduleTotalBadge");
+  if (badgeEl) {
+    badgeEl.textContent = `${totalAssigned} işletme`;
+  }
+
+  const counts = {};
+  daysConfig.forEach(d => counts[d.key] = 0);
+  let unassignedCount = 0;
+
+  skillState.coordinators.forEach(coord => {
+    const d = String(coord.day || "").trim();
+    if (counts[d] !== undefined) {
+      counts[d]++;
+    } else {
+      unassignedCount++;
+    }
+  });
+
+  const maxCount = Math.max(...Object.values(counts), 1);
+
+  const rowsHtml = daysConfig.map(day => {
+    const count = counts[day.key] || 0;
+    const pct = Math.round((count / maxCount) * 100);
+    return `
+      <div class="skill-schedule-row" onclick="filterCoordinatorsByDay('${day.key}')" title="${day.label} günkü işletmeleri görüntüle">
+        <span class="skill-day-pill ${day.pillClass}" style="min-width: 82px; text-align: center;">${day.label}</span>
+        <div class="skill-schedule-bar-wrap">
+          <div class="skill-schedule-bar ${day.pillClass}" style="width: ${Math.max(pct, count > 0 ? 8 : 0)}%;"></div>
+        </div>
+        <span class="skill-schedule-count">${count} İşletme</span>
+        <span class="skill-schedule-arrow">›</span>
+      </div>
+    `;
+  }).join("");
+
+  const unassignedHtml = unassignedCount > 0 ? `
+    <div class="skill-schedule-unassigned-note" onclick="filterCoordinatorsByDay('none')">
+      <span>⚠️ <strong>${unassignedCount} işletmeye</strong> gün atanmamış</span>
+      <span class="skill-unassigned-link">Ata ➔</span>
+    </div>
+  ` : "";
+
+  container.innerHTML = rowsHtml + unassignedHtml;
+}
+
+window.filterCoordinatorsByDay = function(dayKey) {
+  setSkillView("coordinators");
+  const filter = document.getElementById("skillCoordinatorDayFilter");
+  if (filter) {
+    filter.value = dayKey;
+    filter.dispatchEvent(new Event("change"));
+  }
+};
 
 function renderSkillReportAssignments() {
   if (!els.skillReportAssignmentList) return;

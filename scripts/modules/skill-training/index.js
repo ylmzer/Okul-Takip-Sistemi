@@ -2932,3 +2932,24 @@ document.getElementById("skillTeacherFilterResetBtn")?.addEventListener("click",
   renderSkillTeachers?.();
 });
 
+
+// Dashboard Hızlı İşlemler Delegated Handler
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".skill-quick-grid button");
+  if (!btn) return;
+  const action = btn.dataset.skillAction;
+  const target = btn.dataset.skillViewTarget;
+
+  if (action === "add-student") {
+    setSkillView("students");
+    setTimeout(() => { if (typeof openSkillStudentDrawer === "function") openSkillStudentDrawer(); }, 120);
+  } else if (action === "add-business") {
+    setSkillView("businesses");
+    setTimeout(() => { if (typeof openSkillBusinessDrawer === "function") openSkillBusinessDrawer(); }, 120);
+  } else if (action === "add-coordinator") {
+    setSkillView("coordinators");
+    setTimeout(() => { if (typeof openSkillCoordinatorDrawer === "function") openSkillCoordinatorDrawer(); }, 120);
+  } else if (target) {
+    setSkillView(target);
+  }
+});
