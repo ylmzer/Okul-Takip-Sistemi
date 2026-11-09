@@ -1903,7 +1903,7 @@ document.getElementById("skillReportSearchClearBtn")?.addEventListener("click", 
   renderSkillReportAssignments();
 });
 document.getElementById("skillReportSelectWithStudentsBtn")?.addEventListener("click", () => {
-  els.skillReportAssignmentList?.querySelectorAll(".skill-assignment-row").forEach((row) => {
+  els.skillReportAssignmentList?.querySelectorAll(".skill-assignment-card, .skill-assignment-row").forEach((row) => {
     const cb = row.querySelector("input[type='checkbox']");
     const hasBadge = row.querySelector(".has-students");
     if (cb) {
@@ -1915,7 +1915,7 @@ document.getElementById("skillReportSelectWithStudentsBtn")?.addEventListener("c
   runSkillReportPrecheck();
 });
 document.getElementById("skillReportClearSelectionBtn")?.addEventListener("click", () => {
-  els.skillReportAssignmentList?.querySelectorAll(".skill-assignment-row").forEach((row) => {
+  els.skillReportAssignmentList?.querySelectorAll(".skill-assignment-card, .skill-assignment-row").forEach((row) => {
     const cb = row.querySelector("input[type='checkbox']");
     if (cb) {
       cb.checked = false;

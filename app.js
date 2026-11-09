@@ -4161,7 +4161,7 @@ function renderSkillReportAssignments() {
     const dayLabel = coordinator?.day ? getSkillDayName(coordinator.day) : "";
     const dayDisplay = dayLabel && dayLabel !== "Gün yok" ? ` (${escapeHtml(dayLabel)})` : (coordinator?.day ? ` (${escapeHtml(coordinator.day)})` : "");
     return `
-      <div class="skill-assignment-card skill-assignment-row ${isChecked ? "is-selected" : ""}" data-skill-report-business-row="${escapeHtml(business.id)}">
+      <div class="skill-assignment-card ${isChecked ? "is-selected" : ""}" data-skill-report-business-row="${escapeHtml(business.id)}">
         <div class="skill-assignment-header-row">
           <label class="skill-assignment-check-label">
             <input type="checkbox" value="${escapeHtml(business.id)}" data-skill-report-business ${isChecked ? "checked" : ""} />
@@ -4178,15 +4178,21 @@ function renderSkillReportAssignments() {
           <div class="skill-business-students-drawer" id="skillBusinessStudents_${escapeHtml(business.id)}" style="display: none;">
             <div class="skill-students-title">Öğrenciler (${studentCount}):</div>
             <div class="skill-students-chips">
-              ${students.map((s) => `
+              ${students.map((s) => {
+                const stuNo = escapeHtml(String(s.no || s.studentNo || s.student_no || "-"));
+                const stuName = escapeHtml(String(s.name || s.studentName || s.student_name || s.fullName || "Öğrenci"));
+                const stuClass = (s.className || s.sinif || s.class_name) ? escapeHtml(String(s.className || s.sinif || s.class_name)) : "";
+                const stuField = (s.field || s.alan || s.branch) ? escapeHtml(String(s.field || s.alan || s.branch)) : "";
+                const stuDays = (s.days || s.schoolDays || s.school_days) ? escapeHtml(String(s.days || s.schoolDays || s.school_days)) : "";
+                return `
                 <div class="skill-student-chip">
-                  <span class="stu-badge-no">#${escapeHtml(s.no || s.studentNo || "-")}</span>
-                  <strong class="stu-badge-name">${escapeHtml(s.name || s.studentName || s.fullName || "Öğrenci")}</strong>
-                  ${(s.className || s.sinif) ? `<span class="stu-badge-class">${escapeHtml(s.className || s.sinif)}</span>` : ""}
-                  ${(s.field || s.alan) ? `<span class="stu-badge-field">${escapeHtml(s.field || s.alan)}</span>` : ""}
-                  ${(s.days || s.schoolDays) ? `<span class="stu-badge-days" title="Okul Günleri">📅 ${escapeHtml(s.days || s.schoolDays)}</span>` : ""}
-                </div>
-              `).join("")}
+                  <span class="stu-badge-no">#${stuNo}</span>
+                  <strong class="stu-badge-name">${stuName}</strong>
+                  ${stuClass ? `<span class="stu-badge-class">${stuClass}</span>` : ""}
+                  ${stuField ? `<span class="stu-badge-field">${stuField}</span>` : ""}
+                  ${stuDays ? `<span class="stu-badge-days" title="Okul Günleri">📅 ${stuDays}</span>` : ""}
+                </div>`;
+              }).join("")}
             </div>
           </div>
         ` : ""}
@@ -4221,9 +4227,10 @@ window.toggleSkillBusinessStudents = function(businessId, event) {
 
   if (!drawer) return;
 
-  const isCurrentlyOpen = drawer.classList.contains("is-open") || (drawer.style.display !== "none" && drawer.style.display !== "");
+  const isCurrentlyOpen = (card && card.classList.contains("is-open")) || drawer.classList.contains("is-open") || (drawer.style.display !== "none" && drawer.style.display !== "");
   const nextOpen = !isCurrentlyOpen;
 
+  if (card) card.classList.toggle("is-open", nextOpen);
   drawer.classList.toggle("is-open", nextOpen);
   drawer.style.setProperty("display", nextOpen ? "block" : "none", "important");
 
@@ -4615,7 +4622,7 @@ function runSkillReportPrecheck() {
   const studentCount = skillState.students.filter((student) => ids.includes(student.businessId)).length;
 
   // Keep row styles in sync with checked state
-  els.skillReportAssignmentList?.querySelectorAll(".skill-assignment-row").forEach((row) => {
+  els.skillReportAssignmentList?.querySelectorAll(".skill-assignment-card, .skill-assignment-row").forEach((row) => {
     const cb = row.querySelector("input[type='checkbox']");
     row.classList.toggle("is-selected", Boolean(cb?.checked));
   });
