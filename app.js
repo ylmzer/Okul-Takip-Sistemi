@@ -4006,6 +4006,52 @@ function renderSkillModule() {
   setSkillView(skillState.activeView || "dashboard");
 }
 
+function handleSkillQuickAction(action, event) {
+  if (event && typeof event.stopPropagation === "function") {
+    event.stopPropagation();
+  }
+  if (action === "add-student") {
+    setSkillView("students");
+    setTimeout(() => {
+      if (typeof openSkillStudentDrawer === "function") {
+        openSkillStudentDrawer(null);
+      } else if (typeof window.openSkillStudentDrawer === "function") {
+        window.openSkillStudentDrawer(null);
+      }
+    }, 100);
+  } else if (action === "add-business") {
+    setSkillView("businesses");
+    setTimeout(() => {
+      if (typeof openSkillBusinessDrawer === "function") {
+        openSkillBusinessDrawer(null);
+      } else if (typeof window.openSkillBusinessDrawer === "function") {
+        window.openSkillBusinessDrawer(null);
+      }
+    }, 100);
+  } else if (action === "add-coordinator") {
+    setSkillView("coordinators");
+    setTimeout(() => {
+      if (typeof openSkillCoordinatorDrawer === "function") {
+        openSkillCoordinatorDrawer(null);
+      } else if (typeof window.openSkillCoordinatorDrawer === "function") {
+        window.openSkillCoordinatorDrawer(null);
+      }
+    }, 100);
+  } else if (action === "reports") {
+    setSkillView("reports");
+  } else if (action === "import-data") {
+    if (typeof window.openSkillImportDialog === "function") {
+      window.openSkillImportDialog();
+    } else {
+      const dialog = document.getElementById("skillImportDialog");
+      if (dialog && typeof dialog.showModal === "function") {
+        dialog.showModal();
+      }
+    }
+  }
+}
+window.handleSkillQuickAction = handleSkillQuickAction;
+
 function renderSkillStats() {
   if (!els.skillStatGrid) return;
   const activeStudents = skillState.students.filter((student) => student.active !== false).length;
@@ -4043,7 +4089,7 @@ function renderSkillStats() {
           ${passiveStudents > 0 ? `<small class="stat-dot is-passive">${passiveStudents} pasif</small>` : `<small class="stat-dot is-good">0 pasif</small>`}
         </div>
       </div>
-      <button type="button" class="stat-action-btn action-student" data-skill-action="add-student" onclick="event.stopPropagation()" title="Yeni öğrenci kaydı oluştur">
+      <button type="button" class="stat-action-btn action-student" onclick="handleSkillQuickAction('add-student', event)" title="Yeni öğrenci kaydı oluştur">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span>Öğrenci Ekle</span>
       </button>
@@ -4060,7 +4106,7 @@ function renderSkillStats() {
         <strong class="stat-value">${businessCount}</strong>
         <small class="stat-sub">Kayıtlı aktif işletme</small>
       </div>
-      <button type="button" class="stat-action-btn action-business" data-skill-action="add-business" onclick="event.stopPropagation()" title="Yeni işletme kaydı oluştur">
+      <button type="button" class="stat-action-btn action-business" onclick="handleSkillQuickAction('add-business', event)" title="Yeni işletme kaydı oluştur">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span>İşletme Ekle</span>
       </button>
@@ -4077,7 +4123,7 @@ function renderSkillStats() {
         <strong class="stat-value">${coordinatorCount}</strong>
         <small class="stat-sub">Görevli öğretmen</small>
       </div>
-      <button type="button" class="stat-action-btn action-coord" data-skill-action="add-coordinator" onclick="event.stopPropagation()" title="İşletmeye koordinatör öğretmen ve gün ata">
+      <button type="button" class="stat-action-btn action-coord" onclick="handleSkillQuickAction('add-coordinator', event)" title="İşletmeye koordinatör öğretmen ve gün ata">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
         <span>Koordinatör Ata</span>
       </button>
@@ -4094,7 +4140,7 @@ function renderSkillStats() {
         <strong class="stat-value">${fieldCount}</strong>
         <small class="stat-sub">Tanımlı alan / dal</small>
       </div>
-      <button type="button" class="stat-action-btn action-report" data-skill-view-target="reports" onclick="event.stopPropagation()" title="Devamsızlık, rehberlik ve ücret raporlarını aç">
+      <button type="button" class="stat-action-btn action-report" onclick="handleSkillQuickAction('reports', event)" title="Devamsızlık, rehberlik ve ücret raporlarını aç">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         <span>Rapor Al</span>
       </button>
@@ -4111,7 +4157,7 @@ function renderSkillStats() {
         <h3 class="stat-holiday-title" title="${escapeHtml(nextHoliday?.name || "Tatil kaydı yok")}">${escapeHtml(nextHoliday?.name || "Tatil kaydı yok")}</h3>
         <small class="stat-sub">${holidaySub}</small>
       </div>
-      <button type="button" class="stat-action-btn action-import" data-skill-action="import-data" onclick="event.stopPropagation()" title="SQLite veya Excel dosyası içe aktar">
+      <button type="button" class="stat-action-btn action-import" onclick="handleSkillQuickAction('import-data', event)" title="SQLite veya Excel dosyası içe aktar">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         <span>Veri Aktar</span>
       </button>
