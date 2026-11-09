@@ -1940,6 +1940,7 @@ if (els.skillReportAssignmentList) {
   els.skillReportAssignmentList.addEventListener("click", (e) => {
     const toggleBtn = e.target.closest("[data-skill-toggle-students]");
     if (!toggleBtn) return;
+    if (e.__skillHandled) return;
     const businessId = toggleBtn.getAttribute("data-skill-toggle-students");
     if (typeof window.toggleSkillBusinessStudents === "function") {
       window.toggleSkillBusinessStudents(businessId, e);

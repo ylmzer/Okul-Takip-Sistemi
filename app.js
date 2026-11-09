@@ -4154,28 +4154,28 @@ function renderSkillReportAssignments() {
   }
 
   els.skillReportAssignmentList.innerHTML = rows.length ? rows.map((business) => {
-    const students = skillState.students.filter((student) => student.businessId === business.id);
-    const coordinator = skillState.coordinators.find((item) => item.businessId === business.id);
+    const students = skillState.students.filter((student) => String(student.businessId || "").trim() === String(business.id || "").trim());
+    const coordinator = skillState.coordinators.find((item) => String(item.businessId || "").trim() === String(business.id || "").trim());
     const isChecked = prevChecked.has(business.id);
     const studentCount = students.length;
     const dayLabel = coordinator?.day ? getSkillDayName(coordinator.day) : "";
     const dayDisplay = dayLabel && dayLabel !== "Gün yok" ? ` (${escapeHtml(dayLabel)})` : (coordinator?.day ? ` (${escapeHtml(coordinator.day)})` : "");
     return `
-      <div class="skill-assignment-card skill-assignment-row ${isChecked ? "is-selected" : ""}" data-skill-report-business-row="${business.id}">
+      <div class="skill-assignment-card skill-assignment-row ${isChecked ? "is-selected" : ""}" data-skill-report-business-row="${escapeHtml(business.id)}">
         <div class="skill-assignment-header-row">
           <label class="skill-assignment-check-label">
-            <input type="checkbox" value="${business.id}" data-skill-report-business ${isChecked ? "checked" : ""} />
+            <input type="checkbox" value="${escapeHtml(business.id)}" data-skill-report-business ${isChecked ? "checked" : ""} />
             <div class="skill-assignment-main">
               <strong class="skill-assignment-name">${escapeHtml(business.name)}</strong>
               <span class="skill-assignment-sub">Koordinatör: ${escapeHtml(coordinator?.teacher || "Atanmadı")}${dayDisplay}</span>
             </div>
           </label>
-          <button type="button" class="skill-assignment-badge ${studentCount > 0 ? "has-students" : "no-students"}" data-skill-toggle-students="${business.id}" onclick="toggleSkillBusinessStudents('${business.id}', event)" title="${studentCount > 0 ? "Öğrencileri göster / gizle" : "Kayıtlı öğrenci yok"}">
+          <button type="button" class="skill-assignment-badge ${studentCount > 0 ? "has-students" : "no-students"}" data-skill-toggle-students="${escapeHtml(business.id)}" onclick="toggleSkillBusinessStudents('${escapeHtml(business.id)}', event)" title="${studentCount > 0 ? "Öğrencileri göster / gizle" : "Kayıtlı öğrenci yok"}">
             ${studentCount > 0 ? `👥 ${studentCount} Öğrenci ▾` : "Boş"}
           </button>
         </div>
         ${studentCount > 0 ? `
-          <div class="skill-business-students-drawer" id="skillBusinessStudents_${business.id}" style="display: none;">
+          <div class="skill-business-students-drawer" id="skillBusinessStudents_${escapeHtml(business.id)}" style="display: none;">
             <div class="skill-students-title">Öğrenciler (${studentCount}):</div>
             <div class="skill-students-chips">
               ${students.map((s) => `
@@ -4200,27 +4200,38 @@ function renderSkillReportAssignments() {
 let _lastSkillDrawerToggleTime = 0;
 let _lastSkillDrawerToggleId = "";
 window.toggleSkillBusinessStudents = function(businessId, event) {
-  const now = Date.now();
-  if (businessId === _lastSkillDrawerToggleId && now - _lastSkillDrawerToggleTime < 200) {
-    return;
-  }
-  _lastSkillDrawerToggleTime = now;
-  _lastSkillDrawerToggleId = businessId;
-
   if (event) {
+    if (event.__skillHandled) return;
+    event.__skillHandled = true;
     if (typeof event.preventDefault === "function") event.preventDefault();
     if (typeof event.stopPropagation === "function") event.stopPropagation();
   }
-  const drawer = document.getElementById(`skillBusinessStudents_${businessId}`);
-  const toggleBtn = document.querySelector(`[data-skill-toggle-students="${businessId}"]`);
+
+  const now = Date.now();
+  if (businessId && businessId === _lastSkillDrawerToggleId && now - _lastSkillDrawerToggleTime < 180) {
+    return;
+  }
+  _lastSkillDrawerToggleTime = now;
+  _lastSkillDrawerToggleId = businessId || "";
+
+  const trigger = event?.currentTarget || event?.target;
+  const card = trigger ? trigger.closest('.skill-assignment-card') : (businessId ? document.querySelector(`[data-skill-report-business-row="${businessId}"]`) : null);
+  const drawer = card ? card.querySelector('.skill-business-students-drawer') : (businessId ? document.getElementById(`skillBusinessStudents_${businessId}`) : null);
+  const toggleBtn = card ? (card.querySelector('[data-skill-toggle-students]') || trigger?.closest('[data-skill-toggle-students]')) : (businessId ? document.querySelector(`[data-skill-toggle-students="${businessId}"]`) : null);
+
   if (!drawer) return;
-  const isHidden = drawer.style.display === "none" || !drawer.style.display;
-  drawer.style.display = isHidden ? "block" : "none";
+
+  const isCurrentlyOpen = drawer.classList.contains("is-open") || (drawer.style.display !== "none" && drawer.style.display !== "");
+  const nextOpen = !isCurrentlyOpen;
+
+  drawer.classList.toggle("is-open", nextOpen);
+  drawer.style.setProperty("display", nextOpen ? "block" : "none", "important");
+
   if (toggleBtn) {
-    toggleBtn.classList.toggle("is-open", isHidden);
+    toggleBtn.classList.toggle("is-open", nextOpen);
     const countMatch = toggleBtn.textContent.match(/\d+/);
     const count = countMatch ? countMatch[0] : "";
-    const arrow = isHidden ? "▴" : "▾";
+    const arrow = nextOpen ? "▴" : "▾";
     toggleBtn.textContent = count ? `👥 ${count} Öğrenci ${arrow}` : `Öğrenciler ${arrow}`;
   }
 };
