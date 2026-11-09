@@ -1968,10 +1968,17 @@ if (els.skillReportMobileSelect) {
 }
 if (els.skillReportMonthSelect) {
   els.skillReportMonthSelect.addEventListener("change", () => {
-    setCheckedSkillReportRange("month");
-    syncSkillReportMonthDates();
-    setSkillReportDateInputsEnabled(false);
-    runSkillReportPrecheck();
+    skillReportMonth = els.skillReportMonthSelect.value;
+    const currentRange = getCheckedSkillReportRange();
+    if (currentRange === "week") {
+      syncSkillReportRange();
+    } else if (currentRange === "month") {
+      syncSkillReportMonthDates();
+      setSkillReportDateInputsEnabled(false);
+      runSkillReportPrecheck();
+    } else {
+      runSkillReportPrecheck();
+    }
   });
 }
 if (els.skillReportPrevMonthBtn) els.skillReportPrevMonthBtn.addEventListener("click", () => moveSkillReportMonth(-1));

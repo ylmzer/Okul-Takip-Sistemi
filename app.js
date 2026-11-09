@@ -4278,30 +4278,29 @@ function syncSkillReportRange() {
   const range = getCheckedSkillReportRange();
   if (range === "week") {
     const today = new Date();
-    const week = getSkillWeekRange(today);
+    const currentYearMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+    const activeMonth = els.skillReportMonthSelect?.value || skillReportMonth || currentYearMonth;
+    let week;
+    if (activeMonth === currentYearMonth) {
+      week = getSkillWeekRange(today);
+    } else {
+      const [y, m] = activeMonth.split("-").map(Number);
+      const d = new Date(y, m - 1, 1);
+      const day = d.getDay() || 7;
+      const start = new Date(d);
+      if (day > 1) {
+        start.setDate(start.getDate() + (8 - day));
+      }
+      const end = new Date(start);
+      end.setDate(start.getDate() + 6);
+      week = { startDate: toSkillIsoDate(start), endDate: toSkillIsoDate(end) };
+    }
     if (els.skillReportStartDate) els.skillReportStartDate.value = week.startDate;
     if (els.skillReportEndDate) els.skillReportEndDate.value = week.endDate;
-    const weekMonth = week.startDate.slice(0, 7);
-    if (els.skillReportMonthSelect) {
-      if (![...els.skillReportMonthSelect.options].some((option) => option.value === weekMonth)) {
-        els.skillReportMonthSelect.add(new Option(today.toLocaleDateString("tr-TR", { month: "long", year: "numeric" }), weekMonth));
-      }
-      els.skillReportMonthSelect.value = weekMonth;
-      skillReportMonth = weekMonth;
-    }
     setSkillReportDateInputsEnabled(false);
   } else if (range === "month") {
     if (els.skillReportMonthSelect?.value) {
       skillReportMonth = els.skillReportMonthSelect.value;
-    } else {
-      const today = new Date();
-      skillReportMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
-      if (els.skillReportMonthSelect) {
-        if (![...els.skillReportMonthSelect.options].some((option) => option.value === skillReportMonth)) {
-          els.skillReportMonthSelect.add(new Option(today.toLocaleDateString("tr-TR", { month: "long", year: "numeric" }), skillReportMonth));
-        }
-        els.skillReportMonthSelect.value = skillReportMonth;
-      }
     }
     syncSkillReportMonthDates();
     setSkillReportDateInputsEnabled(false);
@@ -4321,10 +4320,16 @@ function moveSkillReportMonth(offset) {
     }
     els.skillReportMonthSelect.value = skillReportMonth;
   }
-  setCheckedSkillReportRange("month");
-  syncSkillReportMonthDates();
-  setSkillReportDateInputsEnabled(false);
-  runSkillReportPrecheck();
+  const currentRange = getCheckedSkillReportRange();
+  if (currentRange === "week") {
+    syncSkillReportRange();
+  } else if (currentRange === "month") {
+    syncSkillReportMonthDates();
+    setSkillReportDateInputsEnabled(false);
+    runSkillReportPrecheck();
+  } else {
+    runSkillReportPrecheck();
+  }
 }
 
 function getSelectedReportBusinessIds() {
