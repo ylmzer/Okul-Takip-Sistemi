@@ -4709,8 +4709,9 @@ function setSkillReportType(type) {
     els.skillAbsenceEntryBtn.style.display = activeSkillReportType === "absence" ? "" : "none";
   }
   if (els.skillReportSymbolOptions) {
-    els.skillReportSymbolOptions.hidden = activeSkillReportType !== "absence";
-    els.skillReportSymbolOptions.style.display = activeSkillReportType === "absence" ? "" : "none";
+    const isAbsence = activeSkillReportType === "absence";
+    els.skillReportSymbolOptions.hidden = !isAbsence;
+    els.skillReportSymbolOptions.style.setProperty("display", isAbsence ? "" : "none", "important");
   }
   if (els.skillMonthlyOptions) {
     els.skillMonthlyOptions.hidden = activeSkillReportType !== "monthly";
