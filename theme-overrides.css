@@ -9547,11 +9547,16 @@ body.skill-mode .skill-btn-delete:hover {
    ======================================================== */
 
 /* 1. Birleşik KPI Metrik & Hızlı İşlem Kartları */
+body.skill-mode .skill-view[data-skill-panel="dashboard"] {
+  padding-top: 6px !important;
+}
+
 body.skill-mode .skill-stat-grid {
   display: grid !important;
   grid-template-columns: repeat(5, minmax(140px, 1fr)) !important;
   gap: 12px !important;
   margin-bottom: 14px !important;
+  padding-top: 2px !important;
 }
 
 body.skill-mode .skill-stat-card {
@@ -9621,11 +9626,11 @@ body.skill-mode .stat-icon-pill svg {
   height: 15px !important;
 }
 
-body.skill-mode .icon-student { background: rgba(16, 185, 129, 0.15) !important; color: #34d399 !important; }
-body.skill-mode .icon-business { background: rgba(14, 165, 233, 0.15) !important; color: #38bdf8 !important; }
-body.skill-mode .icon-field { background: rgba(168, 85, 247, 0.15) !important; color: #c084fc !important; }
-body.skill-mode .icon-coord { background: rgba(245, 158, 11, 0.15) !important; color: #fbbf24 !important; }
-body.skill-mode .icon-holiday { background: rgba(244, 63, 94, 0.15) !important; color: #fb7185 !important; }
+body.skill-mode .skill-stat-card .stat-icon-pill.icon-student { background: rgba(16, 185, 129, 0.15) !important; color: #34d399 !important; }
+body.skill-mode .skill-stat-card .stat-icon-pill.icon-business { background: rgba(14, 165, 233, 0.15) !important; color: #38bdf8 !important; }
+body.skill-mode .skill-stat-card .stat-icon-pill.icon-field { background: rgba(168, 85, 247, 0.15) !important; color: #c084fc !important; }
+body.skill-mode .skill-stat-card .stat-icon-pill.icon-coord { background: rgba(245, 158, 11, 0.15) !important; color: #fbbf24 !important; }
+body.skill-mode .skill-stat-card .stat-icon-pill.icon-holiday { background: rgba(244, 63, 94, 0.15) !important; color: #fb7185 !important; }
 
 body.skill-mode .stat-card-mid {
   display: flex !important;
@@ -9725,6 +9730,15 @@ body.skill-mode .stat-action-btn svg {
   width: 13px !important;
   height: 13px !important;
   flex-shrink: 0 !important;
+  color: inherit !important;
+}
+
+body.skill-mode .skill-stat-card .stat-action-btn span,
+body.dark-mode .skill-stat-card .stat-action-btn span {
+  color: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  line-height: 1 !important;
 }
 
 /* Öğrenci Ekle Butonu */
