@@ -2933,10 +2933,12 @@ document.getElementById("skillTeacherFilterResetBtn")?.addEventListener("click",
 });
 
 
-// Dashboard Hızlı İşlemler Delegated Handler
+// Dashboard Hızlı İşlemler & Aksiyonlu Metrik Kartları Delegated Handler
+window.openSkillImportDialog = openSkillImportDialog;
 document.addEventListener("click", (e) => {
-  const btn = e.target.closest(".skill-quick-grid button");
+  const btn = e.target.closest(".stat-action-btn, .skill-quick-grid button");
   if (!btn) return;
+  e.stopPropagation();
   const action = btn.dataset.skillAction;
   const target = btn.dataset.skillViewTarget;
 
@@ -2949,6 +2951,8 @@ document.addEventListener("click", (e) => {
   } else if (action === "add-coordinator") {
     setSkillView("coordinators");
     setTimeout(() => { if (typeof openSkillCoordinatorDrawer === "function") openSkillCoordinatorDrawer(); }, 120);
+  } else if (action === "import-data") {
+    if (typeof openSkillImportDialog === "function") openSkillImportDialog();
   } else if (target) {
     setSkillView(target);
   }

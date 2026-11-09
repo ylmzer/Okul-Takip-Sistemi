@@ -9546,27 +9546,28 @@ body.skill-mode .skill-btn-delete:hover {
    MODERN DASHBOARD / ANA EKRAN GELİŞTİRMELERİ
    ======================================================== */
 
-/* 1. KPI Stat Kartları */
+/* 1. Birleşik KPI Metrik & Hızlı İşlem Kartları */
 body.skill-mode .skill-stat-grid {
   display: grid !important;
-  grid-template-columns: repeat(5, minmax(130px, 1fr)) !important;
-  gap: 8px !important;
-  margin-bottom: 8px !important;
+  grid-template-columns: repeat(5, minmax(140px, 1fr)) !important;
+  gap: 12px !important;
+  margin-bottom: 14px !important;
 }
 
 body.skill-mode .skill-stat-card {
   display: flex !important;
   flex-direction: column !important;
   justify-content: space-between !important;
-  min-height: 72px !important;
-  padding: 7px 11px !important;
-  border-radius: 8px !important;
+  min-height: 128px !important;
+  padding: 12px 14px !important;
+  border-radius: 10px !important;
   background: rgba(255, 255, 255, 0.03) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   cursor: pointer !important;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
   position: relative !important;
   box-sizing: border-box !important;
+  gap: 6px !important;
 }
 
 body:not(.dark-mode).skill-mode .skill-stat-card {
@@ -9580,22 +9581,22 @@ body.skill-mode .skill-stat-card:hover {
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25) !important;
 }
 
-body.skill-mode .skill-stat-card.stat-student:hover { border-color: rgba(16, 185, 129, 0.6) !important; }
-body.skill-mode .skill-stat-card.stat-business:hover { border-color: rgba(14, 165, 233, 0.6) !important; }
-body.skill-mode .skill-stat-card.stat-field:hover { border-color: rgba(168, 85, 247, 0.6) !important; }
-body.skill-mode .skill-stat-card.stat-coord:hover { border-color: rgba(245, 158, 11, 0.6) !important; }
-body.skill-mode .skill-stat-card.stat-holiday:hover { border-color: rgba(244, 63, 94, 0.6) !important; }
+body.skill-mode .skill-stat-card.stat-student:hover { border-color: rgba(16, 185, 129, 0.55) !important; }
+body.skill-mode .skill-stat-card.stat-business:hover { border-color: rgba(14, 165, 233, 0.55) !important; }
+body.skill-mode .skill-stat-card.stat-field:hover { border-color: rgba(168, 85, 247, 0.55) !important; }
+body.skill-mode .skill-stat-card.stat-coord:hover { border-color: rgba(245, 158, 11, 0.55) !important; }
+body.skill-mode .skill-stat-card.stat-holiday:hover { border-color: rgba(244, 63, 94, 0.55) !important; }
 
 body.skill-mode .stat-card-top {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   width: 100% !important;
-  margin-bottom: 2px !important;
+  margin-bottom: 0 !important;
 }
 
 body.skill-mode .stat-label {
-  font-size: 0.72rem !important;
+  font-size: 0.76rem !important;
   font-weight: 650 !important;
   color: #94a3b8 !important;
   letter-spacing: 0.2px !important;
@@ -9609,15 +9610,15 @@ body.skill-mode .stat-icon-pill {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 24px !important;
-  height: 24px !important;
-  border-radius: 6px !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 7px !important;
   flex-shrink: 0 !important;
 }
 
 body.skill-mode .stat-icon-pill svg {
-  width: 13px !important;
-  height: 13px !important;
+  width: 15px !important;
+  height: 15px !important;
 }
 
 body.skill-mode .icon-student { background: rgba(16, 185, 129, 0.15) !important; color: #34d399 !important; }
@@ -9626,13 +9627,20 @@ body.skill-mode .icon-field { background: rgba(168, 85, 247, 0.15) !important; c
 body.skill-mode .icon-coord { background: rgba(245, 158, 11, 0.15) !important; color: #fbbf24 !important; }
 body.skill-mode .icon-holiday { background: rgba(244, 63, 94, 0.15) !important; color: #fb7185 !important; }
 
+body.skill-mode .stat-card-mid {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  margin: 1px 0 3px !important;
+}
+
 body.skill-mode .stat-value {
-  font-size: 1.35rem !important;
+  font-size: 1.65rem !important;
   font-weight: 850 !important;
   color: #f1f5f9 !important;
   line-height: 1.1 !important;
   letter-spacing: -0.5px !important;
-  margin: 1px 0 !important;
+  margin: 0 !important;
 }
 
 body:not(.dark-mode).skill-mode .stat-value {
@@ -9640,14 +9648,14 @@ body:not(.dark-mode).skill-mode .stat-value {
 }
 
 body.skill-mode .stat-holiday-title {
-  font-size: 0.8rem !important;
+  font-size: 0.92rem !important;
   font-weight: 750 !important;
   color: #f1f5f9 !important;
-  margin: 1px 0 !important;
+  margin: 2px 0 !important;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
-  line-height: 1.2 !important;
+  line-height: 1.25 !important;
 }
 
 body:not(.dark-mode).skill-mode .stat-holiday-title {
@@ -9655,33 +9663,33 @@ body:not(.dark-mode).skill-mode .stat-holiday-title {
 }
 
 body.skill-mode .stat-sub {
-  font-size: 0.67rem !important;
+  font-size: 0.71rem !important;
   color: #64748b !important;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
-  line-height: 1.1 !important;
+  line-height: 1.15 !important;
 }
 
 body.skill-mode .stat-dot-row {
   display: flex !important;
   align-items: center !important;
-  gap: 6px !important;
-  font-size: 0.67rem !important;
-  line-height: 1.1 !important;
+  gap: 8px !important;
+  font-size: 0.71rem !important;
+  line-height: 1.15 !important;
 }
 
 body.skill-mode .stat-dot {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 3px !important;
+  gap: 4px !important;
   color: #94a3b8 !important;
 }
 
 body.skill-mode .stat-dot::before {
   content: "" !important;
-  width: 5px !important;
-  height: 5px !important;
+  width: 6px !important;
+  height: 6px !important;
   border-radius: 50% !important;
   background: #10b981 !important;
 }
@@ -9694,125 +9702,126 @@ body.skill-mode .stat-dot.is-good::before {
   background: #64748b !important;
 }
 
-/* 2. Hızlı İşlemler Paneli */
-body.skill-mode .skill-panel.skill-quick-panel {
-  padding: 8px 12px !important;
-  margin-bottom: 8px !important;
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-radius: 8px !important;
-}
-
-body:not(.dark-mode).skill-mode .skill-panel.skill-quick-panel {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04) !important;
-}
-
-body.skill-mode .skill-panel-title-row {
-  margin-bottom: 6px !important;
-}
-
-body.skill-mode .skill-panel-title-row h2 {
-  font-size: 0.82rem !important;
-  font-weight: 800 !important;
-  color: #e2e8f0 !important;
-  margin: 0 !important;
-}
-
-body:not(.dark-mode).skill-mode .skill-panel-title-row h2 {
-  color: #0f172a !important;
-}
-
-body.skill-mode .skill-quick-grid {
-  display: grid !important;
-  grid-template-columns: repeat(5, minmax(110px, 1fr)) !important;
-  gap: 8px !important;
-}
-
-body.skill-mode .skill-quick-grid button {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 3px !important;
-  padding: 6px 4px !important;
-  border-radius: 8px !important;
-  background: rgba(255, 255, 255, 0.02) !important;
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
-  cursor: pointer !important;
-  transition: all 0.16s ease !important;
-  text-align: center !important;
-  color: #f1f5f9 !important;
-  min-height: 52px !important;
-  box-sizing: border-box !important;
-}
-
-body:not(.dark-mode).skill-mode .skill-quick-grid button {
-  background: #f8fafc !important;
-  border-color: #e2e8f0 !important;
-  color: #0f172a !important;
-}
-
-body.skill-mode .skill-quick-grid button:hover {
-  background: rgba(255, 255, 255, 0.06) !important;
-  border-color: rgba(56, 189, 248, 0.4) !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25) !important;
-}
-
-body:not(.dark-mode).skill-mode .skill-quick-grid button:hover {
-  background: #f1f5f9 !important;
-  border-color: #cbd5e1 !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
-}
-
-body.skill-mode .quick-icon-wrap {
+/* Kart İçi Entegre Hızlı İşlem Butonu (.stat-action-btn) */
+body.skill-mode .stat-action-btn {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 26px !important;
-  height: 26px !important;
+  gap: 6px !important;
+  width: 100% !important;
+  height: 30px !important;
+  padding: 0 10px !important;
+  margin-top: auto !important;
   border-radius: 7px !important;
-  margin-bottom: 0 !important;
-  transition: transform 0.15s ease !important;
-}
-
-body.skill-mode .quick-icon-wrap svg {
-  width: 15px !important;
-  height: 15px !important;
-}
-
-body.skill-mode .skill-quick-grid button:hover .quick-icon-wrap {
-  transform: scale(1.08) !important;
-}
-
-body.skill-mode .quick-btn-student .quick-icon-wrap { background: rgba(16, 185, 129, 0.16) !important; color: #34d399 !important; border: 1px solid rgba(16, 185, 129, 0.3) !important; }
-body.skill-mode .quick-btn-business .quick-icon-wrap { background: rgba(14, 165, 233, 0.16) !important; color: #38bdf8 !important; border: 1px solid rgba(14, 165, 233, 0.3) !important; }
-body.skill-mode .quick-btn-coord .quick-icon-wrap { background: rgba(245, 158, 11, 0.16) !important; color: #fbbf24 !important; border: 1px solid rgba(245, 158, 11, 0.3) !important; }
-body.skill-mode .quick-btn-report .quick-icon-wrap { background: rgba(168, 85, 247, 0.16) !important; color: #c084fc !important; border: 1px solid rgba(168, 85, 247, 0.3) !important; }
-body.skill-mode .quick-btn-import .quick-icon-wrap { background: rgba(45, 212, 191, 0.16) !important; color: #2dd4bf !important; border: 1px solid rgba(45, 212, 191, 0.3) !important; }
-
-body.skill-mode .skill-quick-grid strong {
-  font-size: 0.77rem !important;
+  font-size: 0.75rem !important;
   font-weight: 700 !important;
-  color: #f1f5f9 !important;
-  line-height: 1.1 !important;
+  cursor: pointer !important;
+  transition: all 0.16s ease !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
 }
 
-body:not(.dark-mode).skill-mode .skill-quick-grid strong {
-  color: #0f172a !important;
+body.skill-mode .stat-action-btn svg {
+  width: 13px !important;
+  height: 13px !important;
+  flex-shrink: 0 !important;
 }
 
-body.skill-mode .skill-quick-grid small {
-  display: none !important;
+/* Öğrenci Ekle Butonu */
+body.skill-mode .stat-action-btn.action-student {
+  background: rgba(16, 185, 129, 0.13) !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  color: #34d399 !important;
+}
+body:not(.dark-mode).skill-mode .stat-action-btn.action-student {
+  background: #ecfdf5 !important;
+  border: 1px solid #a7f3d0 !important;
+  color: #059669 !important;
+}
+body.skill-mode .stat-action-btn.action-student:hover {
+  background: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
 }
 
-/* 3. İki Sütunlu Alt Panel (Bildirimler & Haftalık Dağılım) */
+/* İşletme Ekle Butonu */
+body.skill-mode .stat-action-btn.action-business {
+  background: rgba(14, 165, 233, 0.13) !important;
+  border: 1px solid rgba(14, 165, 233, 0.3) !important;
+  color: #38bdf8 !important;
+}
+body:not(.dark-mode).skill-mode .stat-action-btn.action-business {
+  background: #f0f9ff !important;
+  border: 1px solid #bae6fd !important;
+  color: #0284c7 !important;
+}
+body.skill-mode .stat-action-btn.action-business:hover {
+  background: #0ea5e9 !important;
+  border-color: #0ea5e9 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3) !important;
+}
+
+/* Koordinatör Ata Butonu */
+body.skill-mode .stat-action-btn.action-coord {
+  background: rgba(245, 158, 11, 0.13) !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+  color: #fbbf24 !important;
+}
+body:not(.dark-mode).skill-mode .stat-action-btn.action-coord {
+  background: #fffbeb !important;
+  border: 1px solid #fde68a !important;
+  color: #d97706 !important;
+}
+body.skill-mode .stat-action-btn.action-coord:hover {
+  background: #f59e0b !important;
+  border-color: #f59e0b !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3) !important;
+}
+
+/* Rapor Al Butonu */
+body.skill-mode .stat-action-btn.action-report {
+  background: rgba(168, 85, 247, 0.13) !important;
+  border: 1px solid rgba(168, 85, 247, 0.3) !important;
+  color: #c084fc !important;
+}
+body:not(.dark-mode).skill-mode .stat-action-btn.action-report {
+  background: #faf5ff !important;
+  border: 1px solid #e9d5ff !important;
+  color: #7e22ce !important;
+}
+body.skill-mode .stat-action-btn.action-report:hover {
+  background: #9333ea !important;
+  border-color: #9333ea !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3) !important;
+}
+
+/* Veri Aktar Butonu */
+body.skill-mode .stat-action-btn.action-import {
+  background: rgba(45, 212, 191, 0.13) !important;
+  border: 1px solid rgba(45, 212, 191, 0.3) !important;
+  color: #2dd4bf !important;
+}
+body:not(.dark-mode).skill-mode .stat-action-btn.action-import {
+  background: #f0fdfa !important;
+  border: 1px solid #99f6e4 !important;
+  color: #0d9488 !important;
+}
+body.skill-mode .stat-action-btn.action-import:hover {
+  background: #14b8a6 !important;
+  border-color: #14b8a6 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3) !important;
+}
+
+/* 2. İki Sütunlu Alt Panel (Bildirimler & Haftalık Dağılım) */
 body.skill-mode .skill-dashboard-bottom-grid {
   display: grid !important;
   grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr) !important;
-  gap: 10px !important;
+  gap: 12px !important;
 }
 
 @media (max-width: 900px) {
@@ -9823,8 +9832,8 @@ body.skill-mode .skill-dashboard-bottom-grid {
 
 body.skill-mode .skill-notice-panel,
 body.skill-mode .skill-schedule-panel {
-  padding: 10px 14px !important;
-  border-radius: 8px !important;
+  padding: 14px 16px !important;
+  border-radius: 10px !important;
   background: rgba(255, 255, 255, 0.03) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   box-sizing: border-box !important;
@@ -9841,8 +9850,8 @@ body.skill-mode .skill-section-title {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  margin-bottom: 8px !important;
-  padding-bottom: 6px !important;
+  margin-bottom: 10px !important;
+  padding-bottom: 8px !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
 
@@ -9853,28 +9862,28 @@ body:not(.dark-mode).skill-mode .skill-section-title {
 body.skill-mode .skill-title-left {
   display: flex !important;
   align-items: center !important;
-  gap: 7px !important;
+  gap: 8px !important;
 }
 
 body.skill-mode .skill-title-icon {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 24px !important;
-  height: 24px !important;
-  border-radius: 6px !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 7px !important;
 }
 
 body.skill-mode .skill-title-icon svg {
-  width: 14px !important;
-  height: 14px !important;
+  width: 15px !important;
+  height: 15px !important;
 }
 
 body.skill-mode .skill-title-icon.icon-bell { background: rgba(245, 158, 11, 0.15) !important; color: #fbbf24 !important; }
 body.skill-mode .skill-title-icon.icon-cal { background: rgba(14, 165, 233, 0.15) !important; color: #38bdf8 !important; }
 
 body.skill-mode .skill-section-title h2 {
-  font-size: 0.85rem !important;
+  font-size: 0.88rem !important;
   font-weight: 800 !important;
   color: #e2e8f0 !important;
   margin: 0 !important;
@@ -9887,8 +9896,8 @@ body:not(.dark-mode).skill-mode .skill-section-title h2 {
 body.skill-mode .skill-alert-badge {
   display: inline-flex !important;
   align-items: center !important;
-  padding: 1px 6px !important;
-  font-size: 0.7rem !important;
+  padding: 2px 7px !important;
+  font-size: 0.72rem !important;
   font-weight: 700 !important;
   border-radius: 5px !important;
   background: rgba(30, 41, 59, 0.8) !important;
@@ -9912,7 +9921,7 @@ body.skill-mode .skill-alert-badge.is-empty {
 body.skill-mode .skill-alert-list {
   display: flex !important;
   flex-direction: column !important;
-  gap: 6px !important;
+  gap: 8px !important;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
@@ -9922,9 +9931,9 @@ body.skill-mode .skill-alert-list {
 body.skill-mode .skill-alert {
   display: flex !important;
   align-items: center !important;
-  gap: 8px !important;
-  padding: 7px 10px !important;
-  border-radius: 7px !important;
+  gap: 10px !important;
+  padding: 9px 12px !important;
+  border-radius: 8px !important;
   background: rgba(255, 255, 255, 0.02) !important;
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
   transition: all 0.15s ease !important;
@@ -9954,10 +9963,10 @@ body.skill-mode .skill-alert-body {
 
 body.skill-mode .skill-alert-body strong {
   display: block !important;
-  font-size: 0.78rem !important;
+  font-size: 0.8rem !important;
   font-weight: 700 !important;
   color: #f1f5f9 !important;
-  line-height: 1.2 !important;
+  line-height: 1.25 !important;
 }
 
 body:not(.dark-mode).skill-mode .skill-alert-body strong {
@@ -9966,10 +9975,10 @@ body:not(.dark-mode).skill-mode .skill-alert-body strong {
 
 body.skill-mode .skill-alert-body small {
   display: block !important;
-  font-size: 0.7rem !important;
+  font-size: 0.72rem !important;
   color: #94a3b8 !important;
-  margin-top: 1px !important;
-  line-height: 1.25 !important;
+  margin-top: 2px !important;
+  line-height: 1.3 !important;
 }
 
 body:not(.dark-mode).skill-mode .skill-alert-body small {
@@ -9977,11 +9986,11 @@ body:not(.dark-mode).skill-mode .skill-alert-body small {
 }
 
 body.skill-mode .skill-alert button {
-  padding: 3px 8px !important;
-  height: 24px !important;
-  font-size: 0.72rem !important;
+  padding: 4px 10px !important;
+  height: 26px !important;
+  font-size: 0.73rem !important;
   font-weight: 700 !important;
-  border-radius: 5px !important;
+  border-radius: 6px !important;
   background: rgba(14, 165, 233, 0.15) !important;
   border: 1px solid rgba(56, 189, 248, 0.4) !important;
   color: #38bdf8 !important;
@@ -10000,11 +10009,11 @@ body.skill-mode .skill-alert button:hover {
 body.skill-mode .skill-alert-empty-box {
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
-  padding: 10px 12px !important;
+  gap: 12px !important;
+  padding: 13px 15px !important;
   background: rgba(16, 185, 129, 0.08) !important;
   border: 1px solid rgba(16, 185, 129, 0.25) !important;
-  border-radius: 8px !important;
+  border-radius: 9px !important;
 }
 
 body:not(.dark-mode).skill-mode .skill-alert-empty-box {
@@ -10016,13 +10025,13 @@ body.skill-mode .skill-alert-empty-icon {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 28px !important;
-  height: 28px !important;
+  width: 30px !important;
+  height: 30px !important;
   border-radius: 50% !important;
   background: rgba(16, 185, 129, 0.25) !important;
   color: #34d399 !important;
   font-weight: 900 !important;
-  font-size: 0.95rem !important;
+  font-size: 1rem !important;
   flex-shrink: 0 !important;
 }
 
@@ -10033,10 +10042,10 @@ body.skill-mode .skill-alert-empty-content {
 
 body.skill-mode .skill-alert-empty-content strong {
   display: block !important;
-  font-size: 0.8rem !important;
+  font-size: 0.83rem !important;
   font-weight: 750 !important;
   color: #34d399 !important;
-  margin-bottom: 1px !important;
+  margin-bottom: 2px !important;
 }
 
 body:not(.dark-mode).skill-mode .skill-alert-empty-content strong {
@@ -10045,9 +10054,9 @@ body:not(.dark-mode).skill-mode .skill-alert-empty-content strong {
 
 body.skill-mode .skill-alert-empty-content p {
   margin: 0 !important;
-  font-size: 0.72rem !important;
+  font-size: 0.74rem !important;
   color: #94a3b8 !important;
-  line-height: 1.3 !important;
+  line-height: 1.35 !important;
 }
 
 body:not(.dark-mode).skill-mode .skill-alert-empty-content p {
@@ -10055,12 +10064,12 @@ body:not(.dark-mode).skill-mode .skill-alert-empty-content p {
 }
 
 body.skill-mode .skill-alert-empty-btn {
-  padding: 4px 10px !important;
+  padding: 5px 11px !important;
   border-radius: 6px !important;
   background: rgba(16, 185, 129, 0.22) !important;
   border: 1px solid rgba(16, 185, 129, 0.45) !important;
   color: #34d399 !important;
-  font-size: 0.73rem !important;
+  font-size: 0.75rem !important;
   font-weight: 750 !important;
   cursor: pointer !important;
   white-space: nowrap !important;
@@ -10077,15 +10086,15 @@ body.skill-mode .skill-alert-empty-btn:hover {
 body.skill-mode .skill-weekly-schedule-list {
   display: flex !important;
   flex-direction: column !important;
-  gap: 5px !important;
+  gap: 6px !important;
 }
 
 body.skill-mode .skill-schedule-row {
   display: flex !important;
   align-items: center !important;
-  gap: 8px !important;
-  padding: 4px 8px !important;
-  border-radius: 7px !important;
+  gap: 10px !important;
+  padding: 6px 9px !important;
+  border-radius: 8px !important;
   background: rgba(255, 255, 255, 0.02) !important;
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
   cursor: pointer !important;
@@ -10110,7 +10119,7 @@ body:not(.dark-mode).skill-mode .skill-schedule-row:hover {
 
 body.skill-mode .skill-schedule-bar-wrap {
   flex: 1 1 auto !important;
-  height: 6px !important;
+  height: 7px !important;
   background: rgba(255, 255, 255, 0.06) !important;
   border-radius: 999px !important;
   overflow: hidden !important;
@@ -10133,10 +10142,10 @@ body.skill-mode .skill-schedule-bar.day-per { background: #34d399 !important; }
 body.skill-mode .skill-schedule-bar.day-cum { background: #f472b6 !important; }
 
 body.skill-mode .skill-schedule-count {
-  font-size: 0.73rem !important;
+  font-size: 0.76rem !important;
   font-weight: 700 !important;
   color: #cbd5e1 !important;
-  min-width: 62px !important;
+  min-width: 65px !important;
   text-align: right !important;
 }
 
@@ -10146,33 +10155,23 @@ body:not(.dark-mode).skill-mode .skill-schedule-count {
 
 body.skill-mode .skill-schedule-arrow {
   color: #64748b !important;
-  font-size: 0.85rem !important;
+  font-size: 0.92rem !important;
   line-height: 1 !important;
 }
 
 body.skill-mode .skill-schedule-unassigned-note {
-  margin-top: 3px !important;
-  padding: 5px 8px !important;
+  margin-top: 4px !important;
+  padding: 6px 10px !important;
   background: rgba(245, 158, 11, 0.08) !important;
   border: 1px solid rgba(245, 158, 11, 0.28) !important;
-  border-radius: 6px !important;
-  font-size: 0.72rem !important;
+  border-radius: 7px !important;
+  font-size: 0.74rem !important;
   color: #fbbf24 !important;
   cursor: pointer !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   transition: all 0.15s ease !important;
-}
-
-body.skill-mode .skill-schedule-unassigned-note:hover {
-  background: rgba(245, 158, 11, 0.15) !important;
-  border-color: rgba(245, 158, 11, 0.5) !important;
-}
-
-body.skill-mode .skill-unassigned-link {
-  font-weight: 700 !important;
-  text-decoration: underline !important;
 }
 
 body.skill-mode .skill-schedule-unassigned-note:hover {
