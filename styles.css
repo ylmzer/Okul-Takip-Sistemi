@@ -18884,77 +18884,152 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-badge.
 
 /* Öğrenci Çekmecesi / Listesi */
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-business-students-drawer {
-  background: #0a1017 !important;
-  border-top: 1px solid rgba(51, 65, 85, 0.5) !important;
-  padding: 8px 12px 10px 12px !important;
+  background: #090e15 !important;
+  border-top: 1px solid rgba(51, 65, 85, 0.45) !important;
+  padding: 6px 10px 8px 10px !important;
 }
 
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-students-title {
-  font-size: 0.72rem !important;
+  font-size: 0.7rem !important;
   font-weight: 700 !important;
   color: #64748b !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
-  margin-bottom: 6px !important;
+  margin-bottom: 4px !important;
 }
 
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-students-chips {
   display: flex !important;
   flex-direction: column !important;
-  gap: 5px !important;
+  gap: 4px !important;
 }
 
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-student-chip {
   display: flex !important;
   align-items: center !important;
   flex-wrap: wrap !important;
-  gap: 6px 8px !important;
+  gap: 4px 6px !important;
   background: #111a26 !important;
   border: 1px solid rgba(51, 65, 85, 0.45) !important;
-  border-radius: 6px !important;
-  padding: 4px 8px !important;
-  font-size: 0.76rem !important;
+  border-radius: 5px !important;
+  padding: 3px 6px !important;
+  font-size: 0.74rem !important;
 }
 
 body.skill-mode .skill-view[data-skill-panel="reports"] .stu-badge-no {
   background: rgba(56, 189, 248, 0.15) !important;
   color: #38bdf8 !important;
-  padding: 1px 6px !important;
-  border-radius: 4px !important;
+  padding: 1px 5px !important;
+  border-radius: 3px !important;
   font-weight: 700 !important;
-  font-size: 0.72rem !important;
+  font-size: 0.7rem !important;
 }
 
 body.skill-mode .skill-view[data-skill-panel="reports"] .stu-badge-name {
-  color: #f1f5f9 !important;
-  font-weight: 600 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 0.77rem !important;
 }
 
 body.skill-mode .skill-view[data-skill-panel="reports"] .stu-badge-class,
 body.skill-mode .skill-view[data-skill-panel="reports"] .stu-badge-field {
   background: rgba(148, 163, 184, 0.12) !important;
   color: #cbd5e1 !important;
-  padding: 1px 6px !important;
-  border-radius: 4px !important;
-  font-size: 0.72rem !important;
+  padding: 1px 5px !important;
+  border-radius: 3px !important;
+  font-size: 0.7rem !important;
 }
 
 body.skill-mode .skill-view[data-skill-panel="reports"] .stu-badge-days {
   margin-left: auto !important;
   background: rgba(234, 179, 8, 0.12) !important;
   color: #facc15 !important;
-  padding: 1px 6px !important;
-  border-radius: 4px !important;
-  font-size: 0.72rem !important;
+  padding: 1px 5px !important;
+  border-radius: 3px !important;
+  font-size: 0.7rem !important;
   font-weight: 600 !important;
 }
 
 /* Sağ Panel - Rapor Parametreleri */
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-options,
 body.skill-mode .skill-report-options {
   background: #111a26 !important;
   border: 1px solid rgba(51, 65, 85, 0.45) !important;
-  border-radius: 12px !important;
-  padding: 14px !important;
+  border-radius: 10px !important;
+  padding: 8px 10px !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-options-scroll {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 0 !important;
+  scrollbar-width: thin !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-options-scroll::-webkit-scrollbar {
+  width: 3px !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-options-scroll::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25) !important;
+  border-radius: 3px !important;
+}
+
+/* Ay Seçici (◀ Mayıs 2026 ▶) */
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-month-picker,
+body.skill-mode .skill-month-picker {
+  display: grid !important;
+  grid-template-columns: 28px minmax(0, 1fr) 28px !important;
+  align-items: center !important;
+  gap: 4px !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin-bottom: 2px !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-month-picker button,
+body.skill-mode .skill-month-picker button {
+  min-height: 27px !important;
+  height: 27px !important;
+  width: 28px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #0b1118 !important;
+  border: 1px solid rgba(51, 65, 85, 0.5) !important;
+  color: #38bdf8 !important;
+  border-radius: 5px !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  font-size: 0.76rem !important;
+  transition: all 0.15s ease !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-month-picker button:hover {
+  background: rgba(56, 189, 248, 0.15) !important;
+  border-color: #38bdf8 !important;
+  color: #ffffff !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-month-picker select,
+body.skill-mode .skill-month-picker select {
+  min-height: 27px !important;
+  height: 27px !important;
+  background: #0b1118 !important;
+  border: 1px solid rgba(51, 65, 85, 0.5) !important;
+  color: #f1f5f9 !important;
+  border-radius: 5px !important;
+  padding: 0 6px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  width: 100% !important;
 }
 
 /* Segment Pill Bar (Bu Hafta / Bu Ay / Zaman Aralığı) */
@@ -18964,10 +19039,10 @@ body.skill-mode .skill-segment-row {
   grid-template-columns: repeat(3, 1fr) !important;
   background: #0b1118 !important;
   border: 1px solid rgba(51, 65, 85, 0.5) !important;
-  border-radius: 8px !important;
-  padding: 3px !important;
-  gap: 3px !important;
-  margin-bottom: 10px !important;
+  border-radius: 5px !important;
+  padding: 2px !important;
+  gap: 2px !important;
+  margin-bottom: 3px !important;
   width: 100% !important;
   box-sizing: border-box !important;
 }
@@ -19002,9 +19077,9 @@ body.skill-mode .skill-segment-item span {
   justify-content: center !important;
   width: 100% !important;
   height: 100% !important;
-  padding: 7px 4px !important;
-  border-radius: 6px !important;
-  font-size: 0.78rem !important;
+  padding: 4px 2px !important;
+  border-radius: 4px !important;
+  font-size: 0.74rem !important;
   font-weight: 600 !important;
   color: #94a3b8 !important;
   text-align: center !important;
@@ -19027,54 +19102,63 @@ body.skill-mode .skill-segment-item input:checked + span {
   background: #0284c7 !important;
   color: #ffffff !important;
   font-weight: 700 !important;
-  box-shadow: 0 1px 4px rgba(2, 132, 199, 0.4) !important;
+  box-shadow: 0 1px 3px rgba(2, 132, 199, 0.35) !important;
 }
 
 /* Form Satırları (Başlangıç, Bitiş, Her Sayfada) */
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-date-row,
-body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-nup {
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-nup,
+body.skill-mode .skill-date-row,
+body.skill-mode .skill-report-nup {
   display: grid !important;
-  grid-template-columns: 88px minmax(0, 1fr) !important;
+  grid-template-columns: 70px minmax(0, 1fr) !important;
   align-items: center !important;
-  gap: 8px !important;
-  margin-bottom: 7px !important;
+  gap: 6px !important;
+  margin-bottom: 2px !important;
   width: 100% !important;
   box-sizing: border-box !important;
 }
 
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-date-row > span,
-body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-nup > span {
-  font-size: 0.82rem !important;
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-nup > span,
+body.skill-mode .skill-date-row > span,
+body.skill-mode .skill-report-nup > span {
+  font-size: 0.74rem !important;
   font-weight: 600 !important;
   color: #94a3b8 !important;
   white-space: nowrap !important;
 }
 
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-date-row input[type="date"],
-body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-nup select {
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-nup select,
+body.skill-mode .skill-date-row input[type="date"],
+body.skill-mode .skill-report-nup select {
   width: 100% !important;
-  min-height: 36px !important;
-  height: 36px !important;
+  min-height: 27px !important;
+  height: 27px !important;
   background: #0b1118 !important;
   border: 1px solid rgba(51, 65, 85, 0.5) !important;
   color: #f1f5f9 !important;
-  border-radius: 8px !important;
-  padding: 0 10px !important;
-  font-size: 0.86rem !important;
+  border-radius: 5px !important;
+  padding: 0 6px !important;
+  font-size: 0.77rem !important;
   box-sizing: border-box !important;
   transition: border-color 0.15s ease !important;
 }
 
-body.skill-mode .skill-view[data-skill-panel="reports"] .skill-date-row input[type="date"]:disabled {
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-date-row input[type="date"]:disabled,
+body.skill-mode .skill-date-row input[type="date"]:disabled {
   background: rgba(11, 17, 24, 0.6) !important;
   color: #64748b !important;
-  border-color: rgba(51, 65, 85, 0.35) !important;
+  border-color: rgba(51, 65, 85, 0.3) !important;
   cursor: not-allowed !important;
-  opacity: 0.85 !important;
+  opacity: 0.8 !important;
 }
 
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-date-row input[type="date"]:focus,
-body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-nup select:focus {
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-nup select:focus,
+body.skill-mode .skill-date-row input[type="date"]:focus,
+body.skill-mode .skill-report-nup select:focus {
   border-color: #38bdf8 !important;
   outline: none !important;
 }
@@ -19083,19 +19167,19 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-nup select
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-symbol-options,
 body.skill-mode .skill-report-symbol-options {
   display: grid !important;
-  grid-template-columns: 88px minmax(0, 1fr) !important;
+  grid-template-columns: 70px minmax(0, 1fr) !important;
   align-items: center !important;
-  gap: 8px !important;
-  min-height: 36px !important;
-  margin-top: 2px !important;
-  margin-bottom: 7px !important;
+  gap: 6px !important;
+  min-height: 26px !important;
+  margin-top: 1px !important;
+  margin-bottom: 2px !important;
   width: 100% !important;
   box-sizing: border-box !important;
 }
 
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-symbol-options .skill-symbol-title,
 body.skill-mode .skill-report-symbol-options .skill-symbol-title {
-  font-size: 0.82rem !important;
+  font-size: 0.74rem !important;
   font-weight: 600 !important;
   color: #94a3b8 !important;
   white-space: nowrap !important;
@@ -19105,7 +19189,7 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-symbol-chips,
 body.skill-mode .skill-symbol-chips {
   display: flex !important;
   align-items: center !important;
-  gap: 8px !important;
+  gap: 5px !important;
   width: 100% !important;
 }
 
@@ -19114,15 +19198,16 @@ body.skill-mode .skill-chip-checkbox {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 6px !important;
+  gap: 4px !important;
   background: #0b1118 !important;
   border: 1px solid rgba(51, 65, 85, 0.55) !important;
-  border-radius: 6px !important;
-  padding: 5px 8px !important;
+  border-radius: 5px !important;
+  padding: 2px 5px !important;
   cursor: pointer !important;
   margin: 0 !important;
   flex: 1 !important;
-  min-height: 34px !important;
+  min-height: 26px !important;
+  height: 26px !important;
   box-sizing: border-box !important;
   transition: all 0.15s ease !important;
   user-select: none !important;
@@ -19138,19 +19223,19 @@ body.skill-mode .skill-view[data-skill-panel="reports"] .skill-chip-checkbox inp
 body.skill-mode .skill-chip-checkbox input {
   accent-color: #10b981 !important;
   margin: 0 !important;
-  width: 15px !important;
-  height: 15px !important;
+  width: 13px !important;
+  height: 13px !important;
   cursor: pointer !important;
   flex-shrink: 0 !important;
 }
 
 body.skill-mode .skill-view[data-skill-panel="reports"] .skill-chip-checkbox .chip-label,
 body.skill-mode .skill-chip-checkbox .chip-label {
-  font-size: 0.77rem !important;
+  font-size: 0.72rem !important;
   color: #cbd5e1 !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 3px !important;
+  gap: 2px !important;
   white-space: nowrap !important;
 }
 
@@ -19161,40 +19246,53 @@ body.skill-mode .skill-chip-checkbox .chip-label strong {
 }
 
 /* Sağ Panel Aksiyon Butonları */
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-options-actions,
 body.skill-mode .skill-report-options-actions {
   display: flex !important;
   flex-direction: column !important;
-  gap: 8px !important;
-  margin-top: 14px !important;
-  padding-top: 12px !important;
-  border-top: 1px solid rgba(51, 65, 85, 0.4) !important;
+  gap: 4px !important;
+  margin-top: 4px !important;
+  padding-top: 4px !important;
+  border-top: 1px solid rgba(51, 65, 85, 0.35) !important;
+}
+
+body.skill-mode #skillAbsenceEntryBtn {
+  min-height: 28px !important;
+  height: 28px !important;
+  font-size: 0.78rem !important;
+  padding: 3px 8px !important;
+  border-radius: 5px !important;
 }
 
 body.skill-mode #skillReportPreviewBtn {
   font-weight: 700 !important;
-  padding: 10px 14px !important;
-  font-size: 0.9rem !important;
+  padding: 5px 10px !important;
+  min-height: 33px !important;
+  height: 33px !important;
+  font-size: 0.83rem !important;
   background: #059669 !important;
   border-color: #10b981 !important;
   color: #ffffff !important;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   cursor: pointer !important;
   transition: all 0.15s ease !important;
 }
 
 body.skill-mode #skillReportPreviewBtn:hover {
   background: #10b981 !important;
-  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.4) !important;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4) !important;
 }
 
 body.skill-mode #skillReportDirectPrintBtn {
   background: rgba(30, 41, 59, 0.7) !important;
   border: 1px solid rgba(56, 189, 248, 0.4) !important;
   color: #38bdf8 !important;
-  border-radius: 8px !important;
-  font-size: 0.84rem !important;
+  border-radius: 5px !important;
+  font-size: 0.78rem !important;
   font-weight: 600 !important;
-  padding: 8px 12px !important;
+  min-height: 28px !important;
+  height: 28px !important;
+  padding: 3px 8px !important;
   cursor: pointer !important;
   transition: all 0.15s ease !important;
 }
@@ -19204,4 +19302,5 @@ body.skill-mode #skillReportDirectPrintBtn:hover {
   border-color: #38bdf8 !important;
   color: #ffffff !important;
 }
+
 

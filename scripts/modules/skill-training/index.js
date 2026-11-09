@@ -1940,18 +1940,10 @@ if (els.skillReportAssignmentList) {
   els.skillReportAssignmentList.addEventListener("click", (e) => {
     const toggleBtn = e.target.closest("[data-skill-toggle-students]");
     if (!toggleBtn) return;
-    e.preventDefault();
-    e.stopPropagation();
     const businessId = toggleBtn.getAttribute("data-skill-toggle-students");
-    const drawer = document.getElementById(`skillBusinessStudents_${businessId}`);
-    if (!drawer) return;
-    const isHidden = drawer.style.display === "none" || !drawer.style.display;
-    drawer.style.display = isHidden ? "block" : "none";
-    toggleBtn.classList.toggle("is-open", isHidden);
-    const countMatch = toggleBtn.textContent.match(/\d+/);
-    const count = countMatch ? countMatch[0] : "";
-    const arrow = isHidden ? "▴" : "▾";
-    toggleBtn.textContent = count ? `👥 ${count} Öğrenci ${arrow}` : `Öğrenciler ${arrow}`;
+    if (typeof window.toggleSkillBusinessStudents === "function") {
+      window.toggleSkillBusinessStudents(businessId, e);
+    }
   });
 }
 document.getElementById("skillReportDirectPrintBtn")?.addEventListener("click", () => {

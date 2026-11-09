@@ -3933,13 +3933,28 @@ function deleteAllSkillHolidays() {
 }
 
 function getSkillDayName(day) {
-  return {
+  if (day === undefined || day === null || day === "") return "";
+  const str = String(day).trim();
+  const map = {
     "1": "Pazartesi",
     "2": "Salı",
     "3": "Çarşamba",
     "4": "Perşembe",
-    "5": "Cuma"
-  }[day] || "Gün yok";
+    "5": "Cuma",
+    "6": "Cumartesi",
+    "7": "Pazar",
+    "0": "Pazar"
+  };
+  if (map[str]) return map[str];
+  const trLower = str.toLocaleLowerCase("tr-TR");
+  if (trLower.includes("pazar") && !trLower.includes("pazartesi")) return "Pazar";
+  if (trLower.includes("pazartesi")) return "Pazartesi";
+  if (trLower.includes("salı") || trLower.includes("sali")) return "Salı";
+  if (trLower.includes("çarşamba") || trLower.includes("carsamba")) return "Çarşamba";
+  if (trLower.includes("perşembe") || trLower.includes("persembe")) return "Perşembe";
+  if (trLower.includes("cuma")) return "Cuma";
+  if (trLower.includes("cumartesi")) return "Cumartesi";
+  return str;
 }
 
 function setSkillView(view) {
@@ -4143,6 +4158,8 @@ function renderSkillReportAssignments() {
     const coordinator = skillState.coordinators.find((item) => item.businessId === business.id);
     const isChecked = prevChecked.has(business.id);
     const studentCount = students.length;
+    const dayLabel = coordinator?.day ? getSkillDayName(coordinator.day) : "";
+    const dayDisplay = dayLabel && dayLabel !== "Gün yok" ? ` (${escapeHtml(dayLabel)})` : (coordinator?.day ? ` (${escapeHtml(coordinator.day)})` : "");
     return `
       <div class="skill-assignment-card skill-assignment-row ${isChecked ? "is-selected" : ""}" data-skill-report-business-row="${business.id}">
         <div class="skill-assignment-header-row">
@@ -4150,24 +4167,24 @@ function renderSkillReportAssignments() {
             <input type="checkbox" value="${business.id}" data-skill-report-business ${isChecked ? "checked" : ""} />
             <div class="skill-assignment-main">
               <strong class="skill-assignment-name">${escapeHtml(business.name)}</strong>
-              <span class="skill-assignment-sub">Koordinatör: ${escapeHtml(coordinator?.teacher || "Atanmadı")}${coordinator?.day ? ` (${escapeHtml(coordinator.day)})` : ""}</span>
+              <span class="skill-assignment-sub">Koordinatör: ${escapeHtml(coordinator?.teacher || "Atanmadı")}${dayDisplay}</span>
             </div>
           </label>
-          <button type="button" class="skill-assignment-badge ${studentCount > 0 ? "has-students" : "no-students"}" data-skill-toggle-students="${business.id}" title="${studentCount > 0 ? "Öğrencileri göster / gizle" : "Kayıtlı öğrenci yok"}">
+          <button type="button" class="skill-assignment-badge ${studentCount > 0 ? "has-students" : "no-students"}" data-skill-toggle-students="${business.id}" onclick="toggleSkillBusinessStudents('${business.id}', event)" title="${studentCount > 0 ? "Öğrencileri göster / gizle" : "Kayıtlı öğrenci yok"}">
             ${studentCount > 0 ? `👥 ${studentCount} Öğrenci ▾` : "Boş"}
           </button>
         </div>
         ${studentCount > 0 ? `
           <div class="skill-business-students-drawer" id="skillBusinessStudents_${business.id}" style="display: none;">
-            <div class="skill-students-title">İşletmedeki Öğrenciler (${studentCount}):</div>
+            <div class="skill-students-title">Öğrenciler (${studentCount}):</div>
             <div class="skill-students-chips">
               ${students.map((s) => `
                 <div class="skill-student-chip">
-                  <span class="stu-badge-no">#${escapeHtml(s.no || "-")}</span>
-                  <span class="stu-badge-name">${escapeHtml(s.name || "Öğrenci")}</span>
-                  ${s.className ? `<span class="stu-badge-class">${escapeHtml(s.className)}</span>` : ""}
-                  ${s.field ? `<span class="stu-badge-field">${escapeHtml(s.field)}</span>` : ""}
-                  ${s.days ? `<span class="stu-badge-days" title="Okul Günleri">📅 ${escapeHtml(s.days)}</span>` : ""}
+                  <span class="stu-badge-no">#${escapeHtml(s.no || s.studentNo || "-")}</span>
+                  <strong class="stu-badge-name">${escapeHtml(s.name || s.studentName || s.fullName || "Öğrenci")}</strong>
+                  ${(s.className || s.sinif) ? `<span class="stu-badge-class">${escapeHtml(s.className || s.sinif)}</span>` : ""}
+                  ${(s.field || s.alan) ? `<span class="stu-badge-field">${escapeHtml(s.field || s.alan)}</span>` : ""}
+                  ${(s.days || s.schoolDays) ? `<span class="stu-badge-days" title="Okul Günleri">📅 ${escapeHtml(s.days || s.schoolDays)}</span>` : ""}
                 </div>
               `).join("")}
             </div>
@@ -4179,6 +4196,34 @@ function renderSkillReportAssignments() {
 
   runSkillReportPrecheck();
 }
+
+let _lastSkillDrawerToggleTime = 0;
+let _lastSkillDrawerToggleId = "";
+window.toggleSkillBusinessStudents = function(businessId, event) {
+  const now = Date.now();
+  if (businessId === _lastSkillDrawerToggleId && now - _lastSkillDrawerToggleTime < 200) {
+    return;
+  }
+  _lastSkillDrawerToggleTime = now;
+  _lastSkillDrawerToggleId = businessId;
+
+  if (event) {
+    if (typeof event.preventDefault === "function") event.preventDefault();
+    if (typeof event.stopPropagation === "function") event.stopPropagation();
+  }
+  const drawer = document.getElementById(`skillBusinessStudents_${businessId}`);
+  const toggleBtn = document.querySelector(`[data-skill-toggle-students="${businessId}"]`);
+  if (!drawer) return;
+  const isHidden = drawer.style.display === "none" || !drawer.style.display;
+  drawer.style.display = isHidden ? "block" : "none";
+  if (toggleBtn) {
+    toggleBtn.classList.toggle("is-open", isHidden);
+    const countMatch = toggleBtn.textContent.match(/\d+/);
+    const count = countMatch ? countMatch[0] : "";
+    const arrow = isHidden ? "▴" : "▾";
+    toggleBtn.textContent = count ? `👥 ${count} Öğrenci ${arrow}` : `Öğrenciler ${arrow}`;
+  }
+};
 
 function renderSkillReportControls() {
   if (els.skillReportSchoolFilter) {
