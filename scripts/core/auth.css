@@ -421,17 +421,33 @@ body.module-mode .module-card .module-icon::after {
   display: none !important;
 }
 
-/* 4. Sağ alt köşeye sade tıklama oku */
-body.module-mode .module-card em {
+/* 4. Sağ alt köşeye tek ve sade tıklama oku (eski ::before '->' ve kutu arka planını kaldır) */
+body.module-mode .module-card em,
+body.module-mode .module-card-featured em {
   display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   position: absolute !important;
   right: 22px !important;
   bottom: 20px !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   font-style: normal !important;
   font-size: 1.05rem !important;
+  line-height: 1 !important;
   color: #64748b !important;
   opacity: 0.45 !important;
   transition: transform 0.16s ease, opacity 0.16s ease, color 0.16s ease !important;
+}
+
+body.module-mode .module-card em::before,
+body.module-mode .module-card-featured em::before {
+  display: none !important;
+  content: none !important;
 }
 
 body.dark-mode.module-mode .module-card em {
