@@ -33,7 +33,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=116" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=141" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=142" />
   </head>
   <body class="auth-mode">
     <script>
@@ -1849,22 +1849,40 @@
 
         <section class="skill-view" data-skill-panel="reports">
           <nav class="skill-report-tabs" aria-label="Rapor türleri">
-            <button class="is-active" type="button" data-skill-report-tab="absence">📅 Devamsızlık</button>
-            <button type="button" data-skill-report-tab="daily">📋 Günlük Rehberlik</button>
-            <button type="button" data-skill-report-tab="monthly">📑 Aylık Rehberlik</button>
-            <button type="button" data-skill-report-tab="termination">📄 Fesih (İşten Çıkış)</button>
-            <button type="button" data-skill-report-tab="grades">📊 Not Çizelgesi</button>
-            <button type="button" data-skill-report-tab="wage">💰 Ücret Raporu</button>
+            <button class="is-active" type="button" data-skill-report-tab="absence">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <span>Devamsızlık</span>
+            </button>
+            <button type="button" data-skill-report-tab="daily">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14h6"/><path d="M9 10h6"/></svg>
+              <span>Günlük Rehberlik</span>
+            </button>
+            <button type="button" data-skill-report-tab="monthly">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <span>Aylık Rehberlik</span>
+            </button>
+            <button type="button" data-skill-report-tab="termination">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+              <span>Fesih (İşten Çıkış)</span>
+            </button>
+            <button type="button" data-skill-report-tab="grades">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              <span>Not Çizelgesi</span>
+            </button>
+            <button type="button" data-skill-report-tab="wage">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              <span>Ücret Raporu</span>
+            </button>
           </nav>
 
           <div class="skill-report-mobile-select-container">
             <select id="skillReportMobileSelect" class="skill-report-mobile-select" aria-label="Rapor Türü Seçin">
-              <option value="absence">📅 Devamsızlık</option>
-              <option value="daily">📋 Günlük Rehberlik</option>
-              <option value="monthly">📑 Aylık Rehberlik</option>
-              <option value="termination">📄 Fesih (İşten Çıkış)</option>
-              <option value="grades">📊 Not Çizelgesi</option>
-              <option value="wage">💰 Ücret Raporu</option>
+              <option value="absence">Devamsızlık</option>
+              <option value="daily">Günlük Rehberlik</option>
+              <option value="monthly">Aylık Rehberlik</option>
+              <option value="termination">Fesih (İşten Çıkış)</option>
+              <option value="grades">Not Çizelgesi</option>
+              <option value="wage">Ücret Raporu</option>
             </select>
           </div>
 
@@ -1897,16 +1915,16 @@
                     <input id="skillReportSelectAll" type="checkbox" /> <strong>Tümünü Seç</strong>
                   </label>
                   <button type="button" class="skill-quick-select-btn" id="skillReportSelectWithStudentsBtn" title="Sadece öğrencisi olan işletmeleri seç">
-                    👥 Öğrencililer
+                    Öğrencililer
                   </button>
                   <button type="button" class="skill-quick-select-btn" id="skillReportClearSelectionBtn" title="Seçimleri temizle">
-                    ✕ Temizle
+                    Temizle
                   </button>
 
                   <div class="skill-report-filter-spacer"></div>
 
-                  <span class="skill-report-badge-pill badge-business">🏢 İşletme: <strong id="skillReportBusinessCount">0</strong></span>
-                  <span class="skill-report-badge-pill badge-student">👤 Öğrenci: <strong id="skillReportStudentCount">0</strong></span>
+                  <span class="skill-report-badge-pill badge-business">İşletme <strong id="skillReportBusinessCount">0</strong></span>
+                  <span class="skill-report-badge-pill badge-student">Öğrenci <strong id="skillReportStudentCount">0</strong></span>
                   <label class="skill-checkbox-line skill-empty-businesses" title="Öğrencisi olmayan boş işletmeleri de listede göster">
                     <input id="skillReportIncludeEmpty" type="checkbox" /> Boşları göster
                   </label>
@@ -1918,9 +1936,13 @@
             <aside class="skill-report-options">
               <div class="skill-report-options-scroll">
                 <div class="skill-month-picker">
-                  <button id="skillReportPrevMonthBtn" type="button" title="Önceki Ay">◀</button>
+                  <button id="skillReportPrevMonthBtn" type="button" title="Önceki Ay" aria-label="Önceki Ay">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                  </button>
                   <select id="skillReportMonthSelect"></select>
-                  <button id="skillReportNextMonthBtn" type="button" title="Sonraki Ay">▶</button>
+                  <button id="skillReportNextMonthBtn" type="button" title="Sonraki Ay" aria-label="Sonraki Ay">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
                 </div>
                 <div class="skill-radio-row skill-segment-row">
                   <label class="skill-segment-item"><input type="radio" name="skillReportRange" value="week" /> <span>Bu Hafta</span></label>
@@ -1929,28 +1951,28 @@
                 </div>
                 <div class="skill-date-row skill-date-range-row">
                   <label class="skill-date-inline">
-                    <span>Başlangıç:</span>
+                    <span>Başlangıç</span>
                     <input id="skillReportStartDate" type="date" />
                   </label>
                   <label class="skill-date-inline">
-                    <span>Bitiş:</span>
+                    <span>Bitiş</span>
                     <input id="skillReportEndDate" type="date" />
                   </label>
                 </div>
                 <label class="skill-date-row skill-report-nup">
-                  <span>Her sayfada:</span>
-                  <select id="skillReportPerPage"><option value="1">1</option><option value="2">2</option></select>
+                  <span>Her sayfada</span>
+                  <select id="skillReportPerPage"><option value="1">1 İşletme</option><option value="2">2 İşletme</option></select>
                 </label>
                 <div class="skill-report-symbol-options">
-                  <span class="skill-symbol-title">Otomatik:</span>
+                  <span class="skill-symbol-title">Otomatik İşaret</span>
                   <div class="skill-symbol-chips">
                     <label class="skill-chip-checkbox" title="İşletme günlerinde [X] doldur">
                       <input id="skillReportBusinessSymbolEnabled" type="checkbox" checked />
-                      <span class="chip-label"><strong>[X]</strong> İşletmede</span>
+                      <span class="chip-label"><strong>X</strong> İşletmede</span>
                     </label>
                     <label class="skill-chip-checkbox" title="Okul günlerinde [O] doldur">
                       <input id="skillReportSchoolSymbolEnabled" type="checkbox" checked />
-                      <span class="chip-label"><strong>[O]</strong> Okulda</span>
+                      <span class="chip-label"><strong>O</strong> Okulda</span>
                     </label>
                   </div>
                 </div>
@@ -2078,7 +2100,6 @@
                 </div>
               </div>
               <div class="skill-report-options-actions">
-                <button class="skill-wide-soft" id="skillAbsenceEntryBtn" type="button">📝 Devamsızlık Girişi</button>
                 <div class="skill-precheck">
                   <div>
                     <strong>Rapor Ön Kontrol</strong>
@@ -2086,8 +2107,20 @@
                   </div>
                   <button id="skillReportPrecheckBtn" type="button">Kontrol Et</button>
                 </div>
-                <button class="skill-wide-soft primary-action" id="skillReportPreviewBtn" type="button">👁️ Rapor Önizleme</button>
-                <button class="skill-wide-soft secondary-action" id="skillReportDirectPrintBtn" type="button" title="Seçili işletmeler için raporu doğrudan yazdır veya PDF olarak kaydet">🖨️ Yazdır / PDF</button>
+                <button class="skill-wide-soft primary-action" id="skillReportPreviewBtn" type="button">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <span>Rapor Önizleme</span>
+                </button>
+                <div class="skill-report-secondary-actions">
+                  <button class="skill-wide-soft" id="skillAbsenceEntryBtn" type="button">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    <span>Devamsızlık Girişi</span>
+                  </button>
+                  <button class="skill-wide-soft secondary-action" id="skillReportDirectPrintBtn" type="button" title="Seçili işletmeler için raporu doğrudan yazdır veya PDF olarak kaydet">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                    <span>Yazdır / PDF</span>
+                  </button>
+                </div>
               </div>
             </aside>
           </div>
@@ -5330,7 +5363,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./scripts/core/module-registry.js?v=1"></script>
-    <script src="./app.js?v=154"></script>
+    <script src="./app.js?v=155"></script>
     <script src="./scripts/modules/settings/index.js?v=8"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=9"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=17"></script>

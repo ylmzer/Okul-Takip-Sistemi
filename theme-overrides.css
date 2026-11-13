@@ -10249,3 +10249,440 @@ body.skill-mode .skill-unassigned-link {
   font-weight: 700 !important;
   text-decoration: underline !important;
 }
+
+
+/* ==========================================================================
+   Raporlar Sayfasi - Sade & Profesyonel Tasarim Yenilemesi
+   ========================================================================== */
+
+/* 1. Rapor Sekmeleri (Unified Teal/Slate Tab Bar) */
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-tabs {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-bottom: 14px !important;
+  padding: 5px !important;
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  overflow-x: auto !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-tabs {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-tabs button {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 8px 14px !important;
+  border-radius: 8px !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  color: #64748b !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  transition: all 0.16s ease !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-tabs button {
+  color: #94a3b8 !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-tabs button:hover {
+  color: #0f172a !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-tabs button:hover {
+  color: #f1f5f9 !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-tabs button.is-active {
+  color: #ffffff !important;
+  background: #0f766e !important;
+  border-color: #0d9488 !important;
+  box-shadow: 0 2px 8px rgba(15, 118, 110, 0.25) !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-tabs button.is-active {
+  color: #ffffff !important;
+  background: #0f766e !important;
+  border-color: rgba(45, 212, 191, 0.35) !important;
+  box-shadow: 0 2px 10px rgba(15, 118, 110, 0.35) !important;
+}
+
+/* 2. Sol Filtre Karti */
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-filter {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 14px 16px !important;
+  margin-bottom: 12px !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03) !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-filter {
+  background: #101924 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-filter-grid label span {
+  font-size: 0.69rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  color: #64748b !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-filter-grid label span {
+  color: #94a3b8 !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-filter-bottom {
+  padding-top: 10px !important;
+  margin-top: 2px !important;
+  border-top: 1px solid #f1f5f9 !important;
+  gap: 8px !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-filter-bottom {
+  border-top-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-quick-select-btn {
+  background: transparent !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #475569 !important;
+  border-radius: 6px !important;
+  padding: 4px 10px !important;
+  font-size: 0.74rem !important;
+  font-weight: 600 !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-quick-select-btn:hover {
+  border-color: #0f766e !important;
+  color: #0f766e !important;
+  background: rgba(15, 118, 110, 0.06) !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-quick-select-btn {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-quick-select-btn:hover {
+  border-color: rgba(45, 212, 191, 0.45) !important;
+  color: #5eead4 !important;
+  background: rgba(20, 184, 166, 0.1) !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-badge-pill {
+  padding: 3px 9px !important;
+  border-radius: 6px !important;
+  font-size: 0.73rem !important;
+  font-weight: 600 !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #475569 !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-badge-pill {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #94a3b8 !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-badge-pill strong {
+  color: #e2e8f0 !important;
+}
+
+/* 3. Isletme Listesi (Minimalist Kartlar & Hafif Ogrenci Rozeti) */
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-table {
+  gap: 6px !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease, background-color 0.15s ease !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-card {
+  background: #101924 !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-card:hover {
+  border-color: #cbd5e1 !important;
+  background: #f8fafc !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-card:hover {
+  border-color: rgba(45, 212, 191, 0.35) !important;
+  background: #131e2c !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-card.is-selected {
+  background: rgba(15, 118, 110, 0.04) !important;
+  border-color: #0d9488 !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-card.is-selected {
+  background: rgba(20, 184, 166, 0.08) !important;
+  border-color: rgba(45, 212, 191, 0.45) !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-header-row {
+  padding: 9px 14px !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-name {
+  font-size: 0.86rem !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.01em !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-sub {
+  font-size: 0.74rem !important;
+  opacity: 0.75 !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-badge.has-students {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 4px 10px !important;
+  border-radius: 999px !important;
+  font-size: 0.74rem !important;
+  font-weight: 600 !important;
+  background: rgba(15, 118, 110, 0.08) !important;
+  border: 1px solid rgba(15, 118, 110, 0.2) !important;
+  color: #0f766e !important;
+  box-shadow: none !important;
+  transition: all 0.15s ease !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-badge.has-students:hover {
+  background: #0f766e !important;
+  border-color: #0f766e !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-badge.has-students {
+  background: rgba(20, 184, 166, 0.1) !important;
+  border: 1px solid rgba(45, 212, 191, 0.22) !important;
+  color: #5eead4 !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-assignment-badge.has-students:hover {
+  background: rgba(20, 184, 166, 0.22) !important;
+  border-color: rgba(45, 212, 191, 0.45) !important;
+  color: #ffffff !important;
+}
+
+/* 4. Sag Panel (Temiz Form Duzeni & Birlesik Renk Paleti) */
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-options {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03) !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-options {
+  background: #101924 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-options-scroll {
+  gap: 12px !important;
+}
+
+/* Ay Secici Oklar */
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-month-picker button {
+  color: #0f766e !important;
+  border-radius: 8px !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-month-picker button:hover {
+  background: rgba(15, 118, 110, 0.08) !important;
+  border-color: #0f766e !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-month-picker button {
+  color: #5eead4 !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-month-picker button:hover {
+  background: rgba(20, 184, 166, 0.15) !important;
+  border-color: rgba(45, 212, 191, 0.4) !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-month-picker select {
+  border-radius: 8px !important;
+  font-weight: 650 !important;
+}
+
+/* Segment Kontrol (Bu Hafta / Bu Ay / Zaman Araligi) */
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-segment-row {
+  margin-bottom: 0 !important;
+  border-radius: 8px !important;
+  padding: 3px !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-segment-item:has(input:checked) span,
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-segment-item input:checked + span {
+  background: #0f766e !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(15, 118, 110, 0.3) !important;
+}
+
+/* Baslangic / Bitis Tarihleri (2 Sutun Ust Etiketli) */
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-date-range-row {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+  margin-bottom: 0 !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-date-inline {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 4px !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-date-inline > span {
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  color: #64748b !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-date-inline > span {
+  color: #94a3b8 !important;
+}
+
+/* Her Sayfada & Otomatik Isaret */
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-nup,
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-symbol-options {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 5px !important;
+  margin: 0 !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-nup > span,
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-symbol-options .skill-symbol-title {
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  color: #64748b !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-nup > span,
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-symbol-options .skill-symbol-title {
+  color: #94a3b8 !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-chip-checkbox .chip-label strong {
+  color: #0f766e !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-chip-checkbox .chip-label strong {
+  color: #2dd4bf !important;
+}
+
+/* Sag Panel Aksiyon Butonlari */
+body.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-options-actions {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  margin-top: 14px !important;
+  padding-top: 14px !important;
+  border-top: 1px solid #f1f5f9 !important;
+}
+
+body.dark-mode.skill-mode .skill-view[data-skill-panel="reports"] .skill-report-options-actions {
+  border-top-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+body.skill-mode #skillReportPreviewBtn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  min-height: 40px !important;
+  height: 40px !important;
+  background: linear-gradient(135deg, #0d9488, #0f766e) !important;
+  border: 1px solid #0f766e !important;
+  color: #ffffff !important;
+  font-size: 0.86rem !important;
+  font-weight: 650 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(15, 118, 110, 0.25) !important;
+}
+
+body.skill-mode #skillReportPreviewBtn:hover {
+  background: linear-gradient(135deg, #14b8a6, #0d9488) !important;
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.35) !important;
+}
+
+body.skill-mode .skill-report-secondary-actions {
+  display: flex !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+
+body.skill-mode #skillAbsenceEntryBtn,
+body.skill-mode #skillReportDirectPrintBtn {
+  flex: 1 1 0% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  min-height: 34px !important;
+  height: 34px !important;
+  padding: 6px 10px !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  white-space: nowrap !important;
+  background: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+body.skill-mode #skillAbsenceEntryBtn:hover,
+body.skill-mode #skillReportDirectPrintBtn:hover {
+  background: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+  color: #0f172a !important;
+}
+
+body.dark-mode.skill-mode #skillAbsenceEntryBtn,
+body.dark-mode.skill-mode #skillReportDirectPrintBtn {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode.skill-mode #skillAbsenceEntryBtn:hover,
+body.dark-mode.skill-mode #skillReportDirectPrintBtn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(45, 212, 191, 0.35) !important;
+  color: #ffffff !important;
+}

@@ -4432,7 +4432,7 @@ function renderSkillReportAssignments() {
             </div>
           </label>
           <button type="button" class="skill-assignment-badge ${studentCount > 0 ? "has-students" : "no-students"}" data-skill-toggle-students="${escapeHtml(business.id)}" onclick="toggleSkillBusinessStudents('${escapeHtml(business.id)}', event)" title="${studentCount > 0 ? "Öğrencileri göster / gizle" : "Kayıtlı öğrenci yok"}">
-            ${studentCount > 0 ? `👥 ${studentCount} Öğrenci ▾` : "Boş"}
+            ${studentCount > 0 ? `<span>${studentCount} Öğrenci</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>` : "Boş"}
           </button>
         </div>
         ${studentCount > 0 ? `
@@ -4891,7 +4891,7 @@ function runSkillReportPrecheck() {
   // Update preview button text with dynamic live badge
   if (els.skillReportPreviewBtn) {
     const countText = ids.length > 0 ? `(${ids.length} İşletme / ${studentCount} Öğrenci)` : `(Tüm İşletmeler)`;
-    els.skillReportPreviewBtn.innerHTML = `👁️ Rapor Önizleme <small style="font-size: 0.78rem; opacity: 0.9; margin-left: 4px;">${countText}</small>`;
+    els.skillReportPreviewBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span>Rapor Önizleme</span><small style="font-size: 0.76rem; opacity: 0.88; font-weight: 500;">${countText}</small>`;
   }
 
   if (els.skillReportPrecheckText) {
