@@ -2158,135 +2158,74 @@ body.dark-mode .editor-side select option {
   color: #cbd5e1 !important;
 }
 
+body.dark-mode .editor-tools {
+  background: rgba(15, 23, 42, 0.72) !important;
+  border: 1px solid rgba(148, 163, 184, 0.16) !important;
+  border-radius: 10px !important;
+  padding: 5px 6px !important;
+  gap: 3px !important;
+}
+
 body.dark-mode .editor-tools button,
 body.dark-mode .editor-tools label,
-body.dark-mode .editor-tools select {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
+body.dark-mode .editor-tools select,
+body.dark-mode .editor-tools .list-picker-wrapper button.list-picker-btn,
+body.dark-mode .editor-tools .table-picker-wrapper button.table-picker-btn,
+body.dark-mode .editor-tools .color-picker-btn,
+body.dark-mode .editor-tools button.link-btn {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 1px solid transparent !important;
   color: #cbd5e1 !important;
+  border-radius: 6px !important;
+  min-width: 28px !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 6px !important;
+  font-size: 0.78rem !important;
+  box-shadow: none !important;
+  transition: background-color 0.14s ease, border-color 0.14s ease, color 0.14s ease !important;
 }
 
-body.dark-mode .editor-tools button[data-command="bold"],
-body.dark-mode .editor-tools button[data-command="italic"],
-body.dark-mode .editor-tools button[data-command="underline"] {
-  color: #60a5fa !important;
-  background-color: rgba(30, 64, 175, 0.2) !important;
-  border-color: rgba(30, 64, 175, 0.3) !important;
-}
-body.dark-mode .editor-tools button[data-command="bold"]:hover,
-body.dark-mode .editor-tools button[data-command="italic"]:hover,
-body.dark-mode .editor-tools button[data-command="underline"]:hover {
-  background-color: rgba(30, 64, 175, 0.35) !important;
-}
-
-body.dark-mode .editor-tools button[data-command="strikeThrough"] {
-  color: #94a3b8 !important;
+body.dark-mode .editor-tools button:hover,
+body.dark-mode .editor-tools label:hover,
+body.dark-mode .editor-tools .list-picker-wrapper button.list-picker-btn:hover,
+body.dark-mode .editor-tools .table-picker-wrapper button.table-picker-btn:hover,
+body.dark-mode .editor-tools .color-picker-btn:hover,
+body.dark-mode .editor-tools button.link-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
   background-color: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+  color: #ffffff !important;
 }
 
-body.dark-mode .editor-tools .list-picker-wrapper button.list-picker-btn[data-command="insertUnorderedList"],
-body.dark-mode .editor-tools .list-picker-wrapper button.list-picker-btn[data-command="insertOrderedList"] {
-  color: #c084fc !important;
-  background-color: rgba(109, 40, 217, 0.2) !important;
-  border-color: rgba(109, 40, 217, 0.3) !important;
-}
-body.dark-mode .editor-tools .list-picker-wrapper button.list-picker-btn[data-command="insertUnorderedList"]:hover,
-body.dark-mode .editor-tools .list-picker-wrapper button.list-picker-btn[data-command="insertOrderedList"]:hover {
-  background-color: rgba(109, 40, 217, 0.35) !important;
-}
-
-body.dark-mode .editor-tools button[data-command="justifyLeft"],
-body.dark-mode .editor-tools button[data-command="justifyCenter"],
-body.dark-mode .editor-tools button[data-command="justifyRight"] {
-  color: #2dd4bf !important;
-  background-color: rgba(15, 118, 110, 0.2) !important;
-  border-color: rgba(15, 118, 110, 0.3) !important;
-}
-body.dark-mode .editor-tools button[data-command="justifyLeft"]:hover,
-body.dark-mode .editor-tools button[data-command="justifyCenter"]:hover,
-body.dark-mode .editor-tools button[data-command="justifyRight"]:hover {
-  background-color: rgba(15, 118, 110, 0.35) !important;
-}
-
-body.dark-mode .editor-tools button[data-command="outdent"],
-body.dark-mode .editor-tools button[data-command="indent"] {
-  color: #fbbf24 !important;
-  background-color: rgba(180, 83, 9, 0.2) !important;
-  border-color: rgba(180, 83, 9, 0.3) !important;
-}
-body.dark-mode .editor-tools button[data-command="outdent"]:hover,
-body.dark-mode .editor-tools button[data-command="indent"]:hover {
-  background-color: rgba(180, 83, 9, 0.35) !important;
-}
-
-body.dark-mode .editor-tools button[data-command="removeFormat"] {
-  color: #f87171 !important;
-  background-color: rgba(220, 38, 38, 0.2) !important;
-  border-color: rgba(220, 38, 38, 0.3) !important;
-}
-body.dark-mode .editor-tools button[data-command="removeFormat"]:hover {
-  background-color: rgba(220, 38, 38, 0.35) !important;
+body.dark-mode .editor-tools button.is-active,
+body.dark-mode .editor-tools button[aria-pressed="true"] {
+  background: rgba(45, 212, 191, 0.16) !important;
+  background-color: rgba(45, 212, 191, 0.16) !important;
+  border-color: rgba(45, 212, 191, 0.35) !important;
+  color: #5eead4 !important;
 }
 
 body.dark-mode .editor-tools select.font-size-select {
-  color: #2dd4bf !important;
-  background-color: rgba(6, 95, 70, 0.2) !important;
-  border-color: rgba(6, 95, 70, 0.3) !important;
-}
-
-body.dark-mode .editor-tools .table-picker-wrapper button.table-picker-btn {
-  color: #34d399 !important;
-  background-color: rgba(4, 120, 87, 0.2) !important;
-  border-color: rgba(4, 120, 87, 0.3) !important;
-}
-body.dark-mode .editor-tools .table-picker-wrapper button.table-picker-btn:hover {
-  background-color: rgba(4, 120, 87, 0.35) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
+  color: #e2e8f0 !important;
+  padding: 0 6px !important;
 }
 
 body.dark-mode .editor-tools button.journal-entry-tool-btn {
-  color: #2dd4bf !important;
-  background-color: rgba(15, 79, 70, 0.2) !important;
-  border-color: rgba(15, 79, 70, 0.3) !important;
+  color: #5eead4 !important;
+  background: rgba(20, 184, 166, 0.1) !important;
+  border-color: rgba(45, 212, 191, 0.24) !important;
+  padding: 0 8px !important;
+  font-weight: 700 !important;
 }
+
 body.dark-mode .editor-tools button.journal-entry-tool-btn:hover {
-  background-color: rgba(15, 79, 70, 0.35) !important;
-}
-
-body.dark-mode .editor-tools button.link-btn {
-  color: #818cf8 !important;
-  background-color: rgba(55, 48, 163, 0.2) !important;
-  border-color: rgba(55, 48, 163, 0.3) !important;
-}
-body.dark-mode .editor-tools button.link-btn:hover {
-  background-color: rgba(55, 48, 163, 0.35) !important;
-}
-
-body.dark-mode .editor-tools .color-picker-btn[title="Yazı rengi"] {
-  color: #facc15 !important;
-  background-color: rgba(202, 138, 4, 0.2) !important;
-  border-color: rgba(202, 138, 4, 0.3) !important;
-}
-body.dark-mode .editor-tools .color-picker-btn[title="Yazı rengi"]:hover {
-  background-color: rgba(202, 138, 4, 0.35) !important;
-}
-
-body.dark-mode .editor-tools .color-picker-btn[title="Vurgu rengi"] {
-  color: #fbbf24 !important;
-  background-color: rgba(180, 83, 9, 0.2) !important;
-  border-color: rgba(180, 83, 9, 0.3) !important;
-}
-body.dark-mode .editor-tools .color-picker-btn[title="Vurgu rengi"]:hover {
-  background-color: rgba(180, 83, 9, 0.35) !important;
-}
-
-body.dark-mode .editor-tools label[title="Görsel ekle"] {
-  color: #f472b6 !important;
-  background-color: rgba(190, 24, 93, 0.2) !important;
-  border-color: rgba(190, 24, 93, 0.3) !important;
-}
-body.dark-mode .editor-tools label[title="Görsel ekle"]:hover {
-  background-color: rgba(190, 24, 93, 0.35) !important;
+  background: rgba(20, 184, 166, 0.2) !important;
+  border-color: rgba(45, 212, 191, 0.45) !important;
+  color: #99f6e4 !important;
 }
 
 body.dark-mode .color-picker-popup,
@@ -6576,4 +6515,216 @@ body.dark-mode select option:hover {
   background-color: #0f766e !important;
   color: #ffffff !important;
 }
+
+/* ==========================================================================
+   Soru Bankasi Kartlari & Soru Editoru Kurumsal Sade Tasarim
+   ========================================================================== */
+
+body.app-mode .question-card {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  padding: 14px 16px !important;
+  border-radius: 14px !important;
+  transition: border-color 0.16s ease, background 0.16s ease !important;
+}
+
+body.dark-mode.app-mode .question-card:hover {
+  border-color: rgba(148, 163, 184, 0.22) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+}
+
+body.dark-mode.app-mode .question-card.is-selected {
+  border-color: rgba(45, 212, 191, 0.38) !important;
+  background: rgba(15, 118, 110, 0.08) !important;
+}
+
+body.app-mode .question-meta {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  overflow-x: visible !important;
+  white-space: normal !important;
+  gap: 6px !important;
+  margin-right: 34px !important;
+}
+
+body.app-mode .question-meta .chip {
+  max-width: none !important;
+  font-size: 0.71rem !important;
+  padding: 3px 8px !important;
+}
+
+body.app-mode .question-preview {
+  flex: 1 1 auto !important;
+  font-size: 0.88rem !important;
+  line-height: 1.5 !important;
+}
+
+body.app-mode .card-actions {
+  margin-top: auto !important;
+  gap: 7px !important;
+}
+
+body.dark-mode .card-btn-primary {
+  background: #0f766e !important;
+  border-color: #14b8a6 !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .card-btn-primary:hover {
+  background: #0d9488 !important;
+}
+
+body.dark-mode .question-card.is-selected .card-btn-primary {
+  background: rgba(20, 184, 166, 0.14) !important;
+  border-color: rgba(45, 212, 191, 0.38) !important;
+  color: #5eead4 !important;
+}
+
+body.dark-mode .question-card.is-selected .card-btn-primary:hover {
+  background: rgba(20, 184, 166, 0.24) !important;
+}
+
+body.dark-mode .card-btn-soft,
+body.dark-mode .card-btn-plain {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(148, 163, 184, 0.18) !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .card-btn-soft:hover,
+body.dark-mode .card-btn-plain:hover {
+  background: rgba(255, 255, 255, 0.11) !important;
+  border-color: rgba(148, 163, 184, 0.3) !important;
+  color: #ffffff !important;
+}
+
+body.app-mode .question-card-footer {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  padding-top: 10px !important;
+  margin-top: 2px !important;
+  border-top: 1px solid rgba(148, 163, 184, 0.12) !important;
+}
+
+body.app-mode .quick-points {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 0 !important;
+}
+
+body.app-mode .quick-points input {
+  width: 68px !important;
+  min-height: 30px !important;
+  height: 30px !important;
+  padding: 4px 8px !important;
+  text-align: center !important;
+}
+
+body.dark-mode .delete-question-btn {
+  min-height: 30px !important;
+  height: 30px !important;
+  padding: 0 12px !important;
+  background: rgba(239, 68, 68, 0.1) !important;
+  border: 1px solid rgba(239, 68, 68, 0.26) !important;
+  color: #fca5a5 !important;
+  border-radius: 7px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+}
+
+body.dark-mode .delete-question-btn:hover {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: rgba(239, 68, 68, 0.42) !important;
+  color: #fecaca !important;
+}
+
+/* Soru Editoru Modal Sade & Kullanisli Duzen */
+#questionEditorDialog .editor {
+  grid-template-columns: minmax(0, 1fr) 290px !important;
+  gap: 14px !important;
+  align-items: start !important;
+}
+
+#questionEditorDialog .editor-main,
+#questionEditorDialog .editor-side {
+  padding: 14px !important;
+  border-radius: 12px !important;
+}
+
+#questionEditorDialog .editor-side {
+  display: grid !important;
+  gap: 10px !important;
+}
+
+#questionEditorDialog .editor-side-row {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+}
+
+#questionEditorDialog .editor-side label {
+  display: grid !important;
+  gap: 4px !important;
+  margin: 0 !important;
+}
+
+#questionEditorDialog .editor-side label span {
+  font-size: 0.75rem !important;
+  font-weight: 650 !important;
+  color: #94a3b8 !important;
+}
+
+#questionEditorDialog .editor-side select,
+#questionEditorDialog .editor-side input {
+  min-height: 35px !important;
+  height: 35px !important;
+  padding: 6px 10px !important;
+  font-size: 0.84rem !important;
+}
+
+#questionEditorDialog .editor-side textarea {
+  min-height: 60px !important;
+  padding: 7px 10px !important;
+  font-size: 0.84rem !important;
+  resize: vertical !important;
+}
+
+#questionEditorDialog .rich-editor {
+  min-height: 150px !important;
+  padding: 12px 14px !important;
+  border-radius: 10px !important;
+}
+
+#questionEditorDialog .rich-editor.answer-editor {
+  min-height: 105px !important;
+}
+
+#questionEditorDialog .editor-main > label,
+#questionEditorDialog .editor-main .answer-box {
+  display: grid !important;
+  gap: 6px !important;
+}
+
+#questionEditorDialog .editor-main > label span,
+#questionEditorDialog .editor-main .answer-box > span {
+  font-size: 0.78rem !important;
+  font-weight: 650 !important;
+}
+
+body.dark-mode #questionEditorDialog .type-select {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(148, 163, 184, 0.22) !important;
+  color: #f1f5f9 !important;
+}
+
+@media (max-width: 900px) {
+  #questionEditorDialog .editor {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 

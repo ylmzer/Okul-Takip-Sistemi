@@ -471,6 +471,18 @@ body.dark-mode.module-mode .user-avatar {
    Sol Üst Modül Kartına Entegre Sade Modül Değiştirici (Masaüstü)
    ========================================================================== */
 
+@media (max-width: 900px) {
+  #moduleFloatPanel .module-switcher-divider {
+    grid-column: 1 / -1 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 1px !important;
+    border: 0 !important;
+    margin: 4px 0 !important;
+    background: rgba(148, 163, 184, 0.16) !important;
+  }
+}
+
 @media (min-width: 901px) {
   /* Sağ üstteki yüzen OTS butonunu kaldır */
   #otsFloatingLauncherBtn,

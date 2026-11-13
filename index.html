@@ -33,11 +33,11 @@
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=116" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=148" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=149" />
     <link rel="stylesheet" href="./scripts/modules/system-admin/styles.css?v=1" />
     <link rel="stylesheet" href="./scripts/modules/skill-training/styles.css?v=1" />
     <link rel="stylesheet" href="./scripts/modules/annual-plan/styles.css?v=1" />
-    <link rel="stylesheet" href="./scripts/core/auth.css?v=5" />
+    <link rel="stylesheet" href="./scripts/core/auth.css?v=6" />
   </head>
   <body class="auth-mode">
     <script>
@@ -1181,7 +1181,7 @@
         <div class="basket-heading" style="padding: 10px 20px; align-items: center;">
           <div style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;">
             <h2 id="questionEditorTitle" style="margin: 0; font-size: 1.15rem; white-space: nowrap;">Soru Editörü</h2>
-            <select id="questionType" class="type-select" aria-label="Soru tipi" style="min-height: 32px; height: 32px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; font-size: 0.85rem; font-weight: 600; background: #fff; cursor: pointer; max-width: 200px;">
+            <select id="questionType" class="type-select" aria-label="Soru tipi" style="min-height: 34px; height: 34px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; max-width: 210px;">
               <option value="open">Klasik / açık uçlu</option>
               <option value="multipleChoice">Çoktan seçmeli</option>
               <option value="trueFalse">Doğru / yanlış</option>
@@ -1438,10 +1438,16 @@
                 <span>Kazanım</span>
                 <select id="questionOutcome"></select>
               </label>
-              <label>
-                <span>Sınıf düzeyi</span>
-                <input id="questionGrade" type="text" placeholder="Örn. 10" />
-              </label>
+              <div class="editor-side-row">
+                <label>
+                  <span>Sınıf düzeyi</span>
+                  <input id="questionGrade" type="text" placeholder="Örn. 10" />
+                </label>
+                <label>
+                  <span>Puan</span>
+                  <input id="questionPoints" type="number" min="1" value="10" />
+                </label>
+              </div>
               <label class="hidden-field">
                 <span>Zorluk</span>
                 <select id="questionDifficulty">
@@ -1462,22 +1468,18 @@
                   <option value="2-3">2. Dönem 3. Yazılı</option>
                 </select>
               </label>
-              <label>
-                <span>Puan</span>
-                <input id="questionPoints" type="number" min="1" value="10" />
-              </label>
               <label class="hidden-field">
                 <span>Etiketler</span>
                 <input id="questionTags" type="text" placeholder="virgülle ayır" />
               </label>
               <label>
                 <span>Öğretmen notu</span>
-                <textarea id="questionNote" rows="4"></textarea>
+                <textarea id="questionNote" rows="2" placeholder="İsteğe bağlı kısa not..."></textarea>
               </label>
             </aside>
           </form>
         </div>
-        <div class="dialog-actions basket-actions question-editor-actions" style="margin-top: auto; padding: 14px 20px; background: #f8fafc; border-top: 1px solid var(--line); flex-shrink: 0; display: flex; gap: 10px; justify-content: flex-end;">
+        <div class="dialog-actions basket-actions question-editor-actions" style="margin-top: auto; padding: 12px 20px; border-top: 1px solid var(--line); flex-shrink: 0; display: flex; gap: 10px; justify-content: flex-end;">
           <button class="ghost-action" id="deleteQuestionBtn" type="button">Sil</button>
           <button class="secondary-action" id="newEditorQuestionBtn" type="button">Yeni soru</button>
           <button class="secondary-action" id="resetQuestionBtn" type="button">Temizle</button>
