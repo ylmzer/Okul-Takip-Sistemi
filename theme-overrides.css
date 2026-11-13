@@ -6727,4 +6727,21 @@ body.dark-mode #questionEditorDialog .type-select {
   }
 }
 
+/* Soru Onizleme & Sepet Ozet Kartlari Koyu Tema Uyumu */
+body.dark-mode .preview-context div,
+body.dark-mode .basket-summary div {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(148, 163, 184, 0.16) !important;
+}
+
+body.dark-mode .preview-context span,
+body.dark-mode .basket-summary span {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .preview-context strong,
+body.dark-mode .basket-summary strong {
+  color: #f1f5f9 !important;
+}
+
 
