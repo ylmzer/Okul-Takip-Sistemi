@@ -1497,7 +1497,9 @@ function saveSkillProfileStore() {
       }
     }
   }
-  scheduleAutoBackupSnapshot("skill-profile-change");
+  if (typeof scheduleAutoBackupSnapshot === "function") {
+    scheduleAutoBackupSnapshot("skill-profile-change");
+  }
 }
 
 function saveSkillState() {
@@ -2732,8 +2734,10 @@ function normalizeImportedPoint(value) {
 
 function saveState(options = {}) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  scheduleAutoBackupSnapshot("sorubank-change");
-  if (options.sync !== false) scheduleCloudSave();
+  if (typeof scheduleAutoBackupSnapshot === "function") {
+    scheduleAutoBackupSnapshot("sorubank-change");
+  }
+  if (options.sync !== false && typeof scheduleCloudSave === "function") scheduleCloudSave();
 }
 
 // Bulut Senkronizasyon -> scripts/core/cloud-sync.js
