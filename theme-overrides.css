@@ -6826,4 +6826,66 @@ body.dark-mode .basket-summary strong {
   }
 }
 
+/* Sinav Sepeti (#examCartDialog) Koyu Tema & Hizalama Uyumu */
+body.dark-mode .basket-status {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(148, 163, 184, 0.14) !important;
+}
+
+body.dark-mode .basket-warnings div {
+  background: rgba(245, 158, 11, 0.12) !important;
+  border-color: rgba(245, 158, 11, 0.28) !important;
+  color: #fcd34d !important;
+}
+
+body.dark-mode .basket-mode-toggle,
+body.dark-mode .basket-view-toggle {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+}
+
+body.dark-mode .basket-mode-toggle button,
+body.dark-mode .basket-view-toggle button {
+  color: #94a3b8 !important;
+  background: transparent !important;
+}
+
+body.dark-mode .basket-mode-toggle button:hover,
+body.dark-mode .basket-view-toggle button:hover {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .basket-mode-toggle button.is-active,
+body.dark-mode .basket-view-toggle button.is-active {
+  background: rgba(20, 184, 166, 0.18) !important;
+  color: #5eead4 !important;
+  border: 1px solid rgba(45, 212, 191, 0.32) !important;
+  box-shadow: none !important;
+}
+
+body.dark-mode .basket-panel-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .selected-actions {
+  align-items: end !important;
+}
+
+body.dark-mode .selected-actions .selected-points {
+  display: grid !important;
+  gap: 3px !important;
+  margin: 0 !important;
+}
+
+body.dark-mode .selected-actions .selected-points span,
+body.dark-mode .basket-answer-space-select span {
+  display: block !important;
+  margin: 0 !important;
+  color: #94a3b8 !important;
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+}
+
 
