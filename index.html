@@ -37,6 +37,7 @@
     <link rel="stylesheet" href="./scripts/modules/system-admin/styles.css?v=1" />
     <link rel="stylesheet" href="./scripts/modules/skill-training/styles.css?v=1" />
     <link rel="stylesheet" href="./scripts/modules/annual-plan/styles.css?v=1" />
+    <link rel="stylesheet" href="./scripts/core/auth.css?v=1" />
   </head>
   <body class="auth-mode">
     <script>
@@ -88,52 +89,80 @@
 
     <section class="auth-shell" id="authShell" aria-label="Giriş ve modül seçimi">
       <div class="auth-brand">
-        <img src="icons/logo-clean.svg" class="auth-brand-mark" alt="Logo" style="filter: drop-shadow(0 3px 6px rgba(0,0,0,0.15));" />
-        <strong>Okul Takip Sistemi</strong>
+        <img src="icons/logo-clean.svg" class="auth-brand-mark" alt="Okul Takip Sistemi Logo" />
+        <div class="auth-brand-text">
+          <strong>Okul Takip Sistemi</strong>
+          <small>Kurumsal Öğretmen ve İdare Platformu</small>
+        </div>
       </div>
 
       <div class="auth-card" id="loginPanel">
         <div class="auth-intro">
-          <p class="eyebrow">Hesap</p>
-          <h1>Önce hesabınızı oluşturun</h1>
-          <p class="auth-copy">Yerelde güvenli bir çalışma akışı kuralım. Buluta geçtiğimizde bu alan Supabase Auth ile aynı mantıkta çalışacak.</p>
-          <div class="auth-highlights">
-            <span>Modüler yapı</span>
-            <span>PWA hazır</span>
-            <span>Bulut geçişine uygun</span>
-          </div>
+          <p class="eyebrow">Eğitim Yönetim Platformu</p>
+          <h1>Tüm okul ve ders süreçleriniz tek merkezde</h1>
+          <p class="auth-copy">Soru bankası, öğrenci gelişim takibi, beceri eğitimi evrakları, kurs devam çizelgeleri ve yıllık planlarınızı tek hesaptan güvenle yönetin.</p>
+          <ul class="auth-highlights" aria-label="Platform özellikleri">
+            <li>
+              <span class="auth-hl-icon" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <span>Soru Bankası &amp; Sınav Hazırlama</span>
+            </li>
+            <li>
+              <span class="auth-hl-icon" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <span>Beceri Eğitimi &amp; İME Evrakları</span>
+            </li>
+            <li>
+              <span class="auth-hl-icon" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <span>Yıllık Plan &amp; Kurs Takibi</span>
+            </li>
+            <li>
+              <span class="auth-hl-icon" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <span>Bulut Senkronizasyonu &amp; Yedekleme</span>
+            </li>
+          </ul>
         </div>
         <div class="auth-panel">
+          <div class="auth-panel-head">
+            <h2>Hesap İşlemleri</h2>
+            <p>Devam etmek için oturum açın veya yeni hesap oluşturun.</p>
+          </div>
           <div class="auth-switch" role="group" aria-label="Hesap işlemi">
-            <button class="is-active" id="showRegisterBtn" type="button">Kayıt ol</button>
-            <button id="showLoginBtn" type="button">Giriş yap</button>
+            <button class="is-active" id="showRegisterBtn" type="button">Kayıt Ol</button>
+            <button id="showLoginBtn" type="button">Giriş Yap</button>
           </div>
           <form class="login-form" id="localRegisterForm">
             <label>
-              <span>Ad soyad</span>
+              <span>Ad Soyad</span>
               <input id="registerNameInput" type="text" autocomplete="name" placeholder="Örn. Yılmaz Er" required />
             </label>
             <label>
-              <span>E-posta</span>
+              <span>E-posta Adresi</span>
               <input id="registerEmailInput" type="email" autocomplete="email" placeholder="ornek@okul.com" required />
             </label>
             <label>
               <span>Şifre</span>
               <input id="registerPasswordInput" type="password" autocomplete="new-password" placeholder="En az 4 karakter" required />
             </label>
-            <button class="primary-action" type="submit">Hesap oluştur</button>
-            <button class="ghost-action" id="quickStartBtn" type="button" style="margin-top: 10px; width: 100%; border: 1px dashed var(--accent);">Kayıt Olmadan Hızlı Başla</button>
+            <button class="primary-action" type="submit">Hesap Oluştur</button>
+            <button class="ghost-action" id="quickStartBtn" type="button">Kayıt Olmadan Hızlı Başla</button>
           </form>
           <form class="login-form" id="localLoginForm" hidden>
             <label>
-              <span>E-posta</span>
+              <span>E-posta Adresi</span>
               <input id="localUserEmailInput" type="email" autocomplete="email" placeholder="ornek@okul.com" required />
             </label>
             <label>
               <span>Şifre</span>
-              <input id="localUserPasswordInput" type="password" autocomplete="current-password" placeholder="Şifreniz" required />
+              <input id="localUserPasswordInput" type="password" autocomplete="current-password" placeholder="Şifrenizi girin" required />
             </label>
-            <button class="primary-action" type="submit">Giriş yap</button>
+            <button class="primary-action" type="submit">Giriş Yap</button>
           </form>
         </div>
       </div>
