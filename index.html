@@ -37,7 +37,7 @@
     <link rel="stylesheet" href="./scripts/modules/system-admin/styles.css?v=1" />
     <link rel="stylesheet" href="./scripts/modules/skill-training/styles.css?v=1" />
     <link rel="stylesheet" href="./scripts/modules/annual-plan/styles.css?v=1" />
-    <link rel="stylesheet" href="./scripts/core/auth.css?v=3" />
+    <link rel="stylesheet" href="./scripts/core/auth.css?v=4" />
   </head>
   <body class="auth-mode">
     <script>
@@ -5201,7 +5201,6 @@
           <button class="mobile-nav-panel-close course-dialog-close-btn" id="mobileModulePanelCloseBtn" type="button" aria-label="Modül değiştiriciyi kapat">&times;</button>
         </div>
         <div class="module-float-panel-links">
-          <button type="button" data-floating-module="hub"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Ana Ekran</strong></span></button>
           <button type="button" data-floating-module="sorubank"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Soru Bankası</strong></span></button>
           <button type="button" data-floating-module="student-tracking"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Ders Takibi</strong></span></button>
           <button type="button" data-floating-module="skill-training"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Beceri Eğitimi</strong></span></button>
@@ -5209,6 +5208,8 @@
           <button type="button" data-floating-module="annual-plan"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Yıllık Plan</strong></span></button>
           <button type="button" data-floating-module="settings"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Ayarlar</strong></span></button>
           <button type="button" data-floating-module="system-admin" class="float-admin-btn" hidden style="display: none !important;"><span class="module-float-icon" aria-hidden="true">👑</span><span class="module-switcher-copy"><strong>Yönetim Paneli</strong></span></button>
+          <hr class="module-switcher-divider" />
+          <button type="button" data-floating-module="hub"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Modül Ana Ekranı</strong></span></button>
           <button type="button" data-floating-action="profile"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Profil</strong></span></button>
           <button type="button" data-floating-action="logout"><span class="module-float-icon" aria-hidden="true"></span><span class="module-switcher-copy"><strong>Çıkış</strong></span></button>
         </div>
@@ -5418,7 +5419,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.js"></script>
     <script src="./scripts/core/module-registry.js?v=1"></script>
-    <script src="./app.js?v=166"></script>
+    <script src="./app.js?v=167"></script>
     <script src="./scripts/core/cloud-sync.js?v=1"></script>
     <script src="./scripts/modules/settings/backup.js?v=1"></script>
     <script src="./scripts/modules/sorubank/bank-and-curriculum.js?v=1"></script>

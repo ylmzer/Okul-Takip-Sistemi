@@ -731,7 +731,7 @@ const els = {
   desktopModuleDockButtons: document.querySelectorAll("[data-dock-module]"),
   desktopSidebarCollapseBtn: document.querySelector("#desktopSidebarCollapseBtn"),
   mobileModuleHubBtn: document.querySelector("#mobileModuleHubBtn"),
-  moduleSwitcherTriggers: document.querySelectorAll("button[data-module-switcher-trigger]"),
+  moduleSwitcherTriggers: document.querySelectorAll("[data-module-switcher-trigger]"),
   moduleSwitcherBackdrop: document.querySelector("#moduleSwitcherBackdrop"),
   moduleSwitcherCurrentLabel: document.querySelector("#moduleSwitcherCurrentLabel"),
   appNavMobileSelect: document.querySelector("#appNavMobileSelect"),
@@ -1782,8 +1782,23 @@ function toggleFloatingModuleSwitcher(trigger = null) {
   els.moduleFloatPanel.hidden = false;
   els.moduleFloatPanel.setAttribute("aria-modal", isMobile ? "true" : "false");
   if (isMobile) {
+    els.moduleFloatPanel.style.removeProperty("top");
+    els.moduleFloatPanel.style.removeProperty("left");
+    els.moduleFloatPanel.style.removeProperty("right");
     els.moduleSwitcherBackdrop?.removeAttribute("hidden");
     document.body.classList.add("module-switcher-open");
+  } else {
+    const anchor = (trigger instanceof HTMLElement && trigger.getBoundingClientRect().width > 0)
+      ? trigger
+      : [...document.querySelectorAll(".module-sidebar-brand[data-module-switcher-trigger]")].find((el) => el.offsetParent !== null);
+    if (anchor) {
+      const rect = anchor.getBoundingClientRect();
+      const top = Math.min(rect.bottom + 8, window.innerHeight - 360);
+      const left = Math.max(12, Math.min(rect.left, window.innerWidth - 268));
+      els.moduleFloatPanel.style.setProperty("top", `${Math.max(12, top)}px`, "important");
+      els.moduleFloatPanel.style.setProperty("left", `${left}px`, "important");
+      els.moduleFloatPanel.style.setProperty("right", "auto", "important");
+    }
   }
   els.moduleSwitcherTriggers?.forEach((item) => item.setAttribute("aria-expanded", "true"));
   requestAnimationFrame(() => {
@@ -3138,27 +3153,19 @@ els.desktopModuleDock?.addEventListener("focusin", () => {
 });
 let moduleSwitcherHoverTimer = null;
 
-if (els.moduleFloatSwitcher) {
-  els.moduleFloatSwitcher.addEventListener("pointerenter", () => {
-    if (window.matchMedia("(min-width: 901px)").matches) {
-      clearTimeout(moduleSwitcherHoverTimer);
-      if (els.moduleFloatPanel?.hidden) {
-        toggleFloatingModuleSwitcher(document.querySelector("#otsFloatingLauncherBtn"));
-      }
-    }
-  });
-  els.moduleFloatSwitcher.addEventListener("pointerleave", () => {
-    if (window.matchMedia("(min-width: 901px)").matches) {
-      clearTimeout(moduleSwitcherHoverTimer);
-      moduleSwitcherHoverTimer = setTimeout(() => {
-        closeFloatingModuleSwitcher();
-      }, 220);
-    }
-  });
-}
-
 els.moduleSwitcherTriggers?.forEach((trigger) => {
   trigger.setAttribute("aria-haspopup", "dialog");
+  if (trigger.tagName !== "BUTTON") {
+    trigger.setAttribute("role", "button");
+    trigger.setAttribute("tabindex", "0");
+    trigger.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        event.stopPropagation();
+        toggleFloatingModuleSwitcher(trigger);
+      }
+    });
+  }
   trigger.addEventListener("click", (event) => {
     event.preventDefault();
     event.stopPropagation();
