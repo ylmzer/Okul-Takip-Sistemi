@@ -376,3 +376,78 @@ body.auth-mode .login-form .ghost-action {
   font-weight: 600 !important;
   border: 1px dashed rgba(20, 184, 166, 0.5) !important;
 }
+
+/* ==========================================================================
+   Modül Ana Sayfası (Module Hub) Kurumsal İyileştirmeleri
+   ========================================================================== */
+
+/* 1. Kart iç boşluğu ve hover geçişi */
+body.module-mode .module-card {
+  position: relative !important;
+  min-height: 156px !important;
+  padding: 22px 24px !important;
+  border-radius: 14px !important;
+  transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease !important;
+}
+
+body.module-mode .module-card:hover {
+  transform: translateY(-2px) !important;
+}
+
+/* 2. Üstteki renkli çizgiyi sol hizaya (ikonla aynı eksene) al */
+body.module-mode .module-card::before {
+  left: 24px !important;
+  transform: none !important;
+  width: 34px !important;
+  height: 3px !important;
+  border-radius: 0 0 4px 4px !important;
+}
+
+/* 3. İkon kutusundaki eski parlak/glossy cam yansımasını kaldır, mat kurumsal rozet yap */
+body.module-mode .module-card .module-icon {
+  background-image: none !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  border-radius: 12px !important;
+  width: 46px !important;
+  height: 46px !important;
+}
+
+body.dark-mode.module-mode .module-card .module-icon {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.module-mode .module-card .module-icon::after {
+  display: none !important;
+}
+
+/* 4. Sağ alt köşeye sade tıklama oku */
+body.module-mode .module-card em {
+  display: inline-flex !important;
+  position: absolute !important;
+  right: 22px !important;
+  bottom: 20px !important;
+  font-style: normal !important;
+  font-size: 1.05rem !important;
+  color: #64748b !important;
+  opacity: 0.45 !important;
+  transition: transform 0.16s ease, opacity 0.16s ease, color 0.16s ease !important;
+}
+
+body.dark-mode.module-mode .module-card em {
+  color: #94a3b8 !important;
+}
+
+body.module-mode .module-card:hover em {
+  opacity: 1 !important;
+  color: #14b8a6 !important;
+  transform: translateX(3px) !important;
+}
+
+/* 5. Sağ üst kullanıcı avatarını koyu temada kurumsal Teal yap */
+body.dark-mode.module-mode .user-avatar {
+  background: rgba(20, 184, 166, 0.18) !important;
+  color: #5eead4 !important;
+  border: 1px solid rgba(45, 212, 191, 0.3) !important;
+}
+
