@@ -6609,14 +6609,14 @@ body.app-mode .question-card-footer {
   border-top: 1px solid rgba(148, 163, 184, 0.12) !important;
 }
 
-body.app-mode .quick-points {
+body.app-mode .question-card-footer .quick-points {
   display: inline-flex !important;
   align-items: center !important;
   gap: 8px !important;
   margin: 0 !important;
 }
 
-body.app-mode .quick-points input {
+body.app-mode .question-card-footer .quick-points input {
   width: 68px !important;
   min-height: 30px !important;
   height: 30px !important;
@@ -6882,6 +6882,7 @@ body.dark-mode .selected-actions .quick-points.selected-points,
 body.app-mode .selected-actions .basket-answer-space-select,
 body.dark-mode .selected-actions .basket-answer-space-select {
   display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
   gap: 4px !important;
   width: 100% !important;
   margin: 0 !important;
