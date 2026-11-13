@@ -32,7 +32,7 @@
     <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg" />
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=116" />
-    <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
+    <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=2" />
     <link rel="stylesheet" href="./theme-overrides.css?v=154" />
     <link rel="stylesheet" href="./scripts/modules/system-admin/styles.css?v=1" />
     <link rel="stylesheet" href="./scripts/modules/skill-training/styles.css?v=1" />
@@ -4113,28 +4113,28 @@
             <strong>Ders Takibi</strong>
           </div>
         </div>
-        <p class="student-subtitle">Sınıftan günlük değerlendirmeye</p>
+        <p class="student-subtitle">Sınıf, günlük takip ve değerlendirme</p>
 
         <nav class="student-nav" aria-label="Ders takibi bölümleri">
-          <button class="is-active" data-student-view="dashboard" type="button">Bugün</button>
-          <button data-student-view="classes" type="button">Sınıflarım</button>
-          <button data-student-view="students" type="button">Öğrenciler</button>
-          <button data-student-view="lessons" type="button">Dersler</button>
+          <button class="is-active" data-student-view="dashboard" type="button">Genel Bakış</button>
           <button data-student-view="routine" type="button">Günlük Değerlendirme</button>
           <button data-student-view="homework" type="button">Ödevler</button>
           <button data-student-view="projects" type="button">Projeler</button>
+          <button data-student-view="classes" type="button">Sınıflar</button>
+          <button data-student-view="students" type="button">Öğrenciler</button>
+          <button data-student-view="lessons" type="button">Dersler</button>
           <button data-student-view="reports" type="button">Raporlar</button>
         </nav>
 
         <div class="student-nav-mobile-select-container">
           <select id="studentNavMobileSelect" class="student-nav-mobile-select" aria-label="Menü Seçin">
-            <option value="dashboard">Bugün</option>
-            <option value="classes">Sınıflarım</option>
-            <option value="students">Öğrenciler</option>
-            <option value="lessons">Dersler</option>
+            <option value="dashboard">Genel Bakış</option>
             <option value="routine">Günlük Değerlendirme</option>
             <option value="homework">Ödevler</option>
             <option value="projects">Projeler</option>
+            <option value="classes">Sınıflar</option>
+            <option value="students">Öğrenciler</option>
+            <option value="lessons">Dersler</option>
             <option value="reports">Raporlar</option>
           </select>
         </div>
@@ -4143,30 +4143,152 @@
       <main class="student-workspace">
         <header class="student-topbar">
           <div>
-            <h1 id="studentPageTitle">Bugün</h1>
-            <p id="studentPageSubtitle">Günün sınıfları, değerlendirmeleri ve yaklaşan çalışmaları</p>
+            <h1 id="studentPageTitle">Genel Bakış</h1>
+            <p id="studentPageSubtitle">Sınıflar, günlük değerlendirme, ödev ve proje takibi</p>
           </div>
-          <button class="secondary-action module-switch-action" id="studentModuleSwitchBtn" data-module-switcher-trigger type="button" aria-expanded="false" aria-controls="moduleFloatPanel">Modül değiştir</button>
+          <div class="student-topbar-actions">
+            <button class="primary-action" data-student-target="routine" type="button">+ Hızlı Değerlendirme</button>
+            <button class="secondary-action module-switch-action" id="studentModuleSwitchBtn" data-module-switcher-trigger type="button" aria-expanded="false" aria-controls="moduleFloatPanel">Modül değiştir</button>
+          </div>
         </header>
 
+        <!-- 1. GENEL BAKIŞ -->
         <section class="student-view is-active" data-student-panel="dashboard">
           <div class="student-flow-card" id="studentFlowCard"></div>
           <div class="student-stat-grid" id="studentStatGrid"></div>
           <div class="student-quick-grid">
-            <button data-student-target="routine" type="button"><span>01</span><strong>Bugünü değerlendir</strong><small>Sınıf ve dersi seç</small></button>
-            <button data-student-target="classes" type="button"><span>02</span><strong>Sınıfları yönet</strong><small>Öğrenci ve dersleri gör</small></button>
-            <button data-student-target="homework" type="button"><span>03</span><strong>Ödev durumları</strong><small>Teslimleri işaretle</small></button>
-            <button data-student-target="projects" type="button"><span>04</span><strong>Proje durumları</strong><small>İlerlemeyi takip et</small></button>
+            <button data-student-target="routine" type="button"><span>01</span><strong>Günlük Değerlendirme</strong><small>Sınıf ve dersi seçip hızlı puanla</small></button>
+            <button data-student-target="homework" type="button"><span>02</span><strong>Ödev Ata &amp; Değerlendir</strong><small>Öğrenci veya tüm sınıfa ödev ver</small></button>
+            <button data-student-target="projects" type="button"><span>03</span><strong>Proje Ata &amp; Değerlendir</strong><small>Öğrenci veya sınıfa proje tanımla</small></button>
+            <button data-student-target="reports" type="button"><span>04</span><strong>Raporlama</strong><small>Ortalama, teslim ve yazdırılabilir rapor</small></button>
+          </div>
+          <div class="student-dashboard-grid" id="studentDashboardExtras"></div>
+        </section>
+
+        <!-- 2. GÜNLÜK HIZLI DEĞERLENDİRME -->
+        <section class="student-view" data-student-panel="routine">
+          <div class="student-panel">
+            <div class="student-panel-title">
+              <div>
+                <p class="eyebrow">Günlük hızlı değerlendirme</p>
+                <h2>Sınıf içi anlık puanlama</h2>
+              </div>
+              <div class="student-inline-actions">
+                <button class="ghost-action" id="studentRoutineAllFullBtn" type="button">Tümüne 100 Ver</button>
+                <button class="ghost-action" id="studentRoutineClearBtn" type="button">Günü Temizle</button>
+                <button class="primary-action" id="studentSaveRoutineBtn" type="button">Kaydet</button>
+              </div>
+            </div>
+            <div class="student-filter-grid">
+              <label>
+                <span>Tarih</span>
+                <div class="student-date-nav">
+                  <button class="ghost-action" id="studentRoutinePrevDayBtn" type="button" title="Önceki gün">&#8249;</button>
+                  <input id="studentRoutineDate" type="date" />
+                  <button class="ghost-action" id="studentRoutineNextDayBtn" type="button" title="Sonraki gün">&#8250;</button>
+                  <button class="ghost-action" id="studentRoutineTodayBtn" type="button">Bugün</button>
+                </div>
+              </label>
+              <label><span>Sınıf</span><select id="studentRoutineClass"></select></label>
+              <label><span>Ders</span><select id="studentRoutineLesson"></select></label>
+            </div>
+            <div class="student-routine-summary" id="studentRoutineSummary"></div>
+            <div class="student-routine-list" id="studentRoutineList"></div>
           </div>
         </section>
 
+        <!-- 3. ÖDEVLER -->
+        <section class="student-view" data-student-panel="homework">
+          <div class="student-two-column">
+            <form class="student-panel student-form" id="studentHomeworkForm">
+              <div class="student-panel-title">
+                <div>
+                  <p class="eyebrow">Ödev</p>
+                  <h2>Ödev tanımla &amp; ata</h2>
+                </div>
+              </div>
+              <input id="studentHomeworkId" type="hidden" />
+              <label><span>Sınıf</span><select id="studentHomeworkClass"></select></label>
+              <label><span>Ders</span><select id="studentHomeworkLesson"></select></label>
+              <label><span>Ödev başlığı</span><input id="studentHomeworkTitle" type="text" placeholder="Örn. 1. Ünite Çalışma Soruları" required /></label>
+              <label><span>Teslim tarihi</span><input id="studentHomeworkDue" type="date" /></label>
+              <label><span>Açıklama (isteğe bağlı)</span><textarea id="studentHomeworkDesc" rows="2" placeholder="Sayfa numarası veya kısa yönerge..."></textarea></label>
+              <div class="student-assign-box">
+                <span class="student-field-label">Atama kapsamı</span>
+                <div class="student-segmented" role="group" aria-label="Ödev atama kapsamı">
+                  <button type="button" class="is-active" data-assign-scope="homework" data-scope-val="class">Tüm Sınıf</button>
+                  <button type="button" data-assign-scope="homework" data-scope-val="students">Seçili Öğrenciler</button>
+                </div>
+                <div class="student-picker-box" id="studentHomeworkPicker" hidden>
+                  <div class="student-picker-head">
+                    <span id="studentHomeworkPickerCount">0 öğrenci seçili</span>
+                    <div>
+                      <button type="button" class="ghost-action" data-picker-all="homework">Tümü</button>
+                      <button type="button" class="ghost-action" data-picker-none="homework">Temizle</button>
+                    </div>
+                  </div>
+                  <div class="student-picker-list" id="studentHomeworkPickerList"></div>
+                </div>
+              </div>
+              <div class="student-form-actions">
+                <button class="primary-action" type="submit">Ödevi Kaydet</button>
+                <button class="ghost-action" id="studentClearHomeworkBtn" type="button">Temizle</button>
+              </div>
+            </form>
+            <div class="student-list" id="studentHomeworkList"></div>
+          </div>
+        </section>
+
+        <!-- 4. PROJELER -->
+        <section class="student-view" data-student-panel="projects">
+          <div class="student-two-column">
+            <form class="student-panel student-form" id="studentProjectForm">
+              <div class="student-panel-title">
+                <div>
+                  <p class="eyebrow">Proje</p>
+                  <h2>Proje tanımla &amp; ata</h2>
+                </div>
+              </div>
+              <input id="studentProjectId" type="hidden" />
+              <label><span>Sınıf</span><select id="studentProjectClass"></select></label>
+              <label><span>Ders</span><select id="studentProjectLesson"></select></label>
+              <label><span>Proje adı</span><input id="studentProjectTitle" type="text" placeholder="Örn. Dönem Performans Projesi" required /></label>
+              <label><span>Teslim tarihi</span><input id="studentProjectDue" type="date" /></label>
+              <label><span>Açıklama (isteğe bağlı)</span><textarea id="studentProjectDesc" rows="2" placeholder="Kapsam ve değerlendirme ölçütleri..."></textarea></label>
+              <div class="student-assign-box">
+                <span class="student-field-label">Atama kapsamı</span>
+                <div class="student-segmented" role="group" aria-label="Proje atama kapsamı">
+                  <button type="button" class="is-active" data-assign-scope="projects" data-scope-val="class">Tüm Sınıf</button>
+                  <button type="button" data-assign-scope="projects" data-scope-val="students">Seçili Öğrenciler</button>
+                </div>
+                <div class="student-picker-box" id="studentProjectPicker" hidden>
+                  <div class="student-picker-head">
+                    <span id="studentProjectPickerCount">0 öğrenci seçili</span>
+                    <div>
+                      <button type="button" class="ghost-action" data-picker-all="projects">Tümü</button>
+                      <button type="button" class="ghost-action" data-picker-none="projects">Temizle</button>
+                    </div>
+                  </div>
+                  <div class="student-picker-list" id="studentProjectPickerList"></div>
+                </div>
+              </div>
+              <div class="student-form-actions">
+                <button class="primary-action" type="submit">Projeyi Kaydet</button>
+                <button class="ghost-action" id="studentClearProjectBtn" type="button">Temizle</button>
+              </div>
+            </form>
+            <div class="student-list" id="studentProjectList"></div>
+          </div>
+        </section>
+
+        <!-- 5. SINIFLAR -->
         <section class="student-view" data-student-panel="classes">
           <div class="student-two-column">
             <form class="student-panel student-form" id="studentClassForm">
               <div class="student-panel-title">
                 <div>
                   <p class="eyebrow">Sınıf</p>
-                  <h2>Sınıf bilgisi</h2>
+                  <h2>Sınıf oluştur / düzenle</h2>
                 </div>
               </div>
               <input id="studentClassId" type="hidden" />
@@ -4181,6 +4303,42 @@
           </div>
         </section>
 
+        <!-- 6. ÖĞRENCİLER -->
+        <section class="student-view" data-student-panel="students">
+          <div class="student-two-column">
+            <form class="student-panel student-form" id="studentStudentForm">
+              <div class="student-panel-title">
+                <div>
+                  <p class="eyebrow">Öğrenci</p>
+                  <h2>Sınıfa öğrenci ekle</h2>
+                </div>
+              </div>
+              <input id="studentStudentId" type="hidden" />
+              <label><span>Sınıf</span><select id="studentStudentClass"></select></label>
+              <label><span>Okul numarası</span><input id="studentNo" type="text" placeholder="Örn. 152" /></label>
+              <label><span>Ad soyad</span><input id="studentName" type="text" placeholder="Örn. Ahmet Yılmaz" required /></label>
+              <div class="student-form-actions">
+                <button class="primary-action" type="submit">Kaydet</button>
+                <button class="ghost-action" id="studentClearStudentBtn" type="button">Temizle</button>
+              </div>
+              <div class="student-import-box">
+                <label class="wide">
+                  <span>E-Okul toplu liste yapıştır</span>
+                  <textarea id="studentImportText" rows="5" placeholder="Her satıra: Numara Ad Soyad&#10;Örn:&#10;101 Ali Demir&#10;102 Ayşe Kaya"></textarea>
+                </label>
+                <button class="secondary-action" id="studentImportBtn" type="button">Listeyi Sınıfa Aktar</button>
+              </div>
+            </form>
+            <div class="student-list-wrap">
+              <div class="student-search-bar">
+                <input id="studentSearchInput" type="search" placeholder="Öğrenci adı veya numara ara..." />
+              </div>
+              <div class="student-list" id="studentStudentList"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. DERSLER -->
         <section class="student-view" data-student-panel="lessons">
           <div class="student-two-column">
             <form class="student-panel student-form" id="studentLessonForm">
@@ -4203,111 +4361,25 @@
           </div>
         </section>
 
-        <section class="student-view" data-student-panel="students">
-          <div class="student-two-column">
-            <form class="student-panel student-form" id="studentStudentForm">
-              <div class="student-panel-title">
-                <div>
-                  <p class="eyebrow">Öğrenci</p>
-                  <h2>Liste ve kayıt</h2>
-                </div>
-              </div>
-              <input id="studentStudentId" type="hidden" />
-              <label><span>Sınıf</span><select id="studentStudentClass"></select></label>
-              <label><span>Okul numarası</span><input id="studentNo" type="text" placeholder="Örn. 152" /></label>
-              <label><span>Ad soyad</span><input id="studentName" type="text" required /></label>
-              <div class="student-form-actions">
-                <button class="primary-action" type="submit">Kaydet</button>
-                <button class="ghost-action" id="studentClearStudentBtn" type="button">Temizle</button>
-              </div>
-              <label class="wide">
-                <span>E-okul öğrenci listesi</span>
-                <textarea id="studentImportText" rows="7" placeholder="E-okuldan kopyaladığınız numara ve ad soyad listesini buraya yapıştırın."></textarea>
-              </label>
-              <button class="secondary-action" id="studentImportBtn" type="button">Listeyi aktar</button>
-            </form>
-            <div class="student-list" id="studentStudentList"></div>
-          </div>
-        </section>
-
-        <section class="student-view" data-student-panel="routine">
-          <div class="student-panel">
-            <div class="student-panel-title">
-              <div>
-                <p class="eyebrow">Günlük takip</p>
-                <h2>Günlük öğrenci değerlendirmesi</h2>
-              </div>
-              <button class="primary-action" id="studentSaveRoutineBtn" type="button">Tümünü kaydet</button>
-            </div>
-            <div class="student-filter-grid">
-              <label><span>Tarih</span><input id="studentRoutineDate" type="date" /></label>
-              <label><span>Sınıf</span><select id="studentRoutineClass"></select></label>
-              <label><span>Ders</span><select id="studentRoutineLesson"></select></label>
-            </div>
-            <div class="student-routine-list" id="studentRoutineList"></div>
-          </div>
-        </section>
-
-        <section class="student-view" data-student-panel="homework">
-          <div class="student-two-column">
-            <form class="student-panel student-form" id="studentHomeworkForm">
-              <div class="student-panel-title">
-                <div>
-                  <p class="eyebrow">Ödev</p>
-                  <h2>Ödev tanımla</h2>
-                </div>
-              </div>
-              <input id="studentHomeworkId" type="hidden" />
-              <label><span>Sınıf</span><select id="studentHomeworkClass"></select></label>
-              <label><span>Ders</span><select id="studentHomeworkLesson"></select></label>
-              <label><span>Ödev başlığı</span><input id="studentHomeworkTitle" type="text" required /></label>
-              <label><span>Teslim tarihi</span><input id="studentHomeworkDue" type="date" /></label>
-              <div class="student-form-actions">
-                <button class="primary-action" type="submit">Kaydet</button>
-                <button class="ghost-action" id="studentClearHomeworkBtn" type="button">Temizle</button>
-              </div>
-            </form>
-            <div class="student-list" id="studentHomeworkList"></div>
-          </div>
-        </section>
-
-        <section class="student-view" data-student-panel="projects">
-          <div class="student-two-column">
-            <form class="student-panel student-form" id="studentProjectForm">
-              <div class="student-panel-title">
-                <div>
-                  <p class="eyebrow">Proje</p>
-                  <h2>Proje tanımla</h2>
-                </div>
-              </div>
-              <input id="studentProjectId" type="hidden" />
-              <label><span>Sınıf</span><select id="studentProjectClass"></select></label>
-              <label><span>Ders</span><select id="studentProjectLesson"></select></label>
-              <label><span>Proje adı</span><input id="studentProjectTitle" type="text" required /></label>
-              <label><span>Teslim tarihi</span><input id="studentProjectDue" type="date" /></label>
-              <div class="student-form-actions">
-                <button class="primary-action" type="submit">Kaydet</button>
-                <button class="ghost-action" id="studentClearProjectBtn" type="button">Temizle</button>
-              </div>
-            </form>
-            <div class="student-list" id="studentProjectList"></div>
-          </div>
-        </section>
-
+        <!-- 8. RAPORLAR -->
         <section class="student-view" data-student-panel="reports">
           <div class="student-report-filters">
             <label><span>Sınıf</span><select id="studentReportClass"></select></label>
             <label><span>Ders</span><select id="studentReportLesson"></select></label>
-            <label><span>Rapor kapsamı</span><select id="studentReportType">
-              <option value="all">Tüm değerlendirmeler</option>
-              <option value="daily">Günlük değerlendirme</option>
-              <option value="homework">Ödev değerlendirmesi</option>
-              <option value="projects">Proje değerlendirmesi</option>
+            <label><span>Öğrenci</span><select id="studentReportStudent"></select></label>
+            <label><span>Kapsam</span><select id="studentReportType">
+              <option value="all">Genel Özet (Tümü)</option>
+              <option value="daily">Günlük Değerlendirme</option>
+              <option value="homework">Ödevler</option>
+              <option value="projects">Projeler</option>
             </select></label>
-            <label><span>Başlangıç tarihi</span><input id="studentReportStart" type="date" /></label>
-            <label><span>Bitiş tarihi</span><input id="studentReportEnd" type="date" /></label>
-            <label><span>Ödev / proje konusu</span><select id="studentReportTask"></select></label>
-            <button class="primary-action student-report-print" id="studentReportPrintBtn" type="button">Yazdırılabilir rapor oluştur</button>
+            <label><span>Başlangıç</span><input id="studentReportStart" type="date" /></label>
+            <label><span>Bitiş</span><input id="studentReportEnd" type="date" /></label>
+            <label><span>Ödev / Proje</span><select id="studentReportTask"></select></label>
+            <div class="student-report-actions">
+              <button class="secondary-action" id="studentReportCsvBtn" type="button">CSV İndir</button>
+              <button class="primary-action student-report-print" id="studentReportPrintBtn" type="button">Yazdırılabilir Rapor</button>
+            </div>
           </div>
           <div id="studentReportContent" class="student-report-content"></div>
         </section>
@@ -5435,7 +5507,7 @@
     <script src="./scripts/modules/annual-plan/index.js?v=17"></script>
     <script src="./scripts/modules/sorubank/index.js?v=8"></script>
     <script src="./scripts/modules/skill-training/index.js?v=36"></script>
-    <script src="./scripts/modules/student-tracking/index.js?v=14"></script>
+    <script src="./scripts/modules/student-tracking/index.js?v=15"></script>
     <script src="./scripts/modules/system-admin/index.js?v=1"></script>
   </body>
 </html>
