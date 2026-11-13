@@ -420,7 +420,8 @@ let cartViewMode = "summary";
 let basketSectionMode = "questions";
 let bulkSelectedQuestionIds = new Set();
 let pendingStudentStatusIds = [];
-let skillReportMonth = "2026-05";
+const _initialReportDate = new Date();
+let skillReportMonth = `${_initialReportDate.getFullYear()}-${String(_initialReportDate.getMonth() + 1).padStart(2, "0")}`;
 let activeSkillReportType = "absence";
 const sidebarCartCounts = new Map();
 let cartFeedback = null;
@@ -4536,9 +4537,12 @@ function renderSkillReportControls() {
     els.skillReportCoordinatorFilter.value = teachers.includes(current) ? current : "";
   }
   if (els.skillReportMonthSelect && !els.skillReportMonthSelect.options.length) {
+    const now = new Date();
+    const baseYear = now.getFullYear();
+    const baseMonth = now.getMonth();
     const months = [];
-    for (let offset = -6; offset <= 6; offset += 1) {
-      const date = new Date(2026, 4 + offset, 1);
+    for (let offset = -12; offset <= 12; offset += 1) {
+      const date = new Date(baseYear, baseMonth + offset, 1);
       const value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
       months.push(`<option value="${value}">${date.toLocaleDateString("tr-TR", { month: "long", year: "numeric" })}</option>`);
     }
