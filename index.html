@@ -33,7 +33,7 @@
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=116" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=1" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=143" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=144" />
   </head>
   <body class="auth-mode">
     <script>
@@ -1959,27 +1959,31 @@
                     <input id="skillReportEndDate" type="date" />
                   </label>
                 </div>
-                <label class="skill-date-row skill-report-nup">
-                  <span>Her sayfada</span>
-                  <select id="skillReportPerPage"><option value="1">1 İşletme</option><option value="2">2 İşletme</option></select>
-                </label>
-                <div class="skill-report-symbol-options">
-                  <span class="skill-symbol-title">Otomatik İşaret</span>
-                  <div class="skill-symbol-chips">
-                    <label class="skill-chip-checkbox" title="İşletme günlerinde [X] doldur">
-                      <input id="skillReportBusinessSymbolEnabled" type="checkbox" checked />
-                      <span class="chip-label"><strong>X</strong> İşletmede</span>
-                    </label>
-                    <label class="skill-chip-checkbox" title="Okul günlerinde [O] doldur">
-                      <input id="skillReportSchoolSymbolEnabled" type="checkbox" checked />
-                      <span class="chip-label"><strong>O</strong> Okulda</span>
-                    </label>
+                <div class="skill-report-nup-symbol-row">
+                  <label class="skill-date-row skill-report-nup">
+                    <span>Her sayfada</span>
+                    <select id="skillReportPerPage"><option value="1">1 İşletme</option><option value="2">2 İşletme</option></select>
+                  </label>
+                  <div class="skill-report-symbol-options">
+                    <span class="skill-symbol-title">Otomatik İşaret</span>
+                    <div class="skill-symbol-chips">
+                      <label class="skill-chip-checkbox" title="İşletme günlerinde [X] doldur">
+                        <input id="skillReportBusinessSymbolEnabled" type="checkbox" checked />
+                        <span class="chip-label"><strong>X</strong> İşletmede</span>
+                      </label>
+                      <label class="skill-chip-checkbox" title="Okul günlerinde [O] doldur">
+                        <input id="skillReportSchoolSymbolEnabled" type="checkbox" checked />
+                        <span class="chip-label"><strong>O</strong> Okulda</span>
+                      </label>
+                    </div>
                   </div>
                 </div>
                 <div class="skill-monthly-options" hidden>
                   <label class="skill-checkbox-line"><input id="skillMonthlyAutoFill" type="checkbox" /> Değerlendirme ve önerileri otomatik doldur</label>
-                  <label class="skill-checkbox-line skill-nested-option"><input id="skillMonthlyMasterCert" type="checkbox" /> Usta öğreticilik belgesi var</label>
-                  <label class="skill-checkbox-line skill-nested-option"><input id="skillMonthlyWagePaid" type="checkbox" /> Ücret ödeniyor</label>
+                  <div class="skill-monthly-nested-row">
+                    <label class="skill-checkbox-line skill-nested-option"><input id="skillMonthlyMasterCert" type="checkbox" /> Usta öğreticilik belgesi var</label>
+                    <label class="skill-checkbox-line skill-nested-option"><input id="skillMonthlyWagePaid" type="checkbox" /> Ücret ödeniyor</label>
+                  </div>
                 </div>
                 <div class="skill-termination-options" hidden>
                   <label class="skill-checkbox-line skill-checkbox-text-first"><span>Formu boş oluştur (şablon)</span><input id="skillTerminationBlank" type="checkbox" /></label>

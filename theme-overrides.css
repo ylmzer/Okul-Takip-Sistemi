@@ -10753,11 +10753,39 @@ body.skill-mode .skill-wage-manual-table td:last-child {
   padding: 8px 12px !important;
 }
 
+/* Devamsizlik Formu: Her Sayfada & Otomatik Isaret Yan Yana */
+body.skill-mode .skill-report-nup-symbol-row {
+  display: flex !important;
+  align-items: flex-end !important;
+  gap: 10px !important;
+  width: 100% !important;
+}
+
+body.skill-mode .skill-report-nup-symbol-row:not(:has(> :not([hidden]))) {
+  display: none !important;
+}
+
+body.skill-mode .skill-report-nup-symbol-row .skill-report-nup {
+  flex: 1 1 0% !important;
+  min-width: 110px !important;
+}
+
+body.skill-mode .skill-report-nup-symbol-row .skill-report-symbol-options {
+  flex: 1.65 1 0% !important;
+  min-width: 0 !important;
+}
+
+body.skill-mode .skill-report-nup-symbol-row .skill-chip-checkbox {
+  padding: 4px 6px !important;
+  min-height: 33px !important;
+  height: 33px !important;
+}
+
 /* Aylik Rehberlik Otomatik Doldur Alt Secenekleri */
 body.skill-mode .skill-monthly-options {
   display: flex !important;
   flex-direction: column !important;
-  gap: 6px !important;
+  gap: 8px !important;
   padding: 10px 12px !important;
   border-radius: 8px !important;
   background: rgba(15, 118, 110, 0.04) !important;
@@ -10773,8 +10801,17 @@ body.skill-mode .skill-monthly-options[hidden] {
   display: none !important;
 }
 
+body.skill-mode .skill-monthly-nested-row {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 8px 16px !important;
+  padding-left: 18px !important;
+}
+
 body.skill-mode .skill-monthly-options .skill-nested-option {
-  margin-left: 18px !important;
-  font-size: 0.8rem !important;
+  margin-left: 0 !important;
+  font-size: 0.79rem !important;
   opacity: 0.92 !important;
+  white-space: nowrap !important;
 }
