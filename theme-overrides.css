@@ -6571,27 +6571,39 @@ body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .glob
     display: none !important;
   }
 
-  /* Skill Training (Beceri Eğitimi) Topbar & Centered Search */
+  /* Skill Training (Beceri Eğitimi) Topbar & Fixed Centered Search */
   body.skill-mode .skill-topbar {
-    display: flex !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 440px) minmax(0, 1fr) !important;
     align-items: center !important;
-    justify-content: space-between !important;
-    padding-right: 120px !important; /* Space so it never touches top-right OTS button */
+    padding-right: 0 !important;
     gap: 16px !important;
   }
 
+  body.skill-mode .skill-topbar h1 {
+    grid-column: 1 !important;
+    justify-self: start !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
   body.skill-mode .skill-header-actions {
+    grid-column: 2 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    flex: 1 !important;
-    max-width: 520px !important;
-    margin: 0 auto !important; /* Centers the search bar */
+    width: 100% !important;
+    max-width: 440px !important;
+    margin: 0 !important;
+    justify-self: center !important;
   }
 
   body.skill-mode .skill-search {
     width: 100% !important;
-    max-width: 480px !important;
+    max-width: 440px !important;
   }
 
   /* Hide mobile hub button on desktop */
