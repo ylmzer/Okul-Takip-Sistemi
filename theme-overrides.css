@@ -6744,4 +6744,86 @@ body.dark-mode .basket-summary strong {
   color: #f1f5f9 !important;
 }
 
+/* Soru Havuzu: Sorular Icin Daha Genis Gorunum Alani */
+@media (min-width: 901px) {
+  body.app-mode .workspace {
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+  }
+
+  body.app-mode .topbar {
+    margin-bottom: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  body.app-mode .topbar .eyebrow {
+    margin-bottom: 2px !important;
+    font-size: 0.66rem !important;
+  }
+
+  body.app-mode .topbar h1 {
+    font-size: 1.4rem !important;
+    line-height: 1.2 !important;
+  }
+
+  body.app-mode .tabs {
+    margin-bottom: 10px !important;
+    gap: 6px !important;
+  }
+
+  body.app-mode .tabs .tab {
+    min-height: 35px !important;
+    padding: 6px 14px !important;
+    font-size: 0.84rem !important;
+  }
+
+  body.app-mode #bankView.is-active {
+    overflow-y: auto !important;
+    padding-right: 4px !important;
+  }
+
+  body.app-mode #bankView .question-grid {
+    flex: 0 0 auto !important;
+    overflow-y: visible !important;
+    padding-bottom: 24px !important;
+  }
+
+  body.app-mode #bankView .toolbar {
+    padding: 8px 10px !important;
+    margin-bottom: 8px !important;
+    gap: 8px !important;
+    align-items: center !important;
+  }
+
+  body.app-mode #bankView .toolbar label > span {
+    display: none !important;
+  }
+
+  body.app-mode #bankView .toolbar input,
+  body.app-mode #bankView .toolbar select,
+  body.app-mode #bankView .bank-import-action {
+    min-height: 36px !important;
+    height: 36px !important;
+    margin: 0 !important;
+  }
+
+  body.app-mode #bankView .bulk-toolbar {
+    padding: 6px 12px !important;
+    margin-bottom: 10px !important;
+    min-height: 38px !important;
+  }
+
+  body.app-mode #bankView .bulk-toolbar button {
+    min-height: 30px !important;
+    height: 30px !important;
+    padding: 0 10px !important;
+    font-size: 0.8rem !important;
+  }
+
+  body.app-mode #bankView .question-card {
+    padding: 12px 14px !important;
+    gap: 8px !important;
+  }
+}
+
 
