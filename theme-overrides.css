@@ -6869,13 +6869,34 @@ body.dark-mode .basket-panel-card {
   color: #e2e8f0 !important;
 }
 
+body.app-mode .selected-actions,
 body.dark-mode .selected-actions {
+  display: grid !important;
+  grid-template-columns: 76px minmax(132px, 148px) 74px !important;
+  gap: 10px !important;
   align-items: end !important;
 }
 
-body.dark-mode .selected-actions .selected-points {
+body.app-mode .selected-actions .quick-points.selected-points,
+body.dark-mode .selected-actions .quick-points.selected-points,
+body.app-mode .selected-actions .basket-answer-space-select,
+body.dark-mode .selected-actions .basket-answer-space-select {
   display: grid !important;
-  gap: 3px !important;
+  gap: 4px !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+body.app-mode .selected-actions .quick-points.selected-points input,
+body.dark-mode .selected-actions .quick-points.selected-points input,
+body.app-mode .selected-actions .basket-answer-space-select select,
+body.dark-mode .selected-actions .basket-answer-space-select select,
+body.app-mode .selected-actions .ghost-action,
+body.dark-mode .selected-actions .ghost-action {
+  width: 100% !important;
+  min-height: 36px !important;
+  height: 36px !important;
+  box-sizing: border-box !important;
   margin: 0 !important;
 }
 
@@ -6886,6 +6907,31 @@ body.dark-mode .basket-answer-space-select span {
   color: #94a3b8 !important;
   font-size: 0.7rem !important;
   font-weight: 700 !important;
+  line-height: 1.2 !important;
+}
+
+/* Sepet Soru + Cevap Alani Koyu Tema Uyumu */
+body.dark-mode .basket-qa section {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(148, 163, 184, 0.16) !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .basket-qa h3 {
+  color: #5eead4 !important;
+}
+
+body.dark-mode .basket-qa p,
+body.dark-mode .basket-qa div,
+body.dark-mode .basket-qa li,
+body.dark-mode .basket-qa td,
+body.dark-mode .basket-qa th {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .basket-qa td,
+body.dark-mode .basket-qa th {
+  border-color: rgba(148, 163, 184, 0.2) !important;
 }
 
 
