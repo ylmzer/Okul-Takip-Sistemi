@@ -1014,6 +1014,7 @@ const els = {
   skillMonthlyOptions: document.querySelector(".skill-monthly-options"),
   skillMonthlyAutoFill: document.querySelector("#skillMonthlyAutoFill"),
   skillMonthlyMasterCert: document.querySelector("#skillMonthlyMasterCert"),
+  skillMonthlyWagePaid: document.querySelector("#skillMonthlyWagePaid"),
   skillTerminationOptions: document.querySelector(".skill-termination-options"),
   skillTerminationBlank: document.querySelector("#skillTerminationBlank"),
   skillTerminationTemplate: document.querySelector("#skillTerminationTemplate"),
@@ -4925,9 +4926,12 @@ function runSkillReportPrecheck() {
 
 function updateSkillReportPerPageLabels() {
   if (!els.skillReportPerPage) return;
-  const labels = activeSkillReportType === "monthly"
-    ? { 1: "1 Form (Dikey)", 2: "2 Form (Yatay)" }
-    : { 1: "1", 2: "2" };
+  let labels = { 1: "1 İşletme", 2: "2 İşletme" };
+  if (activeSkillReportType === "monthly") {
+    labels = { 1: "1 Form (Dikey)", 2: "2 Form (Yatay)" };
+  } else if (activeSkillReportType === "daily") {
+    labels = { 1: "1 Form (Tam Sayfa)", 2: "2 Form (Yarım Sayfa)" };
+  }
   Array.from(els.skillReportPerPage.options).forEach((option) => {
     option.textContent = labels[option.value] || option.textContent;
   });
@@ -5207,7 +5211,7 @@ const monthlyGuidanceTopics = [
   { question: "3. Öğrenci devam durumu günlük olarak takip ediliyor mu?", answer: "Devamsızlık günlük olarak takip ediliyor." },
   { question: "4. Meslek eğitimi çalışmaları puanla değerlendiriliyor mu?", answer: "Mesleki çalışmalar puanla değerlendiriliyor." },
   { question: "5. Yapılan işlerle ilgili olarak her öğrenciye iş dosyası tutuluyor mu?", answer: "Öğrenciler iş dosyası tutturuluyor." },
-  { question: "6. Öğrencilere 3308 sayılı Kanunun 25 inci maddesine göre aylık ücret ödeniyor mu?", answer: "Aylık ücret ödeniyor." },
+  { question: "6. Öğrencilere 3308 sayılı Kanunun 25 inci maddesine göre aylık ücret ödeniyor mu?", answer: () => (els.skillMonthlyWagePaid?.checked ? "Aylık ücret ödeniyor." : ".....") },
   { question: "7. Meslek eğitimi, çalışma saatlerinde yapılıyor mu?", answer: "Meslek eğitimi, çalışma saatlerinde yapılıyor." },
   { question: "8. İş güvenliği konusunda öğrencilere yeterli bilgi veriliyor ve gerekli tedbirler alınıyor mu?", answer: "Yeterli bilgi veriliyor ve gerekli tedbirler alınıyor." },
   { question: "9. Öğrenciler disiplin, kılık-kıyafet ve işletmenin kurallarına uyuyor mu?", answer: "Öğrenciler işletmenin kurallarına uyuyor." },
@@ -5215,7 +5219,7 @@ const monthlyGuidanceTopics = [
   {
     section: "B. Eğitici Personel ile ilgili konular:",
     question: "1. İşletmenin meslek eğitimi ile görevli personelinin usta öğreticilik belgesi var mı?",
-    answer: () => (els.skillMonthlyMasterCert?.checked ? "Usta öğreticilik belgesi var" : "Usta öğreticilik belgesi yok")
+    answer: () => (els.skillMonthlyMasterCert?.checked ? "Usta öğreticilik belgesi var" : ".....")
   },
   { question: "2. Eğitici personelin sorumlu olduğu öğrenci grubu sayısı Mesleki ve Teknik Eğitim Yönetmeliğinin 192 inci maddesine uygun mu?", answer: "Öğrenci grubu sayısı yönetmeliğe uygundur." },
   { question: "3. Meslek eğitimi konusunda koordinatör tarafından eğitici personele yapılan rehberlik ve konusu.", answer: "3308 Sayılı Kanun hakkında bilgi verildi. Staj dosyaları hakkında bilgi verildi." },

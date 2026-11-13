@@ -10686,3 +10686,95 @@ body.dark-mode.skill-mode #skillReportDirectPrintBtn:hover {
   border-color: rgba(45, 212, 191, 0.35) !important;
   color: #ffffff !important;
 }
+
+
+/* ==========================================================================
+   Dark Mode Select/Option & Manuel Devamsizlik Tablo Sutun Duzeltmesi
+   ========================================================================== */
+
+body.dark-mode select,
+body.dark-mode select option {
+  color-scheme: dark !important;
+  background-color: #101924 !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode select option:checked,
+body.dark-mode select option:hover {
+  background-color: #0f766e !important;
+  color: #ffffff !important;
+}
+
+/* Manuel Devamsizlik Girisi Tablo Sutun Cakismasi Duzeltmesi */
+body.skill-mode .skill-wage-manual-table {
+  width: 100% !important;
+  table-layout: auto !important;
+}
+
+body.skill-mode .skill-wage-manual-table th:first-child,
+body.skill-mode .skill-wage-manual-table td:first-child {
+  width: auto !important;
+  min-width: 180px !important;
+  max-width: 280px !important;
+  text-align: left !important;
+  padding: 8px 12px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+body.skill-mode .skill-wage-manual-table th:nth-child(2),
+body.skill-mode .skill-wage-manual-table td:nth-child(2) {
+  width: 85px !important;
+  min-width: 85px !important;
+  max-width: 100px !important;
+  text-align: center !important;
+  padding: 8px 10px !important;
+}
+
+body.skill-mode .skill-wage-manual-table th:nth-child(3),
+body.skill-mode .skill-wage-manual-table td:nth-child(3) {
+  min-width: 160px !important;
+  text-align: left !important;
+  padding: 8px 12px !important;
+}
+
+body.skill-mode .skill-wage-manual-table th:nth-child(4),
+body.skill-mode .skill-wage-manual-table td:nth-child(4) {
+  width: 80px !important;
+  text-align: center !important;
+  padding: 8px 10px !important;
+}
+
+body.skill-mode .skill-wage-manual-table th:last-child,
+body.skill-mode .skill-wage-manual-table td:last-child {
+  width: 150px !important;
+  text-align: right !important;
+  padding: 8px 12px !important;
+}
+
+/* Aylik Rehberlik Otomatik Doldur Alt Secenekleri */
+body.skill-mode .skill-monthly-options {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  padding: 10px 12px !important;
+  border-radius: 8px !important;
+  background: rgba(15, 118, 110, 0.04) !important;
+  border: 1px solid rgba(15, 118, 110, 0.14) !important;
+}
+
+body.dark-mode.skill-mode .skill-monthly-options {
+  background: rgba(20, 184, 166, 0.05) !important;
+  border-color: rgba(45, 212, 191, 0.14) !important;
+}
+
+body.skill-mode .skill-monthly-options[hidden] {
+  display: none !important;
+}
+
+body.skill-mode .skill-monthly-options .skill-nested-option {
+  margin-left: 18px !important;
+  font-size: 0.8rem !important;
+  opacity: 0.92 !important;
+}
