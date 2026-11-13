@@ -4101,6 +4101,12 @@ function handleSkillQuickAction(action, event) {
     }, 100);
   } else if (action === "reports") {
     setSkillView("reports");
+  } else if (action === "fields") {
+    setSkillView("fields");
+  } else if (action === "holidays") {
+    setSkillView("holidays");
+  } else if (action === "school") {
+    setSkillView("school");
   } else if (action === "import-data") {
     if (typeof window.openSkillImportDialog === "function") {
       window.openSkillImportDialog();
@@ -4202,9 +4208,9 @@ function renderSkillStats() {
         <strong class="stat-value">${fieldCount}</strong>
         <small class="stat-sub">Tanımlı alan / dal</small>
       </div>
-      <button type="button" class="stat-action-btn action-report" onclick="handleSkillQuickAction('reports', event)" title="Devamsızlık, rehberlik ve ücret raporlarını aç">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <span>Rapor Al</span>
+      <button type="button" class="stat-action-btn action-report" onclick="handleSkillQuickAction('fields', event)" title="Alan ve dal tanımlarını yönet">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        <span>Alan / Dal Yönet</span>
       </button>
     </div>
 
@@ -4219,9 +4225,9 @@ function renderSkillStats() {
         <h3 class="stat-holiday-title" title="${escapeHtml(nextHoliday?.name || "Tatil kaydı yok")}">${escapeHtml(nextHoliday?.name || "Tatil kaydı yok")}</h3>
         <small class="stat-sub">${holidaySub}</small>
       </div>
-      <button type="button" class="stat-action-btn action-import" onclick="handleSkillQuickAction('import-data', event)" title="SQLite veya Excel dosyası içe aktar">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        <span>Veri Aktar</span>
+      <button type="button" class="stat-action-btn action-import" onclick="handleSkillQuickAction('holidays', event)" title="Resmi tatil takvimini aç">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>Tatil Takvimi</span>
       </button>
     </div>
   `;
@@ -4283,6 +4289,31 @@ function renderSkillAlerts() {
     alertCountEl.classList.toggle("is-empty", alerts.length === 0);
   }
 
+  const dayNamesMap = { "1": "Pazartesi", "2": "Salı", "3": "Çarşamba", "4": "Perşembe", "5": "Cuma" };
+  const jsDay = new Date().getDay();
+  const isWeekday = jsDay >= 1 && jsDay <= 5;
+  const targetDayKey = isWeekday ? String(jsDay) : "1";
+  const todayVisits = skillState.coordinators.filter((item) => String(item.day || "").trim() === targetDayKey).length;
+  const visitTitle = isWeekday ? `Bugünkü Ziyaretler (${dayNamesMap[targetDayKey]})` : `Yaklaşan Ziyaretler (${dayNamesMap[targetDayKey]})`;
+  const visitText = todayVisits > 0
+    ? `${todayVisits} işletme için koordinatörlük rehberliği planlanmış.`
+    : `${dayNamesMap[targetDayKey]} günü için planlı işletme ziyareti bulunmuyor.`;
+
+  const visitSummaryHtml = `
+    <div class="skill-visit-summary">
+      <div class="skill-visit-summary-left">
+        <span class="skill-visit-icon" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </span>
+        <div>
+          <strong>${escapeHtml(visitTitle)}</strong>
+          <small>${escapeHtml(visitText)}</small>
+        </div>
+      </div>
+      <button type="button" class="skill-visit-btn" onclick="filterCoordinatorsByDay('${targetDayKey}')">Programı Gör ➔</button>
+    </div>
+  `;
+
   if (!alerts.length) {
     els.skillAlertList.innerHTML = `
       <div class="skill-alert-empty-box">
@@ -4293,6 +4324,7 @@ function renderSkillAlerts() {
         </div>
         <button type="button" class="skill-alert-empty-btn" onclick="setSkillView('reports')">Rapor Al ➔</button>
       </div>
+      ${visitSummaryHtml}
     `;
     return;
   }
@@ -4310,7 +4342,7 @@ function renderSkillAlerts() {
       </div>
       <button data-skill-view-target="${escapeHtml(alert.target)}" type="button">${escapeHtml(alert.buttonText)} ➔</button>
     </div>
-  `).join("");
+  `).join("") + visitSummaryHtml;
 }
 
 function renderSkillWeeklySchedule() {
@@ -4350,7 +4382,7 @@ function renderSkillWeeklySchedule() {
     const count = counts[day.key] || 0;
     const pct = Math.round((count / maxCount) * 100);
     return `
-      <div class="skill-schedule-row" onclick="filterCoordinatorsByDay('${day.key}')" title="${day.label} günkü işletmeleri görüntüle">
+      <div class="skill-schedule-row${count === 0 ? " is-zero" : ""}" onclick="filterCoordinatorsByDay('${day.key}')" title="${day.label} günkü işletmeleri görüntüle">
         <span class="skill-day-pill ${day.pillClass}" style="min-width: 82px; text-align: center;">${day.label}</span>
         <div class="skill-schedule-bar-wrap">
           <div class="skill-schedule-bar ${day.pillClass}" style="width: ${Math.max(pct, count > 0 ? 8 : 0)}%;"></div>
