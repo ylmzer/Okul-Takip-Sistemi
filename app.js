@@ -1520,6 +1520,22 @@ function ensureSkillCollections() {
   if (deduplicateSkillBusinesses(skillState)) {
     saveSkillState();
   }
+  if (Array.isArray(skillState.holidays) && skillState.holidays.some((h) => String(h.startDate || "").startsWith("2026-"))) {
+    const hasNovBreak2026 = skillState.holidays.some((h) => h.startDate === "2026-11-16" || (h.name || "").includes("1. dönem ara"));
+    if (!hasNovBreak2026) {
+      skillState.holidays.push({
+        id: uid("hol"),
+        startDate: "2026-11-16",
+        endDate: "2026-11-20",
+        startPart: "full",
+        endPart: "full",
+        name: "MEB 1. dönem ara tatili",
+        isSchoolBreak: true
+      });
+      skillState.holidays = sortSkillHolidays(skillState.holidays);
+      saveSkillState();
+    }
+  }
 }
 
 
@@ -3657,20 +3673,64 @@ function getAutomaticSkillHolidays(year) {
     { startDate: `${year}-10-28`, endDate: `${year}-10-29`, startPart: "pm", endPart: "full", name: "Cumhuriyet Bayramı" }
   ];
   const yearSpecific = {
+    2024: [
+      { startDate: "2024-01-22", endDate: "2024-02-02", name: "MEB yarıyıl tatili", isSchoolBreak: true },
+      { startDate: "2024-04-08", endDate: "2024-04-12", name: "MEB 2. dönem ara tatili", isSchoolBreak: true },
+      { startDate: "2024-04-09", endDate: "2024-04-12", startPart: "pm", endPart: "full", name: "Ramazan Bayramı Tatili" },
+      { startDate: "2024-06-15", endDate: "2024-06-19", startPart: "pm", endPart: "full", name: "Kurban Bayramı Tatili" },
+      { startDate: "2024-11-11", endDate: "2024-11-15", name: "MEB 1. dönem ara tatili", isSchoolBreak: true }
+    ],
+    2025: [
+      { startDate: "2025-01-20", endDate: "2025-01-31", name: "MEB yarıyıl tatili", isSchoolBreak: true },
+      { startDate: "2025-03-29", endDate: "2025-04-01", startPart: "pm", endPart: "full", name: "Ramazan Bayramı Tatili" },
+      { startDate: "2025-04-07", endDate: "2025-04-11", name: "MEB 2. dönem ara tatili", isSchoolBreak: true },
+      { startDate: "2025-06-05", endDate: "2025-06-09", startPart: "pm", endPart: "full", name: "Kurban Bayramı Tatili" },
+      { startDate: "2025-11-10", endDate: "2025-11-14", name: "MEB 1. dönem ara tatili", isSchoolBreak: true }
+    ],
     2026: [
       { startDate: "2026-01-19", endDate: "2026-01-30", name: "MEB yarıyıl tatili", isSchoolBreak: true },
       { startDate: "2026-03-16", endDate: "2026-03-20", name: "MEB 2. dönem ara tatili", isSchoolBreak: true },
       { startDate: "2026-03-19", endDate: "2026-03-22", startPart: "pm", endPart: "full", name: "Ramazan Bayramı Tatili" },
-      { startDate: "2026-05-26", endDate: "2026-05-30", startPart: "pm", endPart: "full", name: "Kurban Bayramı Tatili" }
+      { startDate: "2026-05-26", endDate: "2026-05-30", startPart: "pm", endPart: "full", name: "Kurban Bayramı Tatili" },
+      { startDate: "2026-11-16", endDate: "2026-11-20", name: "MEB 1. dönem ara tatili", isSchoolBreak: true }
+    ],
+    2027: [
+      { startDate: "2027-01-25", endDate: "2027-02-05", name: "MEB yarıyıl tatili", isSchoolBreak: true },
+      { startDate: "2027-03-08", endDate: "2027-03-11", startPart: "pm", endPart: "full", name: "Ramazan Bayramı Tatili" },
+      { startDate: "2027-03-08", endDate: "2027-03-12", name: "MEB 2. dönem ara tatili", isSchoolBreak: true },
+      { startDate: "2027-05-15", endDate: "2027-05-19", startPart: "pm", endPart: "full", name: "Kurban Bayramı Tatili" },
+      { startDate: "2027-11-15", endDate: "2027-11-19", name: "MEB 1. dönem ara tatili", isSchoolBreak: true }
+    ],
+    2028: [
+      { startDate: "2028-01-24", endDate: "2028-02-04", name: "MEB yarıyıl tatili", isSchoolBreak: true },
+      { startDate: "2028-02-26", endDate: "2028-02-29", startPart: "pm", endPart: "full", name: "Ramazan Bayramı Tatili" },
+      { startDate: "2028-04-17", endDate: "2028-04-21", name: "MEB 2. dönem ara tatili", isSchoolBreak: true },
+      { startDate: "2028-05-04", endDate: "2028-05-08", startPart: "pm", endPart: "full", name: "Kurban Bayramı Tatili" },
+      { startDate: "2028-11-13", endDate: "2028-11-17", name: "MEB 1. dönem ara tatili", isSchoolBreak: true }
+    ],
+    2029: [
+      { startDate: "2029-01-22", endDate: "2029-02-02", name: "MEB yarıyıl tatili", isSchoolBreak: true },
+      { startDate: "2029-02-14", endDate: "2029-02-17", startPart: "pm", endPart: "full", name: "Ramazan Bayramı Tatili" },
+      { startDate: "2029-04-09", endDate: "2029-04-13", name: "MEB 2. dönem ara tatili", isSchoolBreak: true },
+      { startDate: "2029-04-23", endDate: "2029-04-27", startPart: "pm", endPart: "full", name: "Kurban Bayramı Tatili" },
+      { startDate: "2029-11-12", endDate: "2029-11-16", name: "MEB 1. dönem ara tatili", isSchoolBreak: true }
+    ],
+    2030: [
+      { startDate: "2030-01-21", endDate: "2030-02-01", name: "MEB yarıyıl tatili", isSchoolBreak: true },
+      { startDate: "2030-02-04", endDate: "2030-02-07", startPart: "pm", endPart: "full", name: "Ramazan Bayramı Tatili" },
+      { startDate: "2030-04-08", endDate: "2030-04-12", name: "MEB 2. dönem ara tatili", isSchoolBreak: true },
+      { startDate: "2030-04-13", endDate: "2030-04-17", startPart: "pm", endPart: "full", name: "Kurban Bayramı Tatili" },
+      { startDate: "2030-11-11", endDate: "2030-11-15", name: "MEB 1. dönem ara tatili", isSchoolBreak: true }
     ]
   };
-  return [...fixedHolidays, ...(yearSpecific[year] || [])].map((holiday) => ({
+  const list = [...fixedHolidays, ...(yearSpecific[year] || [])].map((holiday) => ({
     id: uid("hol"),
     startPart: "full",
     endPart: "full",
     isSchoolBreak: false,
     ...holiday
   }));
+  return list.sort((a, b) => String(a.startDate || "").localeCompare(String(b.startDate || "")));
 }
 
 function renderSkillHolidayYears() {
