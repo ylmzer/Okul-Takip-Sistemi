@@ -82,22 +82,30 @@ body:not(.dark-mode) .student-nav button.is-active {
   display: none;
 }
 
-.student-workspace {
+.student-workspace,
+body.student-mode .student-workspace {
   min-width: 0;
-  padding: 20px 24px 36px;
+  padding: 20px 24px 36px !important;
+  margin-top: 0 !important;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.student-topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.student-topbar,
+body.student-mode .student-topbar {
+  position: relative !important;
+  top: auto !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
   gap: 14px;
   flex-wrap: wrap;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 0 12px 0 !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14) !important;
 }
 
 .student-topbar h1 {
@@ -305,17 +313,29 @@ body:not(.dark-mode) .student-stat-card {
   gap: 12px;
 }
 
-.student-quick-grid button {
-  padding: 14px;
+.student-quick-grid button,
+body.student-mode .student-quick-grid button {
+  padding: 14px !important;
   border-radius: 12px;
   border: 1px solid rgba(148, 163, 184, 0.14);
   background: rgba(255, 255, 255, 0.03);
   color: inherit;
-  text-align: left;
-  display: grid;
-  gap: 4px;
+  text-align: left !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  grid-template-columns: none !important;
+  gap: 6px !important;
   cursor: pointer;
   transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.student-quick-grid button small,
+body.student-mode .student-quick-grid button small {
+  color: #94a3b8;
+  font-size: 0.78rem;
+  white-space: normal !important;
+  width: 100% !important;
 }
 
 .student-quick-grid button:hover {
