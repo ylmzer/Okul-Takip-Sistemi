@@ -4332,7 +4332,11 @@
               </div>
               <div class="student-import-box">
                 <label class="wide">
-                  <span>E-Okul toplu liste yapıştır</span>
+                  <span>E-Okul Excel / CSV dosyasından aktar</span>
+                  <input id="studentExcelImportInput" type="file" accept=".xlsx,.xls,.csv" />
+                </label>
+                <label class="wide">
+                  <span>veya E-Okul toplu liste yapıştır</span>
                   <textarea id="studentImportText" rows="5" placeholder="Her satıra: Numara Ad Soyad&#10;Örn:&#10;101 Ali Demir&#10;102 Ayşe Kaya"></textarea>
                 </label>
                 <button class="secondary-action" id="studentImportBtn" type="button">Listeyi Sınıfa Aktar</button>
@@ -5516,7 +5520,7 @@
     <script src="./scripts/modules/annual-plan/index.js?v=17"></script>
     <script src="./scripts/modules/sorubank/index.js?v=8"></script>
     <script src="./scripts/modules/skill-training/index.js?v=37"></script>
-    <script src="./scripts/modules/student-tracking/index.js?v=15"></script>
+    <script src="./scripts/modules/student-tracking/index.js?v=16"></script>
     <script src="./scripts/modules/system-admin/index.js?v=1"></script>
   </body>
 </html>

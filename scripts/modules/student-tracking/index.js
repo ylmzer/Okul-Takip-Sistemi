@@ -56,6 +56,7 @@ const studentEls = {
   clearStudent: document.querySelector("#studentClearStudentBtn"),
   importText: document.querySelector("#studentImportText"),
   importBtn: document.querySelector("#studentImportBtn"),
+  excelImportInput: document.querySelector("#studentExcelImportInput"),
   routineDate: document.querySelector("#studentRoutineDate"),
   routinePrevDay: document.querySelector("#studentRoutinePrevDayBtn"),
   routineNextDay: document.querySelector("#studentRoutineNextDayBtn"),
@@ -1022,6 +1023,145 @@ function importStudents() {
   }
 }
 
+async function importStudentsFromFile(event) {
+  const input = event.target;
+  const file = input?.files?.[0];
+  if (!file) return;
+
+  const fallbackClassId = studentEls.studentClass?.value || "";
+  const norm = (v) => String(v ?? "").trim();
+  const normHeader = (v) => norm(v).toLocaleLowerCase("tr-TR").replace(/[.\s/_-]+/g, " ").trim();
+
+  try {
+    let rows = [];
+    if (file.name.toLowerCase().endsWith(".csv")) {
+      const text = await file.text();
+      if (window.XLSX) {
+        const wb = window.XLSX.read(text, { type: "string" });
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        rows = window.XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+      } else {
+        rows = text.split(/\r?\n/).map((line) => line.split(/[;,]/));
+      }
+    } else {
+      if (!window.XLSX) {
+        toast("Excel okuyucu (XLSX) yüklenemedi.", "error");
+        return;
+      }
+      const buffer = await file.arrayBuffer();
+      const wb = window.XLSX.read(buffer, { type: "array" });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      rows = window.XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+    }
+
+    if (!rows.length) {
+      toast("Dosya boş görünüyor.", "warning");
+      return;
+    }
+
+    let headerIdx = -1;
+    let colNo = -1;
+    let colFullName = -1;
+    let colFirst = -1;
+    let colLast = -1;
+    let colClass = -1;
+
+    for (let i = 0; i < Math.min(rows.length, 25); i += 1) {
+      const cells = (rows[i] || []).map(normHeader);
+      const idxName = cells.findIndex((c) => c === "ad soyad" || c === "adı soyadı" || c === "adi soyadi" || c === "öğrenci adı soyadı" || c === "öğrenci adı");
+      const idxFirst = cells.findIndex((c) => c === "adı" || c === "adi" || c === "ad");
+      const idxLast = cells.findIndex((c) => c === "soyadı" || c === "soyadi" || c === "soyad");
+      const idxNo = cells.findIndex((c) => c.includes("okul no") || c.includes("öğrenci no") || c.includes("ogrenci no") || c === "no" || c === "numara");
+      const idxClass = cells.findIndex((c) => c.includes("sınıf") || c.includes("sinif") || c.includes("şube") || c.includes("sube"));
+
+      if (idxName !== -1 || (idxFirst !== -1 && idxLast !== -1) || (idxNo !== -1 && cells.some((c) => c.includes("ad")))) {
+        headerIdx = i;
+        colNo = idxNo;
+        colFullName = idxName;
+        colFirst = idxFirst;
+        colLast = idxLast;
+        colClass = idxClass;
+        break;
+      }
+    }
+
+    const startRow = headerIdx >= 0 ? headerIdx + 1 : 0;
+    let added = 0;
+    let createdClasses = 0;
+
+    const resolveClassId = (rawClass) => {
+      const cleanClass = norm(rawClass);
+      if (!cleanClass) return fallbackClassId;
+      let existing = studentState.classes.find((c) => norm(c.name).toLocaleLowerCase("tr-TR") === cleanClass.toLocaleLowerCase("tr-TR"));
+      if (!existing) {
+        existing = { id: studentUid("cls"), name: cleanClass, note: "e-Okul aktarımı" };
+        studentState.classes.push(existing);
+        createdClasses += 1;
+      }
+      return existing.id;
+    };
+
+    for (let r = startRow; r < rows.length; r += 1) {
+      const row = rows[r] || [];
+      if (!row.some((cell) => norm(cell) !== "")) continue;
+
+      let no = "";
+      let name = "";
+      let rowClassName = "";
+
+      if (headerIdx >= 0) {
+        no = colNo >= 0 ? norm(row[colNo]) : "";
+        if (colFullName >= 0) {
+          name = norm(row[colFullName]);
+        } else if (colFirst >= 0 || colLast >= 0) {
+          name = [colFirst >= 0 ? norm(row[colFirst]) : "", colLast >= 0 ? norm(row[colLast]) : ""].filter(Boolean).join(" ").trim();
+        }
+        if (colClass >= 0) rowClassName = norm(row[colClass]);
+      } else {
+        const nonEmpty = row.map(norm).filter(Boolean);
+        if (nonEmpty.length >= 2 && /^\d{1,6}$/.test(nonEmpty[0])) {
+          no = nonEmpty[0];
+          name = nonEmpty[1];
+        } else if (nonEmpty.length === 1 && !/^\d+$/.test(nonEmpty[0])) {
+          name = nonEmpty[0];
+        }
+      }
+
+      if (!name || name.length < 2 || /^(toplam|sınıf|okul|liste|sayfa)/i.test(name)) continue;
+      const targetClassId = resolveClassId(rowClassName);
+      if (!targetClassId) continue;
+
+      const exists = studentState.students.some((s) =>
+        s.classId === targetClassId &&
+        (s.name.toLocaleLowerCase("tr-TR") === name.toLocaleLowerCase("tr-TR") || (no && s.no === no))
+      );
+      if (!exists) {
+        studentState.students.push({ id: studentUid("st"), classId: targetClassId, no, name });
+        added += 1;
+      }
+    }
+
+    if (!fallbackClassId && createdClasses === 0 && added === 0) {
+      toast("Önce bir sınıf seçin veya dosyada Sınıf sütunu bulunduğundan emin olun.", "warning");
+      return;
+    }
+
+    if (added > 0 || createdClasses > 0) {
+      saveStudentState();
+      renderStudentModule();
+      const extra = createdClasses > 0 ? ` (${createdClasses} yeni sınıf oluşturuldu)` : "";
+      toast(`${added} öğrenci dosyadan aktarıldı${extra}.`, "success");
+    } else {
+      toast("Yeni öğrenci eklenemedi (tüm öğrenciler zaten kayıtlı veya format tanınmadı).", "info");
+    }
+  } catch (err) {
+    console.error(err);
+    toast("Dosya okunurken hata oluştu.", "error");
+  } finally {
+    if (input) input.value = "";
+  }
+}
+
 function updateRoutineRowRecord(rowEl, mutator) {
   const sid = rowEl?.dataset.routineStudent;
   const date = studentEls.routineDate?.value || todayIso();
@@ -1144,6 +1284,7 @@ function bindStudentEvents() {
   });
   studentEls.clearStudent?.addEventListener("click", clearStudentForm);
   studentEls.importBtn?.addEventListener("click", importStudents);
+  studentEls.excelImportInput?.addEventListener("change", importStudentsFromFile);
   studentEls.studentSearch?.addEventListener("input", renderStudents);
   studentEls.studentClass?.addEventListener("change", renderStudents);
   studentEls.lessonClass?.addEventListener("change", renderLessons);
