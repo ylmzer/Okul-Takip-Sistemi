@@ -6873,7 +6873,10 @@ body.global-settings-mode .global-settings-card {
   border-radius: 14px !important;
   display: none !important;
   flex-direction: column !important;
+  align-items: stretch !important;
   gap: 18px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 body.global-settings-mode .global-settings-card.is-active {
@@ -6902,21 +6905,35 @@ body.global-settings-mode .global-settings-card-heading .backup-help {
 body.global-settings-mode .profile-premium-card {
   display: flex !important;
   align-items: center !important;
+  justify-content: space-between !important;
   gap: 16px !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
   padding: 16px 18px !important;
   border-radius: 12px !important;
-  flex-wrap: wrap !important;
+  flex-wrap: nowrap !important;
+  box-sizing: border-box !important;
 }
 
 body.global-settings-mode .profile-premium-details {
-  flex: 1 1 220px !important;
+  flex: 1 1 auto !important;
   min-width: 0 !important;
+}
+
+body.global-settings-mode #globalSettingsProfileBtn {
+  margin-left: auto !important;
+  flex-shrink: 0 !important;
+  width: auto !important;
 }
 
 body.global-settings-mode .profile-premium-stats {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   gap: 12px !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
 }
 
 body.global-settings-mode .profile-stat-box {
