@@ -2118,8 +2118,35 @@ body.dark-mode .skill-absence-grid-table thead tr:nth-child(2) th {
   border-bottom: 2px solid rgba(148, 163, 184, 0.28) !important;
 }
 
-body.dark-mode .skill-absence-grid-table th.is-weekend {
-  color: #f87171 !important;
+body.dark-mode .skill-absence-grid-table thead tr th.is-weekend {
+  background: rgba(239, 68, 68, 0.14) !important;
+  color: #fca5a5 !important;
+}
+
+body.dark-mode .skill-absence-grid-table td.absence-cell.is-weekend {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(239, 68, 68, 0.09),
+    rgba(239, 68, 68, 0.09) 5px,
+    rgba(15, 23, 42, 0.75) 5px,
+    rgba(15, 23, 42, 0.75) 10px
+  ) !important;
+  color: #64748b !important;
+}
+
+body:not(.dark-mode) .skill-absence-grid-table thead tr th.is-weekend {
+  background: #fef2f2 !important;
+  color: #dc2626 !important;
+}
+
+body:not(.dark-mode) .skill-absence-grid-table td.absence-cell.is-weekend {
+  background: repeating-linear-gradient(
+    45deg,
+    #fee2e2,
+    #fee2e2 5px,
+    #fff5f5 5px,
+    #fff5f5 10px
+  ) !important;
 }
 
 body.dark-mode .skill-absence-grid-table th.is-week-start,
