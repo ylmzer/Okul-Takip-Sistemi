@@ -2080,3 +2080,66 @@ body:not(.dark-mode).skill-mode .skill-compact-mgmt-form .skill-filter-reset-btn
   border-color: #fca5a5 !important;
   color: #b91c1c !important;
 }
+
+/* Devamsizlik Isleme Paneli: Kapatma Butonu & Ayirici Gun Sutunlari */
+#skillAbsenceEntryDialog .skill-status-head {
+  align-items: center !important;
+  gap: 14px !important;
+}
+
+#skillAbsenceEntryDialog .skill-close-x {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  flex-shrink: 0 !important;
+  margin-left: 4px !important;
+}
+
+body.dark-mode .skill-absence-grid-table th,
+body.dark-mode .skill-absence-grid-table td {
+  border-right: 1px solid rgba(148, 163, 184, 0.2) !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14) !important;
+}
+
+body.dark-mode .skill-absence-grid-table thead tr:first-child th {
+  background: #131d31 !important;
+  color: #94a3b8 !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  padding: 6px 4px !important;
+}
+
+body.dark-mode .skill-absence-grid-table thead tr:nth-child(2) th {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  font-size: 0.84rem !important;
+  font-weight: 800 !important;
+  padding: 5px 4px !important;
+  border-bottom: 2px solid rgba(148, 163, 184, 0.28) !important;
+}
+
+body.dark-mode .skill-absence-grid-table th.is-weekend {
+  color: #f87171 !important;
+}
+
+body.dark-mode .skill-absence-grid-table th.is-week-start,
+body.dark-mode .skill-absence-grid-table td.is-week-start {
+  border-left: 2px solid rgba(45, 212, 191, 0.45) !important;
+}
+
+body.dark-mode .skill-absence-grid-table td.absence-cell.is-alt-col:not(.is-weekend):not(.is-holiday):not(.is-school-day) {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+body.dark-mode .skill-absence-grid-table tbody tr:nth-child(even) td {
+  border-bottom: 2px solid rgba(148, 163, 184, 0.26) !important;
+}
+
+body:not(.dark-mode) .skill-absence-grid-table th.is-week-start,
+body:not(.dark-mode) .skill-absence-grid-table td.is-week-start {
+  border-left: 2px solid #0d9488 !important;
+}
+
+body:not(.dark-mode) .skill-absence-grid-table tbody tr:nth-child(even) td {
+  border-bottom: 2px solid #cbd5e1 !important;
+}

@@ -1529,8 +1529,10 @@ function renderAbsenceEntryGrid() {
     dates.forEach(date => {
       const isWE = date.getDay() === 0 || date.getDay() === 6;
       const isHol = isReportHoliday(date);
+      const isWeekStart = date.getDay() === 1;
+      const isAlt = date.getDate() % 2 === 0;
       const label = dayNamesShort[date.getDay()];
-      html += `<th class="${isWE ? "is-weekend" : ""} ${isHol ? "is-holiday" : ""}">${label}</th>`;
+      html += `<th class="${isWE ? "is-weekend" : ""} ${isHol ? "is-holiday" : ""} ${isWeekStart ? "is-week-start" : ""} ${isAlt ? "is-alt-col" : ""}">${label}</th>`;
     });
     dayNamesRow.innerHTML = html;
   }
@@ -1542,7 +1544,9 @@ function renderAbsenceEntryGrid() {
     dates.forEach(date => {
       const isWE = date.getDay() === 0 || date.getDay() === 6;
       const isHol = isReportHoliday(date);
-      html += `<th class="${isWE ? "is-weekend" : ""} ${isHol ? "is-holiday" : ""}">${date.getDate()}</th>`;
+      const isWeekStart = date.getDay() === 1;
+      const isAlt = date.getDate() % 2 === 0;
+      html += `<th class="${isWE ? "is-weekend" : ""} ${isHol ? "is-holiday" : ""} ${isWeekStart ? "is-week-start" : ""} ${isAlt ? "is-alt-col" : ""}">${date.getDate()}</th>`;
     });
     dayNumsRow.innerHTML = html;
   }
@@ -1561,12 +1565,14 @@ function renderAbsenceEntryGrid() {
       dates.forEach(date => {
         const isWE = date.getDay() === 0 || date.getDay() === 6;
         const isHol = isReportHolidayForStudent(date, student);
+        const isWeekStart = date.getDay() === 1;
+        const isAlt = date.getDate() % 2 === 0;
         const dateStr = toSkillIsoDate(date);
         const { schoolType, summerStartDate, summerEndDate } = getStudentSchoolConfig(student);
         const isSummer = (summerStartDate && summerEndDate && dateStr >= summerStartDate && dateStr <= summerEndDate);
         const isSch = !isWE && !isHol && (!isSummer || schoolType !== "mesem") && schoolDays.includes(getShortSkillDay(date));
         const cellVal = getGridSymbolForEntry(student, date, "am");
-        sHtml += `<td class="absence-cell ${isWE ? "is-weekend" : ""} ${isHol ? "is-holiday" : ""} ${isSch ? "is-school-day" : ""}" 
+        sHtml += `<td class="absence-cell ${isWE ? "is-weekend" : ""} ${isHol ? "is-holiday" : ""} ${isSch ? "is-school-day" : ""} ${isWeekStart ? "is-week-start" : ""} ${isAlt ? "is-alt-col" : ""}" 
                       data-student-id="${student.id}" 
                       data-student-name="${escapeHtml(student.name)}" 
                       data-date="${dateStr}" 
@@ -1580,12 +1586,14 @@ function renderAbsenceEntryGrid() {
       dates.forEach(date => {
         const isWE = date.getDay() === 0 || date.getDay() === 6;
         const isHol = isReportHolidayForStudent(date, student);
+        const isWeekStart = date.getDay() === 1;
+        const isAlt = date.getDate() % 2 === 0;
         const dateStr = toSkillIsoDate(date);
         const { schoolType, summerStartDate, summerEndDate } = getStudentSchoolConfig(student);
         const isSummer = (summerStartDate && summerEndDate && dateStr >= summerStartDate && dateStr <= summerEndDate);
         const isSch = !isWE && !isHol && (!isSummer || schoolType !== "mesem") && schoolDays.includes(getShortSkillDay(date));
         const cellVal = getGridSymbolForEntry(student, date, "pm");
-        oHtml += `<td class="absence-cell ${isWE ? "is-weekend" : ""} ${isHol ? "is-holiday" : ""} ${isSch ? "is-school-day" : ""}" 
+        oHtml += `<td class="absence-cell ${isWE ? "is-weekend" : ""} ${isHol ? "is-holiday" : ""} ${isSch ? "is-school-day" : ""} ${isWeekStart ? "is-week-start" : ""} ${isAlt ? "is-alt-col" : ""}" 
                       data-student-id="${student.id}" 
                       data-student-name="${escapeHtml(student.name)}" 
                       data-date="${dateStr}" 
