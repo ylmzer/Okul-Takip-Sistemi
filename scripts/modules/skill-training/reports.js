@@ -390,7 +390,7 @@ function renderSkillReportAssignments() {
       .toLocaleLowerCase("tr-TR")
       .includes(query);
     return matchesSchool && matchesEmpty && matchesTeacher && matchesQuery;
-  });
+  }).sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "tr-TR", { numeric: true, sensitivity: "base" }));
 
   if (els.skillReportBusinessCount) els.skillReportBusinessCount.textContent = rows.length;
   if (els.skillReportStudentCount) {
@@ -400,7 +400,9 @@ function renderSkillReportAssignments() {
   }
 
   els.skillReportAssignmentList.innerHTML = rows.length ? rows.map((business) => {
-    const students = skillState.students.filter((student) => String(student.businessId || "").trim() === String(business.id || "").trim());
+    const students = skillState.students
+      .filter((student) => String(student.businessId || "").trim() === String(business.id || "").trim())
+      .sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "tr-TR", { numeric: true, sensitivity: "base" }));
     const coordinator = skillState.coordinators.find((item) => String(item.businessId || "").trim() === String(business.id || "").trim());
     const isChecked = prevChecked.has(business.id);
     const studentCount = students.length;
