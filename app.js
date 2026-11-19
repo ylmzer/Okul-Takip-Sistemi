@@ -1785,6 +1785,7 @@ function toggleFloatingModuleSwitcher(trigger = null) {
     els.moduleFloatPanel.style.removeProperty("top");
     els.moduleFloatPanel.style.removeProperty("left");
     els.moduleFloatPanel.style.removeProperty("right");
+    els.moduleFloatPanel.style.removeProperty("width");
     els.moduleSwitcherBackdrop?.removeAttribute("hidden");
     document.body.classList.add("module-switcher-open");
   } else {
@@ -1793,10 +1794,13 @@ function toggleFloatingModuleSwitcher(trigger = null) {
       : [...document.querySelectorAll(".module-sidebar-brand[data-module-switcher-trigger]")].find((el) => el.offsetParent !== null);
     if (anchor) {
       const rect = anchor.getBoundingClientRect();
+      const width = Math.max(220, Math.round(rect.width));
       const top = Math.min(rect.bottom + 8, window.innerHeight - 360);
-      const left = Math.max(12, Math.min(rect.left, window.innerWidth - 268));
+      const left = Math.max(12, Math.min(rect.left, window.innerWidth - width - 12));
       els.moduleFloatPanel.style.setProperty("top", `${Math.max(12, top)}px`, "important");
       els.moduleFloatPanel.style.setProperty("left", `${left}px`, "important");
+      els.moduleFloatPanel.style.setProperty("width", `${width}px`, "important");
+      els.moduleFloatPanel.style.setProperty("box-sizing", "border-box", "important");
       els.moduleFloatPanel.style.setProperty("right", "auto", "important");
     }
   }

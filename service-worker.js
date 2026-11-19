@@ -1,4 +1,4 @@
-const CACHE_NAME = "ots-pwa-v78";
+const CACHE_NAME = "ots-pwa-v79";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -9,7 +9,7 @@ const APP_SHELL = [
   "./scripts/modules/skill-training/styles.css?v=6",
   "./scripts/modules/annual-plan/styles.css?v=1",
   "./scripts/core/auth.css?v=8",
-  "./app.js?v=167",
+  "./app.js?v=168",
   "./icons/logo-clean.svg",
   "./scripts/core/module-registry.js?v=1",
   "./scripts/core/cloud-sync.js?v=1",
