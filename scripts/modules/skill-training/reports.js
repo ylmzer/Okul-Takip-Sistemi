@@ -492,9 +492,10 @@ window.toggleSkillBusinessStudents = function(businessId, event) {
 function renderSkillReportControls() {
   if (els.skillReportSchoolFilter) {
     const curSchool = els.skillReportSchoolFilter.value;
+    const sortedSchools = [...skillState.schoolRecords].sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "tr-TR", { numeric: true, sensitivity: "base" }));
     els.skillReportSchoolFilter.innerHTML = [
       `<option value="">Tüm Okullar</option>`,
-      ...skillState.schoolRecords.map((s) => `<option value="${s.id}">${escapeHtml(s.name)}</option>`)
+      ...sortedSchools.map((s) => `<option value="${s.id}">${escapeHtml(s.name)}</option>`)
     ].join("");
     if (curSchool !== undefined && curSchool !== "" && skillState.schoolRecords.some((s) => s.id === curSchool)) {
       els.skillReportSchoolFilter.value = curSchool;
@@ -536,9 +537,10 @@ function renderSkillReportControls() {
   }
   if (els.skillTerminationStudent) {
     const current = els.skillTerminationStudent.value || "";
+    const sortedStudents = [...skillState.students].sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "tr-TR", { numeric: true, sensitivity: "base" }));
     els.skillTerminationStudent.innerHTML = [
       `<option value="">Öğrenci seçiniz</option>`,
-      ...skillState.students.map((student) => {
+      ...sortedStudents.map((student) => {
         const business = getSkillBusiness(student.businessId);
         const label = `${student.no || "-"} - ${student.name || "Öğrenci"} (${business?.name || "İşletme yok"})`;
         return `<option value="${student.id}">${escapeHtml(label)}</option>`;

@@ -567,16 +567,23 @@ function handleSkillManagedTables(event) {
 
 function renderSkillSelects() {
   ensureSkillCollections();
+  const byNameAsc = (a, b) => String(a || "").localeCompare(String(b || ""), "tr-TR", { numeric: true, sensitivity: "base" });
+  const sortedBusinesses = [...skillState.businesses].sort((a, b) => byNameAsc(a.name, b.name));
+  const sortedTeachers = [...skillState.teacherPool].sort((a, b) => byNameAsc(a.name, b.name));
+  const sortedSchools = [...skillState.schoolRecords].sort((a, b) => byNameAsc(a.name, b.name));
+
   const businessOptions = [
     `<option value="">İşletme seçiniz</option>`,
-    ...skillState.businesses.map((business) => `<option value="${business.id}">${escapeHtml(business.name)}</option>`)
+    ...sortedBusinesses.map((business) => `<option value="${business.id}">${escapeHtml(business.name)}</option>`)
   ].join("");
   if (els.skillStudentBusiness) els.skillStudentBusiness.innerHTML = businessOptions;
   if (els.skillStudentBusinessFilter) {
+    const currentBizFilter = els.skillStudentBusinessFilter.value || "";
     els.skillStudentBusinessFilter.innerHTML = [
       `<option value="">Tüm işletmeler</option>`,
-      ...skillState.businesses.map((business) => `<option value="${business.id}">${escapeHtml(business.name)}</option>`)
+      ...sortedBusinesses.map((business) => `<option value="${business.id}">${escapeHtml(business.name)}</option>`)
     ].join("");
+    els.skillStudentBusinessFilter.value = sortedBusinesses.some((b) => b.id === currentBizFilter) ? currentBizFilter : "";
   }
   if (els.skillStudentClassFilter) {
     const currentClassFilter = els.skillStudentClassFilter.value || "";
@@ -591,39 +598,39 @@ function renderSkillSelects() {
   if (els.skillCoordinatorBusiness) els.skillCoordinatorBusiness.innerHTML = businessOptions;
   const teacherOptions = [
     `<option value="">Öğretmen seçiniz</option>`,
-    ...skillState.teacherPool.map((teacher) => `<option value="${escapeHtml(teacher.name)}">${escapeHtml(teacher.name)}</option>`)
+    ...sortedTeachers.map((teacher) => `<option value="${escapeHtml(teacher.name)}">${escapeHtml(teacher.name)}</option>`)
   ].join("");
   if (els.skillCoordinatorTeacher) els.skillCoordinatorTeacher.innerHTML = teacherOptions;
   const schoolOptions = [
     `<option value="">Okul seçiniz</option>`,
-    ...skillState.schoolRecords.map((school) => `<option value="${school.id}">${escapeHtml(school.name)}</option>`)
+    ...sortedSchools.map((school) => `<option value="${school.id}">${escapeHtml(school.name)}</option>`)
   ].join("");
   if (els.skillCoordinatorSchool) {
     els.skillCoordinatorSchool.innerHTML = schoolOptions;
-    if (skillState.schoolRecords.length > 0) {
-      els.skillCoordinatorSchool.value = skillState.schoolRecords[0].id;
+    if (sortedSchools.length > 0) {
+      els.skillCoordinatorSchool.value = sortedSchools[0].id;
     }
   }
-  const deputies = skillState.schoolRecords.map((school) => school.deputy).filter(Boolean);
-  const deputyOptions = [`<option value="">Müdür yardımcısı seçiniz</option>`, ...[...new Set(deputies)].map((deputy) => `<option value="${escapeHtml(deputy)}">${escapeHtml(deputy)}</option>`)].join("");
+  const deputies = [...new Set(skillState.schoolRecords.map((school) => school.deputy).filter(Boolean))].sort(byNameAsc);
+  const deputyOptions = [`<option value="">Müdür yardımcısı seçiniz</option>`, ...deputies.map((deputy) => `<option value="${escapeHtml(deputy)}">${escapeHtml(deputy)}</option>`)].join("");
   if (els.skillCoordinatorDeputy) {
     els.skillCoordinatorDeputy.innerHTML = deputyOptions;
   }
-  if (els.skillCoordinatorSchool && skillState.schoolRecords.length > 0) {
+  if (els.skillCoordinatorSchool && sortedSchools.length > 0) {
     els.skillCoordinatorSchool.dispatchEvent(new Event("change"));
   }
 }
 
 // Universal Table Sorting for Skill Module (Beceri Eğitimi)
 const skillTableSort = {
-  businesses: { key: "", dir: "asc" },
-  students: { key: "", dir: "asc" },
-  coordinators: { key: "", dir: "asc" },
-  schools: { key: "", dir: "asc" },
-  teachers: { key: "", dir: "asc" },
-  fields: { key: "", dir: "asc" },
+  businesses: { key: "name", dir: "asc" },
+  students: { key: "name", dir: "asc" },
+  coordinators: { key: "business", dir: "asc" },
+  schools: { key: "name", dir: "asc" },
+  teachers: { key: "name", dir: "asc" },
+  fields: { key: "area", dir: "asc" },
   holidays: { key: "", dir: "asc" },
-  importPreview: { key: "", dir: "asc" }
+  importPreview: { key: "student_name", dir: "asc" }
 };
 window.skillTableSort = skillTableSort;
 
