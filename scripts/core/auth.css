@@ -522,6 +522,11 @@ body.dark-mode.module-mode .user-avatar {
     letter-spacing: -0.01em !important;
   }
 
+  body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside .module-sidebar-brand[data-module-switcher-trigger] strong::before {
+    display: none !important;
+    content: none !important;
+  }
+
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside .module-sidebar-brand[data-module-switcher-trigger] > div {
     gap: 2px !important;
   }
@@ -537,15 +542,17 @@ body.dark-mode.module-mode .user-avatar {
     display: block !important;
     content: "" !important;
     position: absolute !important;
-    right: 14px !important;
+    right: 12px !important;
     top: 50% !important;
-    width: 7px !important;
-    height: 7px !important;
-    border-right: 1.8px solid #94a3b8 !important;
-    border-bottom: 1.8px solid #94a3b8 !important;
-    transform: translateY(-65%) rotate(45deg) !important;
+    width: 16px !important;
+    height: 16px !important;
+    border: 0 !important;
+    background-color: #94a3b8 !important;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat !important;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat !important;
+    transform: translateY(-50%) !important;
     pointer-events: none !important;
-    transition: transform 0.16s ease, border-color 0.16s ease !important;
+    transition: transform 0.18s ease, background-color 0.16s ease !important;
   }
 
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside .module-sidebar-brand[data-module-switcher-trigger]:hover {
@@ -556,11 +563,11 @@ body.dark-mode.module-mode .user-avatar {
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside .module-sidebar-brand[data-module-switcher-trigger][aria-expanded="true"]::after {
     display: block !important;
     content: "" !important;
-    border-color: #2dd4bf !important;
+    background-color: #2dd4bf !important;
   }
 
   body:is(.app-mode, .skill-mode, .student-mode, .annual-mode, .course-mode, .global-settings-mode) aside .module-sidebar-brand[data-module-switcher-trigger][aria-expanded="true"]::after {
-    transform: translateY(-25%) rotate(-135deg) !important;
+    transform: translateY(-50%) rotate(180deg) !important;
   }
 
   /* Açılır menüyü sol üst kartın altında tek sütunlu kurumsal listeye çevir */

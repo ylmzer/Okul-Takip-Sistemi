@@ -2149,6 +2149,25 @@ body:not(.dark-mode) .skill-absence-grid-table td.absence-cell.is-weekend {
   ) !important;
 }
 
+/* Veri Yonetimi Acilir Ok Simgesi (Ust Modul Secici ile Ayni SVG Chevron) */
+body.skill-mode .skill-nav-parent b {
+  font-size: 0 !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin-left: auto !important;
+  display: inline-block !important;
+  flex-shrink: 0 !important;
+  background-color: currentColor !important;
+  opacity: 0.85 !important;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat !important;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat !important;
+  transition: transform 0.18s ease, opacity 0.15s ease !important;
+}
+
+body.skill-mode .skill-nav-parent[aria-expanded="false"] b {
+  transform: rotate(-90deg) !important;
+}
+
 body.dark-mode .skill-absence-grid-table th.is-week-start,
 body.dark-mode .skill-absence-grid-table td.is-week-start {
   border-left: 2px solid rgba(45, 212, 191, 0.45) !important;
