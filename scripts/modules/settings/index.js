@@ -41,12 +41,23 @@
     } catch (e) {}
     if (total === 0) return "0 KB";
     if (total < 1024) return total + " B";
-    return (total / 1024).toFixed(1) + " KB";
+    const kb = total / 1024;
+    if (kb >= 1024) return (kb / 1024).toFixed(2) + " MB";
+    return kb.toFixed(1) + " KB";
   }
+
+  const PANEL_META = {
+    profile: { title: "Profil & Hesap", subtitle: "Kullanıcı bilgileri, depolama kullanımı ve hesap özeti" },
+    sync: { title: "Bulut Senkronizasyon", subtitle: "Supabase hesap bağlantısı ve anlık veri eşitleme" },
+    backup: { title: "Yedekleme & Geri Yükleme", subtitle: "Modül bazlı JSON yedek alma ve otomatik kopyalar" },
+    general: { title: "Genel Ayarlar", subtitle: "Başlangıç modülü, tema ve otomatik yedekleme tercihleri" }
+  };
 
   function collectElements() {
     return {
       shell: byId("globalSettingsShell"),
+      pageTitle: document.querySelector("#globalSettingsShell .global-settings-topbar h1"),
+      pageEyebrow: document.querySelector("#globalSettingsShell .global-settings-topbar .eyebrow"),
       backBtn: byId("globalSettingsBackBtn"),
       profileBtn: byId("globalSettingsProfileBtn"),
       userName: byId("globalSettingsUserName"),
@@ -80,6 +91,9 @@
     state.els.panels.forEach((section) => {
       section.classList.toggle("is-active", section.dataset.globalSettingsPanel === panel);
     });
+    const meta = PANEL_META[panel] || PANEL_META.profile;
+    if (state.els.pageTitle) state.els.pageTitle.textContent = meta.title;
+    if (state.els.pageEyebrow) state.els.pageEyebrow.textContent = meta.subtitle;
   }
 
   function selectedBackupModules(defaultModules = []) {
@@ -156,8 +170,9 @@
     
     if (state.els.syncType) {
       const cloudConfig = JSON.parse(localStorage.getItem("sorubank:cloud-config:v1") || "{}");
-      const isCloud = Boolean(cloudConfig.url && cloudConfig.anonKey);
-      state.els.syncType.textContent = isCloud ? "Bulut Eşitlemeli" : "Yerel Profil";
+      const cloudStatus = byId("cloudStatusTitle")?.textContent || "";
+      const isCloud = Boolean((cloudConfig.url && cloudConfig.anonKey) || cloudStatus.includes("Buluta") || session?.email);
+      state.els.syncType.textContent = isCloud ? "Bulut + Yerel" : "Yerel Profil";
     }
 
     const settings = loadGlobalSettings();

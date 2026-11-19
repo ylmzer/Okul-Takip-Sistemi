@@ -32,7 +32,7 @@
     <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg" />
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
     <link rel="stylesheet" href="./styles.css?v=116" />
-    <link rel="stylesheet" href="./theme-overrides.css?v=154" />
+    <link rel="stylesheet" href="./theme-overrides.css?v=155" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=3" />
     <link rel="stylesheet" href="./scripts/modules/system-admin/styles.css?v=1" />
     <link rel="stylesheet" href="./scripts/modules/skill-training/styles.css?v=6" />
@@ -409,7 +409,10 @@
             </div>
             <div class="settings-form-grid">
               <div class="settings-form-field">
-                <label for="landingModuleSelect">Başlangıç Modülü</label>
+                <div class="settings-field-copy">
+                  <label for="landingModuleSelect">Başlangıç Modülü</label>
+                  <span>Oturum açıldığında doğrudan açılacak varsayılan çalışma alanı.</span>
+                </div>
                 <select id="landingModuleSelect">
                   <option value="">Modül Seçim Ekranı (Varsayılan)</option>
                   <option value="sorubank">Soru Bankası</option>
@@ -419,9 +422,12 @@
                   <option value="annual-plan">Yıllık Plan</option>
                 </select>
               </div>
-              
+
               <div class="settings-form-field">
-                <label for="appThemeSelect">Arayüz Teması</label>
+                <div class="settings-field-copy">
+                  <label for="appThemeSelect">Arayüz Teması</label>
+                  <span>Uygulama genelindeki renk temasını belirleyin.</span>
+                </div>
                 <select id="appThemeSelect">
                   <option value="system">Otomatik (Sistem / cihaz)</option>
                   <option value="light">Açık Tema</option>
@@ -430,15 +436,18 @@
               </div>
 
               <label class="settings-toggle-field">
-                <input id="autoBackupToggle" type="checkbox" checked />
-                <div>
+                <div class="settings-field-copy">
                   <strong>Otomatik Yedekleme</strong>
-                  <span>Program verilerinde değişiklik yapıldığında otomatik kopya oluşturur.</span>
+                  <span>Program verilerinde değişiklik yapıldığında otomatik yerel kopya oluşturur.</span>
                 </div>
+                <input id="autoBackupToggle" type="checkbox" checked />
               </label>
 
               <div class="settings-form-field">
-                <label for="autoBackupLimitSelect">Otomatik Yedek Limiti</label>
+                <div class="settings-field-copy">
+                  <label for="autoBackupLimitSelect">Otomatik Yedek Limiti</label>
+                  <span>Tarayıcıda saklanacak maksimum otomatik kopya sayısı.</span>
+                </div>
                 <select id="autoBackupLimitSelect">
                   <option value="10">En son 10 yedeği sakla</option>
                   <option value="20" selected>En son 20 yedeği sakla (Varsayılan)</option>
@@ -5502,7 +5511,7 @@
     <script src="./scripts/modules/skill-training/holidays-and-views.js?v=1"></script>
     <script src="./scripts/modules/skill-training/reports.js?v=3"></script>
     <script src="./scripts/modules/skill-training/management.js?v=2"></script>
-    <script src="./scripts/modules/settings/index.js?v=8"></script>
+    <script src="./scripts/modules/settings/index.js?v=9"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=9"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=17"></script>
     <script src="./scripts/modules/sorubank/index.js?v=8"></script>
