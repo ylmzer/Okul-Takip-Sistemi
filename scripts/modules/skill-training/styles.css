@@ -1738,8 +1738,11 @@ body:not(.dark-mode).skill-mode #skillGlobalSearchClear:hover {
 
 /* 2. Sol Kenar Çubuğu: Yeşil noktaları kaldırıp sade kurumsal SVG ikonları göster */
 body.skill-mode .skill-nav button::before,
-body.skill-mode .skill-subnav button::before {
+body.skill-mode .skill-subnav button::before,
+body.skill-mode .skill-nav button span::before,
+body.skill-mode .skill-subnav button span::before {
   display: none !important;
+  content: none !important;
 }
 
 body.skill-mode .skill-nav button span,
