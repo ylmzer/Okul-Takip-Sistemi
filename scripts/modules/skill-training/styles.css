@@ -2168,6 +2168,107 @@ body.skill-mode .skill-nav-parent[aria-expanded="false"] b {
   transform: rotate(-90deg) !important;
 }
 
+/* IME Veri Aktarimi Onizleme: Scroll, Sabit Baslik & Gorunum Sekmeleri */
+body.skill-mode #skillImportDialog .skill-table-card {
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+  max-height: none !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+}
+
+body.skill-mode #skillImportDialog .skill-table-card thead th {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 4 !important;
+  background: #0f172a !important;
+}
+
+body:not(.dark-mode).skill-mode #skillImportDialog .skill-table-card thead th {
+  background: #f8fafc !important;
+}
+
+.skill-import-view-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+  padding: 4px 6px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+}
+
+.skill-import-mode-tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 2px;
+  border-radius: 7px;
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+body:not(.dark-mode) .skill-import-mode-tabs {
+  background: #f1f5f9;
+}
+
+.skill-import-mode-tabs button {
+  min-height: 26px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.skill-import-mode-tabs button.is-active {
+  background: rgba(20, 184, 166, 0.2);
+  color: #5eead4;
+}
+
+body:not(.dark-mode) .skill-import-mode-tabs button.is-active {
+  background: #ffffff;
+  color: #0f766e;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
+}
+
+.skill-import-filter-inputs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.skill-import-filter-inputs input,
+.skill-import-filter-inputs select {
+  min-height: 28px !important;
+  height: 28px !important;
+  padding: 0 8px !important;
+  font-size: 0.76rem !important;
+  border-radius: 6px !important;
+}
+
+.skill-import-filter-inputs input {
+  width: 210px !important;
+}
+
+/* Gorunum Modlarina Gore Sutun Sadeleştirme */
+#skillImportPreviewArea.is-mode-basic [data-imp-col="teacher"],
+#skillImportPreviewArea.is-mode-basic [data-imp-col="day"],
+#skillImportPreviewArea.is-mode-basic [data-imp-col="days"] {
+  display: none !important;
+}
+
+#skillImportPreviewArea.is-mode-assign [data-imp-col="status"],
+#skillImportPreviewArea.is-mode-assign [data-imp-col="no"],
+#skillImportPreviewArea.is-mode-assign [data-imp-col="class"] {
+  display: none !important;
+}
+
 body.dark-mode .skill-absence-grid-table th.is-week-start,
 body.dark-mode .skill-absence-grid-table td.is-week-start {
   border-left: 2px solid rgba(45, 212, 191, 0.45) !important;

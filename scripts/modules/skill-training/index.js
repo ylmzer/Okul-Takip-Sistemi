@@ -644,7 +644,18 @@ function renderImportPreviewTable() {
   populateImportDatalists();
   
   let html = "";
+  const impQuery = (document.getElementById("skillImportSearchInput")?.value || "").trim().toLocaleLowerCase("tr-TR");
+  const impStatus = document.getElementById("skillImportStatusFilter")?.value || "all";
+
   parsedImportRecords.forEach((r, idx) => {
+    if (impStatus === "new" && r.isExistingStudent) return;
+    if (impStatus === "existing" && !r.isExistingStudent) return;
+    if (impStatus === "no-teacher" && (r.coordinator_name || "").trim()) return;
+    if (impQuery) {
+      const hay = `${r.student_no || ""} ${r.student_name || ""} ${r.business_name || ""} ${r.class_name || ""}`.toLocaleLowerCase("tr-TR");
+      if (!hay.includes(impQuery)) return;
+    }
+
     if (!r.originalField) {
       r.originalField = r.field;
     }
@@ -685,17 +696,17 @@ function renderImportPreviewTable() {
         <td style="text-align: center !important; padding: 2px 4px !important; vertical-align: middle !important;">
           <input type="checkbox" class="import-row-checkbox" data-index="${idx}" ${isChecked} style="cursor: pointer; width: 15px; height: 15px; margin: 0; vertical-align: middle;" />
         </td>
-        <td style="text-align: center !important; padding: 2px 4px !important; vertical-align: middle !important;">${statusBadge}</td>
-        <td style="padding: 2px 6px !important; vertical-align: middle !important;">${escapeHtml(r.student_no || "-")}</td>
-        <td style="padding: 2px 6px !important; vertical-align: middle !important;"><strong>${escapeHtml(r.student_name || "-")}</strong></td>
-        <td style="padding: 2px 6px !important; vertical-align: middle !important;">${escapeHtml(r.class_name || "-")}</td>
-        <td style="padding: 2px 6px !important; vertical-align: middle !important;">${fieldInputHtml}</td>
-        <td style="padding: 2px 6px !important; vertical-align: middle !important; font-size: 0.78rem !important; max-width: 200px !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important;" title="${escapeHtml(r.business_name || "")}">
+        <td data-imp-col="status" style="text-align: center !important; padding: 2px 4px !important; vertical-align: middle !important;">${statusBadge}</td>
+        <td data-imp-col="no" style="padding: 2px 6px !important; vertical-align: middle !important;">${escapeHtml(r.student_no || "-")}</td>
+        <td data-imp-col="name" style="padding: 2px 6px !important; vertical-align: middle !important;"><strong>${escapeHtml(r.student_name || "-")}</strong></td>
+        <td data-imp-col="class" style="padding: 2px 6px !important; vertical-align: middle !important;">${escapeHtml(r.class_name || "-")}</td>
+        <td data-imp-col="field" style="padding: 2px 6px !important; vertical-align: middle !important;">${fieldInputHtml}</td>
+        <td data-imp-col="business" style="padding: 2px 6px !important; vertical-align: middle !important; font-size: 0.78rem !important; max-width: 200px !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important;" title="${escapeHtml(r.business_name || "")}">
           <strong>${escapeHtml(r.business_name || "-")}</strong>
         </td>
-        <td style="padding: 2px 6px !important; vertical-align: middle !important;">${teacherInputHtml}</td>
-        <td style="padding: 2px 4px !important; vertical-align: middle !important;">${daySelectHtml}</td>
-        <td style="padding: 2px 4px !important; vertical-align: middle !important;">${stuDaysInputHtml}</td>
+        <td data-imp-col="teacher" style="padding: 2px 6px !important; vertical-align: middle !important;">${teacherInputHtml}</td>
+        <td data-imp-col="day" style="padding: 2px 4px !important; vertical-align: middle !important;">${daySelectHtml}</td>
+        <td data-imp-col="days" style="padding: 2px 4px !important; vertical-align: middle !important;">${stuDaysInputHtml}</td>
       </tr>
     `;
   });
@@ -791,14 +802,14 @@ async function analyzeImeImportFile(file) {
     // Scan existing state and match records
     parsedImportRecords.forEach(r => {
       const stuNo = (r.student_no || "").trim();
-      const stuName = (r.student_name || "").trim().toLowerCase();
+      const stuName = (r.student_name || "").trim().toLocaleLowerCase("tr-TR");
       
       let existingStu = null;
       if (stuNo) {
         existingStu = skillState.students.find(s => String(s.no || "").trim() === stuNo);
       }
       if (!existingStu && stuName) {
-        existingStu = skillState.students.find(s => (s.name || "").trim().toLowerCase() === stuName);
+        existingStu = skillState.students.find(s => (s.name || "").trim().toLocaleLowerCase("tr-TR") === stuName);
       }
       
       if (existingStu) {
@@ -1160,13 +1171,29 @@ document.getElementById("skillImportSchoolType")?.addEventListener("change", () 
 
 document.getElementById("skillImportSelectAll")?.addEventListener("change", (e) => {
   const isChecked = e.target.checked;
-  parsedImportRecords.forEach(r => r.selected = isChecked);
-  
   document.querySelectorAll(".import-row-checkbox").forEach(cb => {
     cb.checked = isChecked;
+    const idx = parseInt(cb.dataset.index, 10);
+    if (!Number.isNaN(idx) && parsedImportRecords[idx]) {
+      parsedImportRecords[idx].selected = isChecked;
+    }
   });
-  
   updateBulkActionsBar();
+});
+
+document.getElementById("skillImportSearchInput")?.addEventListener("input", renderImportPreviewTable);
+document.getElementById("skillImportStatusFilter")?.addEventListener("change", renderImportPreviewTable);
+document.getElementById("skillImportViewControls")?.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-import-view-mode]");
+  if (!btn) return;
+  const mode = btn.dataset.importViewMode || "all";
+  document.querySelectorAll("[data-import-view-mode]").forEach((b) => b.classList.toggle("is-active", b === btn));
+  const area = document.getElementById("skillImportPreviewArea");
+  if (area) {
+    area.classList.remove("is-mode-basic", "is-mode-assign");
+    if (mode === "basic") area.classList.add("is-mode-basic");
+    if (mode === "assign") area.classList.add("is-mode-assign");
+  }
 });
 
 // Single-button Coordinator Deputy assignment to everyone

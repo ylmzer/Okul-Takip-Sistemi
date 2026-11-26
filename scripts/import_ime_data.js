@@ -85,7 +85,7 @@ function isEncodedWord(word) {
   if (!checkWord) return false;
 
   if (/^\d{7,}$/.test(checkWord)) return false;
-  if (/^\d{1,2}\/[A-Z0-9]+$/i.test(checkWord)) return false;
+  if (/^\d{1,2}\/[A-ZÇĞİÖŞÜ0-9]+$/i.test(checkWord)) return false;
   if (/^\d+$/.test(checkWord)) return false;
   if (/^\d{1,2}[-./]\d{1,2}[-./]\d{2,4}$/.test(checkWord)) return false;
   if (/^202\d$/.test(checkWord)) return false;
@@ -95,7 +95,7 @@ function isEncodedWord(word) {
     if (normalLowercase.has(checkWord[i])) return false;
   }
 
-  const cipherChars = new Set("øùö÷Õ|$%&'()*+<=>[\\]^_`{|}~");
+  const cipherChars = new Set("øùö÷Õ|$%&'()*+,./:;<=>0123456789[\\]^_`{|}~");
   for (let i = 0; i < checkWord.length; i++) {
     if (cipherChars.has(checkWord[i])) return true;
   }
@@ -306,7 +306,7 @@ export async function parsePdf(filePath) {
       const str = decodeItem(item);
 
       if (x >= 230 && x <= 245 && /^\d+$/.test(str)) rowNo = str;
-      else if (x >= 255 && x <= 270 && /^\d{1,2}\/[A-Z0-9]+$/i.test(str)) className = str;
+      else if (x >= 255 && x <= 270 && /^\d{1,2}\/[A-ZÇĞİÖŞÜ0-9]+$/i.test(str)) className = str;
       else if (x >= 285 && x <= 298 && /^\d+$/.test(str)) studentNo = str;
       else if (x >= 315 && x <= 335) studentName = str;
       else if (x >= 680 && x <= 710) trainerName = str;
@@ -407,7 +407,7 @@ export async function parsePdf(filePath) {
       business_name: currentBusiness.name,
       business_address: currentBusiness.address,
       business_phone: currentBusiness.phone,
-      coordinator_name: coordinatorTeacher.toUpperCase(),
+      coordinator_name: coordinatorTeacher.toLocaleUpperCase("tr-TR"),
       deputy: deputyName,
       days: ""
     });
@@ -555,5 +555,60 @@ export async function parseExcel(filePath) {
     return records;
   }
 
-  return [];
+  // Genel Excel / e-Okul fallback parser
+  const fallbackRecords = [];
+  for (const sheetName of sheetNames) {
+    const sheet = workbook.Sheets[sheetName];
+    const data = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+    let headerIdx = -1;
+    let cNo = -1, cFullName = -1, cFirst = -1, cLast = -1, cClass = -1, cBiz = -1, cField = -1;
+
+    for (let r = 0; r < Math.min(20, data.length); r++) {
+      const cells = (data[r] || []).map(v => turkishClean(String(v || "").replace(/\s+/g, " ")));
+      const idxFull = cells.findIndex(c => c.includes("ad soyad") || c.includes("adi soyadi") || c === "ogrenci adi");
+      const idxFirst = cells.findIndex(c => c === "adi" || c === "ad");
+      const idxLast = cells.findIndex(c => c === "soyadi" || c === "soyad");
+      const idxNo = cells.findIndex(c => c.includes("okul no") || c.includes("ogrenci no") || c === "no" || c === "numara");
+      const idxClass = cells.findIndex(c => c.includes("sinif") || c.includes("sube"));
+      const idxBiz = cells.findIndex(c => c.includes("isletme"));
+      const idxField = cells.findIndex(c => c.includes("alan") || c.includes("dal"));
+
+      if (idxFull !== -1 || (idxFirst !== -1 && idxLast !== -1)) {
+        headerIdx = r;
+        cNo = idxNo;
+        cFullName = idxFull;
+        cFirst = idxFirst;
+        cLast = idxLast;
+        cClass = idxClass;
+        cBiz = idxBiz;
+        cField = idxField;
+        break;
+      }
+    }
+
+    if (headerIdx < 0) continue;
+    let lastBiz = "";
+    for (let r = headerIdx + 1; r < data.length; r++) {
+      const row = (data[r] || []).map(v => String(v ?? "").replace(/\r?\n/g, " ").trim());
+      if (row.every(c => !c)) continue;
+      const bizVal = cBiz >= 0 ? row[cBiz] : "";
+      if (bizVal) lastBiz = bizVal;
+      const stuName = cFullName >= 0
+        ? row[cFullName]
+        : [cFirst >= 0 ? row[cFirst] : "", cLast >= 0 ? row[cLast] : ""].filter(Boolean).join(" ").trim();
+      if (!stuName || stuName.length < 2) continue;
+      fallbackRecords.push({
+        student_name: stuName,
+        student_no: cNo >= 0 ? String(row[cNo] || "").split(".")[0] : "",
+        class_name: cClass >= 0 ? row[cClass] : "",
+        field: (cField >= 0 && row[cField]) ? row[cField] : guessField(lastBiz),
+        business_name: lastBiz || "Belirtilmedi",
+        business_address: "",
+        business_phone: "",
+        coordinator_name: "",
+        days: ""
+      });
+    }
+  }
+  return fallbackRecords;
 }

@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="./theme-overrides.css?v=156" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=3" />
     <link rel="stylesheet" href="./scripts/modules/system-admin/styles.css?v=1" />
-    <link rel="stylesheet" href="./scripts/modules/skill-training/styles.css?v=6" />
+    <link rel="stylesheet" href="./scripts/modules/skill-training/styles.css?v=7" />
     <link rel="stylesheet" href="./scripts/modules/annual-plan/styles.css?v=1" />
     <link rel="stylesheet" href="./scripts/core/auth.css?v=8" />
   </head>
@@ -3091,21 +3091,39 @@
               </div>
             </div>
 
+            <!-- Row 1.5: View Mode Switcher & Search/Filter -->
+            <div id="skillImportViewControls" class="skill-import-view-controls">
+              <div class="skill-import-mode-tabs" role="group" aria-label="Önizleme görünümü">
+                <button type="button" class="is-active" data-import-view-mode="all">Tümü</button>
+                <button type="button" data-import-view-mode="basic">1. Öğrenci &amp; İşletme</button>
+                <button type="button" data-import-view-mode="assign">2. Koordinatör &amp; Gün</button>
+              </div>
+              <div class="skill-import-filter-inputs">
+                <input id="skillImportSearchInput" type="search" placeholder="Öğrenci, no veya işletme ara..." />
+                <select id="skillImportStatusFilter" aria-label="Kayıt durumu filtresi">
+                  <option value="all">Tüm Kayıtlar</option>
+                  <option value="new">Sadece Yeni</option>
+                  <option value="existing">Sadece Kayıtlı</option>
+                  <option value="no-teacher">Öğretmeni Eksik</option>
+                </select>
+              </div>
+            </div>
+
             <!-- Table Card: Takes FULL remaining vertical height -->
             <div class="skill-table-card" style="margin-top: 0; padding: 0; flex: 1; min-height: 0; overflow-y: auto; width: 100%;">
               <table class="skill-data-table" style="font-size: 0.82rem;">
                 <thead>
                   <tr>
                     <th style="width: 32px; text-align: center; padding: 4px;"><input type="checkbox" id="skillImportSelectAll" style="cursor: pointer; width: 15px; height: 15px; margin: 0; vertical-align: middle;" /></th>
-                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="isExistingStudent" style="width: 70px; text-align: center; padding: 4px;" title="Sıralamak için tıklayın">Durum <span class="skill-sort-indicator">⇅</span></th>
-                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="student_no" style="width: 75px; padding: 4px;" title="Sıralamak için tıklayın">Öğrenci No <span class="skill-sort-indicator">⇅</span></th>
-                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="student_name" style="min-width: 130px; padding: 4px;" title="Sıralamak için tıklayın">Ad Soyad <span class="skill-sort-indicator">⇅</span></th>
-                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="class_name" style="width: 65px; padding: 4px;" title="Sıralamak için tıklayın">Sınıf <span class="skill-sort-indicator">⇅</span></th>
-                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="field" style="min-width: 170px; padding: 4px;" title="Sıralamak için tıklayın">Alan/Dal <span class="skill-sort-indicator">⇅</span></th>
-                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="business_name" style="min-width: 160px; padding: 4px;" title="Sıralamak için tıklayın">İşletme <span class="skill-sort-indicator">⇅</span></th>
-                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="coordinator_name" style="min-width: 170px; padding: 4px;" title="Sıralamak için tıklayın">Koordinatör Öğretmen <span class="skill-sort-indicator">⇅</span></th>
-                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="coord_day" style="width: 110px; padding: 4px;" title="Sıralamak için tıklayın">Ziyaret Günü <span class="skill-sort-indicator">⇅</span></th>
-                    <th class="skill-sort-col" data-sort-table="importPreview" data-sort-key="days" style="width: 85px; padding: 4px;" title="Öğrencinin Okul / Teorik Eğitim Günleri - Sıralamak için tıklayın">Okul Günleri <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-imp-col="status" data-sort-table="importPreview" data-sort-key="isExistingStudent" style="width: 70px; text-align: center; padding: 4px;" title="Sıralamak için tıklayın">Durum <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-imp-col="no" data-sort-table="importPreview" data-sort-key="student_no" style="width: 75px; padding: 4px;" title="Sıralamak için tıklayın">Öğrenci No <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-imp-col="name" data-sort-table="importPreview" data-sort-key="student_name" style="min-width: 130px; padding: 4px;" title="Sıralamak için tıklayın">Ad Soyad <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-imp-col="class" data-sort-table="importPreview" data-sort-key="class_name" style="width: 65px; padding: 4px;" title="Sıralamak için tıklayın">Sınıf <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-imp-col="field" data-sort-table="importPreview" data-sort-key="field" style="min-width: 170px; padding: 4px;" title="Sıralamak için tıklayın">Alan/Dal <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-imp-col="business" data-sort-table="importPreview" data-sort-key="business_name" style="min-width: 160px; padding: 4px;" title="Sıralamak için tıklayın">İşletme <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-imp-col="teacher" data-sort-table="importPreview" data-sort-key="coordinator_name" style="min-width: 170px; padding: 4px;" title="Sıralamak için tıklayın">Koordinatör Öğretmen <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-imp-col="day" data-sort-table="importPreview" data-sort-key="coord_day" style="width: 110px; padding: 4px;" title="Sıralamak için tıklayın">Ziyaret Günü <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-imp-col="days" data-sort-table="importPreview" data-sort-key="days" style="width: 85px; padding: 4px;" title="Öğrencinin Okul / Teorik Eğitim Günleri - Sıralamak için tıklayın">Okul Günleri <span class="skill-sort-indicator">⇅</span></th>
                   </tr>
                 </thead>
                 <tbody id="skillImportPreviewTable"></tbody>
@@ -5519,7 +5537,7 @@
     <script src="./scripts/modules/course-tracking/index.js?v=9"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=17"></script>
     <script src="./scripts/modules/sorubank/index.js?v=8"></script>
-    <script src="./scripts/modules/skill-training/index.js?v=37"></script>
+    <script src="./scripts/modules/skill-training/index.js?v=38"></script>
     <script src="./scripts/modules/student-tracking/index.js?v=16"></script>
     <script src="./scripts/modules/system-admin/index.js?v=1"></script>
   </body>
