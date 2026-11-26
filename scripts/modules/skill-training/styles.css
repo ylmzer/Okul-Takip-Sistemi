@@ -2408,6 +2408,71 @@ body.skill-mode .skill-visit-icon svg {
   margin: 0 !important;
 }
 
+/* Okul & Koordinatorler Sayfasi Sadelestirme */
+body.skill-mode .skill-view[data-skill-panel="school"] .skill-mgmt-section-icon {
+  display: none !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="school"] .skill-mgmt-filter-bar {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: nowrap !important;
+  gap: 8px !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="school"] .skill-student-filters-bar {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  gap: 8px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="school"] .skill-search-input-wrap {
+  flex: 1 1 200px !important;
+  min-width: 140px !important;
+  max-width: 340px !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="school"] #skillSchoolTypeFilter {
+  flex: 0 0 130px !important;
+  width: 130px !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="school"] #skillTeacherSchoolFilter {
+  flex: 0 1 240px !important;
+  width: auto !important;
+  min-width: 160px !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="school"] .skill-mgmt-badge {
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+}
+
+body.skill-mode .skill-view[data-skill-panel="school"] .skill-mgmt-top-actions {
+  flex-shrink: 0 !important;
+}
+
+/* Yaz tatili sutunlarini ana tabloda gizle (duzenleme panelinde erisilebilir) */
+body.skill-mode .skill-view[data-skill-panel="school"] th[data-sort-key="summerStartDate"],
+body.skill-mode .skill-view[data-skill-panel="school"] th[data-sort-key="summerEndDate"],
+body.skill-mode .skill-view[data-skill-panel="school"] #skillSchoolTable td:nth-child(6),
+body.skill-mode .skill-view[data-skill-panel="school"] #skillSchoolTable td:nth-child(7) {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  body.skill-mode .skill-view[data-skill-panel="school"] .skill-mgmt-filter-bar,
+  body.skill-mode .skill-view[data-skill-panel="school"] .skill-student-filters-bar {
+    flex-wrap: wrap !important;
+  }
+}
+
 body.dark-mode .skill-absence-grid-table th.is-week-start,
 body.dark-mode .skill-absence-grid-table td.is-week-start {
   border-left: 2px solid rgba(45, 212, 191, 0.45) !important;
