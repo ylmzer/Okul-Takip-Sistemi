@@ -234,17 +234,18 @@ function renderSkillAlerts() {
     });
   }
 
-  const alertCountEl = document.getElementById("skillAlertCount");
-  if (alertCountEl) {
-    alertCountEl.textContent = `${alerts.length} bildirim`;
-    alertCountEl.classList.toggle("is-empty", alerts.length === 0);
-  }
-
   const dayNamesMap = { "1": "Pazartesi", "2": "Salı", "3": "Çarşamba", "4": "Perşembe", "5": "Cuma" };
   const jsDay = new Date().getDay();
   const isWeekday = jsDay >= 1 && jsDay <= 5;
   const targetDayKey = isWeekday ? String(jsDay) : "1";
   const todayVisits = skillState.coordinators.filter((item) => String(item.day || "").trim() === targetDayKey).length;
+
+  const alertCountEl = document.getElementById("skillAlertCount");
+  if (alertCountEl) {
+    const visibleCount = alerts.length + (todayVisits > 0 ? 1 : 0);
+    alertCountEl.textContent = `${visibleCount} bildirim`;
+    alertCountEl.classList.toggle("is-empty", visibleCount === 0);
+  }
   const visitTitle = isWeekday ? `Bugünkü Ziyaretler (${dayNamesMap[targetDayKey]})` : `Yaklaşan Ziyaretler (${dayNamesMap[targetDayKey]})`;
   const visitText = todayVisits > 0
     ? `${todayVisits} işletme için koordinatörlük rehberliği planlanmış.`
