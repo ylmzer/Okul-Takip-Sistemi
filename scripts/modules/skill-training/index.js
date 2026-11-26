@@ -98,6 +98,7 @@ async function handleImportNextStep() {
   if (step1) step1.style.display = "none";
   if (tabContainer) tabContainer.style.display = "none";
   if (step2) step2.style.display = "flex";
+  els.skillImportDialog?.classList.add("is-step2");
   if (els.skillImportPreviewArea) els.skillImportPreviewArea.style.display = "flex";
   if (saveBtn) saveBtn.disabled = true;
   if (prevBtn) prevBtn.disabled = true;
@@ -120,6 +121,7 @@ function handleImportPrevStep() {
   if (step2) step2.style.display = "none";
   if (step1) step1.style.display = "block";
   if (tabContainer) tabContainer.style.display = "flex";
+  els.skillImportDialog?.classList.remove("is-step2");
   
   if (els.skillImportPreviewArea) els.skillImportPreviewArea.style.display = "none";
   if (els.skillImportStats) els.skillImportStats.textContent = "";
@@ -435,6 +437,7 @@ function openSkillImportDialog() {
   if (step1) step1.style.display = "block";
   if (step2) step2.style.display = "none";
   if (tabContainer) tabContainer.style.display = "flex";
+  els.skillImportDialog?.classList.remove("is-step2");
   if (nextBtn) nextBtn.disabled = true;
 
   if (els.skillImportFileInput) els.skillImportFileInput.value = "";
@@ -650,9 +653,12 @@ function renderImportPreviewTable() {
   parsedImportRecords.forEach((r, idx) => {
     if (impStatus === "new" && r.isExistingStudent) return;
     if (impStatus === "existing" && !r.isExistingStudent) return;
+    if (impStatus === "no-field" && (r.field || "").trim() && r.field !== "Belirtilmedi") return;
     if (impStatus === "no-teacher" && (r.coordinator_name || "").trim()) return;
+    if (impStatus === "no-day" && dayToName(r.coord_day)) return;
+    if (impStatus === "no-school-days" && (r.days || "").trim()) return;
     if (impQuery) {
-      const hay = `${r.student_no || ""} ${r.student_name || ""} ${r.business_name || ""} ${r.class_name || ""}`.toLocaleLowerCase("tr-TR");
+      const hay = `${r.student_no || ""} ${r.student_name || ""} ${r.business_name || ""} ${r.class_name || ""} ${r.field || ""}`.toLocaleLowerCase("tr-TR");
       if (!hay.includes(impQuery)) return;
     }
 
@@ -661,11 +667,11 @@ function renderImportPreviewTable() {
     }
     if (!r.field || r.field === "Belirtilmedi") {
       const matchedField = findClosestMatch(r.originalField, schoolType);
-      if (matchedField) r.field = matchedField;
+      r.field = matchedField || "";
     }
     
     let fieldInputHtml = `
-      <input class="import-field-input" type="text" list="importAlanDalList" data-index="${idx}" value="${escapeHtml(r.field || '')}" placeholder="Alan/Dal ara..." style="padding: 2px 6px !important; border-radius: 4px !important; border: 1px solid var(--line) !important; background: var(--surface) !important; color: var(--ink) !important; width: 100% !important; font-size: 0.78rem !important; height: 24px !important; outline: none !important; box-sizing: border-box !important; margin: 0 !important;" />
+      <input class="import-field-input" type="text" list="importAlanDalList" data-index="${idx}" value="${escapeHtml(r.field || '')}" title="${escapeHtml(r.field || '')}" placeholder="Alan/Dal ara..." style="padding: 2px 6px !important; border-radius: 4px !important; border: 1px solid var(--line) !important; background: var(--surface) !important; color: var(--ink) !important; width: 100% !important; font-size: 0.78rem !important; height: 24px !important; outline: none !important; box-sizing: border-box !important; margin: 0 !important;" />
     `;
     
     let teacherInputHtml = `

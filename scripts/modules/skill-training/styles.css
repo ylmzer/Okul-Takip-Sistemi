@@ -2313,6 +2313,41 @@ body:not(.dark-mode) .import-day-pill.is-active {
   color: #0f766e;
 }
 
+/* Step 1 Kompakt Boyut & Step 2 Ust Bar / Alan-Dal Genislik Duzeltmesi */
+body.skill-mode .skill-import-dialog:not(.is-step2) {
+  width: min(680px, calc(100vw - 24px)) !important;
+  height: auto !important;
+  max-height: calc(100vh - 32px) !important;
+}
+
+body.skill-mode .skill-import-dialog:not(.is-step2) .skill-status-body {
+  height: auto !important;
+  padding: 16px 20px !important;
+}
+
+body.skill-mode #skillImportNextBtn {
+  width: auto !important;
+}
+
+body.skill-mode #skillImportSettings,
+body.skill-mode #skillImportGlobalActions,
+body.skill-mode #skillImportBulkActions {
+  height: auto !important;
+  min-height: 36px !important;
+  padding: 5px 10px !important;
+  flex-wrap: wrap !important;
+}
+
+body.skill-mode #skillImportSchoolType {
+  height: 26px !important;
+  min-height: 26px !important;
+  padding: 2px 8px !important;
+}
+
+body.skill-mode #skillImportDialog [data-imp-col="field"] {
+  min-width: 260px !important;
+}
+
 body.dark-mode .skill-absence-grid-table th.is-week-start,
 body.dark-mode .skill-absence-grid-table td.is-week-start {
   border-left: 2px solid rgba(45, 212, 191, 0.45) !important;
