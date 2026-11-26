@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="./theme-overrides.css?v=156" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=3" />
     <link rel="stylesheet" href="./scripts/modules/system-admin/styles.css?v=1" />
-    <link rel="stylesheet" href="./scripts/modules/skill-training/styles.css?v=9" />
+    <link rel="stylesheet" href="./scripts/modules/skill-training/styles.css?v=10" />
     <link rel="stylesheet" href="./scripts/modules/annual-plan/styles.css?v=1" />
     <link rel="stylesheet" href="./scripts/core/auth.css?v=8" />
   </head>
@@ -1634,6 +1634,9 @@
                   <option value="">Durum: Tümü</option>
                   <option value="active">Durum: Aktif</option>
                   <option value="passive">Durum: Pasif</option>
+                  <option value="no-field">Alan/Dal Eksik</option>
+                  <option value="no-business">İşletmesi Eksik</option>
+                  <option value="no-days">Okul Günü Eksik</option>
                 </select>
                 <button class="secondary-action skill-filter-reset-btn" id="skillStudentFilterResetBtn" type="button" title="Filtreleri sıfırla" style="display: none;">✕</button>
                 <span class="skill-mgmt-badge" id="skillStudentCountBadge">0 Kayıt</span>
@@ -1695,7 +1698,11 @@
                   </label>
                   <label class="stu-col-field">
                     <span>Alan / dal</span>
-                    <input id="skillStudentField" type="text" placeholder="Alan / dal seçin..." readonly style="cursor: pointer; outline: none; background: var(--surface); color: var(--ink);" />
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                      <input id="skillStudentField" type="text" list="skillStudentFieldDatalist" placeholder="Alan / dal yazın veya seçin..." style="flex: 1; min-width: 0; outline: none; background: var(--surface); color: var(--ink);" />
+                      <button type="button" id="skillStudentFieldManageBtn" class="secondary-action" style="min-height: 34px; height: 34px; padding: 0 10px; font-size: 0.76rem; flex-shrink: 0;" title="Alan / Dal listesini yönet">Liste</button>
+                    </div>
+                    <datalist id="skillStudentFieldDatalist"></datalist>
                   </label>
                   <label class="stu-col-business">
                     <span>İşletme</span>
@@ -1826,7 +1833,9 @@
                   <option value="3">Çarşamba</option>
                   <option value="4">Perşembe</option>
                   <option value="5">Cuma</option>
-                  <option value="none">Belirtilmedi</option>
+                  <option value="none">Ziyaret Günü Eksik</option>
+                  <option value="no-teacher">Öğretmeni Eksik</option>
+                  <option value="no-deputy">Md. Yrd. Eksik</option>
                 </select>
                 <button class="secondary-action skill-filter-reset-btn" id="skillCoordinatorFilterResetBtn" type="button" title="Filtreleri sıfırla" style="display: none;">✕</button>
                 <span class="skill-mgmt-badge" id="skillCoordinatorCountBadge">0 Kayıt</span>
@@ -3128,10 +3137,10 @@
                 <thead>
                   <tr>
                     <th style="width: 32px; text-align: center; padding: 4px;"><input type="checkbox" id="skillImportSelectAll" style="cursor: pointer; width: 15px; height: 15px; margin: 0; vertical-align: middle;" /></th>
-                    <th class="skill-sort-col" data-imp-col="status" data-sort-table="importPreview" data-sort-key="isExistingStudent" style="width: 70px; text-align: center; padding: 4px;" title="Sıralamak için tıklayın">Durum <span class="skill-sort-indicator">⇅</span></th>
-                    <th class="skill-sort-col" data-imp-col="no" data-sort-table="importPreview" data-sort-key="student_no" style="width: 75px; padding: 4px;" title="Sıralamak için tıklayın">Öğrenci No <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-imp-col="status" data-sort-table="importPreview" data-sort-key="isExistingStudent" style="width: 86px; text-align: center; padding: 4px;" title="Sıralamak için tıklayın">Durum <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-imp-col="no" data-sort-table="importPreview" data-sort-key="student_no" style="width: 58px; padding: 4px;" title="Sıralamak için tıklayın">No <span class="skill-sort-indicator">⇅</span></th>
                     <th class="skill-sort-col" data-imp-col="name" data-sort-table="importPreview" data-sort-key="student_name" style="min-width: 130px; padding: 4px;" title="Sıralamak için tıklayın">Ad Soyad <span class="skill-sort-indicator">⇅</span></th>
-                    <th class="skill-sort-col" data-imp-col="class" data-sort-table="importPreview" data-sort-key="class_name" style="width: 65px; padding: 4px;" title="Sıralamak için tıklayın">Sınıf <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-imp-col="class" data-sort-table="importPreview" data-sort-key="class_name" style="width: 56px; padding: 4px;" title="Sıralamak için tıklayın">Sınıf <span class="skill-sort-indicator">⇅</span></th>
                     <th class="skill-sort-col" data-imp-col="field" data-sort-table="importPreview" data-sort-key="field" style="min-width: 260px; padding: 4px;" title="Sıralamak için tıklayın">Alan/Dal <span class="skill-sort-indicator">⇅</span></th>
                     <th class="skill-sort-col" data-imp-col="business" data-sort-table="importPreview" data-sort-key="business_name" style="min-width: 160px; padding: 4px;" title="Sıralamak için tıklayın">İşletme <span class="skill-sort-indicator">⇅</span></th>
                     <th class="skill-sort-col" data-imp-col="teacher" data-sort-table="importPreview" data-sort-key="coordinator_name" style="min-width: 170px; padding: 4px;" title="Sıralamak için tıklayın">Koordinatör Öğretmen <span class="skill-sort-indicator">⇅</span></th>
@@ -5545,12 +5554,12 @@
     <script src="./scripts/modules/sorubank/export-print.js?v=1"></script>
     <script src="./scripts/modules/skill-training/holidays-and-views.js?v=1"></script>
     <script src="./scripts/modules/skill-training/reports.js?v=3"></script>
-    <script src="./scripts/modules/skill-training/management.js?v=2"></script>
+    <script src="./scripts/modules/skill-training/management.js?v=3"></script>
     <script src="./scripts/modules/settings/index.js?v=9"></script>
     <script src="./scripts/modules/course-tracking/index.js?v=9"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=17"></script>
     <script src="./scripts/modules/sorubank/index.js?v=8"></script>
-    <script src="./scripts/modules/skill-training/index.js?v=40"></script>
+    <script src="./scripts/modules/skill-training/index.js?v=41"></script>
     <script src="./scripts/modules/student-tracking/index.js?v=16"></script>
     <script src="./scripts/modules/system-admin/index.js?v=1"></script>
   </body>

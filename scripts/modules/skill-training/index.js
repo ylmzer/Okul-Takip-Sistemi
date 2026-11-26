@@ -2395,6 +2395,12 @@ function populateStudentAlanDalDatalist() {
     }
   });
   allAlanDalSuggestions = Array.from(uniqueOptions).sort();
+  const stuFieldDatalist = document.getElementById("skillStudentFieldDatalist");
+  if (stuFieldDatalist) {
+    const localLabels = (skillState.fields || []).map(f => getSkillFieldLabel(f)).filter(Boolean);
+    const merged = Array.from(new Set([...localLabels, ...allAlanDalSuggestions])).sort((a, b) => a.localeCompare(b, "tr-TR"));
+    stuFieldDatalist.innerHTML = merged.map(lbl => `<option value="${escapeHtml(lbl)}"></option>`).join("");
+  }
   
   // Initialize the custom dialog elements
   initStudentAlanDalDialog();
@@ -2402,6 +2408,7 @@ function populateStudentAlanDalDatalist() {
 
 function initStudentAlanDalDialog() {
   const input = document.getElementById("skillStudentField");
+  const manageBtn = document.getElementById("skillStudentFieldManageBtn");
   const dialog = document.getElementById("skillFieldSelectorDialog");
   const searchInput = document.getElementById("skillFieldSelectorSearch");
   const listContainer = document.getElementById("skillFieldSelectorList");
@@ -2411,14 +2418,19 @@ function initStudentAlanDalDialog() {
 
   if (!input || !dialog || !listContainer) return;
 
-  // Click on the student field opens the dialog
-  input.addEventListener("click", () => {
-    if (searchInput) searchInput.value = "";
-    if (newAreaInput) newAreaInput.value = "";
-    if (newBranchInput) newBranchInput.value = "";
-    renderFieldSelectorList();
-    dialog.showModal();
-  });
+  // Only open the modal when explicitly clicking the "Liste" button (typing/selecting works inline!)
+  if (manageBtn && !manageBtn.dataset.bound) {
+    manageBtn.dataset.bound = "1";
+    manageBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (searchInput) searchInput.value = "";
+      if (newAreaInput) newAreaInput.value = "";
+      if (newBranchInput) newBranchInput.value = "";
+      renderFieldSelectorList();
+      dialog.showModal();
+    });
+  }
 
   // Keep track of which item is being edited
   let editingId = null;
@@ -2569,6 +2581,7 @@ function initStudentAlanDalDialog() {
   }
 
   listContainer.addEventListener("click", (e) => {
+    e.stopPropagation();
     const selectBtn = e.target.closest(".select-field-btn");
     const selectTrigger = e.target.closest(".select-field-trigger");
     if (selectBtn || selectTrigger) {

@@ -2345,7 +2345,32 @@ body.skill-mode #skillImportSchoolType {
 }
 
 body.skill-mode #skillImportDialog [data-imp-col="field"] {
-  min-width: 260px !important;
+  min-width: 240px !important;
+}
+
+body.skill-mode .skill-import-dialog.is-step2 {
+  width: min(1460px, calc(100vw - 16px)) !important;
+}
+
+body.skill-mode #skillImportDialog .skill-data-table th,
+body.skill-mode #skillImportDialog .skill-data-table td {
+  padding: 2px 5px !important;
+}
+
+body.skill-mode #skillImportDialog [data-imp-col="status"] {
+  width: 84px !important;
+  min-width: 84px !important;
+}
+
+body.skill-mode #skillImportDialog [data-imp-col="no"] {
+  width: 56px !important;
+  min-width: 56px !important;
+  max-width: 56px !important;
+}
+
+body.skill-mode #skillImportDialog [data-imp-col="class"] {
+  width: 54px !important;
+  min-width: 54px !important;
 }
 
 body.dark-mode .skill-absence-grid-table th.is-week-start,

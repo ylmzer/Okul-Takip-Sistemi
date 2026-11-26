@@ -777,7 +777,12 @@ function renderSkillStudents() {
       .includes(query);
     const matchesClass = !classFilter || normalizeSkillClass(student.className) === classFilter;
     const matchesBusiness = !businessFilter || student.businessId === businessFilter;
-    const matchesStatus = !statusFilter || (statusFilter === "active" ? student.active !== false : student.active === false);
+    const matchesStatus = !statusFilter
+      || (statusFilter === "active" && student.active !== false)
+      || (statusFilter === "passive" && student.active === false)
+      || (statusFilter === "no-field" && (!(student.field || "").trim() || student.field === "Belirtilmedi"))
+      || (statusFilter === "no-business" && !student.businessId)
+      || (statusFilter === "no-days" && !(student.days || "").trim());
     return matchesSearch && matchesClass && matchesBusiness && matchesStatus;
   });
 
@@ -924,7 +929,9 @@ function renderSkillCoordinators() {
   const dayFilter = document.getElementById("skillCoordinatorDayFilter")?.value || "";
   let coordinators = skillState.coordinators.filter((coordinator) => {
     if (dayFilter === "none" && coordinator.day) return false;
-    if (dayFilter && dayFilter !== "none" && String(coordinator.day || "") !== dayFilter) return false;
+    if (dayFilter === "no-teacher" && (coordinator.teacher || "").trim()) return false;
+    if (dayFilter === "no-deputy" && (coordinator.deputy || "").trim()) return false;
+    if (dayFilter && !["none", "no-teacher", "no-deputy"].includes(dayFilter) && String(coordinator.day || "") !== dayFilter) return false;
     if (searchQuery) {
       const business = getSkillBusiness(coordinator.businessId);
       const hay = [business?.name, business?.address, coordinator.teacher, coordinator.deputy, getSkillDayName(coordinator.day)].join(" ").toLocaleLowerCase("tr-TR");

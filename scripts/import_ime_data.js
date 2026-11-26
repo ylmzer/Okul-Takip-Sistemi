@@ -55,7 +55,8 @@ function decodeCipherString(rawStr = "") {
       out.push(' ');
     } else if (c === ' ') {
       // In cipher fonts where space is \u0003, ASCII 32 (32+29=61) is used for 'ü'
-      out.push(hasLowerCipher ? 'ü' : ' ');
+      const inlineU = /[a-zçğıöşüA-ZÇĞİÖŞÜ] [a-zçğıöşü]/.test(rawStr);
+      out.push((hasLowerCipher || inlineU) ? 'ü' : ' ');
     } else if (c === 'Õ') {
       out.push(hasLowerCipher ? 'ı' : 'I');
     } else if (turkishMap[c]) {
@@ -229,9 +230,10 @@ export async function parsePdf(filePath) {
     return a.x - b.x;
   });
 
-  // Extract coordinator and week info
+  // Extract coordinator per page and week info
   let weekDate = "";
   let coordinatorTeacher = "";
+  const pageCoordinators = {};
   let deputyName = "";
 
   // Look for weekDate
@@ -241,13 +243,22 @@ export async function parsePdf(filePath) {
     weekDate = decodeString(rawWeek);
   }
 
-  // Look for coordinator (near X > 600 and Y > 480)
-  const coordItems = items.filter(it => it.x > 600 && it.y > 480 && it.page === 0);
-  for (let i = 0; i < coordItems.length; i++) {
-    if (turkishClean(decodeItem(coordItems[i])) === "imza" && i > 0) {
-      coordinatorTeacher = decodeItem(coordItems[i - 1]);
-      break;
+  // Look for coordinator per page (near X > 600 and Y > 480)
+  const sortedPages = [...new Set(items.map(it => it.page))].sort((a, b) => a - b);
+  let lastCoord = "";
+  for (const pIdx of sortedPages) {
+    const coordItems = items.filter(it => it.x > 600 && it.y > 480 && it.page === pIdx);
+    for (let i = 0; i < coordItems.length; i++) {
+      if (turkishClean(decodeItem(coordItems[i])) === "imza" && i > 0) {
+        const tName = decodeItem(coordItems[i - 1]);
+        if (tName) {
+          lastCoord = tName;
+          if (!coordinatorTeacher) coordinatorTeacher = tName;
+        }
+        break;
+      }
     }
+    if (lastCoord) pageCoordinators[pIdx] = lastCoord;
   }
 
   // Look for Deputy (Md.Yrd. K.ALPARSLAN)
@@ -306,7 +317,7 @@ export async function parsePdf(filePath) {
       const str = decodeItem(item);
 
       if (x >= 230 && x <= 245 && /^\d+$/.test(str)) rowNo = str;
-      else if (x >= 255 && x <= 270 && /^\d{1,2}\/[A-ZÇĞİÖŞÜ0-9]+$/i.test(str)) className = str;
+      else if (x >= 255 && x <= 270 && /^\d{1,2}\/[A-ZÇĞİÖŞÜ][A-ZÇĞİÖŞÜ0-9]*$/i.test(str)) className = str;
       else if (x >= 285 && x <= 298 && /^\d+$/.test(str)) studentNo = str;
       else if (x >= 315 && x <= 335) studentName = str;
       else if (x >= 680 && x <= 710) trainerName = str;
@@ -408,7 +419,7 @@ export async function parsePdf(filePath) {
       business_name: currentBusiness.name,
       business_address: currentBusiness.address,
       business_phone: currentBusiness.phone,
-      coordinator_name: coordinatorTeacher.toLocaleUpperCase("tr-TR"),
+      coordinator_name: (pageCoordinators[sRow.page] || coordinatorTeacher).toLocaleUpperCase("tr-TR"),
       deputy: deputyName,
       days: ""
     });
