@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="./theme-overrides.css?v=156" />
     <link rel="stylesheet" href="./scripts/modules/student-tracking/styles.css?v=3" />
     <link rel="stylesheet" href="./scripts/modules/system-admin/styles.css?v=1" />
-    <link rel="stylesheet" href="./scripts/modules/skill-training/styles.css?v=7" />
+    <link rel="stylesheet" href="./scripts/modules/skill-training/styles.css?v=8" />
     <link rel="stylesheet" href="./scripts/modules/annual-plan/styles.css?v=1" />
     <link rel="stylesheet" href="./scripts/core/auth.css?v=8" />
   </head>
@@ -3077,6 +3077,16 @@
                     <option value="Cuma">Cuma</option>
                   </select>
                 </div>
+                <div style="display: flex; align-items: center; gap: 3px;">
+                  <span style="color: var(--muted); font-weight: bold; font-size: 0.72rem;">Okul Günleri:</span>
+                  <div id="skillImportBulkSchoolDays" class="import-days-pills">
+                    <button type="button" class="import-day-pill" data-day="Pzt">Pzt</button>
+                    <button type="button" class="import-day-pill" data-day="Sal">Sal</button>
+                    <button type="button" class="import-day-pill" data-day="Çar">Çar</button>
+                    <button type="button" class="import-day-pill" data-day="Per">Per</button>
+                    <button type="button" class="import-day-pill" data-day="Cum">Cum</button>
+                  </div>
+                </div>
                 <div style="display: flex; align-items: center; gap: 4px; margin-left: 4px;">
                   <button id="skillImportBulkApplyBtn" type="button" class="primary-action" style="padding: 0 8px; font-size: 0.72rem; font-weight: bold; height: 22px; min-height: 22px; border-radius: 4px; border: none; cursor: pointer; background: var(--accent); color: #fff;" title="Doldurulan bilgileri seçili öğrencilere ve işletmelerine uygula">
                     ✓ Uygula
@@ -3123,7 +3133,7 @@
                     <th class="skill-sort-col" data-imp-col="business" data-sort-table="importPreview" data-sort-key="business_name" style="min-width: 160px; padding: 4px;" title="Sıralamak için tıklayın">İşletme <span class="skill-sort-indicator">⇅</span></th>
                     <th class="skill-sort-col" data-imp-col="teacher" data-sort-table="importPreview" data-sort-key="coordinator_name" style="min-width: 170px; padding: 4px;" title="Sıralamak için tıklayın">Koordinatör Öğretmen <span class="skill-sort-indicator">⇅</span></th>
                     <th class="skill-sort-col" data-imp-col="day" data-sort-table="importPreview" data-sort-key="coord_day" style="width: 110px; padding: 4px;" title="Sıralamak için tıklayın">Ziyaret Günü <span class="skill-sort-indicator">⇅</span></th>
-                    <th class="skill-sort-col" data-imp-col="days" data-sort-table="importPreview" data-sort-key="days" style="width: 85px; padding: 4px;" title="Öğrencinin Okul / Teorik Eğitim Günleri - Sıralamak için tıklayın">Okul Günleri <span class="skill-sort-indicator">⇅</span></th>
+                    <th class="skill-sort-col" data-imp-col="days" data-sort-table="importPreview" data-sort-key="days" style="width: 158px; padding: 4px;" title="Öğrencinin Okul / Teorik Eğitim Günleri - Sıralamak için tıklayın">Okul Günleri <span class="skill-sort-indicator">⇅</span></th>
                   </tr>
                 </thead>
                 <tbody id="skillImportPreviewTable"></tbody>
@@ -5537,7 +5547,7 @@
     <script src="./scripts/modules/course-tracking/index.js?v=9"></script>
     <script src="./scripts/modules/annual-plan/index.js?v=17"></script>
     <script src="./scripts/modules/sorubank/index.js?v=8"></script>
-    <script src="./scripts/modules/skill-training/index.js?v=38"></script>
+    <script src="./scripts/modules/skill-training/index.js?v=39"></script>
     <script src="./scripts/modules/student-tracking/index.js?v=16"></script>
     <script src="./scripts/modules/system-admin/index.js?v=1"></script>
   </body>

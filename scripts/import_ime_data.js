@@ -331,14 +331,14 @@ export async function parsePdf(filePath) {
   for (let idx = 0; idx < studentRows.length; idx++) {
     const sRow = studentRows[idx];
     
-    // Find the head of the current business block (the rowNo === "1" student)
+    // Find the head of the current business block on the SAME page
     let headIdx = idx;
-    while (headIdx > 0 && studentRows[headIdx].rowNo !== "1" && studentRows[headIdx].page === sRow.page) {
+    while (headIdx > 0 && studentRows[headIdx].rowNo !== "1" && studentRows[headIdx - 1].page === sRow.page) {
       headIdx--;
     }
     const headRow = studentRows[headIdx];
 
-    // Find all students in this same business block
+    // Find all students in this same business block on this page
     let blockStudents = [headRow];
     for (let i = headIdx + 1; i < studentRows.length; i++) {
       if (studentRows[i].page !== sRow.page || studentRows[i].rowNo === "1") {
@@ -393,9 +393,10 @@ export async function parsePdf(filePath) {
       return out.replace(/\s+/g, " ").trim();
     };
 
-    const name = nameParts.length > 0 ? joinCellLines(nameParts) : "Belirtilmedi";
-    const address = addrParts.length > 0 ? joinCellLines(addrParts) : "";
-    const phone = phoneParts.length > 0 ? phoneParts.join(" ").trim() : "";
+    const hasOwnBusiness = nameParts.length > 0;
+    const name = hasOwnBusiness ? joinCellLines(nameParts) : (sRow.rowNo !== "1" && currentBusiness.name !== "Bilinmeyen İşletme" ? currentBusiness.name : "Belirtilmedi");
+    const address = hasOwnBusiness ? joinCellLines(addrParts) : (sRow.rowNo !== "1" ? currentBusiness.address : "");
+    const phone = hasOwnBusiness ? phoneParts.join(" ").trim() : (sRow.rowNo !== "1" ? currentBusiness.phone : "");
 
     currentBusiness = { name, address, phone };
 

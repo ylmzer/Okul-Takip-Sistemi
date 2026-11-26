@@ -2269,6 +2269,50 @@ body:not(.dark-mode) .skill-import-mode-tabs button.is-active {
   display: none !important;
 }
 
+/* Okul Gunleri Coklu Secim Hapları */
+.import-days-pills {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.import-day-pill {
+  min-width: 28px;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: 5px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(255, 255, 255, 0.04);
+  color: #94a3b8;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.import-day-pill:hover {
+  border-color: rgba(45, 212, 191, 0.45);
+  color: #e2e8f0;
+}
+
+.import-day-pill.is-active {
+  background: rgba(20, 184, 166, 0.22);
+  border-color: rgba(45, 212, 191, 0.5);
+  color: #5eead4;
+}
+
+body:not(.dark-mode) .import-day-pill {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+body:not(.dark-mode) .import-day-pill.is-active {
+  background: #ccfbf1;
+  border-color: #0d9488;
+  color: #0f766e;
+}
+
 body.dark-mode .skill-absence-grid-table th.is-week-start,
 body.dark-mode .skill-absence-grid-table td.is-week-start {
   border-left: 2px solid rgba(45, 212, 191, 0.45) !important;

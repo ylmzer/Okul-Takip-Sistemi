@@ -681,8 +681,18 @@ function renderImportPreviewTable() {
     }
     daySelectHtml += `</select>`;
 
+    const stuDaysOrder = ["Pzt", "Sal", "Çar", "Per", "Cum"];
+    const stuDayMap = { pazartesi: "Pzt", pzt: "Pzt", salı: "Sal", sali: "Sal", sal: "Sal", çarşamba: "Çar", carsamba: "Çar", çar: "Çar", car: "Çar", perşembe: "Per", persembe: "Per", per: "Per", cuma: "Cum", cum: "Cum" };
+    const activeStuDays = new Set(
+      String(r.days || "")
+        .split(/[,;\s/]+/)
+        .map((d) => stuDayMap[d.trim().toLocaleLowerCase("tr-TR")])
+        .filter(Boolean)
+    );
     let stuDaysInputHtml = `
-      <input class="import-days-input" type="text" data-index="${idx}" value="${escapeHtml(r.days || '')}" placeholder="-" title="Öğrencinin Okul / Teorik Eğitim Günleri" style="padding: 2px 6px !important; border-radius: 4px !important; border: 1px solid var(--line) !important; background: var(--surface) !important; color: var(--ink) !important; width: 100% !important; font-size: 0.75rem !important; height: 24px !important; outline: none !important; box-sizing: border-box !important; margin: 0 !important;" />
+      <div class="import-days-pills" data-index="${idx}" title="Öğrencinin okul günlerini seçin (birden fazla gün seçilebilir)">
+        ${stuDaysOrder.map((d) => `<button type="button" class="import-day-pill ${activeStuDays.has(d) ? "is-active" : ""}" data-day="${d}">${d}</button>`).join("")}
+      </div>
     `;
 
     const statusBadge = r.isExistingStudent
@@ -1224,13 +1234,15 @@ document.getElementById("skillImportBulkApplyBtn")?.addEventListener("click", ()
   const bulkFieldInput = document.getElementById("skillImportBulkFieldInput");
   const bulkTeacherInput = document.getElementById("skillImportBulkTeacherInput");
   const bulkDaySelect = document.getElementById("skillImportBulkDaySelect");
+  const bulkSchoolDayPills = Array.from(document.querySelectorAll("#skillImportBulkSchoolDays .import-day-pill.is-active")).map(b => b.dataset.day);
   
   const bulkField = bulkFieldInput ? bulkFieldInput.value.trim() : "";
-  const bulkTeacher = bulkTeacherInput ? bulkTeacherInput.value.trim().toUpperCase() : "";
+  const bulkTeacher = bulkTeacherInput ? bulkTeacherInput.value.trim().toLocaleUpperCase("tr-TR") : "";
   const bulkDay = bulkDaySelect ? bulkDaySelect.value : "";
+  const bulkSchoolDaysStr = bulkSchoolDayPills.join(",");
   
-  if (!bulkField && !bulkTeacher && !bulkDay) {
-    showToast("Lütfen uygulanacak en az bir alan/dal, öğretmen veya ziyaret günü belirleyin.", "warning");
+  if (!bulkField && !bulkTeacher && !bulkDay && !bulkSchoolDaysStr) {
+    showToast("Lütfen uygulanacak en az bir alan/dal, öğretmen, ziyaret günü veya okul günü belirleyin.", "warning");
     return;
   }
   
@@ -1238,6 +1250,9 @@ document.getElementById("skillImportBulkApplyBtn")?.addEventListener("click", ()
   parsedImportRecords.forEach((r, idx) => {
     if (r.selected) {
       appliedCount++;
+      if (bulkSchoolDaysStr) {
+        r.days = bulkSchoolDaysStr;
+      }
       if (bulkField) {
         r.field = bulkField;
         const fieldEl = document.querySelector(`.import-field-input[data-index="${idx}"]`);
@@ -1271,10 +1286,12 @@ document.getElementById("skillImportBulkApplyBtn")?.addEventListener("click", ()
   if (bulkFieldInput) bulkFieldInput.value = "";
   if (bulkTeacherInput) bulkTeacherInput.value = "";
   if (bulkDaySelect) bulkDaySelect.value = "";
+  document.querySelectorAll("#skillImportBulkSchoolDays .import-day-pill").forEach(b => b.classList.remove("is-active"));
   document.querySelectorAll(".import-row-checkbox").forEach(cb => cb.checked = false);
   const selectAllCheckbox = document.getElementById("skillImportSelectAll");
   if (selectAllCheckbox) selectAllCheckbox.checked = false;
   updateBulkActionsBar();
+  renderImportPreviewTable();
 });
 
 // Single-button Day assignment to selected businesses
@@ -1316,10 +1333,30 @@ document.getElementById("skillImportBulkClearBtn")?.addEventListener("click", ()
   if (bulkFieldInput) bulkFieldInput.value = "";
   if (bulkTeacherInput) bulkTeacherInput.value = "";
   if (bulkDaySelect) bulkDaySelect.value = "";
+  document.querySelectorAll("#skillImportBulkSchoolDays .import-day-pill").forEach(b => b.classList.remove("is-active"));
   document.querySelectorAll(".import-row-checkbox").forEach(cb => cb.checked = false);
   const selectAllCheckbox = document.getElementById("skillImportSelectAll");
   if (selectAllCheckbox) selectAllCheckbox.checked = false;
   updateBulkActionsBar();
+  renderImportPreviewTable();
+});
+
+document.getElementById("skillImportBulkSchoolDays")?.addEventListener("click", (e) => {
+  const pill = e.target.closest(".import-day-pill");
+  if (!pill) return;
+  pill.classList.toggle("is-active");
+});
+
+document.getElementById("skillImportPreviewTable")?.addEventListener("click", (e) => {
+  const pill = e.target.closest(".import-day-pill");
+  if (!pill) return;
+  const wrap = pill.closest(".import-days-pills");
+  const idx = parseInt(wrap?.dataset.index, 10);
+  if (Number.isNaN(idx) || !parsedImportRecords[idx]) return;
+  pill.classList.toggle("is-active");
+  const order = ["Pzt", "Sal", "Çar", "Per", "Cum"];
+  const active = new Set(Array.from(wrap.querySelectorAll(".import-day-pill.is-active")).map(b => b.dataset.day));
+  parsedImportRecords[idx].days = order.filter(d => active.has(d)).join(",");
 });
 
 document.getElementById("skillImportPreviewTable")?.addEventListener("change", (e) => {
