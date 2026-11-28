@@ -817,15 +817,14 @@ function getReportSymbolForDate(student, date, session) {
   }
   const matchingHolidays = skillState.holidays.filter((holiday) => dateValue >= holiday.startDate && dateValue <= (holiday.endDate || holiday.startDate));
   const sessionHolidays = matchingHolidays.filter((holiday) => isHolidaySession(holiday, dateValue, session));
-  if (sessionHolidays.some((holiday) => !isSkillSchoolBreakForMesem(holiday, student))) return "T";
-  if (sessionHolidays.some((holiday) => isSkillSchoolBreakForMesem(holiday, student))) return getSkillMesemBreakSymbol(date);
+  if (sessionHolidays.length > 0) return "T";
   return getBaseReportSymbolForDate(student, date);
 }
 
 function isMutedReportDate(date) {
   const dateValue = toSkillIsoDate(date);
   return date.getDay() === 0 || date.getDay() === 6 || skillState.holidays.some((holiday) => (
-    dateValue >= holiday.startDate && dateValue <= (holiday.endDate || holiday.startDate) && !isSkillSchoolBreakForMesem(holiday)
+    dateValue >= holiday.startDate && dateValue <= (holiday.endDate || holiday.startDate)
   ));
 }
 
@@ -2716,23 +2715,23 @@ function buildAbsenceReportHtml() {
         <meta charset="utf-8" />
         <title>Devamsizlik_Raporu_${getFormattedReportDate()}</title>
         <style>
-          @page { size: A4 portrait; margin: 9mm 8mm; }
+          @page { size: A4 portrait; margin: 0; }
           * { box-sizing: border-box; }
           body { margin: 0; font-family: "Segoe UI Semibold", "Segoe UI", -apple-system, sans-serif; color: #000; background: #fff; }
-          .report-sheet { width: 194mm; margin: 0 auto; }
+          .report-sheet { width: 210mm; margin: 0 auto; }
           .absence-report-card {
-            width: 194mm;
-            padding: 0;
+            width: 210mm;
+            padding: 9mm 8mm;
             border: 0;
             background: #fff;
             break-after: page;
             page-break-after: always;
           }
           .absence-report-card.is-half {
-            width: 194mm;
-            height: 139.5mm;
+            width: 210mm;
+            height: 148.5mm;
             margin: 0 !important;
-            padding: 0 !important;
+            padding: 6mm 8mm !important;
             break-after: auto;
             page-break-after: auto;
             overflow: hidden;
