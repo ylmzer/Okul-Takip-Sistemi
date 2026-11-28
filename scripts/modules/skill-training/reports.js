@@ -760,8 +760,14 @@ function isSkillSchoolBreakForMesem(holiday, student = null) {
   return getActiveSkillSchoolType() === "mesem";
 }
 
-function getSkillMesemBreakSymbol(date) {
+function getSkillMesemBreakSymbol(date, student = null) {
   if (date.getDay() === 0 || date.getDay() === 6) return "";
+  if (student) {
+    const schoolDays = String(student.days || "").split(",").map((day) => day.trim()).filter(Boolean);
+    if (schoolDays.includes(getShortSkillDay(date))) {
+      return "T";
+    }
+  }
   return els.skillReportBusinessSymbolEnabled?.checked === false ? "" : "X";
 }
 
@@ -817,14 +823,15 @@ function getReportSymbolForDate(student, date, session) {
   }
   const matchingHolidays = skillState.holidays.filter((holiday) => dateValue >= holiday.startDate && dateValue <= (holiday.endDate || holiday.startDate));
   const sessionHolidays = matchingHolidays.filter((holiday) => isHolidaySession(holiday, dateValue, session));
-  if (sessionHolidays.length > 0) return "T";
+  if (sessionHolidays.some((holiday) => !isSkillSchoolBreakForMesem(holiday, student))) return "T";
+  if (sessionHolidays.some((holiday) => isSkillSchoolBreakForMesem(holiday, student))) return getSkillMesemBreakSymbol(date, student);
   return getBaseReportSymbolForDate(student, date);
 }
 
 function isMutedReportDate(date) {
   const dateValue = toSkillIsoDate(date);
   return date.getDay() === 0 || date.getDay() === 6 || skillState.holidays.some((holiday) => (
-    dateValue >= holiday.startDate && dateValue <= (holiday.endDate || holiday.startDate)
+    dateValue >= holiday.startDate && dateValue <= (holiday.endDate || holiday.startDate) && !isSkillSchoolBreakForMesem(holiday)
   ));
 }
 

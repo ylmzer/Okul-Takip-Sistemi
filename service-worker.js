@@ -1,4 +1,4 @@
-const CACHE_NAME = "ots-pwa-v89";
+const CACHE_NAME = "ots-pwa-v90";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -18,7 +18,7 @@ const APP_SHELL = [
   "./scripts/modules/sorubank/journal-and-editor.js?v=1",
   "./scripts/modules/sorubank/export-print.js?v=1",
   "./scripts/modules/skill-training/holidays-and-views.js?v=1",
-  "./scripts/modules/skill-training/reports.js?v=5",
+  "./scripts/modules/skill-training/reports.js?v=6",
   "./scripts/modules/skill-training/management.js?v=3",
   "./scripts/modules/sorubank/index.js?v=8",
   "./scripts/modules/skill-training/index.js?v=41",
